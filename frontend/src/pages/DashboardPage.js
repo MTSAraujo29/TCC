@@ -47,7 +47,7 @@ function DashboardPage() {
             backgroundColor: 'rgba(0, 188, 212, 0.4)',
             tension: 0.4,
             fill: true,
-        }, ],
+        }],
     };
 
     const mockWeeklyData = {
@@ -59,7 +59,7 @@ function DashboardPage() {
             backgroundColor: 'rgba(255, 152, 0, 0.4)',
             tension: 0.4,
             fill: true,
-        }, ],
+        }],
     };
 
     const mockMonthlyData = {
@@ -71,7 +71,7 @@ function DashboardPage() {
             backgroundColor: 'rgba(233, 30, 99, 0.4)',
             tension: 0.4,
             fill: true,
-        }, ],
+        }],
     };
 
     const getConsumptionByTypeData = () => {
@@ -89,7 +89,7 @@ function DashboardPage() {
                 backgroundColor: backgroundColors,
                 borderColor: borderColors,
                 borderWidth: 1,
-            }, ],
+            }],
         };
     };
 
@@ -335,7 +335,7 @@ function DashboardPage() {
                     const newStatus = device.status === 'on' ? 'off' : 'on';
                     setDeviceMessage(`Dispositivo "${device.name}" ${newStatus === 'on' ? 'Ligado' : 'Desligado'}.`);
                     setTimeout(() => setDeviceMessage(''), 3000);
-                    return {...device, status: newStatus };
+                    return { ...device, status: newStatus };
                 }
                 return device;
             })
@@ -415,350 +415,302 @@ function DashboardPage() {
 
     const fictionalReport = generateFictionalReport();
 
-    return ( <
-        div className = "container dashboard-container" > { /* Sidebar de Navegação */ } <
-        div className = "sidebar" >
-        <
-        div className = "logo-icon-sidebar" > ⚡ < /div> <
-        div className = { `menu-item ${activeSection === 'inicio' ? 'active' : ''}` }
-        onClick = {
-            () => setActiveSection('inicio')
-        } > 🏠Início <
-        /div> <
-        div className = { `menu-item ${activeSection === 'controle' ? 'active' : ''}` }
-        onClick = {
-            () => setActiveSection('controle')
-        } > 🔌Controle de Energia <
-        /div> <
-        div className = { `menu-item ${activeSection === 'relatorios' ? 'active' : ''}` }
-        onClick = {
-            () => setActiveSection('relatorios')
-        } > 📊Relatórios <
-        /div> <
-        div className = { `menu-item ${activeSection === 'configuracoes' ? 'active' : ''}` }
-        onClick = {
-            () => setActiveSection('configuracoes')
-        } > ⚙️Configurações <
-        /div> <
-        div className = "sidebar-bottom" >
-        <
-        button onClick = { handleLogout }
-        className = "menu-item logout-link-sidebar" > 🔒Sair < /button> < /
-        div > <
-        /div>
+    return (
+        <div className="container dashboard-container">
+            {/* Sidebar de Navegação */}
+            <div className="sidebar">
+                <div className="logo-icon-sidebar">⚡</div>
+                <div className={`menu-item ${activeSection === 'inicio' ? 'active' : ''}`}
+                     onClick={() => setActiveSection('inicio')}>
+                    🏠Início
+                </div>
+                <div className={`menu-item ${activeSection === 'controle' ? 'active' : ''}`}
+                     onClick={() => setActiveSection('controle')}>
+                    🔌Controle de Energia
+                </div>
+                <div className={`menu-item ${activeSection === 'relatorios' ? 'active' : ''}`}
+                     onClick={() => setActiveSection('relatorios')}>
+                    📊Relatórios
+                </div>
+                <div className={`menu-item ${activeSection === 'configuracoes' ? 'active' : ''}`}
+                     onClick={() => setActiveSection('configuracoes')}>
+                    ⚙️Configurações
+                </div>
+                <div className="sidebar-bottom">
+                    <button onClick={handleLogout} className="menu-item logout-link-sidebar">🔒Sair</button>
+                </div>
+            </div>
 
-        { /* Conteúdo Principal do Dashboard */ } <
-        div className = "main-content" > { /* Seção "Início" */ } {
-            activeSection === 'inicio' && ( <
-                >
-                <
-                h2 > Olá, { userName }! < /h2> <
-                div className = "metrics-grid" >
-                <
-                div className = "metric-card" >
-                <
-                h3 > Consumo de energia atual < /h3> <
-                p > { dailyConsumption } < /p> < /
-                div > <
-                div className = "metric-card" >
-                <
-                h3 > Consumo do mês atual < /h3> <
-                p > { currentMonthConsumption } < /p> < /
-                div > <
-                div className = "metric-card" >
-                <
-                h3 > Fatura Estimada < /h3> <
-                p > R$ {
-                    (parseFloat(currentMonthConsumption.replace(' kWh', '')) * 0.75).toFixed(2)
-                } < /p> < /
-                div > <
-                div className = "metric-card" >
-                <
-                h3 > Consumo total < /h3> <
-                p > { totalConsumption } < /p> < /
-                div > <
-                /div>
+            {/* Conteúdo Principal do Dashboard */}
+            <div className="main-content">
+                {/* Seção "Início" */}
+                {
+                    activeSection === 'inicio' && (
+                        <>
+                            <h2>Olá, {userName}!</h2>
+                            <div className="metrics-grid">
+                                <div className="metric-card">
+                                    <h3>Consumo de energia atual</h3>
+                                    <p>{dailyConsumption}</p>
+                                </div>
+                                <div className="metric-card">
+                                    <h3>Consumo do mês atual</h3>
+                                    <p>{currentMonthConsumption}</p>
+                                </div>
+                                <div className="metric-card">
+                                    <h3>Fatura Estimada</h3>
+                                    <p>R$ {(parseFloat(currentMonthConsumption.replace(' kWh', '')) * 0.75).toFixed(2)}</p>
+                                </div>
+                                <div className="metric-card">
+                                    <h3>Consumo total</h3>
+                                    <p>{totalConsumption}</p>
+                                </div>
+                            </div>
 
-                <
-                div className = "chart-area-main" >
-                <
-                div className = "chart-card-main" >
-                <
-                div className = "view-mode-buttons" >
-                <
-                button onClick = {
-                    () => setViewMode('day')
-                }
-                className = { viewMode === 'day' ? 'active-view-button' : 'view-button' } >
-                Dia <
-                /button> <
-                button onClick = {
-                    () => setViewMode('week')
-                }
-                className = { viewMode === 'week' ? 'active-view-button' : 'view-button' } >
-                Semana <
-                /button> <
-                button onClick = {
-                    () => setViewMode('month')
-                }
-                className = { viewMode === 'month' ? 'active-view-button' : 'view-button' } >
-                Mês <
-                /button> < /
-                div > {
-                    getChartData().labels.length > 0 ? ( <
-                        Line data = { getChartData() }
-                        options = { chartOptions }
-                        />
-                    ) : ( <
-                        p style = {
-                            { color: '#BBB', textAlign: 'center' }
-                        } > Carregando dados do gráfico... < /p>
+                            <div className="chart-area-main">
+                                <div className="chart-card-main">
+                                    <div className="view-mode-buttons">
+                                        <button onClick={() => setViewMode('day')}
+                                                className={viewMode === 'day' ? 'active-view-button' : 'view-button'}>
+                                            Dia
+                                        </button>
+                                        <button onClick={() => setViewMode('week')}
+                                                className={viewMode === 'week' ? 'active-view-button' : 'view-button'}>
+                                            Semana
+                                        </button>
+                                        <button onClick={() => setViewMode('month')}
+                                                className={viewMode === 'month' ? 'active-view-button' : 'view-button'}>
+                                            Mês
+                                        </button>
+                                    </div>
+                                    {
+                                        getChartData().labels.length > 0 ? (
+                                            <Line data={getChartData()} options={chartOptions} />
+                                        ) : (
+                                            <p style={{ color: '#BBB', textAlign: 'center' }}>Carregando dados do gráfico...</p>
+                                        )
+                                    }
+                                </div>
+                            </div>
+
+                            <div className="bottom-sections-grid">
+                                <div className="bottom-card consumption-by-type-card">
+                                    <h3>Consumo por Tipo de Dispositivo</h3>
+                                    <div className="chart-wrapper">
+                                        <Doughnut data={getConsumptionByTypeData()} options={consumptionByTypeOptions} />
+                                    </div>
+                                </div>
+
+                                <div className="bottom-card suggested-devices-card">
+                                    <h3>Dispositivos Sugeridos</h3>
+                                    <p style={{ color: '#BBB', fontSize: '0.9em', marginBottom: '15px' }}>
+                                        Sugestões para otimizar o consumo de energia em seus dispositivos.
+                                    </p>
+                                    <ul className="device-suggestion-list">
+                                        {
+                                            getSuggestedDevicesData().length > 0 ? (
+                                                getSuggestedDevicesData().map(device => (
+                                                    <li key={device.id}>
+                                                        <strong>{device.name}: </strong>{device.suggestion}
+                                                    </li>
+                                                ))
+                                            ) : (
+                                                <p style={{ color: '#BBB', textAlign: 'center' }}>Nenhuma sugestão no momento.</p>
+                                            )
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </>
                     )
-                } <
-                /div> < /
-                div >
+                }
 
-                <
-                div className = "bottom-sections-grid" >
-                <
-                div className = "bottom-card consumption-by-type-card" >
-                <
-                h3 > Consumo por Tipo de Dispositivo < /h3> <
-                div className = "chart-wrapper" >
-                <
-                Doughnut data = { getConsumptionByTypeData() }
-                options = { consumptionByTypeOptions }
-                /> < /
-                div > <
-                /div>
+                {/* Seção "Controle de Energia" */}
+                {
+                    activeSection === 'controle' && (
+                        <div className="energy-control-section">
+                            <h2>Controle de Dispositivos</h2>
+                            {deviceMessage && <p className="device-feedback-message">{deviceMessage}</p>}
+                            {
+                                ewelinkMessage && (
+                                    <p className={`message ${ewelinkMessage.includes('sucesso') ? 'success' : 'error'}`}>
+                                        {ewelinkMessage}
+                                    </p>
+                                )
+                            }
 
-                <
-                div className = "bottom-card suggested-devices-card" >
-                <
-                h3 > Dispositivos Sugeridos < /h3> <
-                p style = {
-                    { color: '#BBB', fontSize: '0.9em', marginBottom: '15px' }
-                } >
-                Sugestões para otimizar o consumo de energia em seus dispositivos. <
-                /p> <
-                ul className = "device-suggestion-list" > {
-                    getSuggestedDevicesData().length > 0 ? (
-                        getSuggestedDevicesData().map(device => ( <
-                            li key = { device.id } >
-                            <
-                            strong > { device.name }: < /strong> {device.suggestion} < /
-                            li >
-                        ))
-                    ) : ( <
-                        p style = {
-                            { color: '#BBB', textAlign: 'center' }
-                        } > Nenhuma sugestão no momento. < /p>
+                            {/* NOVO: Exibição e controle dos dispositivos eWeLink */}
+                            <h3>Dispositivos eWeLink</h3>
+                            {
+                                ewelinkConnected ? (
+                                    ewelinkDevices.length > 0 ? (
+                                        <div className="device-control-list">
+                                            {
+                                                ewelinkDevices.map(device => (
+                                                    <div key={device.deviceid}
+                                                         className="device-control-item">
+                                                        {/* Adapte 'name', 'type', 'status' conforme a estrutura real dos seus dispositivos da eWeLink */}
+                                                        <span className="device-control-name">{device.name}({device.extra.extra.uiid})</span>
+                                                        <span className={`device-status-indicator ${device.online ? 'on' : 'off'}`}>
+                                                            {device.online ? 'Online' : 'Offline'}
+                                                        </span>
+                                                        { /* Exemplo de botão para alternar o status, se a eWeLink API suportar */ }
+                                                        { /* Você precisará de um endpoint no seu backend para controlar um dispositivo eWeLink */ }
+                                                        <button
+                                                            // onClick={() => toggleEwelinkDeviceStatus(device.deviceid, device.params.switch)}
+                                                            className={`device-toggle-button ${device.params && device.params.switch === 'on' ? 'on' : 'off'}`}
+                                                            disabled={!device.online} // Desabilita se o dispositivo estiver offline
+                                                        >
+                                                            {device.params && device.params.switch === 'on' ? 'Desligar' : 'Ligar'}
+                                                        </button>
+                                                    </div>
+                                                ))
+                                            }
+                                        </div>
+                                    ) : (
+                                        <p style={{ color: '#BBB', textAlign: 'center' }}>Nenhum dispositivo eWeLink encontrado.</p>
+                                    )
+                                ) : (
+                                    <p style={{ color: '#BBB', textAlign: 'center' }}>
+                                        A eWeLink não está conectada. Por favor, conecte na seção "Configurações".
+                                    </p>
+                                )
+                            }
+                            <button onClick={loadEwelinkDevices}
+                                    disabled={!ewelinkConnected}
+                                    className="refresh-devices-btn">
+                                Atualizar Dispositivos eWeLink
+                            </button>
+
+                            <h3 style={{ marginTop: '30px' }}>Outros Dispositivos (Mock)</h3>
+                            <div className="device-control-list">
+                                {
+                                    devices.length > 0 ? (
+                                        devices.map(device => (
+                                            <div key={device.id}
+                                                 className="device-control-item">
+                                                <span className="device-control-name">{device.name}({device.type})</span>
+                                                <span className={`device-status-indicator ${device.status}`}>
+                                                    {device.status === 'on' ? 'Ligado' : 'Desligado'}
+                                                </span>
+                                                <button onClick={() => toggleDeviceStatus(device.id)}
+                                                        className={`device-toggle-button ${device.status}`}>
+                                                    {device.status === 'on' ? 'Desligar' : 'Ligar'}
+                                                </button>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p style={{ color: '#BBB', textAlign: 'center' }}>Nenhum dispositivo mock para controle.</p>
+                                    )
+                                }
+                            </div>
+                        </div>
                     )
-                } <
-                /ul> < /
-                div > <
-                /div> < /
-                >
-            )
-        }
+                }
 
-        { /* Seção "Controle de Energia" */ } {
-            activeSection === 'controle' && ( <
-                div className = "energy-control-section" >
-                <
-                h2 > Controle de Dispositivos < /h2> {
-                deviceMessage && < p className = "device-feedback-message" > { deviceMessage } < /p>} {
-                ewelinkMessage && ( <
-                    p className = { `message ${ewelinkMessage.includes('sucesso') ? 'success' : 'error'}` } > { ewelinkMessage } <
-                    /p>
-                )
-            }
+                {/* Seção "Relatórios" */}
+                {
+                    activeSection === 'relatorios' && (
+                        <div className="reports-section">
+                            <h2>Relatórios de Consumo</h2>
+                            <div className="report-summary-card">
+                                <h3>Resumo Geral</h3>
+                                <p>Total de Dispositivos: <strong>{fictionalReport.summary.totalDevices}</strong></p>
+                                <p>Dispositivos com Uso Inteligente (estimado): <strong>{fictionalReport.summary.smartUsageDevices}</strong></p>
+                                <p>Dispositivos com Otimização Pendente (estimado): <strong>{fictionalReport.summary.nonSmartUsageDevices}</strong></p>
+                                <p className="overall-report-message">{fictionalReport.summary.overallMessage}</p>
+                            </div>
 
-            { /* NOVO: Exibição e controle dos dispositivos eWeLink */ } <
-            h3 > Dispositivos eWeLink < /h3> {
-            ewelinkConnected ? (
-                ewelinkDevices.length > 0 ? ( <
-                    div className = "device-control-list" > {
-                        ewelinkDevices.map(device => ( <
-                            div key = { device.deviceid }
-                            className = "device-control-item" > { /* Adapte 'name', 'type', 'status' conforme a estrutura real dos seus dispositivos da eWeLink */ } <
-                            span className = "device-control-name" > { device.name }({ device.extra.extra.uiid }) < /span> <
-                            span className = { `device-status-indicator ${device.online ? 'on' : 'off'}` } > { device.online ? 'Online' : 'Offline' } <
-                            /span> { / * Exemplo de botão para alternar o status, se a eWeLink API suportar * / } { / * Você precisará de um endpoint no seu backend para controlar um dispositivo eWeLink * / } <
-                            button
-                            // onClick={() => toggleEwelinkDeviceStatus(device.deviceid, device.params.switch)}
-                            className = { `device-toggle-button ${device.params && device.params.switch === 'on' ? 'on' : 'off'}` }
-                            disabled = {!device.online } // Desabilita se o dispositivo estiver offline
-                            >
-                            { device.params && device.params.switch === 'on' ? 'Desligar' : 'Ligar' } <
-                            /button> < /
-                            div >
-                        ))
-                    } <
-                    /div>
-                ) : ( <
-                    p style = {
-                        { color: '#BBB', textAlign: 'center' }
-                    } > Nenhum dispositivo eWeLink encontrado. < /p>
-                )
-            ) : ( <
-                p style = {
-                    { color: '#BBB', textAlign: 'center' }
-                } >
-                A eWeLink não está conectada.Por favor, conecte na seção "Configurações". <
-                /p>
-            )
-        } <
-        button onClick = { loadEwelinkDevices }
-        disabled = {!ewelinkConnected }
-        className = "refresh-devices-btn" >
-        Atualizar Dispositivos eWeLink <
-        /button>
+                            <h3>Detalhes por Dispositivo</h3>
+                            <div className="device-report-list">
+                                {
+                                    fictionalReport.details.length > 0 ? (
+                                        fictionalReport.details.map((detail, index) => (
+                                            <div key={index}
+                                                 className="device-report-item">
+                                                <h4>{detail.name}</h4>
+                                                <p>Status Atual: <span className={detail.status === 'Ligado' ? 'status-on-text' : 'status-off-text'}>{detail.status}</span></p>
+                                                <p>Tipo: {detail.type}</p>
+                                                <p>Recomendação: {detail.recommendation}</p>
+                                                {
+                                                    parseFloat(detail.potentialImpact) !== 0.00 && (
+                                                        <p className={parseFloat(detail.potentialImpact) > 0 ? 'impact-positive' : 'impact-negative'}>
+                                                            Impacto Potencial: {detail.potentialImpact} kWh no próximo mês
+                                                        </p>
+                                                    )
+                                                }
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p style={{ color: '#BBB', textAlign: 'center' }}>Nenhum relatório disponível.</p>
+                                    )
+                                }
+                            </div>
+                        </div>
+                    )
+                }
 
-        <
-        h3 style = {
-            { marginTop: '30px' }
-        } > Outros Dispositivos(Mock) < /h3> <
-        div className = "device-control-list" > {
-            devices.length > 0 ? (
-                devices.map(device => ( <
-                    div key = { device.id }
-                    className = "device-control-item" >
-                    <
-                    span className = "device-control-name" > { device.name }({ device.type }) < /span> <
-                    span className = { `device-status-indicator ${device.status}` } > { device.status === 'on' ? 'Ligado' : 'Desligado' } <
-                    /span> <
-                    button onClick = {
-                        () => toggleDeviceStatus(device.id)
-                    }
-                    className = { `device-toggle-button ${device.status}` } > { device.status === 'on' ? 'Desligar' : 'Ligar' } <
-                    /button> < /
-                    div >
-                ))
-            ) : ( <
-                p style = {
-                    { color: '#BBB', textAlign: 'center' }
-                } > Nenhum dispositivo mock para controle. < /p>
-            )
-        } <
-        /div> < /
-        div >
-    )
-}
+                {/* Seção "Configurações" */}
+                {
+                    activeSection === 'configuracoes' && (
+                        <div className="settings-section">
+                            <h2>Configurações da Conta</h2>
+                            <div className="user-settings-card">
+                                <h3>Informações do Usuário</h3>
+                                <p><strong>Nome de Usuário: </strong> {userName}</p>
+                                <p><strong>Email: </strong> {userEmail}</p>
+                                <p>
+                                    <button className="change-password-button">Alterar Senha</button>
+                                    <button className="edit-profile-button">Editar Perfil</button>
+                                </p>
+                                <p style={{ marginTop: '20px', fontSize: '0.9em', color: '#888' }}>
+                                    * Funcionalidades de alterar senha e editar perfil são fictícias neste momento.
+                                </p>
+                            </div>
 
-{ /* Seção "Relatórios" */ } {
-    activeSection === 'relatorios' && ( <
-            div className = "reports-section" >
-            <
-            h2 > Relatórios de Consumo < /h2> <
-            div className = "report-summary-card" >
-            <
-            h3 > Resumo Geral < /h3> <
-            p > Total de Dispositivos: < strong > { fictionalReport.summary.totalDevices } < /strong></p >
-            <
-            p > Dispositivos com Uso Inteligente(estimado): < strong > { fictionalReport.summary.smartUsageDevices } < /strong></p >
-            <
-            p > Dispositivos com Otimização Pendente(estimado): < strong > { fictionalReport.summary.nonSmartUsageDevices } < /strong></p >
-            <
-            p className = "overall-report-message" > { fictionalReport.summary.overallMessage } <
-            /p> < /
-            div >
-
-            <
-            h3 > Detalhes por Dispositivo < /h3> <
-            div className = "device-report-list" > {
-                fictionalReport.details.length > 0 ? (
-                    fictionalReport.details.map((detail, index) => ( <
-                            div key = { index }
-                            className = "device-report-item" >
-                            <
-                            h4 > { detail.name } < /h4> <
-                            p > Status Atual: < span className = { detail.status === 'Ligado' ? 'status-on-text' : 'status-off-text' } > { detail.status } < /span></p >
-                            <
-                            p > Tipo: { detail.type } < /p> <
-                            p > Recomendação: { detail.recommendation } < /p> {
-                            parseFloat(detail.potentialImpact) !== 0.00 && ( <
-                                p className = { parseFloat(detail.potentialImpact) > 0 ? 'impact-positive' : 'impact-negative' } >
-                                Impacto Potencial: { detail.potentialImpact }
-                                kWh no próximo mês <
-                                /p>
-                            )
-                        } <
-                        /div>
-                    ))
-            ): ( <
-                p style = {
-                    { color: '#BBB', textAlign: 'center' }
-                } > Nenhum relatório disponível. < /p>
-            )
-        } <
-        /div> < /
-        div >
-)
-}
-
-{ /* Seção "Configurações" */ } {
-    activeSection === 'configuracoes' && ( <
-            div className = "settings-section" >
-            <
-            h2 > Configurações da Conta < /h2> <
-            div className = "user-settings-card" >
-            <
-            h3 > Informações do Usuário < /h3> <
-            p > < strong > Nome de Usuário: < /strong> {userName}</p >
-            <
-            p > < strong > Email: < /strong> {userEmail}</p >
-            <
-            p >
-            <
-            button className = "change-password-button" > Alterar Senha < /button> <
-            button className = "edit-profile-button" > Editar Perfil < /button> < /
-            p > <
-            p style = {
-                { marginTop: '20px', fontSize: '0.9em', color: '#888' }
-            } >
-            *
-            Funcionalidades de alterar senha e editar perfil são fictícias neste momento. <
-            /p> < /
-            div >
-
-            { /* NOVO: Seção de Conexão eWeLink nas Configurações */ } <
-            div className = "ewelink-settings-card" >
-            <
-            h3 > Conexão eWeLink < /h3> {
-            ewelinkMessage && ( <
-                p className = { `message ${ewelinkMessage.includes('sucesso') ? 'success' : 'error'}` } > { ewelinkMessage } <
-                /p>
-            )
-        } <
-        p > Status da Conexão: < strong style = {
-            { color: ewelinkConnected ? '#4CAF50' : '#dc3545' }
-        } > { ewelinkConnected ? 'Conectado' : 'Desconectado' } <
-        /strong></p > {!ewelinkConnected ? ( <
-                button onClick = { handleConnectEwelink }
-                className = "connect-ewelink-btn" >
-                Conectar Minha Conta eWeLink <
-                /button>
-            ) : ( <
-                p style = {
-                    { color: '#BBB', fontSize: '0.9em' }
-                } >
-                Sua conta eWeLink já está conectada. <
-                br / >
-                Se precisar reconectar, clique < a href = "#"
-                onClick = {
-                    () => { /* Lógica para desconectar e reconectar */ }
-                } > aqui < /a>. < /
-                p >
-            )
-        } <
-        /div> < /
-        div >
-)
-} <
-/div> < /
-div >
-);
+                            {/* NOVO: Seção de Conexão eWeLink nas Configurações */}
+                            <div className="ewelink-settings-card">
+                                <h3>Conexão eWeLink</h3>
+                                {
+                                    ewelinkMessage && (
+                                        <p className={`message ${ewelinkMessage.includes('sucesso') ? 'success' : 'error'}`}>
+                                            {ewelinkMessage}
+                                        </p>
+                                    )
+                                }
+                                <p>Status da Conexão: <strong style={{ color: ewelinkConnected ? '#4CAF50' : '#dc3545' }}>{ewelinkConnected ? 'Conectado' : 'Desconectado'}</strong></p>
+                                {!ewelinkConnected ? (
+                                    <button onClick={handleConnectEwelink}
+                                            className="connect-ewelink-btn">
+                                        Conectar Minha Conta eWeLink
+                                    </button>
+                                ) : (
+                                    <p style={{ color: '#BBB', fontSize: '0.9em' }}>
+                                        Sua conta eWeLink já está conectada.
+                                        <br />
+                                        {/* LINHA 747: ALTERADA PARA BUTTON */}
+                                        Se precisar reconectar, clique <button
+                                        onClick={() => { /* Lógica para desconectar e reconectar */ }}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            padding: 0,
+                                            color: '#00bcd4', // Exemplo de cor de link
+                                            textDecoration: 'underline',
+                                            cursor: 'pointer',
+                                            fontSize: 'inherit',
+                                            fontFamily: 'inherit'
+                                        }}
+                                    >aqui</button>.
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    )
+                }
+            </div>
+        </div>
+    );
 }
 
 export default DashboardPage;
