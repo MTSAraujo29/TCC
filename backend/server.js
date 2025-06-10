@@ -1,6 +1,5 @@
 // backend/server.js
 const express = require('express');
-const path = require('path'); // <<< IMPORTADO: Módulo 'path' é essencial
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -8,43 +7,40 @@ const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 const app = express();
-const PORT = process.env.PORT || 10000; // Ajuste para 10000 como fallback, comum no Render
+const PORT = process.env.PORT || 5000;
 
-require('dotenv').config({ path: '../.env' }); // Carrega o .env (bom para desenvolvimento local)
+require('dotenv').config({ path: '../.env' }); // Carrega o .env
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
-    // É crucial que JWT_SECRET esteja nas variáveis de ambiente do Render!
-    console.error('ERRO: JWT_SECRET não está definido nas variáveis de ambiente!');
+    console.error('ERRO: JWT_SECRET não está definido no arquivo .env!');
     process.exit(1);
 }
 
-// =========================================================================
-// 1. Middlewares Essenciais (Vêm primeiro)
-// =========================================================================
-app.use(express.json()); // Para parsear JSON no corpo das requisições
-app.use(express.urlencoded({ extended: true })); // Opcional, para parsear dados de formulário URL-encoded
-
-// Configuração do CORS: Muito importante para permitir requisições do frontend
-app.use(cors({
-    // Use a URL pública do seu Render para produção e localhost para desenvolvimento
-    origin: process.env.NODE_ENV === 'production' ? 'https://tcc-lrbm.onrender.com' : 'http://localhost:3000',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-}));
-
+// Middlewares
+app.use(express.json());
+app.use(cors());
 
 // =========================================================================
-// 2. Rotas da API (Vêm antes de servir os arquivos estáticos do frontend)
-// Todas as suas rotas de API DEVE M VIR NESTA SEÇÃO.
+// NOVO: Importe as rotas da eWeLink AQUI, ANTES DE USÁ-LAS
+// ASSUMA que o arquivo ewelinkAuthRoutes.js está em uma pasta 'routes'
+// dentro do seu diretório 'backend'. Ajuste o caminho se for diferente!
 // =========================================================================
+const ewelinkAuthRoutes = require('./routes/ewelinkAuthRoutes'); // <--- Linha Adicionada/Movida para cá
 
-// <<< LINHA REMOVIDA: A linha "const authRoutes = require('./routes/authRoutes');" foi removida
-// <<<                 porque suas rotas de registro/login estão neste arquivo.
+// Rota de Health Check
+app.get('/health', (req, res) => {
+    res.status(200).send('OK'); // Ou res.status(200).json({ status: 'healthy' });
+});
 
-const ewelinkAuthRoutes = require('./routes/ewelinkAuthRoutes'); // Importe suas rotas da eWeLink
 
-// Middleware de Autenticação JWT (função usada pelas rotas protegidas)
+// Novas rotas para eWeLink OAuth e API
+app.use('/api/ewelink', ewelinkAuthRoutes); // <--- Agora ewelinkAuthRoutes está definido
+
+// =========================================================================
+// Middleware de Autenticação JWT
+// ... (restante do seu código) ...
+// =========================================================================
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -61,6 +57,46 @@ function authenticateToken(req, res, next) {
         next();
     });
 }
+
+// Rota de teste simples
+app.get('/', (req, res) => {
+    res.send('Servidor Backend (Node.js com Express) rodando com Prisma, Hashing e JWT!');
+});
+
+// =========================================================================
+// NOVA ROTA PROTEGIDA: Dados para o Dashboard (Simulados)
+// =========================================================================
+app.get('/api/dashboard/data', authenticateToken, (req, res) => {
+    console.log('Acesso à rota de dados do dashboard por:', req.user.email);
+    res.json({
+        message: 'Dados do Dashboard carregados com sucesso!',
+        devices: [
+            { id: 'dev1', name: 'Lâmpada Sala', type: 'light', status: 'on', consumption_kwh: 0.15 },
+            { id: 'dev2', name: 'Tomada Cozinha', type: 'outlet', status: 'off', consumption_kwh: 0.02 },
+            { id: 'dev3', name: 'Ar Condicionado', type: 'ac', status: 'on', consumption_kwh: 1.2 },
+            { id: 'dev4', name: 'Geladeira', type: 'refrigerator', status: 'on', consumption_kwh: 0.5 }
+        ],
+        daily_consumption_kwh: [10.5, 12.0, 8.3, 15.1, 11.7, 13.5, 9.8],
+        daily_consumption_labels: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+    });
+});
+
+// Exemplo de rota protegida para o dashboard (verifique se o usuário está autenticado no seu sistema)
+// ATENÇÃO: Você tem DUAS rotas '/api/dashboard/data'. Isso pode causar confusão.
+// Uma delas deve ser removida ou ter um propósito diferente (ex: uma para dados mock, outra para dados reais).
+// Mantenha apenas a que você realmente vai usar para dados reais do dashboard após a integração eWeLink.
+/* app.get('/api/dashboard/data', (req, res) => {
+    res.json({
+        message: "Dados do dashboard carregados com sucesso (ainda sem dados reais do eWeLink aqui)",
+        devices: [
+            { id: 'mockDevice1', name: 'Lâmpada Sala', type: 'Lâmpada', status: 'on', consumption_kwh: 0.5 },
+            { id: 'mockDevice2', name: 'TV Quarto', type: 'TV', status: 'off', consumption_kwh: 0.2 },
+        ],
+        daily_consumption_labels: ["2025-06-03", "2025-06-04", "2025-06-05", "2025-06-06", "2025-06-07", "2025-06-08", "2025-06-09"],
+        daily_consumption_kwh: [3.2, 3.5, 2.9, 4.1, 3.8, 4.5, 3.9],
+    });
+}); */
+
 
 // Rota para CRIAR CONTA (Registro de Usuário)
 app.post('/api/register', async(req, res) => {
@@ -147,63 +183,25 @@ app.post('/api/login', async(req, res) => {
     }
 });
 
-
-// Rotas da eWeLink
-app.use('/api/ewelink', ewelinkAuthRoutes);
-
-// Rota para buscar dados do Dashboard (Protegida)
-// ATENÇÃO: Havia uma rota duplicada/comentada para o dashboard.
-// Mantenha APENAS esta que está protegida com 'authenticateToken'.
-app.get('/api/dashboard/data', authenticateToken, (req, res) => {
-    console.log('Acesso à rota de dados do dashboard por:', req.user.email);
+// =========================================================================
+// Rota Protegida (Exemplo: para buscar dados do Dashboard)
+// Agora, para acessar esta rota, o usuário PRECISA enviar um JWT válido.
+// =========================================================================
+app.get('/api/dashboard-data', authenticateToken, (req, res) => {
+    // Se chegou até aqui, o token é válido e req.user contém o payload do token
+    console.log('Acesso à rota protegida por:', req.user.email);
     res.json({
-        message: 'Dados do Dashboard carregados com sucesso!',
-        devices: [
-            { id: 'dev1', name: 'Lâmpada Sala', type: 'light', status: 'on', consumption_kwh: 0.15 },
-            { id: 'dev2', name: 'Tomada Cozinha', type: 'outlet', status: 'off', consumption_kwh: 0.02 },
-            { id: 'dev3', name: 'Ar Condicionado', type: 'ac', status: 'on', consumption_kwh: 1.2 },
-            { id: 'dev4', name: 'Geladeira', type: 'refrigerator', status: 'on', consumption_kwh: 0.5 }
-        ],
-        daily_consumption_kwh: [10.5, 12.0, 8.3, 15.1, 11.7, 13.5, 9.8],
-        daily_consumption_labels: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+        message: 'Bem-vindo ao Dashboard! Você acessou dados protegidos.',
+        userData: {
+            userId: req.user.userId,
+            email: req.user.email,
+            // Poderíamos buscar mais informações do usuário no DB aqui se necessário
+        }
     });
 });
 
-// A rota original app.get('/') que retornava uma string foi REMOVIDA AQUI,
-// pois ela será substituída por servir os arquivos estáticos do frontend.
 
-// =========================================================================
-// 3. Rota de Health Check (Pode vir aqui também)
-// =========================================================================
-app.get('/health', (req, res) => {
-    res.status(200).send('OK');
-});
-
-
-// =========================================================================
-// 4. Servir os Arquivos Estáticos do Frontend (VEM DEPOIS DE TODAS AS ROTAS DA API)
-// ESTA É A SEÇÃO CHAVE PARA O SEU REACT APARECER!
-// =========================================================================
-// O 'path.join(__dirname, '../frontend/build')' assume que server.js está em 'backend/'
-// e a pasta 'build' do frontend está na raiz do seu projeto 'TCC Site/frontend/build'.
-app.use(express.static(path.join(__dirname, '../frontend/build')));
-
-
-// =========================================================================
-// 5. Rota Catch-all para o React Router (VEM POR ÚLTIMO)
-// ESSENCIAL para que o React Router (client-side routing) funcione.
-// Qualquer rota que não seja da API (ex: /login, /dashboard) será redirecionada para o index.html
-// =========================================================================
-app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../frontend', 'build', 'index.html'));
-});
-
-
-// =========================================================================
-// 6. Iniciar o Servidor
-// =========================================================================
+// Inicia o servidor
 app.listen(PORT, () => {
     console.log(`Servidor backend rodando em http://localhost:${PORT}`);
-    // Adicione esta linha para facilitar a visualização da URL pública nos logs do Render
-    console.log(`Aplicativo acessível em https://tcc-lrbm.onrender.com`);
 });
