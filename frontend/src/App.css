@@ -1,0 +1,854 @@
+/* frontend/src/App.css */
+
+/* Estilos Globais e Reset */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(to right, #2a003f, #001030); /* Fundo escuro gradient */
+  color: #E0E0E0; /* Cor do texto padrão para o tema escuro */
+  display: flex; /* Para centralizar o conteúdo do login/criar conta ou o dashboard */
+  justify-content: center;
+  align-items: flex-start; /* Alinha no topo para o dashboard (irá se ajustar para o centro no login) */
+  min-height: 100vh;
+  overflow-x: hidden; /* Evita scroll horizontal */
+  box-sizing: border-box;
+}
+
+/* Estilos para as Páginas de Login e Criar Conta */
+/* Container para Login/Criar Conta (centralizado) */
+.container {
+  background-color: rgba(45, 45, 70, 0.8); /* Fundo mais escuro e translúcido para o card */
+  border-radius: 15px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  padding: 40px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  backdrop-filter: blur(5px); /* Efeito de desfoque no fundo */
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 100px auto; /* Para centralizar verticalmente em páginas como login */
+}
+
+/* Card para Login/Criar Conta */
+.card { /* Usado pelo Login e Criar Conta */
+  background-color: transparent; /* Card transparente para usar o fundo do container */
+  padding: 0; /* Remove padding extra do card */
+  border-radius: 0; /* Remove border-radius extra do card */
+  box-shadow: none; /* Remove sombra extra do card */
+}
+
+.logo-icon {
+  font-size: 4em;
+  color: #00bcd4;
+  margin-bottom: 20px;
+}
+
+h2 {
+  color: #FFF;
+  margin-bottom: 30px;
+  font-size: 1.8em;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: #BBB;
+  font-size: 0.9em;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: calc(100% - 20px);
+  padding: 12px;
+  margin-top: 5px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  background-color: #333;
+  color: #FFF;
+  font-size: 1em;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+  border-color: #00bcd4;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  background-color: #00bcd4;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  margin-top: 20px; /* Mantém a margem padrão para botões gerais */
+}
+
+button:hover {
+  background-color: #00a0b8;
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: #00bcd4;
+  cursor: pointer;
+  font-size: 0.9em;
+  margin-top: 15px;
+  padding: 8px 0;
+  transition: color 0.3s ease;
+}
+
+.link-button:hover {
+  color: #00e0ff;
+  text-decoration: underline;
+}
+
+.error-message {
+  color: #ff6b6b;
+  margin-top: 15px;
+  font-size: 0.9em;
+}
+
+/* --- Estilos para o Dashboard --- */
+
+/* Container Principal do Dashboard (Flexbox para sidebar e main-content) */
+.container.dashboard-container { /* Usa ambas as classes para especificidade */
+  background: none; /* Remove background do container original */
+  box-shadow: none; /* Remove sombra do container original */
+  border-radius: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100vw; /* Ocupa toda a largura da tela */
+  min-height: 100vh; /* Ocupa toda a altura */
+  display: flex; /* Habilita flexbox para layout sidebar/main */
+  justify-content: flex-start; /* Alinha o conteúdo à esquerda */
+  align-items: flex-start; /* Alinha o conteúdo ao topo */
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px; /* Largura fixa da sidebar */
+  background-color: #1a1a2e; /* Cor escura para a sidebar */
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.4);
+  position: sticky; /* Sidebar fixa na rolagem */
+  top: 0;
+  height: 100vh; /* Ocupa toda a altura da viewport */
+  justify-content: space-between; /* Para o botão de sair ir para o final */
+  z-index: 1000; /* Garante que a sidebar fique acima de outros elementos */
+}
+
+.logo-icon-sidebar {
+  font-size: 3em;
+  color: #00bcd4; /* Cor vibrante para o ícone */
+  margin-bottom: 30px;
+  margin-top: 10px;
+}
+
+.menu-item {
+  width: 100%;
+  padding: 15px 25px;
+  color: #E0E0E0;
+  text-decoration: none;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: left; /* Alinhar texto à esquerda */
+  box-sizing: border-box; /* Incluir padding na largura */
+}
+
+.menu-item:hover {
+  background-color: #2b2b4d; /* Cor mais clara no hover */
+}
+
+.menu-item.active {
+  background-color: #00bcd4; /* Cor de destaque para o item ativo */
+  color: #1a1a2e; /* Texto escuro no item ativo para contraste */
+  font-weight: bold;
+}
+
+.sidebar-bottom {
+  width: 100%;
+  padding: 20px 0;
+  border-top: 1px solid #3a3a3a;
+  text-align: center;
+}
+
+.logout-link-sidebar {
+  background: none; /* Reset do estilo de botão */
+  border: none;
+  color: #E0E0E0;
+  cursor: pointer;
+  font-size: 1.1em;
+  padding: 15px 25px;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.3s ease;
+}
+
+.logout-link-sidebar:hover {
+  background-color: #5a1010; /* Cor de hover mais forte para sair */
+}
+
+
+/* Conteúdo Principal do Dashboard */
+.main-content {
+  flex-grow: 1; /* Ocupa o restante do espaço disponível */
+  padding: 30px;
+  background-color: #2a2a4e; /* Fundo do conteúdo principal, um pouco mais claro que a sidebar */
+  min-height: 100vh; /* Garante que o conteúdo principal ocupe toda a altura */
+  overflow-y: auto; /* Permite rolagem se o conteúdo for muito longo */
+  box-sizing: border-box; /* Incluir padding na largura e altura */
+}
+
+.main-content h2 {
+  color: #FFF;
+  margin-top: 0;
+  margin-bottom: 30px;
+  font-size: 2.5em;
+  text-align: center; /* Centraliza o título */
+}
+
+/* Grid de Métricas (Cards no topo) */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Colunas flexíveis */
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.metric-card {
+  background-color: #3a3a5e; /* Fundo dos cards de métricas */
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border: 1px solid #4a4a7e;
+}
+
+.metric-card h3 {
+  color: #AAA;
+  font-size: 1em;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.metric-card p {
+  color: #00bcd4; /* Cor vibrante para os valores */
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Área do Gráfico Principal */
+.chart-area-main {
+  background-color: #3a3a5e; /* Fundo do card do gráfico */
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border: 1px solid #4a4a7e;
+  margin-bottom: 30px;
+  height: 450px; /* Altura fixa para o gráfico principal */
+  display: flex;
+  flex-direction: column; /* Para empilhar botões e gráfico */
+  justify-content: flex-start; /* Alinha o conteúdo ao topo */
+  align-items: center; /* Centraliza horizontalmente */
+  box-sizing: border-box;
+}
+
+.chart-card-main {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Estilos para os botões de seleção de modo de visualização (Dia, Semana, Mês) */
+.view-mode-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  width: 100%; /* Ocupa a largura total para centralizar */
+}
+
+.view-button, .active-view-button {
+  padding: 10px 20px;
+  border: 1px solid #00bcd4;
+  border-radius: 5px;
+  background-color: transparent;
+  color: #00bcd4;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0; /* Remover margin-top herdado de 'button' */
+  width: auto; /* Deixa o botão se ajustar ao conteúdo */
+}
+
+.view-button:hover {
+  background-color: rgba(0, 188, 212, 0.1);
+  color: #00e0ff;
+}
+
+.active-view-button {
+  background-color: #00bcd4;
+  color: #1a1a2e; /* Texto escuro para contraste no botão ativo */
+  font-weight: bold;
+}
+
+.active-view-button:hover {
+  background-color: #00a0b8; /* Escurece um pouco no hover do ativo */
+  color: #FFF;
+}
+
+
+/* Grid Inferior (para os novos cards) */
+.bottom-sections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Duas colunas em telas maiores */
+  gap: 20px;
+  margin-top: 30px; /* Espaço do gráfico principal */
+}
+
+.bottom-card {
+  background-color: #3a3a5e; /* Fundo dos cards inferiores */
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border: 1px solid #4a4a7e;
+  display: flex; /* Habilita flexbox */
+  flex-direction: column; /* Conteúdo em coluna */
+  justify-content: flex-start; /* Alinha o conteúdo ao topo */
+  align-items: center; /* Centraliza horizontalmente */
+  text-align: center;
+  height: 400px; /* Altura fixa para ambos os cards inferiores para alinhamento */
+}
+
+.bottom-card h3 {
+  color: #FFF;
+  font-size: 1.3em;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+/* Estilo para o gráfico de consumo por tipo */
+.consumption-by-type-card .chart-wrapper {
+  width: 100%; /* Ocupa a largura do card */
+  max-width: 300px; /* Limita o tamanho do gráfico para não ficar muito grande */
+  height: 280px; /* Altura para o gráfico de donut */
+  display: flex; /* Para centralizar o canvas do chart */
+  justify-content: center;
+  align-items: center;
+}
+
+/* Estilo para a lista de dispositivos sugeridos */
+.device-suggestion-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  text-align: left; /* Alinha o texto das sugestões à esquerda */
+  overflow-y: auto; /* Adiciona scroll se a lista for muito longa */
+  max-height: 250px; /* Altura máxima para a lista */
+  margin-top: 10px;
+}
+
+.device-suggestion-list li {
+  background-color: #4a4a7e;
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin-bottom: 8px;
+  font-size: 0.95em;
+  color: #E0E0E0;
+  border-left: 3px solid #ff9800; /* Borda de destaque */
+}
+
+.device-suggestion-list li strong {
+  color: #00bcd4;
+}
+
+
+/* Seção de Controle de Energia */
+.energy-control-section {
+  padding: 20px;
+  background-color: #3a3a5e;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border: 1px solid #4a4a7e;
+}
+
+.energy-control-section h2 {
+  text-align: center;
+  color: #FFF;
+  margin-bottom: 25px;
+}
+
+.device-feedback-message {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-align: center;
+  margin-bottom: 20px;
+  opacity: 0.9;
+}
+
+.device-control-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.device-control-item {
+  background-color: #4a4a7e;
+  padding: 15px 20px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #5a5a8e;
+}
+
+.device-control-name {
+  font-size: 1.1em;
+  color: #FFF;
+  flex-grow: 1; /* Permite que o nome ocupe espaço */
+  text-align: left;
+}
+
+.device-status-indicator {
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.85em;
+  font-weight: bold;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.device-status-indicator.on {
+  background-color: #4CAF50; /* Verde para ligado */
+  color: white;
+}
+
+.device-status-indicator.off {
+  background-color: #F44336; /* Vermelho para desligado */
+  color: white;
+}
+
+.device-toggle-button {
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: auto; /* Reset para não herdar width: 100% */
+  margin-top: 0; /* Reset para não herdar margin-top */
+}
+
+.device-toggle-button.on { /* Botão para desligar */
+  background-color: #D32F2F; /* Vermelho mais escuro para desligar */
+  color: white;
+}
+
+.device-toggle-button.on:hover {
+  background-color: #B71C1C;
+}
+
+.device-toggle-button.off { /* Botão para ligar */
+  background-color: #388E3C; /* Verde mais escuro para ligar */
+  color: white;
+}
+
+.device-toggle-button.off:hover {
+  background-color: #2E7D32;
+}
+
+/* NOVO: Estilo para o botão de atualizar dispositivos (eWeLink) */
+.refresh-devices-btn {
+  background-color: #6200EE; /* Um roxo vibrante */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  margin-top: 25px; /* Espaço acima do botão */
+  width: auto; /* Adapta a largura ao conteúdo */
+  display: block; /* Ocupa a própria linha */
+  margin-left: auto; /* Centraliza horizontalmente */
+  margin-right: auto; /* Centraliza horizontalmente */
+}
+
+.refresh-devices-btn:hover {
+  background-color: #3700B3;
+  transform: translateY(-2px);
+}
+
+.refresh-devices-btn:active {
+  transform: translateY(0);
+}
+
+
+/* Seção de Relatórios */
+.reports-section {
+  padding: 20px;
+  background-color: #3a3a5e;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border: 1px solid #4a4a7e;
+}
+
+.reports-section h2 {
+  text-align: center;
+  color: #FFF;
+  margin-bottom: 25px;
+}
+
+.reports-section h3 {
+  color: #FFF;
+  font-size: 1.5em;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.report-summary-card {
+  background-color: #4a4a7e;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.report-summary-card p {
+  margin-bottom: 10px;
+  font-size: 1.1em;
+  color: #E0E0E0;
+}
+
+.report-summary-card strong {
+  color: #00bcd4;
+}
+
+.overall-report-message {
+  margin-top: 20px;
+  font-style: italic;
+  font-size: 1.1em;
+  color: #B0B0B0;
+  border-top: 1px dashed #5a5a8e;
+  padding-top: 15px;
+}
+
+.device-report-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.device-report-item {
+  background-color: #4a4a7e;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid #5a5a8e;
+}
+
+.device-report-item h4 {
+  color: #00bcd4;
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+}
+
+.device-report-item p {
+  font-size: 0.95em;
+  color: #E0E0E0;
+  margin-bottom: 8px;
+}
+
+.status-on-text {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.status-off-text {
+  color: #F44336;
+  font-weight: bold;
+}
+
+.impact-positive {
+  color: #4CAF50; /* Verde para economia */
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.impact-negative {
+  color: #F44336; /* Vermelho para gasto excessivo */
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+/* Seção de Configurações */
+.settings-section {
+  padding: 20px;
+  background-color: #3a3a5e;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border: 1px solid #4a4a7e;
+}
+
+.settings-section h2 {
+  text-align: center;
+  color: #FFF;
+  margin-bottom: 25px;
+}
+
+.user-settings-card {
+  background-color: #4a4a7e;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  margin-bottom: 30px; /* Adicionado para separar do card da eWeLink */
+}
+
+.user-settings-card h3 {
+  color: #FFF;
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.user-settings-card p {
+  margin-bottom: 10px;
+  font-size: 1.1em;
+  color: #E0E0E0;
+}
+
+.user-settings-card strong {
+  color: #00bcd4;
+}
+
+.change-password-button, .edit-profile-button {
+  background-color: #00bcd4;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  margin-right: 10px; /* Espaço entre os botões */
+  margin-top: 15px; /* Adicionado para separar do texto */
+  transition: background-color 0.3s ease;
+  width: auto; /* Ajusta a largura para o conteúdo */
+}
+
+.change-password-button:hover, .edit-profile-button:hover {
+  background-color: #00a0b8;
+}
+
+/* NOVO: Estilos para a seção de Conexão eWeLink nas Configurações */
+.ewelink-settings-card {
+  background-color: #4a4a7e;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  margin-top: 20px; /* Espaço acima do card */
+}
+
+.ewelink-settings-card h3 {
+  color: #FFF;
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.ewelink-settings-card p {
+  margin-bottom: 10px;
+  font-size: 1.0em;
+  color: #E0E0E0;
+  text-align: center;
+}
+
+/* NOVO: Estilo específico para o botão Conectar eWeLink */
+.connect-ewelink-btn {
+  background-color: #4CAF50; /* Verde mais suave para conectar */
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.05em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  margin-top: 20px; /* Espaço acima do botão */
+  width: auto; /* Adapta a largura ao conteúdo */
+  display: block; /* Ocupa a própria linha */
+  margin-left: auto; /* Centraliza horizontalmente */
+  margin-right: auto; /* Centraliza horizontalmente */
+}
+
+.connect-ewelink-btn:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+}
+
+.connect-ewelink-btn:active {
+  transform: translateY(0);
+}
+
+/* NOVO: Estilos para as mensagens de feedback (sucesso, erro, info) */
+.message {
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  font-size: 0.95em;
+  text-align: center;
+  font-weight: bold;
+}
+
+.message.info {
+  background-color: #2196F3; /* Azul */
+  color: white;
+}
+
+.message.success {
+  background-color: #4CAF50; /* Verde */
+  color: white;
+}
+
+.message.error {
+  background-color: #F44336; /* Vermelho */
+  color: white;
+}
+
+
+/* --- Media Queries para Responsividade --- */
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    padding: 10px 0;
+    position: relative; /* Não fixa em telas menores */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    flex-direction: row; /* Itens em linha para telas menores */
+    justify-content: space-around;
+    flex-wrap: wrap; /* Permite que os itens quebrem linha */
+  }
+
+  .logo-icon-sidebar {
+    display: none; /* Esconde o logo na sidebar em telas pequenas */
+  }
+
+  .menu-item {
+    padding: 10px 15px;
+    font-size: 0.9em;
+    text-align: center; /* Centraliza o texto do menu */
+    width: auto; /* Deixa os itens se ajustarem ao conteúdo */
+  }
+
+  .sidebar-bottom {
+    display: none; /* Esconde o botão de sair na sidebar em telas pequenas */
+  }
+
+  .logout-link-sidebar {
+    width: 100%;
+    margin-top: 20px;
+    text-align: center;
+    background-color: #5a1010; /* Mantém a cor de sair no botão principal de sair */
+    padding: 15px;
+  }
+
+  .container.dashboard-container {
+    flex-direction: column; /* Coloca a sidebar acima do conteúdo */
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+
+  .metrics-grid, .bottom-sections-grid, .device-report-list {
+    grid-template-columns: 1fr; /* Uma coluna em telas muito pequenas */
+  }
+
+  .chart-area-main {
+    height: 350px; /* Reduz a altura do gráfico principal */
+  }
+
+  .bottom-card {
+    height: auto; /* Remove altura fixa para melhor adaptabilidade */
+  }
+
+  .consumption-by-type-card .chart-wrapper {
+    height: 250px; /* Ajusta altura do gráfico de donut */
+  }
+
+  .connect-ewelink-btn, .refresh-devices-btn {
+    width: 90%; /* Ajusta a largura em telas menores */
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 25px;
+    margin: 50px auto;
+  }
+
+  h2 {
+    font-size: 1.5em;
+  }
+
+  .metric-card p {
+    font-size: 1.5em;
+  }
+
+  .device-control-item {
+    flex-direction: column; /* Empilha itens do controle de dispositivos */
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .device-control-name, .device-status-indicator, .device-toggle-button {
+    width: 100%;
+    text-align: center;
+    margin: 0;
+  }
+
+  .device-status-indicator {
+    margin-top: 5px;
+  }
+
+  .device-toggle-button {
+    margin-top: 10px;
+  }
+}
