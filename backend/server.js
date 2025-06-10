@@ -28,6 +28,12 @@ app.use(cors());
 // =========================================================================
 const ewelinkAuthRoutes = require('./routes/ewelinkAuthRoutes'); // <--- Linha Adicionada/Movida para cá
 
+// Rota de Health Check
+app.get('/health', (req, res) => {
+    res.status(200).send('OK'); // Ou res.status(200).json({ status: 'healthy' });
+});
+
+
 // Novas rotas para eWeLink OAuth e API
 app.use('/api/ewelink', ewelinkAuthRoutes); // <--- Agora ewelinkAuthRoutes está definido
 
