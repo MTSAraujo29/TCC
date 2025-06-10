@@ -128,8 +128,8 @@ router.get('/callback', async(req, res) => {
         });
 
         console.log(`Tokens eWeLink salvos para o usuário ${userId}. Redirecionando para o dashboard.`);
-        // Redirecione o usuário para o seu dashboard ou uma página de sucesso no frontend
-        res.redirect('http://localhost:3000/dashboard'); // Ajuste para a URL do seu frontend
+        // Ajuste para a URL do seu frontend em produção
+        res.redirect(`https://tcc-lrbm.onrender.com/dashboard`); // <<< AJUSTADO: Use a URL do Render aqui também!
 
     } catch (err) {
         console.error('Erro ao trocar código por token eWeLink:', err.response ? err.response.data : err.message);
@@ -293,52 +293,58 @@ router.get('/devices', authenticateToken, async(req, res) => {
 });
 
 
+// =========================================================================
+// NOVO: Use um bloco de comentário multi-linha para as rotas comentadas.
+// Isso garante que elas sejam completamente ignoradas pelo parser do Express.
+// =========================================================================
+/*
 // Rotas para controlar um dispositivo específico (ex: ligar/desligar)
-// router.post('/device/:deviceId/status', authenticateToken, async (req, res) => {
-//     const { deviceId } = req.params;
-//     const { status } = req.body; // 'on' ou 'off'
-//     const userId = req.user.userId;
+router.post('/device/:deviceId/status', authenticateToken, async (req, res) => {
+    const { deviceId } = req.params;
+    const { status } = req.body; // 'on' ou 'off'
+    const userId = req.user.userId;
 
-//     try {
-//         const user = await prisma.user.findUnique({
-//             where: { id: userId },
-//             select: { ewelinkAccessToken: true, ewelinkRegion: true }
-//         });
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { ewelinkAccessToken: true, ewelinkRegion: true }
+        });
 
-//         if (!user || !user.ewelinkAccessToken || !user.ewelinkRegion) {
-//             return res.status(400).json({ message: 'Conecte sua conta eWeLink primeiro.' });
-//         }
+        if (!user || !user.ewelinkAccessToken || !user.ewelinkRegion) {
+            return res.status(400).json({ message: 'Conecte sua conta eWeLink primeiro.' });
+        }
 
-//         const eweApiBaseUrl = `https://${user.ewelinkRegion}-api.coolkit.cc/v2`;
+        const eweApiBaseUrl = `https://${user.ewelinkRegion}-api.coolkit.cc/v2`;
 
-//         // Exemplo de chamada para controlar um dispositivo (POST /device/thing/status)
-//         // A estrutura exata do payload pode variar dependendo do tipo de dispositivo
-//         const controlResponse = await axios.post(`${eweApiBaseUrl}/device/thing/status`, {
-//             thingList: [
-//                 {
-//                     thingId: deviceId,
-//                     params: {
-//                         switch: status // ou 'power', 'state' dependendo do dispositivo
-//                     }
-//                 }
-//             ]
-//         }, {
-//             headers: {
-//                 'Authorization': `Bearer ${user.ewelinkAccessToken}`,
-//                 'Content-Type': 'application/json'
-//             }
-//         });
+        // Exemplo de chamada para controlar um dispositivo (POST /device/thing/status)
+        // A estrutura exata do payload pode variar dependendo do tipo de dispositivo
+        const controlResponse = await axios.post(`${eweApiBaseUrl}/device/thing/status`, {
+            thingList: [
+                {
+                    thingId: deviceId,
+                    params: {
+                        switch: status // ou 'power', 'state' dependendo do dispositivo
+                    }
+                }
+            ]
+        }, {
+            headers: {
+                'Authorization': `Bearer ${user.ewelinkAccessToken}`,
+                'Content-Type': 'application/json'
+            }
+        });
 
-//         res.json({
-//             message: `Dispositivo ${deviceId} ${status === 'on' ? 'ligado' : 'desligado'} com sucesso!`,
-//             data: controlResponse.data
-//         });
+        res.json({
+            message: `Dispositivo ${deviceId} ${status === 'on' ? 'ligado' : 'desligado'} com sucesso!`,
+            data: controlResponse.data
+        });
 
-//     } catch (err) {
-//         console.error('Erro ao controlar dispositivo eWeLink:', err.response ? err.response.data : err.message);
-//         res.status(500).json({ message: 'Erro ao controlar dispositivo eWeLink.' });
-//     }
-// });
+    } catch (err) {
+        console.error('Erro ao controlar dispositivo eWeLink:', err.response ? err.response.data : err.message);
+        res.status(500).json({ message: 'Erro ao controlar dispositivo eWeLink.' });
+    }
+});
+*/ // <<< FECHAMENTO DO BLOCO DE COMENTÁRIO MULTI-LINHA
 
 
 module.exports = router;
