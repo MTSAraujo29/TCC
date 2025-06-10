@@ -1,0 +1,29 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String   @id @map("_id") @default(auto()) @db.ObjectId
+  name                  String
+  email                 String   @unique
+  password              String
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Campos para integração eWeLink
+  ewelinkAccessToken    String?  // Token de acesso da eWeLink
+  ewelinkRefreshToken   String?  // Token de refresh da eWeLink
+  ewelinkRegion         String?  // Região da conta eWeLink
+  ewelinkTokenExpiresAt DateTime? // Data de expiração do token
+
+  @@map("users")
+}
+
+
