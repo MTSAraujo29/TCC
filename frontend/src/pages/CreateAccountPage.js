@@ -1,10 +1,11 @@
 // frontend/src/pages/CreateAccountPage.js
-import React, { useState } from 'react'; // Importe useState
-import { Link, useNavigate } from 'react-router-dom'; // Importe useNavigate
-import '../App.css'; // Importa o CSS global
+import React, { useState } from 'react'; // Hook de estado
+import { Link, useNavigate } from 'react-router-dom'; // Navegação e link
+import '../App.css'; // CSS global
 
 function CreateAccountPage() {
     const navigate = useNavigate();
+
     // Estados para armazenar os valores dos inputs
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -27,7 +28,7 @@ function CreateAccountPage() {
             const response = await fetch('http://localhost:5000/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, password })
+                body: JSON.stringify({ name, email, password }),
             });
 
             const data = await response.json();
@@ -37,7 +38,7 @@ function CreateAccountPage() {
                 alert('Sua conta foi criada com sucesso! Faça login agora.');
                 navigate('/login'); // Redireciona para a página de login
             } else {
-                // Erro do backend (ex: email já existe, campos obrigatórios)
+                // Erro do backend
                 console.error('Erro ao criar conta:', data.message || 'Erro desconhecido');
                 setError(data.message || 'Erro ao criar conta. Tente novamente.');
             }
@@ -53,6 +54,7 @@ function CreateAccountPage() {
             <div className="card">
                 <div className="logo-icon">⚡</div> {/* Ícone simples */}
                 <h2>Criar Conta</h2>
+
                 <form onSubmit={handleSubmit}>
                     <input
                         type="text"
@@ -82,10 +84,19 @@ function CreateAccountPage() {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                     />
-                    {error && <p style={{ color: 'red', fontSize: '0.9em' }}>{error}</p>} {/* Exibe erro */}
+
+                    {error && (
+                        <p style={{ color: 'red', fontSize: '0.9em' }}>
+                            {error}
+                        </p>
+                    )}
+
                     <button type="submit">Criar</button>
                 </form>
-                <Link to="/" className="link-button">Voltar para login</Link>
+
+                <Link to="/" className="link-button">
+                    Voltar para login
+                </Link>
             </div>
         </div>
     );

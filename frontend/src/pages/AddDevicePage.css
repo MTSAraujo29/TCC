@@ -1,0 +1,87 @@
+/* frontend/src/pages/AddDevicePage.css */
+.add-device-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #2c2c54; /* Cor de fundo similar ao seu dashboard */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.add-device-card {
+    background-color: #3e3e70; /* Fundo do card */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 500px;
+    color: #ffffff; /* Texto branco */
+}
+
+.add-device-card h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #8a2be2; /* Cor roxa para o título */
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: calc(100% - 20px); /* 100% menos o padding */
+    padding: 10px;
+    border: 1px solid #5a5a8a;
+    border-radius: 5px;
+    background-color: #4a4a7e; /* Fundo do input */
+    color: #ffffff;
+    font-size: 1rem;
+}
+
+.form-group input::placeholder {
+    color: #bbb;
+}
+
+.error-message {
+    color: #ff6b6b;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.add-device-card button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    background-color: #8a2be2; /* Botão principal roxo */
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.add-device-card button:hover:not(:disabled) {
+    background-color: #6a0fdc;
+}
+
+.add-device-card button:disabled {
+    background-color: #5a5a8a;
+    cursor: not-allowed;
+}
+
+.add-device-card .cancel-button {
+    background-color: #6c757d; /* Botão cinza para cancelar */
+    margin-top: 10px;
+}
+
+.add-device-card .cancel-button:hover:not(:disabled) {
+    background-color: #5a6268;
+}

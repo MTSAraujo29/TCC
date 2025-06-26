@@ -1,10 +1,11 @@
 // frontend/src/pages/LoginPage.js
-import React, { useState } from 'react'; // Importe useState
-import { Link, useNavigate } from 'react-router-dom';
-import '../App.css'; // Importa o CSS global
+import React, { useState } from 'react'; // Hook de estado
+import { Link, useNavigate } from 'react-router-dom'; // Navegação e link
+import '../App.css'; // CSS global
 
 function LoginPage() {
     const navigate = useNavigate();
+
     // Estados para armazenar os valores dos inputs
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -20,22 +21,23 @@ function LoginPage() {
             const response = await fetch('http://localhost:5000/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ email, password }),
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                // Login bem-sucedido!
+                // Login bem-sucedido
                 console.log('Login bem-sucedido:', data);
-                // Armazena o token JWT no localStorage do navegador
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('userEmail', data.user.email); // Armazena o email também
-                localStorage.setItem('userName', data.user.name); // Armazena o nome também
 
-                navigate('/dashboard'); // Navega para o dashboard
+                // Armazena dados no localStorage
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userEmail', data.user.email);
+                localStorage.setItem('userName', data.user.name);
+
+                navigate('/dashboard'); // Redireciona para o dashboard
             } else {
-                // Erro do backend (ex: credenciais inválidas)
+                // Erro do backend
                 console.error('Falha no login:', data.message || 'Erro desconhecido');
                 setError(data.message || 'Email ou senha inválidos.');
             }
@@ -51,6 +53,7 @@ function LoginPage() {
             <div className="card">
                 <div className="logo-icon">⚡</div> {/* Ícone simples */}
                 <h2>Login</h2>
+
                 <form onSubmit={handleSubmit}>
                     <input
                         type="email"
@@ -66,10 +69,19 @@ function LoginPage() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                    {error && <p style={{ color: 'red', fontSize: '0.9em' }}>{error}</p>} {/* Exibe erro */}
+
+                    {error && (
+                        <p style={{ color: 'red', fontSize: '0.9em' }}>
+                            {error}
+                        </p>
+                    )}
+
                     <button type="submit">Entrar</button>
                 </form>
-                <Link to="/create-account" className="link-button">Criar uma conta</Link>
+
+                <Link to="/create-account" className="link-button">
+                    Criar uma conta
+                </Link>
             </div>
         </div>
     );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'; // Adicionado useCallback
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../App.css'; // Certifique-se de que este caminho está correto
 
@@ -16,6 +16,7 @@ function DashboardPage() {
     const navigate = useNavigate();
     const [userName, setUserName] = useState('');
     const [userEmail, setUserEmail] = useState('');
+    // ALTERADO: `devices` agora guardará os dispositivos do Tasmota (reais ou fictícios)
     const [devices, setDevices] = useState([]);
 
     // Estados para as métricas exibidas
@@ -32,12 +33,13 @@ function DashboardPage() {
     // NOVO: Estado para controlar o modo de visualização do gráfico (day, week, month)
     const [viewMode, setViewMode] = useState('day');
 
-    // NOVO: Estado para o status da conexão eWeLink
-    const [ewelinkConnected, setEwelinkConnected] = useState(false);
-    const [ewelinkMessage, setEwelinkMessage] = useState(''); // Mensagens para a conexão eWeLink
-    const [ewelinkDevices, setEwelinkDevices] = useState([]); // Dispositivos reais da eWeLink
+    // NOVO: Estado para indicar se os dados exibidos são reais ou fictícios
+    const [isRealData, setIsRealData] = useState(false);
+    // NOVO: Estado para a mensagem de dados fictícios
+    const [fictionalDataMessage, setFictionalDataMessage] = useState('');
 
     // Dados fictícios para os modos de visualização do gráfico principal.
+    // Estes serão usados quando isRealData for false.
     const mockDailyData = {
         labels: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
         datasets: [{
@@ -74,18 +76,37 @@ function DashboardPage() {
         }],
     };
 
+    // ALTERADO: Esta função agora deve processar os `devices` (que podem ser reais ou fictícios)
     const getConsumptionByTypeData = () => {
-        // Em uma aplicação real, você agregaria o consumo dos 'devices' por 'type'
-        // ou dos ewelinkDevices se eles tiverem informações de tipo e consumo
-        const deviceTypes = ['Lâmpada', 'Ar Condicionado', 'TV', 'Geladeira', 'Computador'];
-        const data = [15.5, 30.2, 10.8, 25.0, 8.7];
-        const backgroundColors = ['#00bcd4', '#ff9800', '#e91e63', '#4caf50', '#9c27b0'];
-        const borderColors = ['#00838f', '#f57c00', '#c2185b', '#388e3c', '#7b1fa2'];
+        const deviceTypeConsumption = {};
+
+        // Itera sobre os dispositivos (sejam eles reais do Tasmota ou os mocks)
+        devices.forEach(device => {
+            // A tipagem dos seus dispositivos Tasmota pode não ser 'type' diretamente.
+            // Você pode inferir o tipo pelo 'name' ou adicionar um campo 'type' no modelo Device.
+            // Para o Sonoff POW, você pode ter apenas um tipo "Monitor de Energia".
+            // Para o exemplo, vou usar um tipo genérico "Dispositivo de Energia"
+            const type = device.model || 'Dispositivo de Energia'; // Ou use uma lógica de inferência de tipo
+            const consumption = device.latestReading ? device.latestReading.totalEnergy : (device.latestReading ? device.latestReading.power : 0); // Consumo total ou potência
+
+            if (deviceTypeConsumption[type]) {
+                deviceTypeConsumption[type] += consumption;
+            } else {
+                deviceTypeConsumption[type] = consumption;
+            }
+        });
+
+        const labels = Object.keys(deviceTypeConsumption);
+        const data = Object.values(deviceTypeConsumption);
+
+        // Cores para o gráfico de donut. Se tiver mais de 5 tipos, adicione mais cores.
+        const backgroundColors = ['#00bcd4', '#ff9800', '#e91e63', '#4caf50', '#9c27b0', '#f44336', '#2196f3', '#ffeb3b'];
+        const borderColors = ['#00838f', '#f57c00', '#c2185b', '#388e3c', '#7b1fa2', '#d32f2f', '#1976d2', '#fbc02d'];
 
         return {
-            labels: deviceTypes,
+            labels: labels.length > 0 ? labels : ['Nenhum dado'],
             datasets: [{
-                data: data,
+                data: data.length > 0 ? data : [1], // Se não houver dados, exibe um slice vazio
                 backgroundColor: backgroundColors,
                 borderColor: borderColors,
                 borderWidth: 1,
@@ -93,24 +114,62 @@ function DashboardPage() {
         };
     };
 
+    // ALTERADO: Adapte esta função para basear as sugestões nos dispositivos reais/fictícios.
     const getSuggestedDevicesData = () => {
-        // Você pode basear as sugestões nos dispositivos reais da eWeLink
-        return [
-            { id: 1, name: 'Lâmpada do Quarto', suggestion: 'Instalar temporizador para desligar automaticamente.' },
-            { id: 2, name: 'Ar Condicionado da Sala', suggestion: 'Configurar automação para ajustar temperatura ao sair.' },
-            { id: 3, name: 'Geladeira', suggestion: 'Verificar vedação da porta para evitar perda de energia.' },
-            { id: 4, name: 'TV da Sala', suggestion: 'Ativar modo de economia de energia nas configurações.' },
-        ];
+        // Se estiver em modo de dados fictícios, pode retornar sugestões mais genéricas.
+        // Se estiver em modo real, você pode analisar os dados reais dos dispositivos para gerar sugestões.
+        if (!isRealData) {
+            return [
+                { id: 1, name: 'Lâmpada do Quarto (Fictícia)', suggestion: 'Instalar temporizador para desligar automaticamente.' },
+                { id: 2, name: 'Ar Condicionado (Fictício)', suggestion: 'Configurar automação para ajustar temperatura ao sair.' },
+                { id: 3, name: 'Geladeira (Fictícia)', suggestion: 'Verificar vedação da porta para evitar perda de energia.' },
+                { id: 4, name: 'TV da Sala (Fictícia)', suggestion: 'Ativar modo de economia de energia nas configurações.' },
+            ];
+        }
+
+        // Lógica para dados reais (simplificada por enquanto)
+        // Aqui você pode iterar sobre `devices` e suas `latestReading` para dar sugestões
+        // Por exemplo, se um dispositivo está ligado há muito tempo com alto consumo.
+        const suggestions = [];
+        devices.forEach(device => {
+            if (device.powerState && device.latestReading && device.latestReading.power > 100) { // Exemplo: ligado e com consumo alto
+                suggestions.push({
+                    id: device.id,
+                    name: device.name,
+                    suggestion: `Dispositivo ligado com alto consumo (${device.latestReading.power}W). Considere automação ou desligamento quando não estiver em uso.`,
+                });
+            } else if (!device.powerState) {
+                suggestions.push({
+                    id: device.id,
+                    name: device.name,
+                    suggestion: `Dispositivo ${device.name} está desligado. Ótima gestão de energia!`,
+                });
+            } else {
+                suggestions.push({
+                    id: device.id,
+                    name: device.name,
+                    suggestion: `Consumo de ${device.name} está normal. Pequenos ajustes podem otimizar mais.`,
+                });
+            }
+        });
+        return suggestions;
     };
 
+    // ALTERADO: `getChartData` agora usará dados reais quando `isRealData` for true.
+    // Por enquanto, `daily_consumption_kwh` é mockado no backend para ambos, então esta parte não muda muito.
+    // Mas no futuro, esta função precisaria buscar dados históricos REAIS.
     const getChartData = () => {
+        // Se você tiver dados históricos reais do Tasmota no futuro, eles viriam de um estado aqui.
+        // Por enquanto, o backend retorna mocks para `daily_consumption_kwh` para ambos os casos.
+        // Se você quiser que o admin veja gráficos reais também, o backend precisaria fornecer esses dados.
         switch (viewMode) {
             case 'day':
-                return mockDailyData;
+                // Se o backend enviar dados diários reais para o admin, use-os aqui
+                return mockDailyData; // Por enquanto, ainda usa mock
             case 'week':
-                return mockWeeklyData;
+                return mockWeeklyData; // Por enquanto, ainda usa mock
             case 'month':
-                return mockMonthlyData;
+                return mockMonthlyData; // Por enquanto, ainda usa mock
             default:
                 return mockDailyData;
         }
@@ -179,87 +238,120 @@ function DashboardPage() {
         },
     };
 
-    // Função para exibir mensagens na UI
-    const displayEwelinkMessage = useCallback((message, type = 'info') => {
-        setEwelinkMessage(message);
-        // Em um projeto real, você pode querer adicionar uma classe para o tipo da mensagem
-        // e usar CSS para estilizar (ex: setEwelinkMessage({ text: message, type: type }));
-        setTimeout(() => setEwelinkMessage(''), 5000); // Limpa a mensagem após 5 segundos
-    }, []);
-
-    // NOVO: Função para carregar dispositivos eWeLink
-    const loadEwelinkDevices = useCallback(async() => {
+    // NOVO: Função para alternar o status do dispositivo Tasmota via backend
+    const toggleDevicePower = useCallback(async (deviceId, currentPowerState, deviceName) => {
         const token = localStorage.getItem('token');
         if (!token) {
-            displayEwelinkMessage('Você não está logado no sistema.', 'error');
-            setEwelinkConnected(false);
-            setEwelinkDevices([]);
+            setDeviceMessage('Você não está logado.');
             return;
         }
 
-        displayEwelinkMessage('Verificando conexão eWeLink e carregando dispositivos...', 'info');
+        const newState = currentPowerState ? 'OFF' : 'ON'; // Inverte o estado
+        setDeviceMessage(`Enviando comando para ${deviceName}: ${newState}...`);
 
         try {
-            const response = await fetch(`${BACKEND_URL}/api/ewelink/devices`, {
-                method: 'GET',
+            const response = await fetch(`${BACKEND_URL}/api/tasmota/devices/${deviceId}/power`, {
+                method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ state: newState })
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                setEwelinkConnected(true);
-                setEwelinkDevices(data.devices || []);
-                displayEwelinkMessage('Dispositivos eWeLink carregados com sucesso!', 'success');
+                setDeviceMessage(data.message);
+                // O estado do dispositivo será atualizado no frontend quando o backend receber
+                // a mensagem MQTT de confirmação do Tasmota e salvar no DB,
+                // e o fetchDashboardData for chamado novamente (ou um mecanismo de atualização em tempo real).
+                // Por enquanto, você pode fazer uma atualização otimista ou re-fetch.
+                // Para simplificar, vou re-chamar o fetchDashboardData após um breve delay.
+                setTimeout(() => {
+                    fetchDashboardData(); // Re-fetch para atualizar o estado dos dispositivos
+                }, 1000); // Dá um tempo para a mensagem MQTT ser processada no backend
             } else {
-                setEwelinkConnected(false);
-                setEwelinkDevices([]);
-                displayEwelinkMessage(data.message || 'Erro ao carregar dispositivos eWeLink.', 'error');
-                console.error('Erro ao buscar dispositivos eWeLink:', data.message);
+                setDeviceMessage(data.message || 'Erro ao alternar o dispositivo.');
             }
         } catch (error) {
-            setEwelinkConnected(false);
-            setEwelinkDevices([]);
-            displayEwelinkMessage('Erro de rede ou servidor ao tentar conectar à eWeLink.', 'error');
-            console.error('Erro de rede/servidor ao carregar dispositivos eWeLink:', error);
+            setDeviceMessage('Erro de rede ao tentar controlar o dispositivo.');
+            console.error('Erro ao controlar dispositivo:', error);
+        } finally {
+            setTimeout(() => setDeviceMessage(''), 5000); // Limpa a mensagem após 5 segundos
         }
-    }, [displayEwelinkMessage]);
+    }, []);
 
+    // ALTERADO: `toggleDeviceStatus` para dispositivos mockados
+    const toggleDeviceStatus = (id) => {
+        setDevices(prevDevices =>
+            prevDevices.map(device => {
+                if (device.id === id && !isRealData) { // Apenas altere mocks se não for dado real
+                    const newStatus = device.powerState ? 'off' : 'on'; // Assuming powerState is boolean
+                    setDeviceMessage(`Dispositivo "${device.name}" ${newStatus === 'on' ? 'Ligado' : 'Desligado'} (Fictício).`);
+                    setTimeout(() => setDeviceMessage(''), 3000);
+                    return { ...device, powerState: newStatus === 'on' };
+                }
+                return device;
+            })
+        );
+    };
 
-    // NOVO: Função para iniciar o fluxo OAuth da eWeLink
-    const handleConnectEwelink = async() => {
+    // Função centralizada para buscar os dados do dashboard
+    const fetchDashboardData = useCallback(async() => {
         const token = localStorage.getItem('token');
         if (!token) {
-            displayEwelinkMessage('Você precisa estar logado no seu sistema para conectar a eWeLink.', 'error');
+            navigate('/login');
             return;
         }
+
         try {
-            const response = await fetch(`${BACKEND_URL}/api/ewelink/authorize`, {
+            const response = await fetch(`${BACKEND_URL}/api/dashboard/data`, {
                 method: 'GET',
                 headers: {
+                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 }
             });
+
             if (response.ok) {
                 const data = await response.json();
-                if (data.url) {
-                    displayEwelinkMessage('Redirecionando para a eWeLink...', 'info');
-                    window.location.href = data.url;
+                console.log('Dados do Dashboard (backend) recebidos:', data);
+
+                // NOVO: Define se os dados são reais ou fictícios
+                setIsRealData(data.isRealData);
+                if (!data.isRealData) {
+                    setFictionalDataMessage('Você está visualizando dados fictícios. Faça login com admin123@gmail.com para ver os dados reais.');
                 } else {
-                    displayEwelinkMessage('Erro ao obter URL de autorização da eWeLink.', 'error');
+                    setFictionalDataMessage('');
                 }
+
+                // ATUALIZADO: `setDevices` agora usa `data.userDevices`
+                setDevices(data.userDevices || []);
+
+                const totalConsumptionKwh = data.daily_consumption_kwh.reduce((sum, val) => sum + val, 0);
+                setCurrentMonthConsumption(`${totalConsumptionKwh.toFixed(2)} kWh`);
+                setTotalConsumption(`${totalConsumptionKwh.toFixed(2)} kWh`);
+
+                if (data.daily_consumption_kwh.length > 0) {
+                    setDailyConsumption(`${data.daily_consumption_kwh[data.daily_consumption_kwh.length - 1].toFixed(2)} kWh`);
+                } else {
+                    setDailyConsumption('0.00 kWh');
+                }
+
+            } else if (response.status === 401 || response.status === 403) {
+                alert('Sua sessão expirou ou é inválida. Por favor, faça login novamente.');
+                localStorage.removeItem('token');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('userEmail');
+                navigate('/login');
             } else {
-                const data = await response.json();
-                displayEwelinkMessage(data.message || 'Erro ao conectar com a eWeLink.', 'error');
+                console.error('Erro ao carregar dados do Dashboard:', response.status);
             }
         } catch (error) {
-            displayEwelinkMessage('Erro de rede ao tentar conectar com a eWeLink.', 'error');
+            console.error('Erro de rede ao buscar dados do dashboard:', error);
         }
-    };
-
+    }, [navigate]); // 'fetchDashboardData' agora depende apenas de 'navigate'"
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -274,52 +366,8 @@ function DashboardPage() {
         setUserName(storedUserName ? storedUserName.split('@')[0] : '');
         setUserEmail(storedUserEmail || '');
 
-        const fetchDashboardData = async() => {
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/dashboard/data`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('Dados do Dashboard (internos) recebidos:', data);
-
-                    const totalConsumptionKwh = data.daily_consumption_kwh.reduce((sum, val) => sum + val, 0);
-                    setCurrentMonthConsumption(`${totalConsumptionKwh.toFixed(2)} kWh`);
-                    setTotalConsumption(`${totalConsumptionKwh.toFixed(2)} kWh`);
-
-                    if (data.daily_consumption_kwh.length > 0) {
-                        setDailyConsumption(`${data.daily_consumption_kwh[data.daily_consumption_kwh.length - 1].toFixed(2)} kWh`);
-                    } else {
-                        setDailyConsumption('0.00 kWh');
-                    }
-
-                    // Seus dados mock para outros gráficos ou se eWeLink não estiver conectada
-                    setDevices(data.devices || []);
-
-                    // Tenta carregar dispositivos eWeLink após o carregamento inicial do dashboard
-                    loadEwelinkDevices();
-
-                } else if (response.status === 401 || response.status === 403) {
-                    alert('Sua sessão expirou ou é inválida. Por favor, faça login novamente.');
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('userName');
-                    localStorage.removeItem('userEmail');
-                    navigate('/login');
-                } else {
-                    console.error('Erro ao carregar dados do Dashboard:', response.status);
-                }
-            } catch (error) {
-                console.error('Erro de rede ao buscar dados do dashboard:', error);
-            }
-        };
-
-        fetchDashboardData();
-    }, [navigate, loadEwelinkDevices]); // Adicionado loadEwelinkDevices como dependência
+        fetchDashboardData(); // Chama a função para buscar os dados
+    }, [navigate, fetchDashboardData]); // Dependência adicionada 'fetchDashboardData'
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -328,69 +376,69 @@ function DashboardPage() {
         navigate('/login');
     };
 
-    const toggleDeviceStatus = (id) => {
-        setDevices(prevDevices =>
-            prevDevices.map(device => {
-                if (device.id === id) {
-                    const newStatus = device.status === 'on' ? 'off' : 'on';
-                    setDeviceMessage(`Dispositivo "${device.name}" ${newStatus === 'on' ? 'Ligado' : 'Desligado'}.`);
-                    setTimeout(() => setDeviceMessage(''), 3000);
-                    return { ...device, status: newStatus };
-                }
-                return device;
-            })
-        );
-    };
-
-    // FUNÇÃO PARA GERAR O RELATÓRIO FICTÍCIO
-    const generateFictionalReport = useCallback(() => { // Usando useCallback
-        let totalFictionalSavings = 0;
-        let totalFictionalOverspend = 0;
+    // FUNÇÃO PARA GERAR O RELATÓRIO
+    // ALTERADO: Adapte esta função para considerar `isRealData` e os dados reais.
+    const generateReport = useCallback(() => {
+        let totalSavings = 0;
+        let totalOverspend = 0;
         let smartUsageCount = 0;
         let nonSmartUsageCount = 0;
 
-        // Use ewelinkDevices se estiverem disponíveis, senão use 'devices'
-        const devicesToReport = ewelinkDevices.length > 0 ? ewelinkDevices : devices;
+        const devicesToReport = devices; // Usa os devices do estado, que já serão reais ou fictícios.
 
         const reportDetails = devicesToReport.map(device => {
-            const currentConsumption = device.consumption_kwh || 0.1;
+            // Se for dados reais, use latestReading.power. Se fictício, use um valor padrão.
+            const currentConsumptionPower = device.latestReading ? device.latestReading.power : 0.1; // Watts
+            const currentConsumptionKwh = device.latestReading ? device.latestReading.totalEnergy : 0.1; // kWh acumulado
             let recommendation = "";
-            let potentialImpact = 0;
+            let potentialImpactKwh = 0; // Impacto em kWh
 
-            // Adapte a lógica para os dados reais da eWeLink se disponíveis
-            if (device.type === 'switch' && device.status === 'on' && Math.random() > 0.7) {
-                recommendation = "Sugerimos uso de temporizadores ou automação para desligar automaticamente.";
-                potentialImpact = -(currentConsumption * 5);
-                nonSmartUsageCount++;
-            } else if (device.type === 'light' && device.status === 'on' && Math.random() > 0.5) {
-                recommendation = "Verificar se está utilizando lâmpadas LED de baixo consumo.";
-                potentialImpact = -(currentConsumption * 2);
-                nonSmartUsageCount++;
-            } else if (device.status === 'off' && Math.random() > 0.3) {
-                recommendation = "Dispositivo desligado. Ótima gestão de energia!";
-                potentialImpact = currentConsumption * 2;
-                smartUsageCount++;
-            } else {
-                recommendation = "Uso consistente. Considere automação para otimização.";
-                potentialImpact = 0;
+            // Lógica de recomendação: pode ser mais sofisticada com base em AI no futuro.
+            // Por enquanto, exemplos baseados no estado/consumo.
+            if (isRealData) {
+                if (device.powerState && currentConsumptionPower > 100) { // Dispositivo ligado e com alto consumo (ex: 100W)
+                    recommendation = "Alto consumo atual. Considere automação para desligamento quando ocioso.";
+                    potentialImpactKwh = -(currentConsumptionKwh * 0.1); // Ex: 10% de potencial overspend
+                    nonSmartUsageCount++;
+                } else if (!device.powerState) {
+                    recommendation = "Dispositivo desligado. Ótima gestão de energia!";
+                    potentialImpactKwh = currentConsumptionKwh * 0.05; // Ex: Pequena economia por estar desligado
+                    smartUsageCount++;
+                } else {
+                    recommendation = "Uso normal. Verifique configurações para otimização contínua.";
+                    potentialImpactKwh = 0;
+                }
+            } else { // Dados Fictícios
+                if (device.powerState && Math.random() > 0.7) {
+                    recommendation = "Sugerimos uso de temporizadores ou automação para desligar automaticamente.";
+                    potentialImpactKwh = -(currentConsumptionKwh * 0.5);
+                    nonSmartUsageCount++;
+                } else if (!device.powerState && Math.random() > 0.3) {
+                    recommendation = "Dispositivo desligado. Ótima gestão de energia!";
+                    potentialImpactKwh = currentConsumptionKwh * 0.2;
+                    smartUsageCount++;
+                } else {
+                    recommendation = "Uso consistente. Considere automação para otimização.";
+                    potentialImpactKwh = 0;
+                }
             }
 
-            if (potentialImpact < 0) {
-                totalFictionalOverspend += Math.abs(potentialImpact);
+            if (potentialImpactKwh < 0) {
+                totalOverspend += Math.abs(potentialImpactKwh);
             } else {
-                totalFictionalSavings += potentialImpact;
+                totalSavings += potentialImpactKwh;
             }
 
             return {
                 name: device.name,
-                status: device.status === 'on' ? 'Ligado' : 'Desligado',
-                type: device.type,
+                status: device.powerState ? 'Ligado' : 'Desligado', // Use powerState
+                type: device.model || 'Dispositivo', // Use model do Tasmota ou tipo genérico
                 recommendation: recommendation,
-                potentialImpact: potentialImpact.toFixed(2)
+                potentialImpact: potentialImpactKwh.toFixed(2)
             };
         });
 
-        const overallImpact = totalFictionalSavings - totalFictionalOverspend;
+        const overallImpact = totalSavings - totalOverspend;
         let overallMessage = "";
         if (overallImpact > 0) {
             overallMessage = `Com base no seu uso atual, há uma *potencial economia de energia de ${overallImpact.toFixed(2)} kWh* no próximo mês, caso adote as sugestões.`;
@@ -405,15 +453,15 @@ function DashboardPage() {
                 totalDevices: devicesToReport.length,
                 smartUsageDevices: smartUsageCount,
                 nonSmartUsageDevices: nonSmartUsageCount,
-                totalFictionalSavings: totalFictionalSavings.toFixed(2),
-                totalFictionalOverspend: totalFictionalOverspend.toFixed(2),
+                totalSavings: totalSavings.toFixed(2),
+                totalOverspend: totalOverspend.toFixed(2),
                 overallMessage: overallMessage
             },
             details: reportDetails
         };
-    }, [devices, ewelinkDevices]); // Dependências para useCallback
+    }, [devices, isRealData]); // Dependências para useCallback
 
-    const fictionalReport = generateFictionalReport();
+    const report = generateReport(); // Usa o nome genérico 'report'
 
     return (
         <div className="container dashboard-container">
@@ -443,6 +491,21 @@ function DashboardPage() {
 
             {/* Conteúdo Principal do Dashboard */}
             <div className="main-content">
+                {/* NOVO: Aviso de Dados Fictícios */}
+                {fictionalDataMessage && (
+                    <div style={{
+                        backgroundColor: '#ffc107', // Cor de alerta amarela
+                        color: '#333',
+                        padding: '10px 15px',
+                        borderRadius: '5px',
+                        marginBottom: '20px',
+                        textAlign: 'center',
+                        fontWeight: 'bold'
+                    }}>
+                        {fictionalDataMessage}
+                    </div>
+                )}
+
                 {/* Seção "Início" */}
                 {
                     activeSection === 'inicio' && (
@@ -451,7 +514,8 @@ function DashboardPage() {
                             <div className="metrics-grid">
                                 <div className="metric-card">
                                     <h3>Consumo de energia atual</h3>
-                                    <p>{dailyConsumption}</p>
+                                    {/* Exibe o power da última leitura do primeiro dispositivo, se existir */}
+                                    <p>{devices.length > 0 && devices[0].latestReading ? `${devices[0].latestReading.power.toFixed(2)} W` : '0.00 W'}</p>
                                 </div>
                                 <div className="metric-card">
                                     <h3>Consumo do mês atual</h3>
@@ -531,79 +595,55 @@ function DashboardPage() {
                         <div className="energy-control-section">
                             <h2>Controle de Dispositivos</h2>
                             {deviceMessage && <p className="device-feedback-message">{deviceMessage}</p>}
-                            {
-                                ewelinkMessage && (
-                                    <p className={`message ${ewelinkMessage.includes('sucesso') ? 'success' : 'error'}`}>
-                                        {ewelinkMessage}
-                                    </p>
-                                )
-                            }
 
-                            {/* NOVO: Exibição e controle dos dispositivos eWeLink */}
-                            <h3>Dispositivos eWeLink</h3>
+                            {/* ALTERADO: Esta seção agora é para dispositivos Tasmota (reais ou fictícios) */}
+                            <h3>Meus Dispositivos de Energia</h3>
                             {
-                                ewelinkConnected ? (
-                                    ewelinkDevices.length > 0 ? (
-                                        <div className="device-control-list">
-                                            {
-                                                ewelinkDevices.map(device => (
-                                                    <div key={device.deviceid}
-                                                         className="device-control-item">
-                                                        {/* Adapte 'name', 'type', 'status' conforme a estrutura real dos seus dispositivos da eWeLink */}
-                                                        <span className="device-control-name">{device.name}({device.extra.extra.uiid})</span>
-                                                        <span className={`device-status-indicator ${device.online ? 'on' : 'off'}`}>
-                                                            {device.online ? 'Online' : 'Offline'}
-                                                        </span>
-                                                        { /* Exemplo de botão para alternar o status, se a eWeLink API suportar */ }
-                                                        { /* Você precisará de um endpoint no seu backend para controlar um dispositivo eWeLink */ }
+                                devices.length > 0 ? (
+                                    <div className="device-control-list">
+                                        {
+                                            devices.map(device => (
+                                                <div key={device.id}
+                                                     className="device-control-item">
+                                                    <span className="device-control-name">{device.name}</span>
+                                                    <span className={`device-status-indicator ${device.powerState ? 'on' : 'off'}`}>
+                                                        {device.powerState ? 'Ligado' : 'Desligado'}
+                                                    </span>
+                                                    {/* Botão de controle: Se for dado real, usa toggleDevicePower (via backend MQTT) */}
+                                                    {/* Se for dado fictício, usa toggleDeviceStatus (apenas no frontend) */}
+                                                    {isRealData ? (
                                                         <button
-                                                            // onClick={() => toggleEwelinkDeviceStatus(device.deviceid, device.params.switch)}
-                                                            className={`device-toggle-button ${device.params && device.params.switch === 'on' ? 'on' : 'off'}`}
-                                                            disabled={!device.online} // Desabilita se o dispositivo estiver offline
+                                                            onClick={() => toggleDevicePower(device.id, device.powerState, device.name)}
+                                                            className={`device-toggle-button ${device.powerState ? 'on' : 'off'}`}
                                                         >
-                                                            {device.params && device.params.switch === 'on' ? 'Desligar' : 'Ligar'}
+                                                            {device.powerState ? 'Desligar' : 'Ligar'}
                                                         </button>
-                                                    </div>
-                                                ))
-                                            }
-                                        </div>
-                                    ) : (
-                                        <p style={{ color: '#BBB', textAlign: 'center' }}>Nenhum dispositivo eWeLink encontrado.</p>
-                                    )
+                                                    ) : (
+                                                        <button
+                                                            onClick={() => toggleDeviceStatus(device.id)}
+                                                            className={`device-toggle-button ${device.powerState ? 'on' : 'off'}`}
+                                                        >
+                                                            {device.powerState ? 'Desligar' : 'Ligar'}
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            ))
+                                        }
+                                    </div>
                                 ) : (
-                                    <p style={{ color: '#BBB', textAlign: 'center' }}>
-                                        A eWeLink não está conectada. Por favor, conecte na seção "Configurações".
-                                    </p>
+                                    <p style={{ color: '#BBB', textAlign: 'center' }}>Nenhum dispositivo encontrado.</p>
                                 )
                             }
-                            <button onClick={loadEwelinkDevices}
-                                    disabled={!ewelinkConnected}
-                                    className="refresh-devices-btn">
-                                Atualizar Dispositivos eWeLink
-                            </button>
-
-                            <h3 style={{ marginTop: '30px' }}>Outros Dispositivos (Mock)</h3>
-                            <div className="device-control-list">
-                                {
-                                    devices.length > 0 ? (
-                                        devices.map(device => (
-                                            <div key={device.id}
-                                                 className="device-control-item">
-                                                <span className="device-control-name">{device.name}({device.type})</span>
-                                                <span className={`device-status-indicator ${device.status}`}>
-                                                    {device.status === 'on' ? 'Ligado' : 'Desligado'}
-                                                </span>
-                                                <button onClick={() => toggleDeviceStatus(device.id)}
-                                                        className={`device-toggle-button ${device.status}`}>
-                                                    {device.status === 'on' ? 'Desligar' : 'Ligar'}
-                                                </button>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p style={{ color: '#BBB', textAlign: 'center' }}>Nenhum dispositivo mock para controle.</p>
-                                    )
-                                }
-                            </div>
+                            {/* NOVO: Botão para adicionar um novo dispositivo Tasmota */}
+                            {isRealData && (
+                                <button
+                                    onClick={() => navigate('/add-device')} // Você criará uma rota para adicionar dispositivo
+                                    className="add-device-btn"
+                                    style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+                                >
+                                    + Adicionar Novo Dispositivo Tasmota
+                                </button>
+                            )}
                         </div>
                     )
                 }
@@ -615,17 +655,17 @@ function DashboardPage() {
                             <h2>Relatórios de Consumo</h2>
                             <div className="report-summary-card">
                                 <h3>Resumo Geral</h3>
-                                <p>Total de Dispositivos: <strong>{fictionalReport.summary.totalDevices}</strong></p>
-                                <p>Dispositivos com Uso Inteligente (estimado): <strong>{fictionalReport.summary.smartUsageDevices}</strong></p>
-                                <p>Dispositivos com Otimização Pendente (estimado): <strong>{fictionalReport.summary.nonSmartUsageDevices}</strong></p>
-                                <p className="overall-report-message">{fictionalReport.summary.overallMessage}</p>
+                                <p>Total de Dispositivos: <strong>{report.summary.totalDevices}</strong></p>
+                                <p>Dispositivos com Uso Inteligente (estimado): <strong>{report.summary.smartUsageDevices}</strong></p>
+                                <p>Dispositivos com Otimização Pendente (estimado): <strong>{report.summary.nonSmartUsageDevices}</strong></p>
+                                <p className="overall-report-message">{report.summary.overallMessage}</p>
                             </div>
 
                             <h3>Detalhes por Dispositivo</h3>
                             <div className="device-report-list">
                                 {
-                                    fictionalReport.details.length > 0 ? (
-                                        fictionalReport.details.map((detail, index) => (
+                                    report.details.length > 0 ? (
+                                        report.details.map((detail, index) => (
                                             <div key={index}
                                                  className="device-report-item">
                                                 <h4>{detail.name}</h4>
@@ -668,40 +708,49 @@ function DashboardPage() {
                                 </p>
                             </div>
 
-                            {/* NOVO: Seção de Conexão eWeLink nas Configurações */}
-                            <div className="ewelink-settings-card">
-                                <h3>Conexão eWeLink</h3>
-                                {
-                                    ewelinkMessage && (
-                                        <p className={`message ${ewelinkMessage.includes('sucesso') ? 'success' : 'error'}`}>
-                                            {ewelinkMessage}
-                                        </p>
-                                    )
-                                }
-                                <p>Status da Conexão: <strong style={{ color: ewelinkConnected ? '#4CAF50' : '#dc3545' }}>{ewelinkConnected ? 'Conectado' : 'Desconectado'}</strong></p>
-                                {!ewelinkConnected ? (
-                                    <button onClick={handleConnectEwelink}
-                                            className="connect-ewelink-btn">
-                                        Conectar Minha Conta eWeLink
-                                    </button>
-                                ) : (
+                            {/* REMOVIDO: Seção de Conexão eWeLink nas Configurações */}
+                            {/* Agora, esta seção pode ser usada para "Conexão de Dispositivos" (Tasmota) */}
+                            <div className="tasmota-settings-card">
+                                <h3>Gerenciamento de Dispositivos</h3>
+                                <p style={{ color: '#BBB', fontSize: '0.9em' }}>
+                                    Aqui você pode gerenciar seus dispositivos Tasmota.
+                                </p>
+                                {isRealData && (
+                                    <p>
+                                        <button
+                                            onClick={() => navigate('/add-device')} // Rota para adicionar dispositivo
+                                            className="add-device-btn"
+                                            style={{
+                                                padding: '10px 15px',
+                                                backgroundColor: '#00bcd4',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '5px',
+                                                cursor: 'pointer',
+                                                marginRight: '10px'
+                                            }}
+                                        >
+                                            Adicionar Novo Dispositivo
+                                        </button>
+                                        <button
+                                            onClick={fetchDashboardData} // Botão para recarregar dispositivos (útil para ver novos)
+                                            className="refresh-devices-btn"
+                                            style={{
+                                                padding: '10px 15px',
+                                                backgroundColor: '#ff9800',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '5px',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            Atualizar Lista de Dispositivos
+                                        </button>
+                                    </p>
+                                )}
+                                {!isRealData && (
                                     <p style={{ color: '#BBB', fontSize: '0.9em' }}>
-                                        Sua conta eWeLink já está conectada.
-                                        <br />
-                                        {/* LINHA 747: ALTERADA PARA BUTTON */}
-                                        Se precisar reconectar, clique <button
-                                        onClick={() => { /* Lógica para desconectar e reconectar */ }}
-                                        style={{
-                                            background: 'none',
-                                            border: 'none',
-                                            padding: 0,
-                                            color: '#00bcd4', // Exemplo de cor de link
-                                            textDecoration: 'underline',
-                                            cursor: 'pointer',
-                                            fontSize: 'inherit',
-                                            fontFamily: 'inherit'
-                                        }}
-                                    >aqui</button>.
+                                        O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador.
                                     </p>
                                 )}
                             </div>

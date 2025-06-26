@@ -5,31 +5,35 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
 
-// Carrega as variáveis de ambiente do .env na raiz do backend
-// Garanta que o arquivo .env está na mesma pasta que server.js, ou ajuste o path.
-// Se seu .env está em `tcc/.env` e o backend é `tcc/backend`, então o path é `../.env`
-require('dotenv').config({ path: './.env' }); // <-- Verifique este caminho! Se o .env está na raiz do 'backend', use './.env'. Se está na raiz do projeto 'tcc', use '../.env'.
+// Carrega as variáveis de ambiente do .env
+// Certifique-se que o caminho está correto se o .env não estiver na raiz do projeto.
+// Para esta estrutura, apenas 'require('dotenv').config();' deve bastar se o .env estiver em backend/.env
+require('dotenv').config({ path: './.env' });
 
+// --- Instância Global do Prisma (MELHORIA) ---
+// Em vez de criar uma nova instância em cada arquivo que usa Prisma,
+// é melhor ter uma instância global e passá-la ou exportá-la.
+// Se tasmota.service.js já tem a sua, por enquanto deixe como está, mas é algo a considerar.
+const prisma = new PrismaClient();
+
+// Configurações de segurança
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
     console.error('ERRO: JWT_SECRET não está definido no arquivo .env!');
-    process.exit(1);
+    process.exit(1); // Encerra a aplicação se a chave secreta não estiver configurada
 }
 
-// Configurações e Instâncias
-const prisma = new PrismaClient();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middlewares
 app.use(express.json());
-app.use(cors());
+app.use(cors()); // Para produção, configure as origens permitidas em `cors({ origin: 'http://seufrontend.com' })`
 
 // =========================================================================
-// Middleware de Autenticação JWT ÚNICO
-// Movido para cá para ser usado globalmente ou importado onde necessário
+// Middleware de Autenticação JWT (ATUALIZADO)
 // =========================================================================
-function authenticateToken(req, res, next) {
+async function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -37,70 +41,80 @@ function authenticateToken(req, res, next) {
         return res.status(401).json({ message: 'Token de autenticação ausente.' });
     }
 
-    jwt.verify(token, JWT_SECRET, (err, user) => {
+    jwt.verify(token, JWT_SECRET, async(err, user) => {
         if (err) {
-            console.error('Erro de verificação JWT:', err);
-            return res.status(403).json({ message: 'Token inválido ou expirado.' });
+            console.error('Erro de verificação JWT:', err.message); // Melhor logar a mensagem do erro
+            // O erro 'TokenExpiredError' é comum, pode-se lidar especificamente
+            if (err.name === 'TokenExpiredError') {
+                return res.status(401).json({ message: 'Token expirado. Por favor, faça login novamente.' });
+            }
+            return res.status(403).json({ message: 'Token inválido. Por favor, faça login novamente.' });
         }
-        req.user = user;
-        next();
+
+        try {
+            // Buscar informações completas do usuário do banco de dados
+            const dbUser = await prisma.user.findUnique({
+                where: { id: user.userId },
+                select: { id: true, email: true, isAdmin: true }
+            });
+
+            if (!dbUser) {
+                return res.status(403).json({ message: 'Usuário não encontrado no banco de dados.' });
+            }
+
+            req.user = {
+                userId: dbUser.id,
+                email: dbUser.email,
+                isAdmin: dbUser.isAdmin
+            };
+            next();
+        } catch (dbError) {
+            console.error('Erro ao buscar usuário no DB para autenticação:', dbError);
+            return res.status(500).json({ message: 'Erro interno do servidor ao autenticar.' });
+        }
     });
 }
-// Exportar o authenticateToken para ser usado em routes/ewelinkAuthRoutes.js
-module.exports.authenticateToken = authenticateToken; // Exporta para que possa ser importado
+// Não é necessário exportar authenticateToken com module.exports.authenticateToken aqui
+// se você só o utiliza dentro deste arquivo ou o passa como middleware nas rotas.
+// Se suas rotas estão em arquivos separados e você as importa, você pode passar `authenticateToken` diretamente.
 
 // =========================================================================
-// IMPORTAÇÃO E USO DAS ROTAS DA eWeLink
+// Importação e Uso das Rotas Modularizadas
 // =========================================================================
-const ewelinkAuthRoutes = require('./routes/ewelinkAuthRoutes');
 
-// Rota de Health Check
+// Importa os serviços MQTT. Use o nome tasmotaService.
+const tasmotaService = require('./services/tasmota.service');
+
+// Importa as rotas de Tasmota (seu arquivo routes/tasmotaRoutes.js)
+const tasmotaRoutes = require('./routes/tasmotaRoutes');
+// Você pode passar a instância do PrismaClient para as rotas se elas precisarem dela.
+// Ex: app.use('/api/tasmota', tasmotaRoutes(prisma)); // E as rotas teriam que aceitar 'prisma' como argumento
+app.use('/api/tasmota', tasmotaRoutes);
+
+
+// Importa as rotas do Dashboard (o novo arquivo routes/dashboardRoutes.js)
+const dashboardRoutes = require('./routes/dashboardRoutes');
+// Ex: app.use('/api/dashboard', dashboardRoutes(prisma));
+app.use('/api/dashboard', dashboardRoutes);
+
+// =========================================================================
+// Rotas de Autenticação (Registro e Login)
+// =========================================================================
+
+// Rota de saúde (health check)
 app.get('/health', (req, res) => {
     res.status(200).send('OK');
 });
 
-// Use as rotas da eWeLink.
-// NOTA: Se você exportar `authenticateToken` do `server.js` e importar em `ewelinkAuthRoutes.js`,
-// e usar lá, você pode usar `app.use('/api/ewelink', ewelinkAuthRoutes);` aqui.
-// Eu sugiro que você **MANTENHA A FUNÇÃO `authenticateToken` DENTRO DO `ewelinkAuthRoutes.js` COMO NO PASSO 3**,
-// para simplificar e evitar dependências circulares ou problemas de escopo.
-// E remova a definição dela daqui do `server.js` se for o caso.
-// Vou deixar a versão que assume que `authenticateToken` é definido em `ewelinkAuthRoutes.js`.
-app.use('/api/ewelink', ewelinkAuthRoutes);
-
-
-// Rota de teste simples
+// Rota inicial
 app.get('/', (req, res) => {
-    res.send('Servidor Backend (Node.js com Express) rodando com Prisma, Hashing e JWT!');
+    res.send('Servidor Backend (Node.js com Express) rodando com Prisma, Hashing e JWT, e integração Tasmota/MQTT!');
 });
-
-// =========================================================================
-// Rota Protegida: Dados para o Dashboard (usando seu próprio JWT)
-// =========================================================================
-// Mantenha apenas UMA rota /api/dashboard/data.
-// A rota que busca dados da eWeLink será /api/ewelink/devices, não confunda.
-app.get('/api/dashboard/data', authenticateToken, async (req, res) => {
-    console.log('Acesso à rota de dados do dashboard por:', req.user.email);
-    // Aqui você pode retornar dados mockados ou dados reais do seu próprio sistema,
-    // que não sejam diretamente da eWeLink.
-    res.json({
-        message: 'Dados do Dashboard carregados com sucesso!',
-        devices: [
-            { id: 'dev1', name: 'Lâmpada Sala', type: 'light', status: 'on', consumption_kwh: 0.15 },
-            { id: 'dev2', name: 'Tomada Cozinha', type: 'outlet', status: 'off', consumption_kwh: 0.02 },
-            { id: 'dev3', name: 'Ar Condicionado', type: 'ac', status: 'on', consumption_kwh: 1.2 },
-            { id: 'dev4', name: 'Geladeira', type: 'refrigerator', status: 'on', consumption_kwh: 0.5 }
-        ],
-        daily_consumption_kwh: [10.5, 12.0, 8.3, 15.1, 11.7, 13.5, 9.8],
-        daily_consumption_labels: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
-    });
-});
-
 
 // Rota para CRIAR CONTA (Registro de Usuário)
 app.post('/api/register', async(req, res) => {
     const { name, email, password } = req.body;
-
+    // ... sua lógica de registro ...
     if (!name || !email || !password) {
         return res.status(400).json({ message: 'Todos os campos (Nome, Email, Senha) são obrigatórios.' });
     }
@@ -121,6 +135,9 @@ app.post('/api/register', async(req, res) => {
                 name: name,
                 email: email,
                 password: hashedPassword,
+                // Certifique-se de que o campo 'isAdmin' existe no seu modelo User no schema.prisma
+                // Se não existir, remova esta linha ou adicione o campo ao schema.
+                isAdmin: email === 'admin123@gmail.com' // Define admin se o email for o do admin
             },
         });
 
@@ -130,6 +147,7 @@ app.post('/api/register', async(req, res) => {
                 id: newUser.id,
                 name: newUser.name,
                 email: newUser.email,
+                isAdmin: newUser.isAdmin
             }
         });
 
@@ -142,7 +160,7 @@ app.post('/api/register', async(req, res) => {
 // Rota para LOGIN de Usuário
 app.post('/api/login', async(req, res) => {
     const { email, password } = req.body;
-
+    // ... sua lógica de login ...
     if (!email || !password) {
         return res.status(400).json({ message: 'Email e Senha são obrigatórios.' });
     }
@@ -173,6 +191,7 @@ app.post('/api/login', async(req, res) => {
                 id: user.id,
                 name: user.name,
                 email: user.email,
+                isAdmin: user.isAdmin
             }
         });
 
@@ -182,7 +201,14 @@ app.post('/api/login', async(req, res) => {
     }
 });
 
-// Inicia o servidor
+
+// Inicia o servidor Express E o cliente MQTT
 app.listen(PORT, () => {
     console.log(`Servidor backend rodando em http://localhost:${PORT}`);
+    // **Ajuste aqui:** Chame a função correta do tasmotaService
+    tasmotaService.initializeMqttClient()
+        .then(() => console.log('Cliente MQTT inicializado com sucesso!'))
+        .catch(err => console.error('Falha ao inicializar o cliente MQTT:', err));
 });
+
+module.exports.authenticateToken = authenticateToken;
