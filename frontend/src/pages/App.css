@@ -69,3 +69,58 @@
 .device-toggle-button:active {
     filter: brightness(0.9);
 }
+
+
+/* --- RESPONSIVIDADE --- */
+
+@media screen and (max-width: 768px) {
+    .energy-realtime-card {
+        max-width: 98vw;
+        padding: 12px 4px 8px 4px;
+    }
+    .energy-realtime-table {
+        font-size: 0.95em;
+    }
+    .device-toggle-button {
+        font-size: 0.95em;
+        padding: 8px 8px;
+        margin-left: 0;
+        width: 100%;
+        margin-top: 8px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .energy-realtime-card {
+        max-width: 100vw;
+        padding: 6px 2px 4px 2px;
+        border-radius: 6px;
+    }
+    .energy-realtime-card h3 {
+        font-size: 1em;
+        margin-bottom: 8px;
+    }
+    .energy-realtime-table {
+        font-size: 0.9em;
+        overflow-x: auto;
+        display: block;
+    }
+    .energy-realtime-table td {
+        padding: 4px 6px;
+    }
+    .device-toggle-button {
+        font-size: 0.9em;
+        padding: 6px 4px;
+        width: 100%;
+        margin-left: 0;
+        margin-top: 6px;
+    }
+}
+
+.energy-realtime-card,
+.energy-realtime-table,
+.device-toggle-button {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100vw;
+}

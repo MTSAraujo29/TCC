@@ -1,19 +1,47 @@
 /* frontend/src/index.css */
 
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #4b0082, #8a2be2, #00bfff);
-  /* Gradiente roxo-azulado */
-  color: #fff;
-  min-height: 100vh;
-  /* Garante que o gradiente preencha a tela */
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: linear-gradient(135deg, #4b0082, #8a2be2, #00bfff);
+    /* Gradiente roxo-azulado */
+    color: #fff;
+    min-height: 100vh;
+    /* Garante que o gradiente preencha a tela */
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        font-size: 15px;
+        padding: 0;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body {
+        font-size: 13px;
+        padding: 0;
+    }
+    code {
+        font-size: 0.9em;
+        word-break: break-all;
+    }
+}
+
+body,
+html,
+#root {
+    width: 100vw;
+    min-width: 0;
+    max-width: 100vw;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 
