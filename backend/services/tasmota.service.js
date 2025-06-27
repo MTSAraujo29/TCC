@@ -70,11 +70,12 @@ async function initializeMqttClient() {
 
         mqttClient.on('message', async(topic, message) => {
             const payload = message.toString();
-            console.log(`[MQTT_MESSAGE] Tópico: ${topic}, Payload: ${payload}`);
+            // console.log(`[MQTT_MESSAGE] Tópico: ${topic}, Payload: ${payload}`);
 
             try {
                 // STATUS10: Dados de energia
                 if (topic.endsWith('STATUS10')) {
+                    // console.log('Payload recebido do Tasmota:', payload);
                     const data = JSON.parse(payload);
                     const tasmotaTopic = topic.split('/')[1]; // Ex: tasmota_C2BE64
                     const device = await prisma.device.findUnique({ where: { tasmotaTopic } });
@@ -84,7 +85,7 @@ async function initializeMqttClient() {
                     }
                     if (data.StatusSNS && data.StatusSNS.ENERGY) {
                         const energy = data.StatusSNS.ENERGY;
-                        await prisma.energyReading.create({
+                        const leituraSalva = await prisma.energyReading.create({
                             data: {
                                 deviceId: device.id,
                                 timestamp: new Date(data.StatusSNS.Time || new Date()),
@@ -92,10 +93,14 @@ async function initializeMqttClient() {
                                 voltage: energy.Voltage,
                                 current: energy.Current,
                                 totalEnergy: energy.Total,
-                                // Adicione outros campos se existirem no schema.prisma
+                                EnergyToday: energy.Today,
+                                EnergyYesterday: energy.Yesterday,
+                                ApparentPower: energy.ApparentPower,
+                                ReactivePower: energy.ReactivePower,
+                                PowerFactor: energy.Factor,
                             }
                         });
-                        console.log(`Leitura de energia salva para o device ${tasmotaTopic}`);
+                        // console.log(`Leitura de energia salva para o device ${tasmotaTopic}`);
                     }
                 }
 
@@ -114,18 +119,19 @@ async function initializeMqttClient() {
                             where: { id: device.id },
                             data: { powerState: isOn }
                         });
-                        console.log(`Status de powerState atualizado para ${isOn} no device ${tasmotaTopic}`);
+                        // console.log(`Status de powerState atualizado para ${isOn} no device ${tasmotaTopic}`);
                     }
                 }
 
                 // SENSOR: Dados de energia periódicos
                 if (topic.endsWith('SENSOR')) {
+                    // console.log('Payload recebido do Tasmota:', payload);
                     const data = JSON.parse(payload);
                     const tasmotaTopic = topic.split('/')[1];
                     const device = await prisma.device.findUnique({ where: { tasmotaTopic } });
                     if (!device) return;
                     if (data.ENERGY) {
-                        await prisma.energyReading.create({
+                        const leituraSalva = await prisma.energyReading.create({
                             data: {
                                 deviceId: device.id,
                                 timestamp: new Date(data.Time || new Date()),
@@ -133,9 +139,14 @@ async function initializeMqttClient() {
                                 voltage: data.ENERGY.Voltage,
                                 current: data.ENERGY.Current,
                                 totalEnergy: data.ENERGY.Total,
+                                EnergyToday: data.ENERGY.Today,
+                                EnergyYesterday: data.ENERGY.Yesterday,
+                                ApparentPower: data.ENERGY.ApparentPower,
+                                ReactivePower: data.ENERGY.ReactivePower,
+                                PowerFactor: data.ENERGY.Factor,
                             }
                         });
-                        console.log(`Leitura de energia (SENSOR) salva para o device ${tasmotaTopic}`);
+                        // console.log(`Leitura de energia (SENSOR) salva para o device ${tasmotaTopic}`);
                     }
                 }
 
@@ -151,8 +162,21 @@ async function initializeMqttClient() {
                             where: { id: device.id },
                             data: { powerState: isOn }
                         });
-                        console.log(`Status de powerState (STATE) atualizado para ${isOn} no device ${tasmotaTopic}`);
+                        // console.log(`Status de powerState (STATE) atualizado para ${isOn} no device ${tasmotaTopic}`);
                     }
+                }
+
+                // POWER: Mudança de estado ON/OFF
+                if (topic.endsWith('POWER')) {
+                    const tasmotaTopic = topic.split('/')[1];
+                    const device = await prisma.device.findUnique({ where: { tasmotaTopic } });
+                    if (!device) return;
+                    const isOn = payload === 'ON';
+                    await prisma.device.update({
+                        where: { id: device.id },
+                        data: { powerState: isOn }
+                    });
+                    // console.log(`Status de powerState (POWER) atualizado para ${isOn} no device ${tasmotaTopic}`);
                 }
             } catch (error) {
                 console.error('Erro ao processar ou salvar mensagem MQTT:', error);
@@ -180,9 +204,27 @@ async function initializeMqttClient() {
     }
 }
 
+async function publishMqttCommand(topic, message) {
+    if (!mqttClient) {
+        await initializeMqttClient();
+    }
+    return new Promise((resolve, reject) => {
+        mqttClient.publish(topic, message, (err) => {
+            if (err) {
+                console.error('Erro ao publicar comando MQTT:', err);
+                reject(err);
+            } else {
+                console.log(`Comando MQTT publicado: ${topic} -> ${message}`);
+                resolve();
+            }
+        });
+    });
+}
+
 // Exporta o cliente Prisma para que possa ser usado em outros lugares (opcional, mas comum)
 // module.exports.prisma = prisma; // Você pode adicionar isso se quiser acessar 'prisma' de outros arquivos
 
 module.exports = {
     initializeMqttClient,
+    publishMqttCommand,
 };

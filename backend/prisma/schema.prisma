@@ -51,6 +51,11 @@ model EnergyReading {
   voltage    Float    // Voltagem em Volts (V)
   current    Float    // Corrente em Amperes (A)
   totalEnergy Float   // Energia total acumulada em kWh
+  EnergyToday Float?  // Energia consumida hoje (kWh)
+  EnergyYesterday Float? // Energia consumida ontem (kWh)
+  ApparentPower Float? // Potência aparente (VA)
+  ReactivePower Float? // Potência reativa (var)
+  PowerFactor Float?   // Fator de potência
   // Adicione outros campos se o Tasmota fornecer, como EnergyToday, EnergyYesterday, etc.
 
   @@map("energyReadings")

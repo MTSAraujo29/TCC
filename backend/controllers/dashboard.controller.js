@@ -133,6 +133,11 @@ async function getDashboardData(req, res) {
                         voltage: latestReading.voltage, // V
                         current: latestReading.current, // A
                         totalEnergy: latestReading.totalEnergy, // kWh
+                        EnergyToday: latestReading.EnergyToday,
+                        EnergyYesterday: latestReading.EnergyYesterday,
+                        ApparentPower: latestReading.ApparentPower,
+                        ReactivePower: latestReading.ReactivePower,
+                        PowerFactor: latestReading.PowerFactor,
                         timestamp: latestReading.timestamp,
                     } : null,
                 });
@@ -371,6 +376,7 @@ async function getDashboardData(req, res) {
             };
         }
 
+        // console.log('Dados enviados para o frontend:', JSON.stringify(dashboardData, null, 2));
         res.json(dashboardData);
 
     } catch (error) {

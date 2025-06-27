@@ -1,0 +1,71 @@
+.energy-realtime-card {
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    padding: 24px 24px 12px 24px;
+    margin: 24px 0 24px 0;
+    color: #fff;
+    max-width: 420px;
+    width: 100%;
+}
+
+.energy-realtime-card h3 {
+    margin-top: 0;
+    margin-bottom: 18px;
+    font-size: 1.2em;
+    color: #00bcd4;
+}
+
+.energy-realtime-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #fff;
+    font-size: 1em;
+}
+
+.energy-realtime-table td {
+    padding: 6px 12px;
+    border-bottom: 1px solid #333;
+}
+
+.energy-realtime-table tr:last-child td {
+    border-bottom: none;
+}
+
+.energy-realtime-table td:first-child {
+    color: #bbb;
+    font-weight: 500;
+    text-align: left;
+}
+
+.energy-realtime-table td:last-child {
+    text-align: right;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.device-toggle-button {
+    pointer-events: auto !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 18px;
+    margin-left: 10px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.device-toggle-button.on {
+    background-color: #f44336;
+}
+
+.device-toggle-button.off {
+    background-color: #4CAF50;
+}
+
+.device-toggle-button:active {
+    filter: brightness(0.9);
+}
