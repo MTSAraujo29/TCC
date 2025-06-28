@@ -1,115 +1,138 @@
-// frontend/src/pages/CreateAccountPage.js
-import React, { useState } from 'react'; // Hook de estado
-import { Link, useNavigate } from 'react-router-dom'; // Navegação e link
-import '../App.css'; // CSS global
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import '../App.css';
 import { API_ENDPOINTS } from '../config/api';
 
 function CreateAccountPage() {
+    // Hooks
     const navigate = useNavigate();
 
-    // Estados para armazenar os valores dos inputs
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState(''); // Estado para mensagens de erro
+    // State management
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+    });
+    const [error, setError] = useState('');
 
-    const handleSubmit = async(e) => {
+    // Handle input changes
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    // Form submission handler
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(''); // Limpa mensagens de erro anteriores
+        setError('');
 
-        if (password !== confirmPassword) {
+        // Validate passwords match
+        if (formData.password !== formData.confirmPassword) {
             setError('As senhas não coincidem!');
             return;
         }
 
-        console.log('Tentando criar conta com:', { name, email, password });
+        console.log('Attempting to create account:', formData);
 
         try {
             const response = await fetch(API_ENDPOINTS.REGISTER, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, password }),
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password
+                }),
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                console.log('Conta criada com sucesso:', data);
-                alert('Sua conta foi criada com sucesso! Faça login agora.');
-                navigate('/login'); // Redireciona para a página de login
+                handleRegistrationSuccess(data);
             } else {
-                // Erro do backend
-                console.error('Erro ao criar conta:', data.message || 'Erro desconhecido');
-                setError(data.message || 'Erro ao criar conta. Tente novamente.');
+                handleRegistrationError(data);
             }
         } catch (err) {
-            // Erro de rede
-            console.error('Erro de rede ao criar conta:', err);
-            setError('Não foi possível conectar ao servidor. Verifique sua conexão ou tente mais tarde.');
+            handleNetworkError(err);
         }
     };
 
-    return ( <
-        div className = "container" >
-        <
-        div className = "card" >
-        <
-        div className = "logo-icon" > ⚡ < /div> {/ * Ícone simples * /} <
-        h2 > Criar Conta < /h2>
+    // Helper functions
+    const handleRegistrationSuccess = (data) => {
+        console.log('Account created successfully:', data);
+        alert('Sua conta foi criada com sucesso! Faça login agora.');
+        navigate('/login');
+    };
 
-        <
-        form onSubmit = { handleSubmit } >
-        <
-        input type = "text"
-        placeholder = "Nome"
-        required value = { name }
-        onChange = {
-            (e) => setName(e.target.value)
-        }
-        /> <
-        input type = "email"
-        placeholder = "Email"
-        required value = { email }
-        onChange = {
-            (e) => setEmail(e.target.value)
-        }
-        /> <
-        input type = "password"
-        placeholder = "Senha"
-        required value = { password }
-        onChange = {
-            (e) => setPassword(e.target.value)
-        }
-        /> <
-        input type = "password"
-        placeholder = "Confirmar Senha"
-        required value = { confirmPassword }
-        onChange = {
-            (e) => setConfirmPassword(e.target.value)
-        }
-        />
+    const handleRegistrationError = (data) => {
+        console.error('Account creation failed:', data.message || 'Unknown error');
+        setError(data.message || 'Erro ao criar conta. Tente novamente.');
+    };
 
-        {
-            error && ( <
-                p style = {
-                    { color: 'red', fontSize: '0.9em' }
-                } > { error } <
-                /p>
-            )
-        }
+    const handleNetworkError = (err) => {
+        console.error('Network error during registration:', err);
+        setError('Não foi possível conectar ao servidor. Verifique sua conexão ou tente mais tarde.');
+    };
 
-        <
-        button type = "submit" > Criar < /button> < /
-        form >
+    // Render
+    return (
+        <div className="container">
+            <div className="card">
+                <div className="logo-icon">⚡</div>
+                <h2>Criar Conta</h2>
 
-        <
-        Link to = "/"
-        className = "link-button" >
-        Voltar para login <
-        /Link> < /
-        div > <
-        /div>
+                <form onSubmit={handleSubmit}>
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Nome"
+                        required
+                        value={formData.name}
+                        onChange={handleInputChange}
+                    />
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        required
+                        value={formData.email}
+                        onChange={handleInputChange}
+                    />
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Senha"
+                        required
+                        value={formData.password}
+                        onChange={handleInputChange}
+                    />
+                    <input
+                        type="password"
+                        name="confirmPassword"
+                        placeholder="Confirmar Senha"
+                        required
+                        value={formData.confirmPassword}
+                        onChange={handleInputChange}
+                    />
+
+                    {error && (
+                        <p style={{ color: 'red', fontSize: '0.9em' }}>
+                            {error}
+                        </p>
+                    )}
+
+                    <button type="submit">Criar</button>
+                </form>
+
+                <Link to="/" className="link-button">
+                    Voltar para login
+                </Link>
+            </div>
+        </div>
     );
 }
 

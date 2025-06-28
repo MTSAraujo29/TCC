@@ -1,22 +1,23 @@
-// frontend/src/pages/LoginPage.js
-import React, { useState } from 'react'; // Hook de estado
-import { Link, useNavigate } from 'react-router-dom'; // Navegação e link
-import '../App.css'; // CSS global
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import '../App.css';
 import { API_ENDPOINTS } from '../config/api';
 
 function LoginPage() {
+    // Hooks
     const navigate = useNavigate();
 
-    // Estados para armazenar os valores dos inputs
+    // State management
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState(''); // Estado para mensagens de erro
+    const [error, setError] = useState('');
 
-    const handleSubmit = async(e) => {
+    // Event handlers
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(''); // Limpa mensagens de erro anteriores
+        setError(''); // Clear previous errors
 
-        console.log('Tentando fazer login com:', { email, password });
+        console.log('Attempting login with:', { email, password });
 
         try {
             const response = await fetch(API_ENDPOINTS.LOGIN, {
@@ -28,73 +29,74 @@ function LoginPage() {
             const data = await response.json();
 
             if (response.ok) {
-                // Login bem-sucedido
-                console.log('Login bem-sucedido:', data);
-
-                // Armazena dados no localStorage
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('userEmail', data.user.email);
-                localStorage.setItem('userName', data.user.name);
-
-                navigate('/dashboard'); // Redireciona para o dashboard
+                handleSuccessfulLogin(data);
             } else {
-                // Erro do backend
-                console.error('Falha no login:', data.message || 'Erro desconhecido');
-                setError(data.message || 'Email ou senha inválidos.');
+                handleLoginError(data);
             }
         } catch (err) {
-            // Erro de rede
-            console.error('Erro de rede ao fazer login:', err);
-            setError('Não foi possível conectar ao servidor. Verifique sua conexão ou tente mais tarde.');
+            handleNetworkError(err);
         }
     };
 
-    return ( <
-        div className = "container" >
-        <
-        div className = "card" >
-        <
-        div className = "logo-icon" > ⚡ < /div> {/ * Ícone simples * /} <
-        h2 > Login < /h2>
+    // Helper functions
+    const handleSuccessfulLogin = (data) => {
+        console.log('Login successful:', data);
 
-        <
-        form onSubmit = { handleSubmit } >
-        <
-        input type = "email"
-        placeholder = "Email"
-        required value = { email }
-        onChange = {
-            (e) => setEmail(e.target.value)
-        }
-        /> <
-        input type = "password"
-        placeholder = "Senha"
-        required value = { password }
-        onChange = {
-            (e) => setPassword(e.target.value)
-        }
-        />
+        // Store user data
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userEmail', data.user.email);
+        localStorage.setItem('userName', data.user.name);
 
-        {
-            error && ( <
-                p style = {
-                    { color: 'red', fontSize: '0.9em' }
-                } > { error } <
-                /p>
-            )
-        }
+        navigate('/dashboard');
+    };
 
-        <
-        button type = "submit" > Entrar < /button> < /
-        form >
+    const handleLoginError = (data) => {
+        console.error('Login failed:', data.message || 'Unknown error');
+        setError(data.message || 'Email ou senha inválidos.');
+    };
 
-        <
-        Link to = "/create-account"
-        className = "link-button" >
-        Criar uma conta <
-        /Link> < /
-        div > <
-        /div>
+    const handleNetworkError = (err) => {
+        console.error('Network error during login:', err);
+        setError('Não foi possível conectar ao servidor. Verifique sua conexão ou tente mais tarde.');
+    };
+
+    // Render
+    return (
+        <div className="container">
+            <div className="card">
+                <div className="logo-icon">⚡</div>
+                <h2>Login</h2>
+
+                <form onSubmit={handleSubmit}>
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <input
+                        type="password"
+                        placeholder="Senha"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+
+                    {error && (
+                        <p style={{ color: 'red', fontSize: '0.9em' }}>
+                            {error}
+                        </p>
+                    )}
+
+                    <button type="submit">Entrar</button>
+                </form>
+
+                <Link to="/create-account" className="link-button">
+                    Criar uma conta
+                </Link>
+            </div>
+        </div>
     );
 }
 
