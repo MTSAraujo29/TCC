@@ -2,6 +2,7 @@
 
 const mqtt = require('mqtt');
 const { PrismaClient } = require('@prisma/client'); // Importa o PrismaClient
+const energyTotalManager = require('./energyTotalManager'); // Importa o novo serviço
 
 // Instancia o PrismaClient uma única vez
 const prisma = new PrismaClient();
@@ -85,20 +86,23 @@ async function initializeMqttClient() {
                     }
                     if (data.StatusSNS && data.StatusSNS.ENERGY) {
                         const energy = data.StatusSNS.ENERGY;
+
+                        // Usa a nova lógica para processar os dados
+                        const processedData = await energyTotalManager.processEnergyData({
+                            power: energy.Power,
+                            voltage: energy.Voltage,
+                            current: energy.Current,
+                            totalEnergy: energy.Total,
+                            EnergyToday: energy.Today,
+                            EnergyYesterday: energy.Yesterday,
+                            ApparentPower: energy.ApparentPower,
+                            ReactivePower: energy.ReactivePower,
+                            PowerFactor: energy.Factor,
+                            timestamp: new Date(data.StatusSNS.Time || new Date())
+                        }, device.id, tasmotaTopic);
+
                         const leituraSalva = await prisma.energyReading.create({
-                            data: {
-                                deviceId: device.id,
-                                timestamp: new Date(data.StatusSNS.Time || new Date()),
-                                power: energy.Power,
-                                voltage: energy.Voltage,
-                                current: energy.Current,
-                                totalEnergy: energy.Total,
-                                EnergyToday: energy.Today,
-                                EnergyYesterday: energy.Yesterday,
-                                ApparentPower: energy.ApparentPower,
-                                ReactivePower: energy.ReactivePower,
-                                PowerFactor: energy.Factor,
-                            }
+                            data: processedData
                         });
                         // console.log(`Leitura de energia salva para o device ${tasmotaTopic}`);
                     }
@@ -131,20 +135,22 @@ async function initializeMqttClient() {
                     const device = await prisma.device.findUnique({ where: { tasmotaTopic } });
                     if (!device) return;
                     if (data.ENERGY) {
+                        // Usa a nova lógica para processar os dados
+                        const processedData = await energyTotalManager.processEnergyData({
+                            power: data.ENERGY.Power,
+                            voltage: data.ENERGY.Voltage,
+                            current: data.ENERGY.Current,
+                            totalEnergy: data.ENERGY.Total,
+                            EnergyToday: data.ENERGY.Today,
+                            EnergyYesterday: data.ENERGY.Yesterday,
+                            ApparentPower: data.ENERGY.ApparentPower,
+                            ReactivePower: data.ENERGY.ReactivePower,
+                            PowerFactor: data.ENERGY.Factor,
+                            timestamp: new Date(data.Time || new Date())
+                        }, device.id, tasmotaTopic);
+
                         const leituraSalva = await prisma.energyReading.create({
-                            data: {
-                                deviceId: device.id,
-                                timestamp: new Date(data.Time || new Date()),
-                                power: data.ENERGY.Power,
-                                voltage: data.ENERGY.Voltage,
-                                current: data.ENERGY.Current,
-                                totalEnergy: data.ENERGY.Total,
-                                EnergyToday: data.ENERGY.Today,
-                                EnergyYesterday: data.ENERGY.Yesterday,
-                                ApparentPower: data.ENERGY.ApparentPower,
-                                ReactivePower: data.ENERGY.ReactivePower,
-                                PowerFactor: data.ENERGY.Factor,
-                            }
+                            data: processedData
                         });
                         // console.log(`Leitura de energia (SENSOR) salva para o device ${tasmotaTopic}`);
                     }

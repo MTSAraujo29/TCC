@@ -1,5 +1,6 @@
 // backend/controllers/tasmota.controller.js
 const tasmotaService = require('../services/tasmota.service');
+const energyTotalManager = require('../services/energyTotalManager'); // NOVO: Importa o serviço de energia total
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -90,18 +91,35 @@ async function getUserDevices(req, res) {
                 },
             },
         });
-        // Mapeia para um formato mais limpo para o frontend
-        const formattedDevices = devices.map(device => ({
-            id: device.id,
-            name: device.name,
-            tasmotaTopic: device.tasmotaTopic,
-            macAddress: device.macAddress,
-            model: device.model,
-            powerState: device.powerState,
-            lastSeen: device.lastSeen,
-            ipAddress: device.ipAddress,
-            latestReading: device.readings.length > 0 ? device.readings[0] : null,
+
+        // NOVO: Processar cada dispositivo para usar a nova lógica de energia total
+        const formattedDevices = await Promise.all(devices.map(async(device) => {
+            // Obter o valor atual de energia total para exibição
+            const currentTotalEnergyForDisplay = await energyTotalManager.getAccumulatedTotalEnergy(device.id);
+
+            let latestReading = device.readings.length > 0 ? device.readings[0] : null;
+
+            // NOVO: Se há leitura, atualizar o totalEnergy com o valor acumulado atual
+            if (latestReading) {
+                latestReading = {
+                    ...latestReading,
+                    totalEnergy: currentTotalEnergyForDisplay // Usar o valor acumulado atual
+                };
+            }
+
+            return {
+                id: device.id,
+                name: device.name,
+                tasmotaTopic: device.tasmotaTopic,
+                macAddress: device.macAddress,
+                model: device.model,
+                powerState: device.powerState,
+                lastSeen: device.lastSeen,
+                ipAddress: device.ipAddress,
+                latestReading: latestReading,
+            };
         }));
+
         res.json(formattedDevices);
     } catch (error) {
         console.error('Erro ao obter dispositivos do usuário:', error);
@@ -126,10 +144,23 @@ async function getDeviceDetails(req, res) {
             },
         });
 
+        // NOVO: Obter o valor atual de energia total para exibição
+        const currentTotalEnergyForDisplay = await energyTotalManager.getAccumulatedTotalEnergy(device.id);
+
+        let latestReading = deviceWithDetails.readings.length > 0 ? deviceWithDetails.readings[0] : null;
+
+        // NOVO: Se há leitura, atualizar o totalEnergy com o valor acumulado atual
+        if (latestReading) {
+            latestReading = {
+                ...latestReading,
+                totalEnergy: currentTotalEnergyForDisplay // Usar o valor acumulado atual
+            };
+        }
+
         // Adiciona a última leitura diretamente ao objeto, se existir
         const formattedDevice = {
             ...deviceWithDetails,
-            latestReading: deviceWithDetails.readings.length > 0 ? deviceWithDetails.readings[0] : null,
+            latestReading: latestReading,
             readings: undefined // Remove o array readings original
         };
 
@@ -153,10 +184,21 @@ async function getLatestEnergyReading(req, res) {
             where: { deviceId: device.id },
             orderBy: { timestamp: 'desc' },
         });
+
         if (!reading) {
             return res.status(404).json({ message: 'Nenhuma leitura de energia encontrada para este dispositivo.' });
         }
-        res.json(reading);
+
+        // NOVO: Obter o valor atual de energia total para exibição
+        const currentTotalEnergyForDisplay = await energyTotalManager.getAccumulatedTotalEnergy(device.id);
+
+        // NOVO: Retornar a leitura com o totalEnergy atualizado
+        const updatedReading = {
+            ...reading,
+            totalEnergy: currentTotalEnergyForDisplay // Usar o valor acumulado atual
+        };
+
+        res.json(updatedReading);
     } catch (error) {
         console.error('Erro ao obter última leitura de energia:', error);
         res.status(500).json({ message: 'Erro interno do servidor ao obter a última leitura de energia.' });

@@ -24,19 +24,20 @@ model User {
 
 // Novo modelo para representar os dispositivos Tasmota (ex: Sonoff POW Elite R3)
 model Device {
-  id           String          @id @map("_id") @default(auto()) @db.ObjectId
-  name         String
-  tasmotaTopic String          @unique
-  macAddress   String?
-  model        String?
-  userId       String          @db.ObjectId
-  user         User            @relation(fields: [userId], references: [id])
-  powerState   Boolean         @default(false)
-  lastSeen     DateTime?       // <<-- Adicione esta linha
-  ipAddress    String?         // <<-- Adicione esta linha
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime      @updatedAt
-  readings     EnergyReading[]
+  id                    String          @id @map("_id") @default(auto()) @db.ObjectId
+  name                  String
+  tasmotaTopic          String          @unique
+  macAddress            String?
+  model                 String?
+  userId                String          @db.ObjectId
+  user                  User            @relation(fields: [userId], references: [id])
+  powerState            Boolean         @default(false)
+  lastSeen              DateTime?       // <<-- Adicione esta linha
+  ipAddress             String?         // <<-- Adicione esta linha
+  lastSavedTotalEnergy  Float?          // <<-- NOVO: Último valor de energia total salvo no banco
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  readings              EnergyReading[]
 
   @@map("devices")
 }
@@ -50,7 +51,7 @@ model EnergyReading {
   power      Float    // Potência instantânea em Watts (W)
   voltage    Float    // Voltagem em Volts (V)
   current    Float    // Corrente em Amperes (A)
-  totalEnergy Float   // Energia total acumulada em kWh
+  totalEnergy Float?  // Energia total acumulada em kWh (AGORA OPCIONAL - só salvo no último dia do mês)
   EnergyToday Float?  // Energia consumida hoje (kWh)
   EnergyYesterday Float? // Energia consumida ontem (kWh)
   ApparentPower Float? // Potência aparente (VA)
