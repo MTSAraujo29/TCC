@@ -1,0 +1,10 @@
+[build]
+  base = "TCC Site/frontend/"
+  publish = "TCC Site/frontend/build/"
+  command = "npm run build"
+  functions = "" # Garante que o diretório de funções esteja vazio
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
