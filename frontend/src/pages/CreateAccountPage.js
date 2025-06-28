@@ -2,6 +2,7 @@
 import React, { useState } from 'react'; // Hook de estado
 import { Link, useNavigate } from 'react-router-dom'; // Navegação e link
 import '../App.css'; // CSS global
+import { API_ENDPOINTS } from '../config/api';
 
 function CreateAccountPage() {
     const navigate = useNavigate();
@@ -13,7 +14,7 @@ function CreateAccountPage() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState(''); // Estado para mensagens de erro
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
         setError(''); // Limpa mensagens de erro anteriores
 
@@ -25,7 +26,7 @@ function CreateAccountPage() {
         console.log('Tentando criar conta com:', { name, email, password });
 
         try {
-            const response = await fetch('http://localhost:5000/api/register', {
+            const response = await fetch(API_ENDPOINTS.REGISTER, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, email, password }),
@@ -49,56 +50,66 @@ function CreateAccountPage() {
         }
     };
 
-    return (
-        <div className="container">
-            <div className="card">
-                <div className="logo-icon">⚡</div> {/* Ícone simples */}
-                <h2>Criar Conta</h2>
+    return ( <
+        div className = "container" >
+        <
+        div className = "card" >
+        <
+        div className = "logo-icon" > ⚡ < /div> {/ * Ícone simples * /} <
+        h2 > Criar Conta < /h2>
 
-                <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        placeholder="Nome"
-                        required
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <input
-                        type="password"
-                        placeholder="Senha"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <input
-                        type="password"
-                        placeholder="Confirmar Senha"
-                        required
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
+        <
+        form onSubmit = { handleSubmit } >
+        <
+        input type = "text"
+        placeholder = "Nome"
+        required value = { name }
+        onChange = {
+            (e) => setName(e.target.value)
+        }
+        /> <
+        input type = "email"
+        placeholder = "Email"
+        required value = { email }
+        onChange = {
+            (e) => setEmail(e.target.value)
+        }
+        /> <
+        input type = "password"
+        placeholder = "Senha"
+        required value = { password }
+        onChange = {
+            (e) => setPassword(e.target.value)
+        }
+        /> <
+        input type = "password"
+        placeholder = "Confirmar Senha"
+        required value = { confirmPassword }
+        onChange = {
+            (e) => setConfirmPassword(e.target.value)
+        }
+        />
 
-                    {error && (
-                        <p style={{ color: 'red', fontSize: '0.9em' }}>
-                            {error}
-                        </p>
-                    )}
+        {
+            error && ( <
+                p style = {
+                    { color: 'red', fontSize: '0.9em' }
+                } > { error } <
+                /p>
+            )
+        }
 
-                    <button type="submit">Criar</button>
-                </form>
+        <
+        button type = "submit" > Criar < /button> < /
+        form >
 
-                <Link to="/" className="link-button">
-                    Voltar para login
-                </Link>
-            </div>
-        </div>
+        <
+        Link to = "/"
+        className = "link-button" >
+        Voltar para login <
+        /Link> < /
+        div > <
+        /div>
     );
 }
 

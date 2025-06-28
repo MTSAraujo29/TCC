@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AddDevicePage.css'; // Opcional: crie este arquivo CSS para estilização
+import { API_ENDPOINTS } from '../config/api';
 
 function AddDevicePage() {
     const [name, setName] = useState('');
@@ -12,9 +13,7 @@ function AddDevicePage() {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-    const API_BASE_URL = 'http://localhost:5000/api'; // Verifique se esta URL está correta
-
-    const handleSubmit = async (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
@@ -28,7 +27,7 @@ function AddDevicePage() {
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/tasmota/devices`, {
+            const response = await fetch(`${API_ENDPOINTS.TASMOTA}/devices`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -53,62 +52,81 @@ function AddDevicePage() {
         }
     };
 
-    return (
-        <div className="add-device-page-container">
-            <div className="add-device-card">
-                <h2>Adicionar Novo Dispositivo Tasmota</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="name">Nome do Dispositivo:</label>
-                        <input
-                            type="text"
-                            id="name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="tasmotaTopic">Tópico Tasmota (MQTT Topic):</label>
-                        <input
-                            type="text"
-                            id="tasmotaTopic"
-                            value={tasmotaTopic}
-                            onChange={(e) => setTasmotaTopic(e.target.value)}
-                            placeholder="Ex: tasmota_power_monitor"
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="macAddress">Endereço MAC (Opcional):</label>
-                        <input
-                            type="text"
-                            id="macAddress"
-                            value={macAddress}
-                            onChange={(e) => setMacAddress(e.target.value)}
-                            placeholder="Ex: 12:34:56:78:90:AB"
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="model">Modelo (Opcional):</label>
-                        <input
-                            type="text"
-                            id="model"
-                            value={model}
-                            onChange={(e) => setModel(e.target.value)}
-                            placeholder="Ex: Sonoff POWR316D"
-                        />
-                    </div>
-                    {error && <p className="error-message">{error}</p>}
-                    <button type="submit" disabled={loading}>
-                        {loading ? 'Adicionando...' : 'Adicionar Dispositivo'}
-                    </button>
-                    <button type="button" className="cancel-button" onClick={() => navigate('/dashboard')}>
-                        Cancelar
-                    </button>
-                </form>
-            </div>
-        </div>
+    return ( <
+        div className = "add-device-page-container" >
+        <
+        div className = "add-device-card" >
+        <
+        h2 > Adicionar Novo Dispositivo Tasmota < /h2> <
+        form onSubmit = { handleSubmit } >
+        <
+        div className = "form-group" >
+        <
+        label htmlFor = "name" > Nome do Dispositivo: < /label> <
+        input type = "text"
+        id = "name"
+        value = { name }
+        onChange = {
+            (e) => setName(e.target.value)
+        }
+        required /
+        >
+        <
+        /div> <
+        div className = "form-group" >
+        <
+        label htmlFor = "tasmotaTopic" > Tópico Tasmota(MQTT Topic): < /label> <
+        input type = "text"
+        id = "tasmotaTopic"
+        value = { tasmotaTopic }
+        onChange = {
+            (e) => setTasmotaTopic(e.target.value)
+        }
+        placeholder = "Ex: tasmota_power_monitor"
+        required /
+        >
+        <
+        /div> <
+        div className = "form-group" >
+        <
+        label htmlFor = "macAddress" > Endereço MAC(Opcional): < /label> <
+        input type = "text"
+        id = "macAddress"
+        value = { macAddress }
+        onChange = {
+            (e) => setMacAddress(e.target.value)
+        }
+        placeholder = "Ex: 12:34:56:78:90:AB" /
+        >
+        <
+        /div> <
+        div className = "form-group" >
+        <
+        label htmlFor = "model" > Modelo(Opcional): < /label> <
+        input type = "text"
+        id = "model"
+        value = { model }
+        onChange = {
+            (e) => setModel(e.target.value)
+        }
+        placeholder = "Ex: Sonoff POWR316D" /
+        >
+        <
+        /div> {
+        error && < p className = "error-message" > { error } < /p>} <
+        button type = "submit"
+        disabled = { loading } > { loading ? 'Adicionando...' : 'Adicionar Dispositivo' } <
+        /button> <
+        button type = "button"
+        className = "cancel-button"
+        onClick = {
+            () => navigate('/dashboard')
+        } >
+        Cancelar <
+        /button> < /
+        form > <
+        /div> < /
+        div >
     );
 }
 

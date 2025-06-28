@@ -2,6 +2,7 @@
 import React, { useState } from 'react'; // Hook de estado
 import { Link, useNavigate } from 'react-router-dom'; // Navegação e link
 import '../App.css'; // CSS global
+import { API_ENDPOINTS } from '../config/api';
 
 function LoginPage() {
     const navigate = useNavigate();
@@ -11,14 +12,14 @@ function LoginPage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState(''); // Estado para mensagens de erro
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
         setError(''); // Limpa mensagens de erro anteriores
 
         console.log('Tentando fazer login com:', { email, password });
 
         try {
-            const response = await fetch('http://localhost:5000/api/login', {
+            const response = await fetch(API_ENDPOINTS.LOGIN, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
@@ -48,42 +49,52 @@ function LoginPage() {
         }
     };
 
-    return (
-        <div className="container">
-            <div className="card">
-                <div className="logo-icon">⚡</div> {/* Ícone simples */}
-                <h2>Login</h2>
+    return ( <
+        div className = "container" >
+        <
+        div className = "card" >
+        <
+        div className = "logo-icon" > ⚡ < /div> {/ * Ícone simples * /} <
+        h2 > Login < /h2>
 
-                <form onSubmit={handleSubmit}>
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <input
-                        type="password"
-                        placeholder="Senha"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
+        <
+        form onSubmit = { handleSubmit } >
+        <
+        input type = "email"
+        placeholder = "Email"
+        required value = { email }
+        onChange = {
+            (e) => setEmail(e.target.value)
+        }
+        /> <
+        input type = "password"
+        placeholder = "Senha"
+        required value = { password }
+        onChange = {
+            (e) => setPassword(e.target.value)
+        }
+        />
 
-                    {error && (
-                        <p style={{ color: 'red', fontSize: '0.9em' }}>
-                            {error}
-                        </p>
-                    )}
+        {
+            error && ( <
+                p style = {
+                    { color: 'red', fontSize: '0.9em' }
+                } > { error } <
+                /p>
+            )
+        }
 
-                    <button type="submit">Entrar</button>
-                </form>
+        <
+        button type = "submit" > Entrar < /button> < /
+        form >
 
-                <Link to="/create-account" className="link-button">
-                    Criar uma conta
-                </Link>
-            </div>
-        </div>
+        <
+        Link to = "/create-account"
+        className = "link-button" >
+        Criar uma conta <
+        /Link> < /
+        div > <
+        /div>
     );
 }
 
