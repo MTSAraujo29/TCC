@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const tasmotaController = require('../controllers/tasmota.controller');
 const authenticateToken = require('../middleware/authenticateToken');
+const tasmotaService = require('../services/tasmota.service');
 
 // Rotas para Gerenciamento de Dispositivos (CRUD)
 router.post('/devices', authenticateToken, tasmotaController.addDevice); // LINHA 8
@@ -21,5 +22,10 @@ router.get('/devices/:deviceId/historical-readings', authenticateToken, tasmotaC
 // Rota para Controle de Dispositivo (Ligar/Desligar)
 router.post('/devices/:deviceId/power', authenticateToken, tasmotaController.getDevice, tasmotaController.toggleDevicePower);
 
+// Endpoint para valor de energia total em tempo real (direto do cache)
+router.get('/devices/:deviceId/total-energy-live', authenticateToken, (req, res) => {
+    const valor = tasmotaService.getTotalEnergyFromCache(req.params.deviceId);
+    res.json({ totalEnergy: valor });
+});
 
 module.exports = router;

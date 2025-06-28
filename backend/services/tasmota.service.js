@@ -44,6 +44,17 @@ const MQTT_OPTIONS = {
 
 let mqttClient = null;
 
+// Cache em memória para o valor mais recente de energia total de cada dispositivo
+const lastTotalEnergyCache = {};
+
+function updateTotalEnergyCache(deviceId, valor) {
+    lastTotalEnergyCache[deviceId] = valor;
+}
+
+function getTotalEnergyFromCache(deviceId) {
+    return lastTotalEnergyCache[deviceId] || null;
+}
+
 // --- Funções de Serviço Tasmota ---
 
 async function initializeMqttClient() {
@@ -86,6 +97,8 @@ async function initializeMqttClient() {
                     }
                     if (data.StatusSNS && data.StatusSNS.ENERGY) {
                         const energy = data.StatusSNS.ENERGY;
+                        // Atualiza o cache em memória com o valor mais recente
+                        updateTotalEnergyCache(device.id, energy.Total);
 
                         // Usa a nova lógica para processar os dados
                         const processedData = await energyTotalManager.processEnergyData({
@@ -135,6 +148,9 @@ async function initializeMqttClient() {
                     const device = await prisma.device.findUnique({ where: { tasmotaTopic } });
                     if (!device) return;
                     if (data.ENERGY) {
+                        // Atualiza o cache em memória com o valor mais recente
+                        updateTotalEnergyCache(device.id, data.ENERGY.Total);
+
                         // Usa a nova lógica para processar os dados
                         const processedData = await energyTotalManager.processEnergyData({
                             power: data.ENERGY.Power,
@@ -233,4 +249,5 @@ async function publishMqttCommand(topic, message) {
 module.exports = {
     initializeMqttClient,
     publishMqttCommand,
+    getTotalEnergyFromCache, // Exporta função para o controller
 };
