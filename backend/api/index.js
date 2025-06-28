@@ -1,37 +1,44 @@
-// backend/server.js
+// TCC Site/backend/api/index.js
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
+const mqtt = require('mqtt'); // Importa o módulo MQTT
+// Importa o serviço MQTT, ajustando o caminho para o nível correto
+const tasmotaService = require('../services/tasmota.service');
 
-// Carrega as variáveis de ambiente do .env
-// Certifique-se que o caminho está correto se o .env não estiver na raiz do projeto.
-// Para esta estrutura, apenas 'require('dotenv').config();' deve bastar se o .env estiver em backend/.env
-require('dotenv').config({ path: './.env' });
+// Carrega as variáveis de ambiente. No Render, elas são injetadas diretamente.
+// Esta linha é mantida por compatibilidade ou para uso em outros ambientes.
+require('dotenv').config();
 
-// --- Instância Global do Prisma (MELHORIA) ---
-// Em vez de criar uma nova instância em cada arquivo que usa Prisma,
-// é melhor ter uma instância global e passá-la ou exportá-la.
-// Se tasmota.service.js já tem a sua, por enquanto deixe como está, mas é algo a considerar.
+// --- Instância Global do Prisma ---
 const prisma = new PrismaClient();
 
 // Configurações de segurança
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
-    console.error('ERRO: JWT_SECRET não está definido no arquivo .env!');
-    process.exit(1); // Encerra a aplicação se a chave secreta não estiver configurada
+    console.error('ERRO: JWT_SECRET não está definido nas variáveis de ambiente! Por favor, configure-o no Render.');
 }
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 // Middlewares
 app.use(express.json());
-app.use(cors()); // Para produção, configure as origens permitidas em `cors({ origin: 'http://seufrontend.com' })`
+
+// --- CONFIGURAÇÃO CORS ---
+// A URL do seu frontend no Netlify será passada para o Render como uma variável de ambiente (FRONTEND_URL).
+// Durante o desenvolvimento local do frontend, ela usará 'http://localhost:3000'.
+const ALLOWED_ORIGIN = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+app.use(cors({
+    origin: ALLOWED_ORIGIN,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Inclua todos os métodos HTTP que seu frontend usará
+    credentials: true // Se você usa cookies, sessões ou headers de autorização
+}));
 
 // =========================================================================
-// Middleware de Autenticação JWT (ATUALIZADO)
+// Middleware de Autenticação JWT
 // =========================================================================
 async function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -43,8 +50,7 @@ async function authenticateToken(req, res, next) {
 
     jwt.verify(token, JWT_SECRET, async(err, user) => {
         if (err) {
-            console.error('Erro de verificação JWT:', err.message); // Melhor logar a mensagem do erro
-            // O erro 'TokenExpiredError' é comum, pode-se lidar especificamente
+            console.error('Erro de verificação JWT:', err.message);
             if (err.name === 'TokenExpiredError') {
                 return res.status(401).json({ message: 'Token expirado. Por favor, faça login novamente.' });
             }
@@ -52,7 +58,6 @@ async function authenticateToken(req, res, next) {
         }
 
         try {
-            // Buscar informações completas do usuário do banco de dados
             const dbUser = await prisma.user.findUnique({
                 where: { id: user.userId },
                 select: { id: true, email: true, isAdmin: true }
@@ -74,28 +79,19 @@ async function authenticateToken(req, res, next) {
         }
     });
 }
-// Não é necessário exportar authenticateToken com module.exports.authenticateToken aqui
-// se você só o utiliza dentro deste arquivo ou o passa como middleware nas rotas.
-// Se suas rotas estão em arquivos separados e você as importa, você pode passar `authenticateToken` diretamente.
+
 
 // =========================================================================
 // Importação e Uso das Rotas Modularizadas
 // =========================================================================
 
-// Importa os serviços MQTT. Use o nome tasmotaService.
-const tasmotaService = require('./services/tasmota.service');
-
-// Importa as rotas de Tasmota (seu arquivo routes/tasmotaRoutes.js)
-const tasmotaRoutes = require('./routes/tasmotaRoutes');
-// Você pode passar a instância do PrismaClient para as rotas se elas precisarem dela.
-// Ex: app.use('/api/tasmota', tasmotaRoutes(prisma)); // E as rotas teriam que aceitar 'prisma' como argumento
+// As rotas agora estão no mesmo nível que 'api', então o caminho é "../routes/..."
+const tasmotaRoutes = require('../routes/tasmotaRoutes');
 app.use('/api/tasmota', tasmotaRoutes);
 
-
-// Importa as rotas do Dashboard (o novo arquivo routes/dashboardRoutes.js)
-const dashboardRoutes = require('./routes/dashboardRoutes');
-// Ex: app.use('/api/dashboard', dashboardRoutes(prisma));
+const dashboardRoutes = require('../routes/dashboardRoutes');
 app.use('/api/dashboard', dashboardRoutes);
+
 
 // =========================================================================
 // Rotas de Autenticação (Registro e Login)
@@ -114,7 +110,6 @@ app.get('/', (req, res) => {
 // Rota para CRIAR CONTA (Registro de Usuário)
 app.post('/api/register', async(req, res) => {
     const { name, email, password } = req.body;
-    // ... sua lógica de registro ...
     if (!name || !email || !password) {
         return res.status(400).json({ message: 'Todos os campos (Nome, Email, Senha) são obrigatórios.' });
     }
@@ -135,9 +130,7 @@ app.post('/api/register', async(req, res) => {
                 name: name,
                 email: email,
                 password: hashedPassword,
-                // Certifique-se de que o campo 'isAdmin' existe no seu modelo User no schema.prisma
-                // Se não existir, remova esta linha ou adicione o campo ao schema.
-                isAdmin: email === 'admin123@gmail.com' // Define admin se o email for o do admin
+                isAdmin: email === 'admin123@gmail.com'
             },
         });
 
@@ -160,7 +153,6 @@ app.post('/api/register', async(req, res) => {
 // Rota para LOGIN de Usuário
 app.post('/api/login', async(req, res) => {
     const { email, password } = req.body;
-    // ... sua lógica de login ...
     if (!email || !password) {
         return res.status(400).json({ message: 'Email e Senha são obrigatórios.' });
     }
@@ -201,14 +193,14 @@ app.post('/api/login', async(req, res) => {
     }
 });
 
+// =========================================================================
+// Inicialização do Cliente MQTT
+// =========================================================================
+// Esta função será chamada uma vez quando o processo Node.js for iniciado no Render.
+tasmotaService.initializeMqttClient()
+    .then(() => console.log('Cliente MQTT inicializado com sucesso!'))
+    .catch(err => console.error('Falha ao inicializar o cliente MQTT:', err));
 
-// Inicia o servidor Express E o cliente MQTT
-app.listen(PORT, () => {
-    console.log(`Servidor backend rodando em http://localhost:${PORT}`);
-    // **Ajuste aqui:** Chame a função correta do tasmotaService
-    tasmotaService.initializeMqttClient()
-        .then(() => console.log('Cliente MQTT inicializado com sucesso!'))
-        .catch(err => console.error('Falha ao inicializar o cliente MQTT:', err));
-});
 
-module.exports.authenticateToken = authenticateToken;
+// EXPORTE A INSTÂNCIA DO APP PARA O AMBIENTE DE DEPLOY (RENDER)
+module.exports = app;
