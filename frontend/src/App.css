@@ -31,45 +31,102 @@ body {
 /* Container para Login/Criar Conta (centralizado) */
 
 .container {
-    background-color: rgba(45, 45, 70, 0.8);
-    /* Fundo mais escuro e translúcido para o card */
-    border-radius: 15px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-    padding: 2.5rem;
-    /* Convertido para REM, antes 40px */
-    width: 90%;
-    /* Largura percentual para se adaptar */
-    max-width: 400px;
-    text-align: center;
-    backdrop-filter: blur(5px);
-    /* Efeito de desfoque no fundo */
-    -webkit-backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    margin: 6.25rem auto;
-    /* Convertido para REM, antes 100px */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-
-/* Card para Login/Criar Conta */
-
 .card {
-    /* Usado pelo Login e Criar Conta */
-    background-color: transparent;
-    /* Card transparente para usar o fundo do container */
-    padding: 0;
-    /* Remove padding extra do card */
-    border-radius: 0;
-    /* Remove border-radius extra do card */
-    box-shadow: none;
-    /* Remove sombra extra do card */
+    background: rgba(30, 32, 44, 0.98);
+    border-radius: 18px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+    padding: 32px 24px 24px 24px;
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 24px 0;
+}
+
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+input {
+    width: 100%;
+    padding: 12px 10px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #23243a;
+    color: #fff;
+    font-size: 1em;
+    margin-bottom: 0;
+    box-sizing: border-box;
+}
+
+button,
+.link-button {
+    width: 100%;
+    padding: 12px 0;
+    border-radius: 6px;
+    border: none;
+    background: #00bcd4;
+    color: #fff;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+}
+
+button:hover,
+.link-button:hover {
+    background: #0097a7;
 }
 
 .logo-icon {
-    font-size: 4rem;
-    /* Convertido para REM */
-    color: #00bcd4;
-    margin-bottom: 1.25rem;
-    /* Convertido para REM */
+    font-size: 3em;
+    margin-bottom: 10px;
+    color: #ffeb3b;
+}
+
+@media (max-width: 600px) {
+    .card {
+        max-width: 98vw;
+        padding: 18px 4vw 18px 4vw;
+        border-radius: 10px;
+    }
+    .container {
+        padding: 0;
+    }
+    input,
+    button,
+    .link-button {
+        font-size: 1em;
+        padding: 10px 0;
+    }
+}
+
+@media (max-width: 400px) {
+    .card {
+        padding: 10px 2vw 10px 2vw;
+        border-radius: 6px;
+    }
+    .logo-icon {
+        font-size: 2em;
+    }
 }
 
 h2 {
@@ -1605,4 +1662,452 @@ body,
 #root {
     width: 100vw;
     overflow-x: hidden;
+}
+
+
+/* --- RESPONSIVIDADE DASHBOARD --- */
+
+.dashboard-container {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    width: 100vw;
+    box-sizing: border-box;
+}
+
+.sidebar {
+    min-width: 220px;
+    background: #181a23;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0 0 0;
+    position: relative;
+    z-index: 2;
+}
+
+.sidebar .logo-icon-sidebar {
+    font-size: 2.2em;
+    margin-bottom: 18px;
+}
+
+.menu-item {
+    width: 90%;
+    padding: 12px 0;
+    margin: 6px 0;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    background: none;
+    color: #fff;
+    font-size: 1.1em;
+    transition: background 0.2s, color 0.2s;
+}
+
+.menu-item.active,
+.menu-item:hover {
+    background: #00bcd4;
+    color: #181a23;
+}
+
+.logout-link-sidebar {
+    background: #f44336;
+    color: #fff;
+    margin-top: 24px;
+}
+
+.sidebar-bottom {
+    margin-top: auto;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 24px;
+}
+
+.main-content {
+    flex: 1;
+    padding: 32px 32px 32px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.metrics-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.metric-card {
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    padding: 18px 24px;
+    min-width: 180px;
+    text-align: center;
+    color: #fff;
+    flex: 1 1 180px;
+    max-width: 220px;
+}
+
+.chart-area-main,
+.chart-card-main {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 24px auto;
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    padding: 18px 12px 12px 12px;
+}
+
+.view-mode-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.view-button,
+.active-view-button {
+    padding: 8px 18px;
+    border-radius: 6px;
+    border: none;
+    background: #23243a;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.active-view-button {
+    background: #00bcd4;
+    color: #181a23;
+}
+
+.bottom-sections-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: center;
+    margin-top: 18px;
+}
+
+.bottom-card {
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    padding: 18px 18px 12px 18px;
+    min-width: 220px;
+    flex: 1 1 320px;
+    max-width: 420px;
+    margin-bottom: 12px;
+}
+
+.chart-wrapper {
+    width: 100%;
+    min-height: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.device-suggestion-list {
+    padding-left: 18px;
+    font-size: 1em;
+}
+
+.energy-control-section,
+.reports-section,
+.settings-section {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    padding: 24px 18px 18px 18px;
+    margin-bottom: 24px;
+}
+
+.device-control-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.device-control-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    background: #23243a;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+}
+
+.device-control-name {
+    flex: 1 1 120px;
+    font-weight: bold;
+    color: #00bcd4;
+}
+
+
+/* Responsividade para telas menores */
+
+@media (max-width: 900px) {
+    .dashboard-container {
+        flex-direction: column;
+    }
+    .sidebar {
+        flex-direction: row;
+        min-width: 0;
+        width: 100vw;
+        height: auto;
+        padding: 8px 0 0 0;
+        justify-content: flex-start;
+        align-items: center;
+        position: static;
+    }
+    .sidebar .logo-icon-sidebar {
+        margin-bottom: 0;
+        margin-right: 12px;
+    }
+    .sidebar-bottom {
+        margin-top: 0;
+        padding-bottom: 0;
+    }
+    .main-content {
+        padding: 18px 4vw;
+    }
+}
+
+@media (max-width: 600px) {
+    .metrics-grid,
+    .bottom-sections-grid {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .main-content {
+        padding: 8px 2vw;
+    }
+    .sidebar {
+        flex-direction: row;
+        min-width: 0;
+        width: 100vw;
+        height: auto;
+        padding: 4px 0 0 0;
+        justify-content: flex-start;
+        align-items: center;
+        position: static;
+        font-size: 0.95em;
+    }
+    .sidebar .logo-icon-sidebar {
+        font-size: 1.5em;
+        margin-right: 8px;
+    }
+    .menu-item {
+        font-size: 1em;
+        padding: 8px 0;
+        margin: 2px 0;
+    }
+    .bottom-card,
+    .metric-card,
+    .energy-realtime-card {
+        min-width: 0;
+        max-width: 100vw;
+        padding: 10px 4px;
+    }
+    .energy-control-section,
+    .reports-section,
+    .settings-section {
+        padding: 10px 2vw;
+    }
+    .device-control-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+    .device-control-name {
+        margin-bottom: 4px;
+    }
+}
+
+
+/* Garante que o botão de logout fique sempre visível no topo em telas pequenas */
+
+@media (max-width: 600px) {
+    .logout-link-sidebar {
+        position: fixed;
+        top: 8px;
+        right: 8px;
+        z-index: 9999;
+        width: auto;
+        padding: 8px 16px;
+        font-size: 1em;
+        border-radius: 6px;
+    }
+}
+
+
+/* --- ESTILOS PARA AddDevicePage (UNIFICADO) --- */
+
+.add-device-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #2c2c54;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100vw;
+}
+
+.add-device-card {
+    background-color: #3e3e70;
+    padding: 32px 24px 24px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    width: 100%;
+    max-width: 420px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.add-device-card h2 {
+    text-align: center;
+    margin-bottom: 22px;
+    color: #8a2be2;
+    font-size: 1.3em;
+}
+
+.form-group {
+    width: 100%;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #5a5a8a;
+    border-radius: 5px;
+    background-color: #4a4a7e;
+    color: #fff;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.form-group input::placeholder {
+    color: #bbb;
+}
+
+.error-message {
+    color: #ff6b6b;
+    margin-bottom: 12px;
+    text-align: center;
+    font-size: 1em;
+}
+
+.button-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.add-device-card button {
+    width: 100%;
+    padding: 12px 0;
+    border: none;
+    border-radius: 6px;
+    background-color: #8a2be2;
+    color: #fff;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 0;
+    transition: background 0.2s;
+}
+
+.add-device-card button:hover:not(:disabled) {
+    background-color: #6a0fdc;
+}
+
+.add-device-card button:disabled {
+    background-color: #5a5a8a;
+    cursor: not-allowed;
+}
+
+.cancel-button {
+    background-color: #6c757d !important;
+    margin-top: 0 !important;
+}
+
+.cancel-button:hover:not(:disabled) {
+    background-color: #5a6268 !important;
+}
+
+
+/* Responsividade AddDevicePage */
+
+@media (max-width: 768px) {
+    .add-device-page-container {
+        padding: 8px;
+        min-height: 100vh;
+    }
+    .add-device-card {
+        max-width: 98vw;
+        padding: 16px;
+    }
+    .add-device-card h2 {
+        font-size: 1.1em;
+        margin-bottom: 14px;
+    }
+    .form-group input {
+        font-size: 0.95em;
+        padding: 8px;
+    }
+    .add-device-card button {
+        font-size: 1em;
+        padding: 10px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .add-device-card {
+        max-width: 100vw;
+        padding: 8px;
+        border-radius: 6px;
+    }
+    .add-device-card h2 {
+        font-size: 1em;
+        margin-bottom: 8px;
+    }
+    .form-group label {
+        font-size: 0.95em;
+    }
+    .form-group input {
+        font-size: 0.9em;
+        padding: 6px;
+    }
+    .add-device-card button {
+        font-size: 0.95em;
+        padding: 8px 0;
+    }
 }
