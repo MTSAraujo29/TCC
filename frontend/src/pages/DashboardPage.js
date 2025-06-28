@@ -342,7 +342,7 @@ function DashboardPage() {
                 // NOVO: Define se os dados são reais ou fictícios
                 setIsRealData(data.isRealData);
                 if (!data.isRealData) {
-                    setFictionalDataMessage('Você está visualizando dados fictícios. Faça login com admin123@gmail.com para ver os dados reais.');
+                    setFictionalDataMessage('Os dados exibidos são fictícios porque sua conta não possui permissões de administrador. Entre em contato com o suporte para solicitar acesso como administrador e visualizar os dados reais.');
                 } else {
                     setFictionalDataMessage('');
                 }
