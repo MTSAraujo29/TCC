@@ -1,0 +1,4 @@
+[build]
+  base    = "TCC Site/frontend"
+  publish = "build"
+  command = "npm run build"
