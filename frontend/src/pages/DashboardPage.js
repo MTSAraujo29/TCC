@@ -350,17 +350,19 @@ function DashboardPage() {
                 // ATUALIZADO: `setDevices` agora usa `data.userDevices`
                 setDevices(data.userDevices || []);
 
-                const totalConsumptionKwh = data.daily_consumption_kwh.reduce((sum, val) => sum + val, 0);
+                // Protege o uso de .reduce para evitar erro se não for array
+                const dailyKwh = Array.isArray(data.daily_consumption_kwh) ? data.daily_consumption_kwh : [];
+                const totalConsumptionKwh = dailyKwh.reduce((sum, val) => sum + val, 0);
                 setCurrentMonthConsumption(`${totalConsumptionKwh.toFixed(2)} kWh`);
                 setTotalConsumption(`${totalConsumptionKwh.toFixed(2)} kWh`);
 
-                if (data.daily_consumption_kwh.length > 0) {
-                    setDailyConsumption(`${data.daily_consumption_kwh[data.daily_consumption_kwh.length - 1].toFixed(2)} kWh`);
+                if (dailyKwh.length > 0) {
+                    setDailyConsumption(`${dailyKwh[dailyKwh.length - 1].toFixed(2)} kWh`);
                 } else {
                     setDailyConsumption('0.00 kWh');
                 }
 
-            } else if (response.status === 401 || response.status === 403) {
+            } else if (response.status === 401) {
                 alert('Sua sessão expirou ou é inválida. Por favor, faça login novamente.');
                 localStorage.removeItem('token');
                 localStorage.removeItem('userName');
