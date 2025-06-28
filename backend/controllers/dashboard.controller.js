@@ -9,7 +9,7 @@ const prisma = new PrismaClient(); // Instância do Prisma
 // Se elas não estão e você vai implementá-las aqui, você não precisaria do import.
 // Pela estrutura atual do seu código, parece que você quer que tasmotaService contenha essas funções.
 const tasmotaService = require('../services/tasmota.service'); // Serviço para interagir com dados Tasmota
-const energyTotalManager = require('../services/energyTotalManager'); // NOVO: Serviço para gerenciar energia total
+
 
 // === Dados Fictícios (Mock Data) ===
 // Estes dados serão enviados para usuários NÃO-ADMIN
@@ -121,9 +121,6 @@ async function getDashboardData(req, res) {
             for (const device of userDevices) {
                 const latestReading = device.readings.length > 0 ? device.readings[0] : null;
 
-                // NOVO: Obter o valor atual de energia total para exibição (valor acumulado do Tasmota)
-                const currentTotalEnergyForDisplay = await energyTotalManager.getAccumulatedTotalEnergy(device.id);
-
                 realDevicesData.push({
                     id: device.id,
                     name: device.name,
@@ -135,7 +132,7 @@ async function getDashboardData(req, res) {
                         power: latestReading.power, // W
                         voltage: latestReading.voltage, // V
                         current: latestReading.current, // A
-                        totalEnergy: currentTotalEnergyForDisplay, // NOVO: Valor acumulado atual do Tasmota para exibição
+                        totalEnergy: latestReading.totalEnergy, // kWh
                         EnergyToday: latestReading.EnergyToday,
                         EnergyYesterday: latestReading.EnergyYesterday,
                         ApparentPower: latestReading.ApparentPower,
@@ -147,15 +144,12 @@ async function getDashboardData(req, res) {
 
                 if (latestReading) {
                     currentRealPower += latestReading.power; // Soma a potência instantânea
-
-                    // NOVO: Usar o valor acumulado atual para cálculos de consumo total
-                    const totalEnergyForCalculations = currentTotalEnergyForDisplay || 0;
-                    totalConsumptionAccumulated += totalEnergyForCalculations;
+                    totalConsumptionAccumulated += latestReading.totalEnergy; // Soma o total acumulado do medidor
 
                     // Acumular consumo para o gráfico de pizza (por tipo de dispositivo/nome)
-                    if (totalEnergyForCalculations > 0) {
+                    if (latestReading.totalEnergy > 0) {
                         const deviceTypeName = device.model || 'Outros'; // Usa o modelo do dispositivo para tipagem
-                        energyConsumptionByDeviceType[deviceTypeName] = (energyConsumptionByDeviceType[deviceTypeName] || 0) + totalEnergyForCalculations;
+                        energyConsumptionByDeviceType[deviceTypeName] = (energyConsumptionByDeviceType[deviceTypeName] || 0) + latestReading.totalEnergy;
                     }
                 }
 
@@ -169,7 +163,7 @@ async function getDashboardData(req, res) {
                 const endOfLastDay = new Date(startOfLastDay);
                 endOfLastDay.setDate(startOfLastDay.getDate() + 1);
 
-                // NOVO: Buscar leituras que tenham totalEnergy (apenas as salvas no último dia do mês)
+
                 const monthReadings = await prisma.energyReading.findMany({
                     where: {
                         deviceId: device.id,
@@ -177,22 +171,27 @@ async function getDashboardData(req, res) {
                             gte: startOfMonth,
                             lte: today, // Até o dia atual
                         },
-                        totalEnergy: { not: null } // NOVO: Apenas leituras com totalEnergy (último dia do mês)
                     },
                     orderBy: { timestamp: 'asc' }, // Ordena para calcular o diff
                 });
 
-                // NOVO: Calcula o consumo mensal para este dispositivo usando apenas os dados salvos no último dia
+                // Calcula o consumo mensal para este dispositivo (diferença do totalEnergy)
                 if (monthReadings.length > 1) {
                     const firstReadingMonth = monthReadings[0].totalEnergy;
                     const lastReadingMonth = monthReadings[monthReadings.length - 1].totalEnergy;
                     currentMonthConsumption += (lastReadingMonth - firstReadingMonth);
                 } else if (monthReadings.length === 1 && monthReadings[0].totalEnergy) {
                     // Se só tiver uma leitura no mês, considera o valor como consumo
+                    // Ou, se o Tasmota reiniciar, o totalEnergy pode ser menor que o anterior.
+                    // Uma abordagem robusta seria salvar a diferença ou o consumo por intervalo.
+                    // Para TCC, vamos somar o totalEnergy se for a única leitura,
+                    // ou a diferença se houver mais de uma.
                     currentMonthConsumption += monthReadings[0].totalEnergy;
                 }
 
-                // NOVO: Para o consumo do último dia, usar apenas leituras com totalEnergy
+                // Calcula o consumo do último dia para este dispositivo
+                // Simplificado: Soma de 'power' ou 'totalEnergy' dentro do último dia.
+                // Uma maneira mais precisa seria: totalEnergy no final do dia - totalEnergy no início do dia.
                 const lastDayReadings = await prisma.energyReading.findMany({
                     where: {
                         deviceId: device.id,
@@ -200,7 +199,6 @@ async function getDashboardData(req, res) {
                             gte: startOfLastDay,
                             lt: endOfLastDay,
                         },
-                        totalEnergy: { not: null } // NOVO: Apenas leituras com totalEnergy
                     },
                     orderBy: { timestamp: 'asc' },
                 });
@@ -213,7 +211,9 @@ async function getDashboardData(req, res) {
                     dailyConsumptionLastDay += lastDayReadings[0].totalEnergy;
                 }
 
-                // NOVO: Para o gráfico histórico, usar apenas leituras com totalEnergy
+
+                // Processar dados históricos para o gráfico principal (consumo diário dos últimos 7 dias)
+                // É mais eficiente fazer uma única query por dispositivo para os últimos 7 dias.
                 const recentReadings = await prisma.energyReading.findMany({
                     where: {
                         deviceId: device.id,
@@ -221,7 +221,6 @@ async function getDashboardData(req, res) {
                             gte: new Date(today.getTime() - (7 * 24 * 60 * 60 * 1000)), // 7 dias atrás
                             lte: today,
                         },
-                        totalEnergy: { not: null } // NOVO: Apenas leituras com totalEnergy
                     },
                     orderBy: {
                         timestamp: 'asc', // Importante para calcular diferenças ou agregação
@@ -251,6 +250,7 @@ async function getDashboardData(req, res) {
                         prevReading = currentReading;
                     }
                 }
+
 
                 // Mapeia os dados agregados para o array mainChartDataValues
                 mainChartLabels.forEach((label, index) => {
@@ -320,10 +320,71 @@ async function getDashboardData(req, res) {
                         lastReport: d.latestReading ? `Potência: ${d.latestReading.power}W, Total Acumulado: ${d.latestReading.totalEnergy} kWh` : 'Sem dados',
                         impact: (d.latestReading && d.latestReading.power > 100) ? 'Alto Consumo' : 'Consumo Normal'
                     }))
-                },
-                // NOVO: Sempre envie o campo daily_consumption_kwh para o frontend
-                daily_consumption_kwh: mainChartDataValues.map(val => parseFloat(val.toFixed(2))),
+                }
             };
 
         } else {
-            console.log(`
+            console.log(`Non-admin user ${userEmail} accessing fictional data.`);
+            // Retornar dados fictícios para usuários não-admin
+
+            // NOVO: mockDailyConsumption para o frontend
+            const mockDailyConsumptionData = [3.2, 3.5, 2.9, 4.1, 3.8, 4.5, 3.9]; // kWh fictício diário
+            const mockDailyConsumptionLabels = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+
+            dashboardData = {
+                isRealData: false,
+                userEmail: userEmail,
+                userDevices: mockDevices.map(d => ({ // Renomeado para userDevices para consistência
+                    ...d,
+                    latestReading: { // Mock de latestReading para o frontend
+                        power: d.power,
+                        totalEnergy: d.totalEnergy,
+                        timestamp: new Date().toISOString()
+                    }
+                })),
+                metrics: {
+                    currentMonthConsumption: parseFloat((Math.random() * 200 + 50).toFixed(2)), // kWh
+                    dailyConsumption: parseFloat((Math.random() * 5 + 1).toFixed(2)), // kWh do último dia
+                    totalConsumption: parseFloat((Math.random() * 1500 + 500).toFixed(2)), // kWh acumulado
+                    currentPower: parseFloat((Math.random() * 500 + 50).toFixed(2)), // Watts
+                    devicesOnline: mockDevices.filter(d => d.powerState).length,
+                    energySaved: parseFloat((Math.random() * 10 + 1).toFixed(2)),
+                },
+                mainChartData: { // Usa mockDailyConsumptionLabels/Data
+                    labels: mockDailyConsumptionLabels,
+                    datasets: [{
+                        label: 'Consumo Diário (kWh)',
+                        data: mockDailyConsumptionData,
+                        borderColor: '#00bcd4',
+                        backgroundColor: 'rgba(0, 188, 212, 0.4)',
+                        tension: 0.4,
+                        fill: true,
+                    }],
+                },
+                consumptionByTypeChartData: generateMockConsumptionByType(), // Já adaptado
+                deviceSuggestions: ['Trocar lâmpadas por LED', 'Desligar aparelhos em standby', 'Aproveitar a luz natural'],
+                reports: {
+                    summary: 'Este é um relatório fictício para demonstração. Faça login como administrador para ver dados reais.',
+                    deviceReports: mockDevices.map(d => ({
+                        id: d.id,
+                        name: d.name,
+                        status: d.powerState ? 'LIGADO' : 'DESLIGADO',
+                        lastReport: `Potência: ${d.power}W, Total Acumulado: ${d.totalEnergy} Wh (fictício)`,
+                        impact: (d.power > 100 || d.totalEnergy > 2000) ? 'Alto Consumo (Fictício)' : 'Consumo Normal (Fictício)'
+                    }))
+                }
+            };
+        }
+
+        // console.log('Dados enviados para o frontend:', JSON.stringify(dashboardData, null, 2));
+        res.json(dashboardData);
+
+    } catch (error) {
+        console.error('Erro ao carregar dados do dashboard:', error);
+        res.status(500).json({ message: 'Erro interno do servidor ao carregar dados do dashboard.' });
+    }
+}
+
+module.exports = {
+    getDashboardData,
+};
