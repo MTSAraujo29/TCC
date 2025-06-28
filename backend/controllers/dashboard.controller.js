@@ -320,71 +320,10 @@ async function getDashboardData(req, res) {
                         lastReport: d.latestReading ? `Potência: ${d.latestReading.power}W, Total Acumulado: ${d.latestReading.totalEnergy} kWh` : 'Sem dados',
                         impact: (d.latestReading && d.latestReading.power > 100) ? 'Alto Consumo' : 'Consumo Normal'
                     }))
-                }
+                },
+                // NOVO: Sempre envie o campo daily_consumption_kwh para o frontend
+                daily_consumption_kwh: mainChartDataValues.map(val => parseFloat(val.toFixed(2))),
             };
 
         } else {
-            console.log(`Non-admin user ${userEmail} accessing fictional data.`);
-            // Retornar dados fictícios para usuários não-admin
-
-            // NOVO: mockDailyConsumption para o frontend
-            const mockDailyConsumptionData = [3.2, 3.5, 2.9, 4.1, 3.8, 4.5, 3.9]; // kWh fictício diário
-            const mockDailyConsumptionLabels = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
-
-            dashboardData = {
-                isRealData: false,
-                userEmail: userEmail,
-                userDevices: mockDevices.map(d => ({ // Renomeado para userDevices para consistência
-                    ...d,
-                    latestReading: { // Mock de latestReading para o frontend
-                        power: d.power,
-                        totalEnergy: d.totalEnergy,
-                        timestamp: new Date().toISOString()
-                    }
-                })),
-                metrics: {
-                    currentMonthConsumption: parseFloat((Math.random() * 200 + 50).toFixed(2)), // kWh
-                    dailyConsumption: parseFloat((Math.random() * 5 + 1).toFixed(2)), // kWh do último dia
-                    totalConsumption: parseFloat((Math.random() * 1500 + 500).toFixed(2)), // kWh acumulado
-                    currentPower: parseFloat((Math.random() * 500 + 50).toFixed(2)), // Watts
-                    devicesOnline: mockDevices.filter(d => d.powerState).length,
-                    energySaved: parseFloat((Math.random() * 10 + 1).toFixed(2)),
-                },
-                mainChartData: { // Usa mockDailyConsumptionLabels/Data
-                    labels: mockDailyConsumptionLabels,
-                    datasets: [{
-                        label: 'Consumo Diário (kWh)',
-                        data: mockDailyConsumptionData,
-                        borderColor: '#00bcd4',
-                        backgroundColor: 'rgba(0, 188, 212, 0.4)',
-                        tension: 0.4,
-                        fill: true,
-                    }],
-                },
-                consumptionByTypeChartData: generateMockConsumptionByType(), // Já adaptado
-                deviceSuggestions: ['Trocar lâmpadas por LED', 'Desligar aparelhos em standby', 'Aproveitar a luz natural'],
-                reports: {
-                    summary: 'Este é um relatório fictício para demonstração. Faça login como administrador para ver dados reais.',
-                    deviceReports: mockDevices.map(d => ({
-                        id: d.id,
-                        name: d.name,
-                        status: d.powerState ? 'LIGADO' : 'DESLIGADO',
-                        lastReport: `Potência: ${d.power}W, Total Acumulado: ${d.totalEnergy} Wh (fictício)`,
-                        impact: (d.power > 100 || d.totalEnergy > 2000) ? 'Alto Consumo (Fictício)' : 'Consumo Normal (Fictício)'
-                    }))
-                }
-            };
-        }
-
-        // console.log('Dados enviados para o frontend:', JSON.stringify(dashboardData, null, 2));
-        res.json(dashboardData);
-
-    } catch (error) {
-        console.error('Erro ao carregar dados do dashboard:', error);
-        res.status(500).json({ message: 'Erro interno do servidor ao carregar dados do dashboard.' });
-    }
-}
-
-module.exports = {
-    getDashboardData,
-};
+            console.log(`
