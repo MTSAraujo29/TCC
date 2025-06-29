@@ -10,6 +10,62 @@ const prisma = new PrismaClient(); // Instância do Prisma
 // Pela estrutura atual do seu código, parece que você quer que tasmotaService contenha essas funções.
 const tasmotaService = require('../services/tasmota.service'); // Serviço para interagir com dados Tasmota
 
+// Cache para evitar logs repetitivos
+const lastLoggedData = new Map();
+
+// Função para limpar cache antigo (mais de 1 hora)
+function cleanupOldCache() {
+    const oneHourAgo = Date.now() - 3600000; // 1 hora em ms
+    for (const [deviceId, data] of lastLoggedData.entries()) {
+        if (data.timestamp < oneHourAgo) {
+            lastLoggedData.delete(deviceId);
+        }
+    }
+}
+
+// Limpa o cache a cada 30 minutos
+setInterval(cleanupOldCache, 1800000); // 30 minutos
+
+// Função para verificar se os dados mudaram significativamente
+function hasSignificantChange(deviceId, currentReading, devicePowerState) {
+    const lastData = lastLoggedData.get(deviceId);
+
+    if (!lastData) {
+        // Primeira vez que vemos este dispositivo, sempre loga
+        lastLoggedData.set(deviceId, {
+            power: currentReading ? currentReading.power : 0,
+            totalEnergy: currentReading ? currentReading.totalEnergy : 0,
+            powerState: devicePowerState,
+            timestamp: Date.now()
+        });
+        return true;
+    }
+
+    // Verifica se houve mudança significativa (mais de 1W de diferença ou mudança de estado)
+    const powerDiff = Math.abs((currentReading ? currentReading.power : 0) - lastData.power);
+    const energyDiff = Math.abs((currentReading ? currentReading.totalEnergy : 0) - lastData.totalEnergy);
+    const stateChanged = devicePowerState !== lastData.powerState;
+
+    // Só considera mudança significativa se:
+    // 1. Mudou o estado do dispositivo (ligado/desligado)
+    // 2. Potência mudou mais de 1W
+    // 3. Energia total mudou mais de 0.01 kWh
+    // 4. Passou mais de 5 minutos desde o último log
+    const timeDiff = Date.now() - lastData.timestamp;
+    const significantChange = stateChanged || powerDiff > 1 || energyDiff > 0.01 || timeDiff > 300000; // 5 minutos
+
+    if (significantChange) {
+        // Atualiza o cache
+        lastLoggedData.set(deviceId, {
+            power: currentReading ? currentReading.power : 0,
+            totalEnergy: currentReading ? currentReading.totalEnergy : 0,
+            powerState: devicePowerState,
+            timestamp: Date.now()
+        });
+    }
+
+    return significantChange;
+}
 
 // === Dados Fictícios (Mock Data) ===
 // Estes dados serão enviados para usuários NÃO-ADMIN
@@ -120,9 +176,19 @@ async function getDashboardData(req, res) {
             // --- Processar cada dispositivo para coletar dados ---
             for (const device of userDevices) {
                 const latestReading = device.readings.length > 0 ? device.readings[0] : null;
-                if (latestReading) {
+
+                // Só loga se há mudança significativa nos dados
+                if (latestReading && hasSignificantChange(device.id, latestReading, device.powerState)) {
                     console.log('Leitura enviada para o frontend:', JSON.stringify(latestReading, null, 2));
+                } else if (latestReading && !device.powerState && latestReading.power === 0) {
+                    // Log único para dispositivos desligados (só uma vez por sessão)
+                    const deviceOffKey = `${device.id}_off_logged`;
+                    if (!lastLoggedData.has(deviceOffKey)) {
+                        console.log(`Dispositivo ${device.name} está desligado - dados zerados (não serão mais logados até mudança significativa)`);
+                        lastLoggedData.set(deviceOffKey, { timestamp: Date.now() });
+                    }
                 }
+
                 realDevicesData.push({
                     id: device.id,
                     name: device.name,
