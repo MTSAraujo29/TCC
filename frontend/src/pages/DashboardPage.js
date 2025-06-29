@@ -131,10 +131,10 @@ function DashboardPage() {
         // Se estiver em modo real, você pode analisar os dados reais dos dispositivos para gerar sugestões.
         if (!isRealData) {
             return [{
-                    id: 1,
-                    name: 'Lâmpada do Quarto (Fictícia)',
-                    suggestion: 'Instalar temporizador para desligar automaticamente.'
-                },
+                id: 1,
+                name: 'Lâmpada do Quarto (Fictícia)',
+                suggestion: 'Instalar temporizador para desligar automaticamente.'
+            },
                 {
                     id: 2,
                     name: 'Ar Condicionado (Fictício)',
@@ -401,9 +401,18 @@ function DashboardPage() {
 
     // Buscar o valor em tempo real sempre que o device principal mudar
     useEffect(() => {
+        let intervalId;
         if (devices.length > 0 && devices[0].id) {
+            // Atualiza imediatamente ao montar
             fetchLiveTotalEnergy(devices[0].id);
+            // Atualiza a cada 5 segundos
+            intervalId = setInterval(() => {
+                fetchLiveTotalEnergy(devices[0].id);
+            }, 5000);
         }
+        return () => {
+            if (intervalId) clearInterval(intervalId);
+        };
     }, [devices, fetchLiveTotalEnergy]);
 
     useEffect(() => {
@@ -942,9 +951,7 @@ function DashboardPage() {
                                         {parseFloat(detail.potentialImpact) !== 0.00 && (
                                             <p
                                                 className={
-                                                    parseFloat(detail.potentialImpact) > 0
-                                                        ? 'impact-positive'
-                                                        : 'impact-negative'
+                                                    parseFloat(detail.potentialImpact) > 0 ? 'impact-positive' : 'impact-negative'
                                                 }
                                             >
                                                 Impacto Potencial: {detail.potentialImpact}
