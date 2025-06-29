@@ -461,43 +461,43 @@ a.link-button {
 
 /* Área do Gráfico Principal */
 
-.chart-area-main {
-    width: 100%;
-    max-width: 700px;
-    min-width: 0;
-    margin: 0 auto 24px auto;
-    background: #23272f;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    padding: 18px 12px 12px 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 320px;
-    max-height: 480px;
-    height: 45vw;
-    box-sizing: border-box;
-    overflow: hidden;
-}
-
+.chart-area-main,
 .chart-card-main {
-    width: 100%;
-    height: 100%;
-    min-height: 220px;
-    max-height: 420px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
+    margin: 0 auto;
+    width: 100%;
+    min-width: 0;
+    max-width: 100vw;
     box-sizing: border-box;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
 .chart-card-main canvas {
+    display: block;
+    margin: 0 auto;
     width: 100% !important;
-    height: 100% !important;
-    max-width: 100%;
-    max-height: 380px;
-    min-height: 180px;
+    max-width: 100% !important;
+    min-width: 0;
+    min-height: 100px;
+    max-height: 220px;
+}
+
+@media (max-width: 600px) {
+    .chart-area-main,
+    .chart-card-main {
+        min-height: 120px;
+        max-height: 180px;
+        height: auto;
+        padding: 0 !important;
+    }
+    .chart-card-main canvas {
+        min-height: 80px;
+        max-height: 120px;
+    }
 }
 
 
@@ -893,28 +893,13 @@ a.link-button {
 /* Novo estilo para o cartão de dados em tempo real */
 
 .energy-realtime-card {
-    background-color: #4a4a7e;
-    padding: 1.25rem;
-    /* Convertido para REM */
-    border-radius: 8px;
-    margin-bottom: 1.875rem;
-    /* Convertido para REM */
-    box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
-    /* Convertido para REM */
     display: flex;
-    /* Usar flexbox para layout */
     flex-direction: column;
-    /* Colocar itens em coluna */
-    align-items: center;
-    /* Centralizar horizontalmente */
+    align-items: center !important;
     justify-content: center;
-    /* Centralizar verticalmente */
-    min-height: 21.875rem;
-    /* Convertido para REM, antes 350px. Altura mínima para o cartão */
-    position: relative;
-    /* Para posicionamento absoluto de elementos internos */
-    overflow: hidden;
-    /* Garante que nada transborde */
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .energy-realtime-card h3 {
@@ -1003,22 +988,14 @@ a.link-button {
 /* Seção relatorio Dados em Tempo Real do Dispositivo Principal */
 
 .energy-realtime-table {
+    margin: 0 auto;
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 1.875rem;
-    /* Convertido para REM */
+    text-align: center;
 }
 
 .energy-realtime-table td {
-    padding: 0.625rem 0.75rem;
-    /* Convertido para REM */
-    border-bottom: 3px solid #5a5a8e;
-    color: #00bcd4;
-}
-
-.energy-realtime-table td:first-child {
-    font-weight: bold;
-    color: #4CAF50;
+    text-align: center !important;
+    vertical-align: middle;
 }
 
 .device-report-list {
@@ -1343,11 +1320,16 @@ a.link-button {
         font-size: 1.8rem;
         /* Ajusta a fonte dos valores */
     }
-    .chart-area-main {
-        height: 21.875rem;
-        /* Reduz a altura do gráfico principal, convertido para REM */
-        padding: 1.25rem;
-        /* Reduz padding, convertido para REM */
+    .chart-area-main,
+    .chart-card-main {
+        min-height: 120px;
+        max-height: 180px;
+        height: auto;
+        padding: 0 !important;
+    }
+    .chart-card-main canvas {
+        min-height: 80px;
+        max-height: 120px;
     }
     .bottom-sections-grid {
         grid-template-columns: 1fr;
@@ -1438,9 +1420,12 @@ a.link-button {
     .metric-card p {
         font-size: 1.5rem;
     }
-    .chart-area-main {
-        height: 18.75rem;
-        /* Altura ainda menor para gráfico, convertido para REM */
+    .chart-area-main,
+    .chart-card-main {
+        min-height: 120px;
+        max-height: 180px;
+        height: auto;
+        padding: 0 !important;
     }
     .view-button,
     .active-view-button {
@@ -1575,20 +1560,21 @@ a.link-button {
         width: 100%;
         padding: 0.5rem;
     }
-    .chart-area-main {
-        min-height: 180px;
-        max-height: 260px;
-        height: 38vw;
-        padding: 6px 2px 4px 2px;
+    .chart-area-main,
+    .chart-card-main {
+        min-height: 120px;
+        max-height: 180px;
+        height: auto;
+        padding: 0 !important;
+    }
+    .chart-card-main canvas {
+        min-height: 80px;
+        max-height: 120px;
     }
     .realtime-secondary-data {
         width: 100%;
         max-width: 100vw;
         gap: 0.5rem;
-    }
-    .chart-card-main canvas {
-        min-height: 120px;
-        max-height: 220px;
     }
 }
 
@@ -1631,11 +1617,12 @@ a.link-button {
         margin: 0;
         text-align: center;
     }
-    .chart-area-main {
+    .chart-area-main,
+    .chart-card-main {
         min-height: 120px;
         max-height: 180px;
-        height: 32vw;
-        padding: 2px 1px 2px 1px;
+        height: auto;
+        padding: 0 !important;
     }
     .chart-card-main canvas {
         min-height: 80px;
