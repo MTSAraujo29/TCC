@@ -165,7 +165,7 @@ async function getCurrentTotalEnergyForDisplay(deviceId) {
             where: { id: deviceId }
         });
 
-        return device ? .lastSavedTotalEnergy || null;
+        return device && device.lastSavedTotalEnergy || null;
     } catch (error) {
         console.error('Erro ao obter energia total para exibição:', error);
         return null;
@@ -183,7 +183,7 @@ async function getAccumulatedTotalEnergy(deviceId) {
             where: { id: deviceId }
         });
 
-        return device ? .lastSavedTotalEnergy || null;
+        return device && device.lastSavedTotalEnergy || null;
     } catch (error) {
         console.error('Erro ao obter energia total acumulada:', error);
         return null;
