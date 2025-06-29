@@ -131,10 +131,10 @@ function DashboardPage() {
         // Se estiver em modo real, você pode analisar os dados reais dos dispositivos para gerar sugestões.
         if (!isRealData) {
             return [{
-                id: 1,
-                name: 'Lâmpada do Quarto (Fictícia)',
-                suggestion: 'Instalar temporizador para desligar automaticamente.'
-            },
+                    id: 1,
+                    name: 'Lâmpada do Quarto (Fictícia)',
+                    suggestion: 'Instalar temporizador para desligar automaticamente.'
+                },
                 {
                     id: 2,
                     name: 'Ar Condicionado (Fictício)',
@@ -226,7 +226,7 @@ function DashboardPage() {
                 ticks: {
                     color: '#BBB',
                     callback: function(value) {
-                        return value + ' kWh';
+                        return Number(value).toFixed(2) + ' kWh';
                     }
                 },
                 grid: { color: 'rgba(255,255,255,0.1)', borderColor: '#444' }
@@ -942,7 +942,9 @@ function DashboardPage() {
                                         {parseFloat(detail.potentialImpact) !== 0.00 && (
                                             <p
                                                 className={
-                                                    parseFloat(detail.potentialImpact) > 0 ? 'impact-positive' : 'impact-negative'
+                                                    parseFloat(detail.potentialImpact) > 0
+                                                        ? 'impact-positive'
+                                                        : 'impact-negative'
                                                 }
                                             >
                                                 Impacto Potencial: {detail.potentialImpact}
@@ -971,17 +973,8 @@ function DashboardPage() {
                                 <strong>Email:</strong> {userEmail}
                             </p>
                             <p>
-                                <button className="change-password-button" onClick={openEditModal}>
-                                    Alterar Senha
-                                </button>
                                 <button className="edit-profile-button" onClick={openEditModal}>
                                     Editar Perfil
-                                </button>
-                                <button
-                                    style={{ background: '#F44336', marginLeft: 8 }}
-                                    onClick={openDeleteModal}
-                                >
-                                    Excluir Conta
                                 </button>
                             </p>
                             <p style={{ marginTop: '20px', fontSize: '0.9em', color: '#888' }}>
@@ -1020,6 +1013,17 @@ function DashboardPage() {
                                                 className="cancel-button"
                                             >
                                                 Cancelar
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setShowEditModal(false);
+                                                    openDeleteModal();
+                                                }}
+                                                className="delete-account-button"
+                                                style={{ background: '#F44336', color: '#fff', marginLeft: 8 }}
+                                            >
+                                                Excluir Conta
                                             </button>
                                         </div>
                                     </form>
@@ -1100,4 +1104,5 @@ function DashboardPage() {
         </div>
     );
 }
+
 export default DashboardPage;
