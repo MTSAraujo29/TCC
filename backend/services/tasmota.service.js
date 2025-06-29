@@ -87,9 +87,8 @@ async function initializeMqttClient() {
             try {
                 // STATUS10: Dados de energia
                 if (topic.endsWith('STATUS10')) {
-                    // console.log('Payload recebido do Tasmota:', payload);
                     const data = JSON.parse(payload);
-                    const tasmotaTopic = topic.split('/')[1]; // Ex: tasmota_C2BE64
+                    const tasmotaTopic = topic.split('/')[1];
                     const device = await prisma.device.findUnique({ where: { tasmotaTopic } });
                     if (!device) {
                         console.warn(`Dispositivo com tasmotaTopic "${tasmotaTopic}" não encontrado no banco de dados. Pulando salvamento.`);
@@ -97,10 +96,8 @@ async function initializeMqttClient() {
                     }
                     if (data.StatusSNS && data.StatusSNS.ENERGY) {
                         const energy = data.StatusSNS.ENERGY;
-                        // Atualiza o cache em memória com o valor mais recente
+                        console.log('Payload STATUS10 recebido do Tasmota:', JSON.stringify(energy, null, 2));
                         updateTotalEnergyCache(device.id, energy.Total);
-
-                        // Usa a nova lógica para processar os dados
                         const processedData = await energyTotalManager.processEnergyData({
                             power: energy.Power,
                             voltage: energy.Voltage,
@@ -113,11 +110,10 @@ async function initializeMqttClient() {
                             PowerFactor: energy.Factor,
                             timestamp: new Date(data.StatusSNS.Time || new Date())
                         }, device.id, tasmotaTopic);
-
+                        console.log('Dados processados para salvar (STATUS10):', JSON.stringify(processedData, null, 2));
                         const leituraSalva = await prisma.energyReading.create({
                             data: processedData
                         });
-                        // console.log(`Leitura de energia salva para o device ${tasmotaTopic}`);
                     }
                 }
 
@@ -142,16 +138,13 @@ async function initializeMqttClient() {
 
                 // SENSOR: Dados de energia periódicos
                 if (topic.endsWith('SENSOR')) {
-                    // console.log('Payload recebido do Tasmota:', payload);
                     const data = JSON.parse(payload);
                     const tasmotaTopic = topic.split('/')[1];
                     const device = await prisma.device.findUnique({ where: { tasmotaTopic } });
                     if (!device) return;
                     if (data.ENERGY) {
-                        // Atualiza o cache em memória com o valor mais recente
+                        console.log('Payload SENSOR recebido do Tasmota:', JSON.stringify(data.ENERGY, null, 2));
                         updateTotalEnergyCache(device.id, data.ENERGY.Total);
-
-                        // Usa a nova lógica para processar os dados
                         const processedData = await energyTotalManager.processEnergyData({
                             power: data.ENERGY.Power,
                             voltage: data.ENERGY.Voltage,
@@ -164,11 +157,10 @@ async function initializeMqttClient() {
                             PowerFactor: data.ENERGY.Factor,
                             timestamp: new Date(data.Time || new Date())
                         }, device.id, tasmotaTopic);
-
+                        console.log('Dados processados para salvar (SENSOR):', JSON.stringify(processedData, null, 2));
                         const leituraSalva = await prisma.energyReading.create({
                             data: processedData
                         });
-                        // console.log(`Leitura de energia (SENSOR) salva para o device ${tasmotaTopic}`);
                     }
                 }
 
