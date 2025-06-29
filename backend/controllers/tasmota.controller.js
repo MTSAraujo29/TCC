@@ -269,6 +269,31 @@ async function toggleDevicePower(req, res) {
     }
 }
 
+// Função para retornar o valor de Energia Total diretamente do Tasmota (cache em memória)
+async function getLiveTotalEnergyFromTasmota(req, res) {
+    const { deviceId } = req.params;
+    const userId = req.user.userId;
+    const isAdmin = req.user.isAdmin;
+    if (!isAdmin) {
+        return res.status(403).json({ message: 'Apenas administradores podem acessar este dado.' });
+    }
+    try {
+        const device = await prisma.device.findUnique({ where: { id: deviceId, userId: userId } });
+        if (!device) {
+            return res.status(404).json({ message: 'Dispositivo não encontrado.' });
+        }
+        // Buscar do cache em memória do serviço Tasmota
+        const totalEnergy = require('../services/tasmota.service').getTotalEnergyFromCache(deviceId);
+        if (totalEnergy === null || typeof totalEnergy === 'undefined') {
+            return res.status(404).json({ message: 'Valor de Energia Total não disponível no momento.' });
+        }
+        res.json({ totalEnergy });
+    } catch (error) {
+        console.error('Erro ao buscar Energia Total do Tasmota:', error);
+        res.status(500).json({ message: 'Erro interno ao buscar Energia Total.' });
+    }
+}
+
 // Exportar funções
 module.exports = {
     getDevice, // Middleware para verificar posse do dispositivo (usado nas rotas)
@@ -278,4 +303,5 @@ module.exports = {
     getLatestEnergyReading,
     getHistoricalEnergyReadings,
     toggleDevicePower,
+    getLiveTotalEnergyFromTasmota,
 };

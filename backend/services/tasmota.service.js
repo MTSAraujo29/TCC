@@ -250,4 +250,10 @@ module.exports = {
     initializeMqttClient,
     publishMqttCommand,
     getTotalEnergyFromCache, // Exporta função para o controller
+    isLastDayOfMonth,
+    isPenultimateDayOfMonth,
+    calculateMonthlyConsumption,
+    processEnergyData,
+    getCurrentTotalEnergyForDisplay,
+    getAccumulatedTotalEnergy,
 };

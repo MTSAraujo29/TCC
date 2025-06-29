@@ -76,12 +76,22 @@ async function processEnergyData(energyData, deviceId, tasmotaTopic) {
     const device = await getDevice(deviceId);
     const dataToSave = prepareBaseData(energyData, deviceId, timestamp);
 
-    // Lógica especial para totalEnergy
+    // Salva todos os dados normalmente, exceto totalEnergy
+    // Só salva totalEnergy no último dia do mês
     if (isLastDayOfMonth()) {
-        await handleLastDayOfMonth(totalEnergy, deviceId, tasmotaTopic, dataToSave, device);
+        // Busca o valor salvo no último mês
+        const lastMonthTotal = device.lastSavedTotalEnergy || 0;
+        // Calcula a diferença entre o valor atual e o do mês passado
+        const monthlyConsumption = calculateMonthlyConsumption(totalEnergy, lastMonthTotal);
+        dataToSave.totalEnergy = monthlyConsumption;
+        // Atualiza o valor salvo no device
+        await prisma.device.update({
+            where: { id: deviceId },
+            data: { lastSavedTotalEnergy: totalEnergy }
+        });
+        console.log(`[${tasmotaTopic}] Último dia do mês - Consumo mensal calculado: ${monthlyConsumption} kWh (Total acumulado: ${totalEnergy} kWh)`);
     } else {
         dataToSave.totalEnergy = null;
-        console.log(`[${tasmotaTopic}] Dia normal - totalEnergy não salvo (valor atual: ${totalEnergy} kWh)`);
     }
 
     return dataToSave;
@@ -124,18 +134,6 @@ function prepareBaseData(energyData, deviceId, timestamp) {
         ReactivePower: energyData.ReactivePower,
         PowerFactor: energyData.PowerFactor,
     };
-}
-
-async function handleLastDayOfMonth(totalEnergy, deviceId, tasmotaTopic, dataToSave, device) {
-    const monthlyConsumption = calculateMonthlyConsumption(totalEnergy, device.lastSavedTotalEnergy || 0);
-    dataToSave.totalEnergy = monthlyConsumption;
-
-    await prisma.device.update({
-        where: { id: deviceId },
-        data: { lastSavedTotalEnergy: totalEnergy }
-    });
-
-    console.log(`[${tasmotaTopic}] Último dia do mês - Consumo mensal calculado: ${monthlyConsumption} kWh (Total acumulado: ${totalEnergy} kWh)`);
 }
 
 // ==============================================

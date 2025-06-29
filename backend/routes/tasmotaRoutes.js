@@ -28,4 +28,8 @@ router.get('/devices/:deviceId/total-energy-live', authenticateToken, (req, res)
     res.json({ totalEnergy: valor });
 });
 
+// Nova rota para buscar Energia Total diretamente do Tasmota (apenas admin)
+const { getLiveTotalEnergyFromTasmota } = require('../controllers/tasmota.controller');
+router.get('/devices/:deviceId/total-energy-live', authenticateToken, getLiveTotalEnergyFromTasmota);
+
 module.exports = router;
