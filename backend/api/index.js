@@ -194,6 +194,50 @@ app.post('/api/login', async(req, res) => {
 });
 
 // =========================================================================
+// Rotas de Conta do Usuário (Editar e Excluir)
+// =========================================================================
+
+// Editar nome e/ou senha da conta
+app.put('/api/account', authenticateToken, async(req, res) => {
+    const userId = req.user.userId;
+    const { name, password } = req.body;
+    if (!name && !password) {
+        return res.status(400).json({ message: 'Informe um novo nome ou nova senha.' });
+    }
+    try {
+        const updateData = {};
+        if (name) updateData.name = name;
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            updateData.password = hashedPassword;
+        }
+        await prisma.user.update({
+            where: { id: userId },
+            data: updateData
+        });
+        res.json({ message: 'Dados da conta atualizados com sucesso.' });
+    } catch (error) {
+        console.error('Erro ao atualizar conta:', error);
+        res.status(500).json({ message: 'Erro interno ao atualizar conta.' });
+    }
+});
+
+// Excluir conta do usuário
+app.delete('/api/account', authenticateToken, async(req, res) => {
+    const userId = req.user.userId;
+    try {
+        // Remove todos os dispositivos e leituras do usuário antes de remover o usuário
+        await prisma.energyReading.deleteMany({ where: { device: { userId } } });
+        await prisma.device.deleteMany({ where: { userId } });
+        await prisma.user.delete({ where: { id: userId } });
+        res.json({ message: 'Conta excluída com sucesso.' });
+    } catch (error) {
+        console.error('Erro ao excluir conta:', error);
+        res.status(500).json({ message: 'Erro interno ao excluir conta.' });
+    }
+});
+
+// =========================================================================
 // Inicialização do Cliente MQTT
 // =========================================================================
 // Esta função será chamada uma vez quando o processo Node.js for iniciado no Render.

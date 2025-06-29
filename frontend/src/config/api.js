@@ -6,7 +6,8 @@ export const API_ENDPOINTS = {
     REGISTER: `${API_BASE_URL}/api/register`,
     TASMOTA: `${API_BASE_URL}/api/tasmota`,
     DASHBOARD: `${API_BASE_URL}/api/dashboard`,
-    HEALTH: `${API_BASE_URL}/health`
+    HEALTH: `${API_BASE_URL}/health`,
+    ACCOUNT: `${API_BASE_URL}/api/account`
 };
 
 export default API_BASE_URL;

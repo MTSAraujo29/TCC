@@ -77,6 +77,16 @@ function DashboardPage() {
     // NOVO: Estado para armazenar o valor em tempo real do consumo total
     const [liveTotalEnergy, setLiveTotalEnergy] = useState(null);
 
+    // Estados para modais de edição/exclusão de conta
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [editName, setEditName] = useState(userName);
+    const [editPassword, setEditPassword] = useState('');
+    const [editLoading, setEditLoading] = useState(false);
+    const [editError, setEditError] = useState('');
+    const [deleteLoading, setDeleteLoading] = useState(false);
+    const [deleteError, setDeleteError] = useState('');
+
     // ALTERADO: Esta função agora deve processar os `devices` (que podem ser reais do Tasmota ou os mocks)
     const getConsumptionByTypeData = () => {
         const deviceTypeConsumption = {};
@@ -121,10 +131,10 @@ function DashboardPage() {
         // Se estiver em modo real, você pode analisar os dados reais dos dispositivos para gerar sugestões.
         if (!isRealData) {
             return [{
-                id: 1,
-                name: 'Lâmpada do Quarto (Fictícia)',
-                suggestion: 'Instalar temporizador para desligar automaticamente.'
-            },
+                    id: 1,
+                    name: 'Lâmpada do Quarto (Fictícia)',
+                    suggestion: 'Instalar temporizador para desligar automaticamente.'
+                },
                 {
                     id: 2,
                     name: 'Ar Condicionado (Fictício)',
@@ -420,12 +430,22 @@ function DashboardPage() {
         return () => clearInterval(interval);
     }, [navigate, fetchDashboardData]); // Dependência adicionada 'fetchDashboardData'
 
-    const handleLogout = () => {
+    // Função para logout (usada em vários lugares)
+    const handleLogout = useCallback(() => {
         localStorage.removeItem('token');
         localStorage.removeItem('userName');
         localStorage.removeItem('userEmail');
         navigate('/login');
-    };
+    }, [navigate]);
+
+    // Logout automático após 10 minutos
+    useEffect(() => {
+        const logoutTimer = setTimeout(() => {
+            alert('Por segurança, você foi desconectado após 10 minutos de sessão. Faça login novamente.');
+            handleLogout();
+        }, 600000); // 10 minutos
+        return () => clearTimeout(logoutTimer);
+    }, [handleLogout]);
 
     // FUNÇÃO PARA GERAR O RELATÓRIO
     // ALTERADO: Adapte esta função para considerar `isRealData` e os dados reais.
@@ -513,426 +533,645 @@ function DashboardPage() {
     }, [devices, isRealData]); // Dependências para useCallback
 
     const report = generateReport(); // Usa o nome genérico 'report'
-    return (
-        <div className="container dashboard-container">
-            {/* Sidebar de Navegação */}
-            <div className="sidebar">
-                <div className="logo-icon-sidebar">⚡</div>
-                <div
-                    className={`menu-item ${activeSection === 'inicio' ? 'active' : ''}`}
-                    onClick={() => setActiveSection('inicio')}
-                >
-                    🏠Home
-                </div>
-                <div
-                    className={`menu-item ${activeSection === 'controle' ? 'active' : ''}`}
-                    onClick={() => setActiveSection('controle')}
-                >
-                    🔌Controle de Energia
-                </div>
-                <div
-                    className={`menu-item ${activeSection === 'relatorios' ? 'active' : ''}`}
-                    onClick={() => setActiveSection('relatorios')}
-                >
-                    📊Relatórios
-                </div>
-                <div
-                    className={`menu-item ${activeSection === 'configuracoes' ? 'active' : ''}`}
-                    onClick={() => setActiveSection('configuracoes')}
-                >
-                    ⚙️Configurações
-                </div>
-                <div className="sidebar-bottom">
-                    <button onClick={handleLogout} className="menu-item logout-link-sidebar">
-                        🔒Sair
-                    </button>
-                </div>
-            </div>
 
-            {/* Conteúdo Principal do Dashboard */}
-            <div className="main-content">
-                {fictionalDataMessage && (
-                    <div
-                        style={{
-                            backgroundColor: '#ffc107',
-                            color: '#333',
-                            padding: '10px 15px',
-                            borderRadius: '5px',
-                            marginBottom: '20px',
-                            textAlign: 'center',
-                            fontWeight: 'bold'
-                        }}
-                    >
-                        {fictionalDataMessage}
-                    </div>
-                )}
+    // Função para abrir modal de edição
+    const openEditModal = () => {
+        setEditName(userName);
+        setEditPassword('');
+        setEditError('');
+        setShowEditModal(true);
+    };
+    // Função para editar nome/senha
+    const handleEditAccount = async(e) => {
+        e.preventDefault();
+        setEditLoading(true);
+        setEditError('');
+        const token = localStorage.getItem('token');
+        if (!editName && !editPassword) {
+            setEditError('Preencha um novo nome ou nova senha.');
+            setEditLoading(false);
+            return;
+        }
+        try {
+            const response = await fetch(API_ENDPOINTS.ACCOUNT, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    name: editName !== userName ? editName : undefined,
+                    password: editPassword || undefined
+                })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                alert('Dados atualizados com sucesso! Faça login novamente.');
+                setShowEditModal(false);
+                handleLogout();
+            } else {
+                setEditError(data.message || 'Erro ao atualizar dados.');
+            }
+        } catch (err) {
+            setEditError('Erro de rede ao atualizar dados.');
+        }
+        setEditLoading(false);
+    };
+    // Função para abrir modal de exclusão
+    const openDeleteModal = () => {
+        setDeleteError('');
+        setShowDeleteModal(true);
+    };
+    // Função para excluir conta
+    const handleDeleteAccount = async() => {
+        setDeleteLoading(true);
+        setDeleteError('');
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch(API_ENDPOINTS.ACCOUNT, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await response.json();
+            if (response.ok) {
+                alert('Conta excluída com sucesso!');
+                setShowDeleteModal(false);
+                handleLogout();
+            } else {
+                setDeleteError(data.message || 'Erro ao excluir conta.');
+            }
+        } catch (err) {
+            setDeleteError('Erro de rede ao excluir conta.');
+        }
+        setDeleteLoading(false);
+    };
 
-                {/* Seção "Início" */}
-                {activeSection === 'inicio' && (
-                    <React.Fragment>
-                        <h2>Olá, {userName}!</h2>
-                        <div className="metrics-grid">
-                            <div className="metric-card">
-                                <h3>Consumo de energia atual</h3>
-                                <p>
-                                    {devices.length > 0 &&
-                                    devices[0].powerState &&
-                                    devices[0].latestReading &&
-                                    typeof devices[0].latestReading.power === 'number'
-                                        ? `${devices[0].latestReading.power.toFixed(2)} W`
-                                        : '0.00 W'}
-                                </p>
-                            </div>
-                            <div className="metric-card">
-                                <h3>Consumo do mês atual</h3>
-                                <p>{currentMonthConsumption}</p>
-                            </div>
-                            <div className="metric-card">
-                                <h3>Fatura Estimada</h3>
-                                <p>
-                                    R${' '}
-                                    {(parseFloat(currentMonthConsumption.replace(' kWh', '')) * 0.75).toFixed(2)}
-                                </p>
-                            </div>
-                            <div className="metric-card">
-                                <h3>Consumo total</h3>
-                                <p>{liveTotalEnergy !== null ? `${liveTotalEnergy.toFixed(2)} kWh` : '0.00 kWh'}</p>
-                            </div>
-                        </div>
+    return ( <
+        div className = "container dashboard-container" > { /* Sidebar de Navegação */ } <
+        div className = "sidebar" >
+        <
+        div className = "logo-icon-sidebar" > ⚡ < /div> <
+        div className = { `menu-item ${activeSection === 'inicio' ? 'active' : ''}` }
+        onClick = {
+            () => setActiveSection('inicio')
+        } > 🏠Home <
+        /div> <
+        div className = { `menu-item ${activeSection === 'controle' ? 'active' : ''}` }
+        onClick = {
+            () => setActiveSection('controle')
+        } > 🔌Controle de Energia <
+        /div> <
+        div className = { `menu-item ${activeSection === 'relatorios' ? 'active' : ''}` }
+        onClick = {
+            () => setActiveSection('relatorios')
+        } > 📊Relatórios <
+        /div> <
+        div className = { `menu-item ${activeSection === 'configuracoes' ? 'active' : ''}` }
+        onClick = {
+            () => setActiveSection('configuracoes')
+        } > ⚙️Configurações <
+        /div> <
+        div className = "sidebar-bottom" >
+        <
+        button onClick = { handleLogout }
+        className = "menu-item logout-link-sidebar" > 🔒Sair <
+        /button> < /
+        div > <
+        /div>
 
-                        <div className="chart-area-main">
-                            <div className="chart-card-main">
-                                <div className="view-mode-buttons">
-                                    <button
-                                        onClick={() => setViewMode('day')}
-                                        className={viewMode === 'day' ? 'active-view-button' : 'view-button'}
-                                    >
-                                        Dia
-                                    </button>
-                                    <button
-                                        onClick={() => setViewMode('week')}
-                                        className={viewMode === 'week' ? 'active-view-button' : 'view-button'}
-                                    >
-                                        Semana
-                                    </button>
-                                    <button
-                                        onClick={() => setViewMode('month')}
-                                        className={viewMode === 'month' ? 'active-view-button' : 'view-button'}
-                                    >
-                                        Mês
-                                    </button>
-                                </div>
-                                {getChartData().labels.length > 0 ? (
-                                    <Line data={getChartData()} options={chartOptions} />
-                                ) : (
-                                    <p style={{ color: '#BBB', textAlign: 'center' }}>Carregando dados do gráfico...</p>
-                                )}
-                            </div>
-                        </div>
+        { /* Conteúdo Principal do Dashboard */ } <
+        div className = "main-content" > {
+            fictionalDataMessage && ( <
+                div style = {
+                    {
+                        backgroundColor: '#ffc107',
+                        color: '#333',
+                        padding: '10px 15px',
+                        borderRadius: '5px',
+                        marginBottom: '20px',
+                        textAlign: 'center',
+                        fontWeight: 'bold'
+                    }
+                } > { fictionalDataMessage } <
+                /div>
+            )
+        }
 
-                        <div className="bottom-sections-grid">
-                            <div className="bottom-card consumption-by-type-card">
-                                <h3>Consumo por Tipo de Dispositivo</h3>
-                                <div className="chart-wrapper">
-                                    <Doughnut data={getConsumptionByTypeData()} options={consumptionByTypeOptions} />
-                                </div>
-                            </div>
-                            <div className="bottom-card suggested-devices-card">
-                                <h3>Dispositivos Sugeridos</h3>
-                                <p style={{ color: '#BBB', fontSize: '0.9em', marginBottom: '15px' }}>
-                                    Sugestões para otimizar o consumo de energia em seus dispositivos.
-                                </p>
-                                <ul className="device-suggestion-list">
-                                    {getSuggestedDevicesData().length > 0 ? (
-                                        getSuggestedDevicesData().map((device) => (
-                                            <li key={device.id}>
-                                                <strong>{device.name}:</strong> {device.suggestion}
-                                            </li>
-                                        ))
-                                    ) : (
-                                        <p style={{ color: '#BBB', textAlign: 'center' }}>Nenhuma sugestão no momento.</p>
-                                    )}
-                                </ul>
-                            </div>
-                        </div>
-                    </React.Fragment>
-                )}
+        { /* Seção "Início" */ } {
+            activeSection === 'inicio' && ( <
+                React.Fragment >
+                <
+                h2 > Olá, { userName }! < /h2> <
+                div className = "metrics-grid" >
+                <
+                div className = "metric-card" >
+                <
+                h3 > Consumo de energia atual < /h3> <
+                p > {
+                    devices.length > 0 &&
+                    devices[0].powerState &&
+                    devices[0].latestReading &&
+                    typeof devices[0].latestReading.power === 'number' ?
+                    `${devices[0].latestReading.power.toFixed(2)} W` : '0.00 W'
+                } <
+                /p> < /
+                div > <
+                div className = "metric-card" >
+                <
+                h3 > Consumo do mês atual < /h3> <
+                p > { currentMonthConsumption } < /p> < /
+                div > <
+                div className = "metric-card" >
+                <
+                h3 > Fatura Estimada < /h3> <
+                p >
+                R$ { ' ' } {
+                    (parseFloat(currentMonthConsumption.replace(' kWh', '')) * 0.75).toFixed(2)
+                } <
+                /p> < /
+                div > <
+                div className = "metric-card" >
+                <
+                h3 > Consumo total < /h3> <
+                p > { liveTotalEnergy !== null ? `${liveTotalEnergy.toFixed(2)} kWh` : '0.00 kWh' } < /p> < /
+                div > <
+                /div>
 
-                {/* Seção "Controle de Energia" */}
-                {activeSection === 'controle' && (
-                    <div className="energy-control-section">
-                        <h2>Controle de Dispositivos</h2>
-                        {deviceMessage && <p className="device-feedback-message">{deviceMessage}</p>}
-                        <h3>Meus Dispositivos de Energia</h3>
-                        {devices.length > 0 ? (
-                            <div className="device-control-list">
-                                {devices.map((device) => (
-                                    <div key={device.id} className="device-control-item">
-                                        <span className="device-control-name">{device.name}</span>
+                <
+                div className = "chart-area-main" >
+                <
+                div className = "chart-card-main" >
+                <
+                div className = "view-mode-buttons" >
+                <
+                button onClick = {
+                    () => setViewMode('day')
+                }
+                className = { viewMode === 'day' ? 'active-view-button' : 'view-button' } >
+                Dia <
+                /button> <
+                button onClick = {
+                    () => setViewMode('week')
+                }
+                className = { viewMode === 'week' ? 'active-view-button' : 'view-button' } >
+                Semana <
+                /button> <
+                button onClick = {
+                    () => setViewMode('month')
+                }
+                className = { viewMode === 'month' ? 'active-view-button' : 'view-button' } >
+                Mês <
+                /button> < /
+                div > {
+                    getChartData().labels.length > 0 ? ( <
+                        Line data = { getChartData() }
+                        options = { chartOptions }
+                        />
+                    ) : ( <
+                        p style = {
+                            { color: '#BBB', textAlign: 'center' }
+                        } > Carregando dados do gráfico... < /p>
+                    )
+                } <
+                /div> < /
+                div >
 
-                                        {/* Botão "Ligar" */}
-                                        <button
-                                            onClick={() => toggleDevicePower(device.id, device.powerState, device.name)}
-                                            className="device-toggle-button power-on"
-                                            type="button"
-                                            style={{ cursor: 'pointer' }}
-                                            disabled={device.powerState}
-                                        >
-                                            Ligar
-                                        </button>
-                                        {/* Botão "Desligar" */}
-                                        <button
-                                            onClick={() => toggleDevicePower(device.id, device.powerState, device.name)}
-                                            className="device-toggle-button power-off"
-                                            type="button"
-                                            style={{ cursor: 'pointer', marginLeft: '10px' }}
-                                            disabled={!device.powerState}
-                                        >
-                                            Desligar
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <p style={{ color: '#BBB', textAlign: 'center' }}>Nenhum dispositivo encontrado.</p>
-                        )}
-                        {isRealData && (
-                            <button
-                                onClick={() => navigate('/add-device')}
-                                className="add-device-btn"
-                                style={{
-                                    marginTop: '20px',
-                                    padding: '10px 20px',
-                                    backgroundColor: '#4CAF50',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '5px',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                +Adicionar Novo Dispositivo Tasmota
-                            </button>
-                        )}
-                    </div>
-                )}
+                <
+                div className = "bottom-sections-grid" >
+                <
+                div className = "bottom-card consumption-by-type-card" >
+                <
+                h3 > Consumo por Tipo de Dispositivo < /h3> <
+                div className = "chart-wrapper" >
+                <
+                Doughnut data = { getConsumptionByTypeData() }
+                options = { consumptionByTypeOptions }
+                /> < /
+                div > <
+                /div> <
+                div className = "bottom-card suggested-devices-card" >
+                <
+                h3 > Dispositivos Sugeridos < /h3> <
+                p style = {
+                    { color: '#BBB', fontSize: '0.9em', marginBottom: '15px' }
+                } >
+                Sugestões para otimizar o consumo de energia em seus dispositivos. <
+                /p> <
+                ul className = "device-suggestion-list" > {
+                    getSuggestedDevicesData().length > 0 ? (
+                        getSuggestedDevicesData().map((device) => ( <
+                            li key = { device.id } >
+                            <
+                            strong > { device.name }: < /strong> {device.suggestion} < /
+                            li >
+                        ))
+                    ) : ( <
+                        p style = {
+                            { color: '#BBB', textAlign: 'center' }
+                        } > Nenhuma sugestão no momento. < /p>
+                    )
+                } <
+                /ul> < /
+                div > <
+                /div> < /
+                React.Fragment >
+            )
+        }
 
-                {/* Seção "Relatórios" */}
-                {activeSection === 'relatorios' && (
-                    <div className="reports-section">
-                        <h2>Relatórios de Consumo</h2>
-                        <div className="report-summary-card">
-                            <h3>Resumo Geral</h3>
-                            <p>
-                                Total de Dispositivos: <strong>{report.summary.totalDevices}</strong>
-                            </p>
-                            <p>
-                                Dispositivos com Uso Inteligente(estimado):{' '}
-                                <strong>{report.summary.smartUsageDevices}</strong>
-                            </p>
-                            <p>
-                                Dispositivos com Otimização Pendente(estimado):{' '}
-                                <strong>{report.summary.nonSmartUsageDevices}</strong>
-                            </p>
-                            <p className="overall-report-message">{report.summary.overallMessage}</p>
-                        </div>
+        { /* Seção "Controle de Energia" */ } {
+            activeSection === 'controle' && ( <
+                    div className = "energy-control-section" >
+                    <
+                    h2 > Controle de Dispositivos < /h2> {
+                    deviceMessage && < p className = "device-feedback-message" > { deviceMessage } < /p>} <
+                    h3 > Meus Dispositivos de Energia < /h3> {
+                    devices.length > 0 ? ( <
+                        div className = "device-control-list" > {
+                            devices.map((device) => ( <
+                                div key = { device.id }
+                                className = "device-control-item" >
+                                <
+                                span className = "device-control-name" > { device.name } < /span>
 
-                        {isRealData && devices.length > 0 && devices[0].latestReading && (
-                            <div className="energy-realtime-card">
-                                <h3>Dados em Tempo Real do Dispositivo Principal</h3>
-                                <table className="energy-realtime-table">
-                                    <tbody>
-                                    <tr>
-                                        <td>Tensão</td>
-                                        <td>
-                                            {devices[0].powerState &&
-                                            typeof devices[0].latestReading.voltage === 'number'
-                                                ? devices[0].latestReading.voltage
-                                                : 0}{' '}
-                                            V
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Corrente</td>
-                                        <td>
-                                            {devices[0].powerState &&
-                                            typeof devices[0].latestReading.current === 'number'
-                                                ? devices[0].latestReading.current
-                                                : 0}{' '}
-                                            A
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Potência Ativa</td>
-                                        <td>
-                                            {devices[0].powerState &&
-                                            typeof devices[0].latestReading.power === 'number'
-                                                ? devices[0].latestReading.power
-                                                : 0}{' '}
-                                            W
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Potência Aparente</td>
-                                        <td>
-                                            {devices[0].powerState &&
-                                            typeof devices[0].latestReading.ApparentPower === 'number'
-                                                ? devices[0].latestReading.ApparentPower
-                                                : 0}{' '}
-                                            VA
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Potência Reativa</td>
-                                        <td>
-                                            {devices[0].powerState &&
-                                            typeof devices[0].latestReading.ReactivePower === 'number'
-                                                ? devices[0].latestReading.ReactivePower
-                                                : 0}{' '}
-                                            var
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Fator de Potência</td>
-                                        <td>
-                                            {devices[0].powerState &&
-                                            typeof devices[0].latestReading.PowerFactor === 'number'
-                                                ? devices[0].latestReading.PowerFactor
-                                                : 0}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Energia Hoje</td>
-                                        <td>
-                                            {typeof devices[0].latestReading.EnergyToday === 'number'
-                                                ? devices[0].latestReading.EnergyToday
-                                                : '--'}{' '}
-                                            kWh
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Energia Ontem</td>
-                                        <td>
-                                            {typeof devices[0].latestReading.EnergyYesterday === 'number'
-                                                ? devices[0].latestReading.EnergyYesterday
-                                                : '--'}{' '}
-                                            kWh
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Energia Total</td>
-                                        <td>{liveTotalEnergy !== null ? liveTotalEnergy : '--'} kWh</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
+                                { /* Botão "Ligar" */ } <
+                                button onClick = {
+                                    () => toggleDevicePower(device.id, device.powerState, device.name)
+                                }
+                                className = "device-toggle-button power-on"
+                                type = "button"
+                                style = {
+                                    { cursor: 'pointer' }
+                                }
+                                disabled = { device.powerState } >
+                                Ligar <
+                                /button> { / * Botão "Desligar" * / } <
+                                button onClick = {
+                                    () => toggleDevicePower(device.id, device.powerState, device.name)
+                                }
+                                className = "device-toggle-button power-off"
+                                type = "button"
+                                style = {
+                                    { cursor: 'pointer', marginLeft: '10px' }
+                                }
+                                disabled = {!device.powerState } >
+                                Desligar <
+                                /button> < /
+                                div >
+                            ))
+                        } <
+                        /div>
+                    ) : ( <
+                        p style = {
+                            { color: '#BBB', textAlign: 'center' }
+                        } > Nenhum dispositivo encontrado. < /p>
+                    )
+                } {
+                    isRealData && ( <
+                        button onClick = {
+                            () => navigate('/add-device')
+                        }
+                        className = "add-device-btn"
+                        style = {
+                            {
+                                marginTop: '20px',
+                                padding: '10px 20px',
+                                backgroundColor: '#4CAF50',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '5px',
+                                cursor: 'pointer'
+                            }
+                        } >
+                        +Adicionar Novo Dispositivo Tasmota <
+                        /button>
+                    )
+                } <
+                /div>
+        )
+    }
 
-                        <h3>Detalhes por Dispositivo</h3>
-                        <div className="device-report-list">
-                            {report.details.length > 0 ? (
-                                report.details.map((detail, index) => (
-                                    <div key={index} className="device-report-item">
-                                        <h4>{detail.name}</h4>
-                                        <p>
-                                            Status Atual:{' '}
-                                            <span
-                                                className={
-                                                    devices[index] && devices[index].powerState
-                                                        ? 'status-on-text'
-                                                        : 'status-off-text'
-                                                }
-                                            >
-                      {devices[index] && devices[index].powerState ? 'Ligado' : 'Desligado'}
-                    </span>
-                                        </p>
-                                        <p>Tipo: {detail.type}</p>
-                                        <p>Recomendação: {detail.recommendation}</p>
-                                        {parseFloat(detail.potentialImpact) !== 0.00 && (
-                                            <p
-                                                className={
-                                                    parseFloat(detail.potentialImpact) > 0 ? 'impact-positive' : 'impact-negative'
-                                                }
-                                            >
-                                                Impacto Potencial: {detail.potentialImpact} kWh no próximo mês
-                                            </p>
-                                        )}
-                                    </div>
-                                ))
-                            ) : (
-                                <p style={{ color: '#BBB', textAlign: 'center' }}>Nenhum relatório disponível.</p>
-                            )}
-                        </div>
-                    </div>
-                )}
+    { /* Seção "Relatórios" */ } {
+        activeSection === 'relatorios' && ( <
+                div className = "reports-section" >
+                <
+                h2 > Relatórios de Consumo < /h2> <
+                div className = "report-summary-card" >
+                <
+                h3 > Resumo Geral < /h3> <
+                p >
+                Total de Dispositivos: < strong > { report.summary.totalDevices } < /strong> < /
+                p > <
+                p >
+                Dispositivos com Uso Inteligente(estimado): { ' ' } <
+                strong > { report.summary.smartUsageDevices } < /strong> < /
+                p > <
+                p >
+                Dispositivos com Otimização Pendente(estimado): { ' ' } <
+                strong > { report.summary.nonSmartUsageDevices } < /strong> < /
+                p > <
+                p className = "overall-report-message" > { report.summary.overallMessage } < /p> < /
+                div >
 
-                {/* Seção "Configurações" */}
-                {activeSection === 'configuracoes' && (
-                    <div className="settings-section">
-                        <h2>Configurações da Conta</h2>
-                        <div className="user-settings-card">
-                            <h3>Informações do Usuário</h3>
-                            <p>
-                                <strong>Nome de Usuário:</strong> {userName}
-                            </p>
-                            <p>
-                                <strong>Email:</strong> {userEmail}
-                            </p>
-                            <p>
-                                <button className="change-password-button">Alterar Senha</button>
-                                <button className="edit-profile-button">Editar Perfil</button>
-                            </p>
-                            <p style={{ marginTop: '20px', fontSize: '0.9em', color: '#888' }}>
-                                * Funcionalidades de alterar senha e editar perfil são fictícias neste momento.
-                            </p>
-                        </div>
-                        <div className="tasmota-settings-card">
-                            <h3>Gerenciamento de Dispositivos</h3>
-                            <p style={{ color: '#BBB', fontSize: '0.9em' }}>
-                                Aqui você pode gerenciar seus dispositivos Tasmota.
-                            </p>
-                            {isRealData ? (
-                                <p>
-                                    <button
-                                        onClick={() => navigate('/add-device')}
-                                        className="add-device-btn"
-                                        style={{
-                                            padding: '10px 15px',
-                                            backgroundColor: '#00bcd4',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '5px',
-                                            cursor: 'pointer',
-                                            marginRight: '10px'
-                                        }}
-                                    >
-                                        Adicionar Novo Dispositivo
-                                    </button>
-                                    <button
-                                        onClick={fetchDashboardData}
-                                        className="refresh-devices-btn"
-                                        style={{
-                                            padding: '10px 15px',
-                                            backgroundColor: '#ff9800',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '5px',
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        Atualizar Lista de Dispositivos
-                                    </button>
-                                </p>
-                            ) : (
-                                <p style={{ color: '#BBB', fontSize: '0.9em' }}>
-                                    O gerenciamento completo de dispositivos está disponível apenas para a conta de
-                                    administrador.
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                )}
-            </div>
-        </div>
-    );
+                {
+                    isRealData && devices.length > 0 && devices[0].latestReading && ( <
+                        div className = "energy-realtime-card" >
+                        <
+                        h3 > Dados em Tempo Real do Dispositivo Principal < /h3> <
+                        table className = "energy-realtime-table" >
+                        <
+                        tbody >
+                        <
+                        tr >
+                        <
+                        td > Tensão < /td> <
+                        td > {
+                            devices[0].powerState &&
+                            typeof devices[0].latestReading.voltage === 'number' ?
+                            devices[0].latestReading.voltage : 0
+                        } { ' ' }
+                        V <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Corrente < /td> <
+                        td > {
+                            devices[0].powerState &&
+                            typeof devices[0].latestReading.current === 'number' ?
+                            devices[0].latestReading.current : 0
+                        } { ' ' }
+                        A <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Potência Ativa < /td> <
+                        td > {
+                            devices[0].powerState &&
+                            typeof devices[0].latestReading.power === 'number' ?
+                            devices[0].latestReading.power : 0
+                        } { ' ' }
+                        W <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Potência Aparente < /td> <
+                        td > {
+                            devices[0].powerState &&
+                            typeof devices[0].latestReading.ApparentPower === 'number' ?
+                            devices[0].latestReading.ApparentPower : 0
+                        } { ' ' }
+                        VA <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Potência Reativa < /td> <
+                        td > {
+                            devices[0].powerState &&
+                            typeof devices[0].latestReading.ReactivePower === 'number' ?
+                            devices[0].latestReading.ReactivePower : 0
+                        } { ' ' }
+                        var <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Fator de Potência < /td> <
+                        td > {
+                            devices[0].powerState &&
+                            typeof devices[0].latestReading.PowerFactor === 'number' ?
+                            devices[0].latestReading.PowerFactor : 0
+                        } <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Energia Hoje < /td> <
+                        td > {
+                            typeof devices[0].latestReading.EnergyToday === 'number' ?
+                            devices[0].latestReading.EnergyToday : '--'
+                        } { ' ' }
+                        kWh <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Energia Ontem < /td> <
+                        td > {
+                            typeof devices[0].latestReading.EnergyYesterday === 'number' ?
+                            devices[0].latestReading.EnergyYesterday : '--'
+                        } { ' ' }
+                        kWh <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Energia Total < /td> <
+                        td > { liveTotalEnergy !== null ? liveTotalEnergy : '--' }
+                        kWh < /td> < /
+                        tr > <
+                        /tbody> < /
+                        table > <
+                        /div>
+                    )
+                }
+
+                <
+                h3 > Detalhes por Dispositivo < /h3> <
+                div className = "device-report-list" > {
+                    report.details.length > 0 ? (
+                        report.details.map((detail, index) => ( <
+                                div key = { index }
+                                className = "device-report-item" >
+                                <
+                                h4 > { detail.name } < /h4> <
+                                p >
+                                Status Atual: { ' ' } <
+                                span className = {
+                                    devices[index] && devices[index].powerState ?
+                                    'status-on-text' : 'status-off-text'
+                                } > { devices[index] && devices[index].powerState ? 'Ligado' : 'Desligado' } <
+                                /span> < /
+                                p > <
+                                p > Tipo: { detail.type } < /p> <
+                                p > Recomendação: { detail.recommendation } < /p> {
+                                parseFloat(detail.potentialImpact) !== 0.00 && ( <
+                                    p className = {
+                                        parseFloat(detail.potentialImpact) > 0 ? 'impact-positive' : 'impact-negative'
+                                    } >
+                                    Impacto Potencial: { detail.potentialImpact }
+                                    kWh no próximo mês <
+                                    /p>
+                                )
+                            } <
+                            /div>
+                        ))
+                ): ( <
+                    p style = {
+                        { color: '#BBB', textAlign: 'center' }
+                    } > Nenhum relatório disponível. < /p>
+                )
+            } <
+            /div> < /
+        div >
+    )
+}
+
+{ /* Seção "Configurações" */ } {
+    activeSection === 'configuracoes' && ( <
+        div className = "settings-section" >
+        <
+        h2 > Configurações da Conta < /h2> <
+        div className = "user-settings-card" >
+        <
+        h3 > Informações do Usuário < /h3> <
+        p >
+        <
+        strong > Nome de Usuário: < /strong> {userName} < /
+        p > <
+        p >
+        <
+        strong > Email: < /strong> {userEmail} < /
+        p > <
+        p >
+        <
+        button className = "change-password-button"
+        onClick = { openEditModal } >
+        Alterar Senha < /button> <
+        button className = "edit-profile-button"
+        onClick = { openEditModal } > Editar Perfil < /button> <
+        button style = {
+            { background: '#F44336', marginLeft: 8 }
+        }
+        onClick = { openDeleteModal } > Excluir Conta < /button> < /
+        p > <
+        p style = {
+            { marginTop: '20px', fontSize: '0.9em', color: '#888' }
+        } >
+        *
+        Após editar ou excluir a conta, será necessário fazer login novamente. <
+        /p> < /
+        div > { /* Modal de edição de conta */ } {
+            showEditModal && ( <
+                    div className = "modal-overlay" >
+                    <
+                    div className = "modal-card" >
+                    <
+                    h3 > Editar Conta < /h3> <
+                    form onSubmit = { handleEditAccount } >
+                    <
+                    label > Nome: < /label> <
+                    input type = "text"
+                    value = { editName }
+                    onChange = { e => setEditName(e.target.value) }
+                    placeholder = "Novo nome" / >
+                    <
+                    label > Nova Senha: < /label> <
+                    input type = "password"
+                    value = { editPassword }
+                    onChange = { e => setEditPassword(e.target.value) }
+                    placeholder = "Nova senha" / > {
+                        editError && < p className = "error-message" > { editError } < /p>} <
+                        div className = "button-group" >
+                        <
+                        button type = "submit"
+                        disabled = { editLoading } > { editLoading ? 'Salvando...' : 'Salvar' } < /button> <
+                        button type = "button"
+                        onClick = {
+                            () => setShowEditModal(false)
+                        }
+                        className = "cancel-button" > Cancelar < /button> < /
+                        div > <
+                        /form> < /
+                        div > <
+                        /div>
+                    )
+                } { /* Modal de exclusão de conta */ } {
+                    showDeleteModal && ( <
+                        div className = "modal-overlay" >
+                        <
+                        div className = "modal-card" >
+                        <
+                        h3 > Excluir Conta < /h3> <
+                        p > Tem certeza que deseja excluir sua conta ? Esta ação é irreversível. < /p> {
+                        deleteError && < p className = "error-message" > { deleteError } < /p>} <
+                        div className = "button-group" >
+                        <
+                        button onClick = { handleDeleteAccount }
+                        disabled = { deleteLoading }
+                        style = {
+                            { background: '#F44336' }
+                        } > { deleteLoading ? 'Excluindo...' : 'Excluir' } < /button> <
+                        button onClick = {
+                            () => setShowDeleteModal(false)
+                        }
+                        className = "cancel-button" > Cancelar < /button> < /
+                        div > <
+                        /div> < /
+                        div >
+                    )
+                } <
+                div className = "tasmota-settings-card" >
+                <
+                h3 > Gerenciamento de Dispositivos < /h3> <
+            p style = {
+                    { color: '#BBB', fontSize: '0.9em' }
+                } >
+                Aqui você pode gerenciar seus dispositivos Tasmota. <
+                /p> {
+            isRealData ? ( <
+                p >
+                <
+                button onClick = {
+                    () => navigate('/add-device')
+                }
+                className = "add-device-btn"
+                style = {
+                    {
+                        padding: '10px 15px',
+                        backgroundColor: '#00bcd4',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
+                        marginRight: '10px'
+                    }
+                } >
+                Adicionar Novo Dispositivo <
+                /button> <
+                button onClick = { fetchDashboardData }
+                className = "refresh-devices-btn"
+                style = {
+                    {
+                        padding: '10px 15px',
+                        backgroundColor: '#ff9800',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer'
+                    }
+                } >
+                Atualizar Lista de Dispositivos <
+                /button> < /
+                p >
+            ) : ( <
+                p style = {
+                    { color: '#BBB', fontSize: '0.9em' }
+                } >
+                O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador. <
+                /p>
+            )
+        } <
+        /div> < /
+        div >
+    )
+} <
+/div> < /
+div >
+);
 }
 export default DashboardPage;
