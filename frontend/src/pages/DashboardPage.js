@@ -90,34 +90,26 @@ function DashboardPage() {
     // ALTERADO: Esta função agora deve processar os `devices` (que podem ser reais do Tasmota ou os mocks)
     const getConsumptionByTypeData = () => {
         const deviceTypeConsumption = {};
-
-        // Itera sobre os dispositivos (sejam eles reais do Tasmota ou os mocks)
         devices.forEach(device => {
-            // A tipagem dos seus dispositivos Tasmota pode não ser 'type' diretamente.
-            // Você pode inferir o tipo pelo 'name' ou adicionar um campo 'type' no modelo Device.
-            // Para o Sonoff POW, você pode ter apenas um tipo "Monitor de Energia".
-            // Para o exemplo, vou usar um tipo genérico "Dispositivo de Energia"
-            const type = device.model || 'Dispositivo de Energia'; // Ou use uma lógica de inferência de tipo
-            const consumption = device.latestReading ? device.latestReading.totalEnergy : (device.latestReading ? device.latestReading.power : 0); // Consumo total ou potência
-
+            const type = device.model || 'Dispositivo de Energia';
+            const consumption = device.latestReading ? device.latestReading.totalEnergy : (device.latestReading ? device.latestReading.power : 0);
             if (deviceTypeConsumption[type]) {
                 deviceTypeConsumption[type] += consumption;
             } else {
                 deviceTypeConsumption[type] = consumption;
             }
         });
-
         const labels = Object.keys(deviceTypeConsumption);
         const data = Object.values(deviceTypeConsumption);
-
-        // Cores para o gráfico de donut. Se tiver mais de 5 tipos, adicione mais cores.
-        const backgroundColors = ['#00bcd4', '#ff9800', '#e91e63', '#4caf50', '#9c27b0', '#f44336', '#2196f3', '#ffeb3b'];
-        const borderColors = ['#00838f', '#f57c00', '#c2185b', '#388e3c', '#7b1fa2', '#d32f2f', '#1976d2', '#fbc02d'];
-
+        // Se só houver um dispositivo, use apenas azul
+        const singleColor = ['#00bcd4'];
+        const singleBorder = ['#00838f'];
+        const backgroundColors = labels.length === 1 ? singleColor : ['#00bcd4', '#ff9800', '#e91e63', '#4caf50', '#9c27b0', '#f44336', '#2196f3', '#ffeb3b'];
+        const borderColors = labels.length === 1 ? singleBorder : ['#00838f', '#f57c00', '#c2185b', '#388e3c', '#7b1fa2', '#d32f2f', '#1976d2', '#fbc02d'];
         return {
             labels: labels.length > 0 ? labels : ['Nenhum dado'],
             datasets: [{
-                data: data.length > 0 ? data : [1], // Se não houver dados, exibe um slice vazio
+                data: data.length > 0 ? data : [1],
                 backgroundColor: backgroundColors,
                 borderColor: borderColors,
                 borderWidth: 1,
