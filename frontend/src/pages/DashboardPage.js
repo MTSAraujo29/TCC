@@ -36,6 +36,10 @@ function DashboardPage() {
     // NOVO: Estado para a mensagem de dados fictícios
     const [fictionalDataMessage, setFictionalDataMessage] = useState('');
 
+    // Cache para evitar logs repetitivos no frontend
+    const [lastLoggedData, setLastLoggedData] = useState(null);
+    const [lastLogTime, setLastLogTime] = useState(0);
+
     // Dados fictícios para os modos de visualização do gráfico principal.
     // Estes serão usados quando isRealData for false.
     const mockDailyData = {
@@ -339,7 +343,18 @@ function DashboardPage() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('Dados do Dashboard (backend) recebidos:', data);
+
+                // Cache para evitar logs repetitivos
+                const currentTime = Date.now();
+                const timeSinceLastLog = currentTime - lastLogTime;
+                const dataChanged = JSON.stringify(data) !== lastLoggedData;
+
+                // Só loga se passou mais de 30 segundos ou se os dados mudaram significativamente
+                if (!lastLoggedData || timeSinceLastLog > 30000 || dataChanged) {
+                    console.log('Dados do Dashboard (backend) recebidos:', data);
+                    setLastLoggedData(JSON.stringify(data));
+                    setLastLogTime(currentTime);
+                }
 
                 // NOVO: Define se os dados são reais ou fictícios
                 setIsRealData(data.isRealData);
@@ -402,10 +417,10 @@ function DashboardPage() {
         if (devices.length > 0 && devices[0].id) {
             // Atualiza imediatamente ao montar
             fetchLiveTotalEnergy(devices[0].id);
-            // Atualiza a cada 5 segundos
+            // Atualiza a cada 10 segundos (aumentado de 5 para 10)
             intervalId = setInterval(() => {
                 fetchLiveTotalEnergy(devices[0].id);
-            }, 5000);
+            }, 10000);
         }
         return () => {
             if (intervalId) clearInterval(intervalId);
@@ -427,10 +442,10 @@ function DashboardPage() {
 
         fetchDashboardData(); // Chama a função para buscar os dados
 
-        // Atualização automática a cada 5 segundos
+        // Atualização automática a cada 10 segundos (aumentado de 5 para 10)
         const interval = setInterval(() => {
             fetchDashboardData();
-        }, 5000);
+        }, 10000);
 
         // Limpa o intervalo ao sair do componente
         return () => clearInterval(interval);

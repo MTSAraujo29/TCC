@@ -12,6 +12,7 @@ const tasmotaService = require('../services/tasmota.service'); // Serviço para 
 
 // Cache para evitar logs repetitivos
 const lastLoggedData = new Map();
+const adminUserLogCache = new Map(); // Cache para logs de admin user
 
 // Função para limpar cache antigo (mais de 1 hora)
 function cleanupOldCache() {
@@ -19,6 +20,12 @@ function cleanupOldCache() {
     for (const [deviceId, data] of lastLoggedData.entries()) {
         if (data.timestamp < oneHourAgo) {
             lastLoggedData.delete(deviceId);
+        }
+    }
+    // Limpar cache de admin user também
+    for (const [userId, data] of adminUserLogCache.entries()) {
+        if (data.timestamp < oneHourAgo) {
+            adminUserLogCache.delete(userId);
         }
     }
 }
@@ -133,7 +140,16 @@ async function getDashboardData(req, res) {
 
     try {
         if (isAdmin) {
-            console.log(`Admin user ${userEmail} accessing real data.`);
+            // Cache para evitar log repetitivo de admin user
+            const adminLogKey = `admin_${userId}`;
+            const lastAdminLog = adminUserLogCache.get(adminLogKey);
+            const timeSinceLastLog = lastAdminLog ? Date.now() - lastAdminLog.timestamp : Infinity;
+
+            // Só loga se passou mais de 5 minutos desde o último log
+            if (!lastAdminLog || timeSinceLastLog > 300000) { // 5 minutos
+                console.log(`Admin user ${userEmail} accessing real data.`);
+                adminUserLogCache.set(adminLogKey, { timestamp: Date.now() });
+            }
 
             // 1. Buscar os dispositivos do usuário (com a última leitura de energia incluída)
             const userDevices = await prisma.device.findMany({
