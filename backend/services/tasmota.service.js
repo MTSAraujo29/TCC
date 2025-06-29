@@ -108,7 +108,7 @@ async function initializeMqttClient() {
                             ApparentPower: energy.ApparentPower,
                             ReactivePower: energy.ReactivePower,
                             PowerFactor: energy.Factor,
-                            timestamp: new Date(data.StatusSNS.Time || new Date())
+                            timestamp: new Date()
                         }, device.id, tasmotaTopic);
                         console.log('Dados processados para salvar (STATUS10):', JSON.stringify(processedData, null, 2));
                         const leituraSalva = await prisma.energyReading.create({
@@ -155,7 +155,7 @@ async function initializeMqttClient() {
                             ApparentPower: data.ENERGY.ApparentPower,
                             ReactivePower: data.ENERGY.ReactivePower,
                             PowerFactor: data.ENERGY.Factor,
-                            timestamp: new Date(data.Time || new Date())
+                            timestamp: new Date()
                         }, device.id, tasmotaTopic);
                         console.log('Dados processados para salvar (SENSOR):', JSON.stringify(processedData, null, 2));
                         const leituraSalva = await prisma.energyReading.create({
