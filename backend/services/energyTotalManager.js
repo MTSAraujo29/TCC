@@ -103,9 +103,18 @@ async function getDevice(deviceId) {
 }
 
 function prepareBaseData(energyData, deviceId, timestamp) {
+    // Converte o timestamp para o horário de Brasília (America/Sao_Paulo)
+    let dateBrasilia;
+    if (timestamp) {
+        // Se já veio um timestamp, converte para string local e cria novo Date
+        dateBrasilia = new Date(new Date(timestamp).toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
+    } else {
+        // Se não veio, pega o momento atual em Brasília
+        dateBrasilia = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
+    }
     return {
         deviceId,
-        timestamp: timestamp || new Date(),
+        timestamp: dateBrasilia,
         power: energyData.power,
         voltage: energyData.voltage,
         current: energyData.current,
@@ -156,7 +165,7 @@ async function getCurrentTotalEnergyForDisplay(deviceId) {
             where: { id: deviceId }
         });
 
-        return device?.lastSavedTotalEnergy || null;
+        return device ? .lastSavedTotalEnergy || null;
     } catch (error) {
         console.error('Erro ao obter energia total para exibição:', error);
         return null;
@@ -174,7 +183,7 @@ async function getAccumulatedTotalEnergy(deviceId) {
             where: { id: deviceId }
         });
 
-        return device?.lastSavedTotalEnergy || null;
+        return device ? .lastSavedTotalEnergy || null;
     } catch (error) {
         console.error('Erro ao obter energia total acumulada:', error);
         return null;
