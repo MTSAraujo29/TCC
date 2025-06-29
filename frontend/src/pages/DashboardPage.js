@@ -360,12 +360,13 @@ function DashboardPage() {
                 // ATUALIZADO: `setDevices` agora usa `data.userDevices`
                 setDevices(data.userDevices || []);
 
-                const totalConsumptionKwh = data.daily_consumption_kwh.reduce((sum, val) => sum + val, 0);
+                const chartDataArray = data.mainChartData && data.mainChartData.datasets && data.mainChartData.datasets[0] ?
+                    data.mainChartData.datasets[0].data : [];
+                const totalConsumptionKwh = chartDataArray.reduce((sum, val) => sum + val, 0);
                 setCurrentMonthConsumption(`${totalConsumptionKwh.toFixed(2)} kWh`);
                 setTotalConsumption(`${totalConsumptionKwh.toFixed(2)} kWh`);
-
-                if (data.daily_consumption_kwh.length > 0) {
-                    setDailyConsumption(`${data.daily_consumption_kwh[data.daily_consumption_kwh.length - 1].toFixed(2)} kWh`);
+                if (chartDataArray.length > 0) {
+                    setDailyConsumption(`${chartDataArray[chartDataArray.length - 1].toFixed(2)} kWh`);
                 } else {
                     setDailyConsumption('0.00 kWh');
                 }
