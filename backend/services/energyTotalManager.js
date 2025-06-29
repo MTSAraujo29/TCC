@@ -60,40 +60,24 @@ function calculateMonthlyConsumption(currentTotalEnergy, lastSavedTotalEnergy) {
  * @returns {Object} Dados processados para salvar no banco
  */
 async function processEnergyData(energyData, deviceId, tasmotaTopic) {
-    const {
-        power,
-        voltage,
-        current,
-        totalEnergy,
-        EnergyToday,
-        EnergyYesterday,
-        ApparentPower,
-        ReactivePower,
-        PowerFactor,
-        timestamp
-    } = energyData;
-
     const device = await getDevice(deviceId);
-    const dataToSave = prepareBaseData(energyData, deviceId, timestamp);
+    const dataToSave = prepareBaseData(energyData, deviceId, energyData.timestamp);
 
-    // Salva todos os dados normalmente, exceto totalEnergy
     // Só salva totalEnergy no último dia do mês
     if (isLastDayOfMonth()) {
-        // Busca o valor salvo no último mês
         const lastMonthTotal = device.lastSavedTotalEnergy || 0;
-        // Calcula a diferença entre o valor atual e o do mês passado
-        const monthlyConsumption = calculateMonthlyConsumption(totalEnergy, lastMonthTotal);
+        const monthlyConsumption = calculateMonthlyConsumption(energyData.totalEnergy, lastMonthTotal);
         dataToSave.totalEnergy = monthlyConsumption;
-        // Atualiza o valor salvo no device
         await prisma.device.update({
             where: { id: deviceId },
-            data: { lastSavedTotalEnergy: totalEnergy }
+            data: { lastSavedTotalEnergy: energyData.totalEnergy }
         });
-        console.log(`[${tasmotaTopic}] Último dia do mês - Consumo mensal calculado: ${monthlyConsumption} kWh (Total acumulado: ${totalEnergy} kWh)`);
+        console.log(`[${tasmotaTopic}] Último dia do mês - Consumo mensal calculado: ${monthlyConsumption} kWh (Total acumulado: ${energyData.totalEnergy} kWh)`);
     } else {
         dataToSave.totalEnergy = null;
     }
 
+    // Sempre retorna o objeto completo para ser salvo no banco
     return dataToSave;
 }
 
