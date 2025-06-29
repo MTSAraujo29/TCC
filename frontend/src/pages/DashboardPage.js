@@ -617,6 +617,23 @@ function DashboardPage() {
         setDeleteLoading(false);
     };
 
+    // Adicionar este useEffect para observar mudanças no token e resetar o estado do dashboard
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/login');
+            return;
+        }
+        // Resetar estados principais ao trocar de token (login/logout)
+        setDevices([]);
+        setIsRealData(false);
+        setFictionalDataMessage('');
+        setCurrentMonthConsumption('0.00 kWh');
+        setDailyConsumption('0.00 kWh');
+        setTotalConsumption('0.00 kWh');
+        fetchDashboardData();
+    }, [localStorage.getItem('token')]);
+
     return (
         <div className="container dashboard-container">
             {/* Sidebar de Navegação */}
@@ -647,7 +664,10 @@ function DashboardPage() {
                     ⚙️Configurações
                 </div>
                 <div className="sidebar-bottom">
-                    <button onClick={handleLogout} className="menu-item logout-link-sidebar">
+                    <button
+                        onClick={handleLogout}
+                        className="menu-item logout-link-sidebar"
+                    >
                         🔒Sair
                     </button>
                 </div>
@@ -656,17 +676,15 @@ function DashboardPage() {
             {/* Conteúdo Principal do Dashboard */}
             <div className="main-content">
                 {fictionalDataMessage && (
-                    <div
-                        style={{
-                            backgroundColor: '#ffc107',
-                            color: '#333',
-                            padding: '10px 15px',
-                            borderRadius: '5px',
-                            marginBottom: '20px',
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                        }}
-                    >
+                    <div style={{
+                        backgroundColor: '#ffc107',
+                        color: '#333',
+                        padding: '10px 15px',
+                        borderRadius: '5px',
+                        marginBottom: '20px',
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                    }}>
                         {fictionalDataMessage}
                     </div>
                 )}
@@ -729,7 +747,9 @@ function DashboardPage() {
                                 {getChartData().labels.length > 0 ? (
                                     <Line data={getChartData()} options={chartOptions} />
                                 ) : (
-                                    <p style={{ color: '#BBB', textAlign: 'center' }}>Carregando dados do gráfico...</p>
+                                    <p style={{ color: '#BBB', textAlign: 'center' }}>
+                                        Carregando dados do gráfico...
+                                    </p>
                                 )}
                             </div>
                         </div>
@@ -754,7 +774,9 @@ function DashboardPage() {
                                             </li>
                                         ))
                                     ) : (
-                                        <p style={{ color: '#BBB', textAlign: 'center' }}>Nenhuma sugestão no momento.</p>
+                                        <p style={{ color: '#BBB', textAlign: 'center' }}>
+                                            Nenhuma sugestão no momento.
+                                        </p>
                                     )}
                                 </ul>
                             </div>
@@ -784,6 +806,7 @@ function DashboardPage() {
                                         >
                                             Ligar
                                         </button>
+
                                         {/* Botão "Desligar" */}
                                         <button
                                             onClick={() => toggleDevicePower(device.id, device.powerState, device.name)}
@@ -798,7 +821,9 @@ function DashboardPage() {
                                 ))}
                             </div>
                         ) : (
-                            <p style={{ color: '#BBB', textAlign: 'center' }}>Nenhum dispositivo encontrado.</p>
+                            <p style={{ color: '#BBB', textAlign: 'center' }}>
+                                Nenhum dispositivo encontrado.
+                            </p>
                         )}
                         {isRealData && (
                             <button
@@ -951,7 +976,9 @@ function DashboardPage() {
                                         {parseFloat(detail.potentialImpact) !== 0.00 && (
                                             <p
                                                 className={
-                                                    parseFloat(detail.potentialImpact) > 0 ? 'impact-positive' : 'impact-negative'
+                                                    parseFloat(detail.potentialImpact) > 0
+                                                        ? 'impact-positive'
+                                                        : 'impact-negative'
                                                 }
                                             >
                                                 Impacto Potencial: {detail.potentialImpact}
@@ -961,7 +988,9 @@ function DashboardPage() {
                                     </div>
                                 ))
                             ) : (
-                                <p style={{ color: '#BBB', textAlign: 'center' }}>Nenhum relatório disponível.</p>
+                                <p style={{ color: '#BBB', textAlign: 'center' }}>
+                                    Nenhum relatório disponível.
+                                </p>
                             )}
                         </div>
                     </div>
@@ -1043,7 +1072,9 @@ function DashboardPage() {
                             <div className="modal-overlay">
                                 <div className="modal-card">
                                     <h3>Excluir Conta</h3>
-                                    <p>Tem certeza que deseja excluir sua conta? Esta ação é irreversível.</p>
+                                    <p>
+                                        Tem certeza que deseja excluir sua conta? Esta ação é irreversível.
+                                    </p>
                                     {deleteError && <p className="error-message">{deleteError}</p>}
                                     <div className="button-group">
                                         <button
@@ -1053,7 +1084,10 @@ function DashboardPage() {
                                         >
                                             {deleteLoading ? 'Excluindo...' : 'Excluir'}
                                         </button>
-                                        <button onClick={() => setShowDeleteModal(false)} className="cancel-button">
+                                        <button
+                                            onClick={() => setShowDeleteModal(false)}
+                                            className="cancel-button"
+                                        >
                                             Cancelar
                                         </button>
                                     </div>
