@@ -246,6 +246,11 @@ async function publishMqttCommand(topic, message) {
 // Exporta o cliente Prisma para que possa ser usado em outros lugares (opcional, mas comum)
 // module.exports.prisma = prisma; // Você pode adicionar isso se quiser acessar 'prisma' de outros arquivos
 
+// Corrigir exportação: importar utilitários do energyTotalManager
+const isLastDayOfMonth = energyTotalManager.isLastDayOfMonth;
+const isPenultimateDayOfMonth = energyTotalManager.isPenultimateDayOfMonth;
+const calculateMonthlyConsumption = energyTotalManager.calculateMonthlyConsumption;
+
 module.exports = {
     initializeMqttClient,
     publishMqttCommand,
@@ -253,7 +258,7 @@ module.exports = {
     isLastDayOfMonth,
     isPenultimateDayOfMonth,
     calculateMonthlyConsumption,
-    processEnergyData,
-    getCurrentTotalEnergyForDisplay,
-    getAccumulatedTotalEnergy,
+    processEnergyData: energyTotalManager.processEnergyData,
+    getCurrentTotalEnergyForDisplay: energyTotalManager.getCurrentTotalEnergyForDisplay,
+    getAccumulatedTotalEnergy: energyTotalManager.getAccumulatedTotalEnergy,
 };
