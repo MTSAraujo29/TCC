@@ -120,7 +120,9 @@ async function getDashboardData(req, res) {
             // --- Processar cada dispositivo para coletar dados ---
             for (const device of userDevices) {
                 const latestReading = device.readings.length > 0 ? device.readings[0] : null;
-
+                if (latestReading) {
+                    console.log('Leitura enviada para o frontend:', JSON.stringify(latestReading, null, 2));
+                }
                 realDevicesData.push({
                     id: device.id,
                     name: device.name,
