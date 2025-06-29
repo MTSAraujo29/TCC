@@ -226,7 +226,7 @@ function DashboardPage() {
                 ticks: {
                     color: '#BBB',
                     callback: function(value) {
-                        return Number(value).toFixed(2) + ' kWh';
+                        return value + ' kWh';
                     }
                 },
                 grid: { color: 'rgba(255,255,255,0.1)', borderColor: '#444' }
@@ -608,8 +608,6 @@ function DashboardPage() {
         setDeleteLoading(false);
     };
 
-
-
     return (
         <div className="container dashboard-container">
             {/* Sidebar de Navegação */}
@@ -944,9 +942,7 @@ function DashboardPage() {
                                         {parseFloat(detail.potentialImpact) !== 0.00 && (
                                             <p
                                                 className={
-                                                    parseFloat(detail.potentialImpact) > 0
-                                                        ? 'impact-positive'
-                                                        : 'impact-negative'
+                                                    parseFloat(detail.potentialImpact) > 0 ? 'impact-positive' : 'impact-negative'
                                                 }
                                             >
                                                 Impacto Potencial: {detail.potentialImpact}
@@ -975,8 +971,17 @@ function DashboardPage() {
                                 <strong>Email:</strong> {userEmail}
                             </p>
                             <p>
+                                <button className="change-password-button" onClick={openEditModal}>
+                                    Alterar Senha
+                                </button>
                                 <button className="edit-profile-button" onClick={openEditModal}>
                                     Editar Perfil
+                                </button>
+                                <button
+                                    style={{ background: '#F44336', marginLeft: 8 }}
+                                    onClick={openDeleteModal}
+                                >
+                                    Excluir Conta
                                 </button>
                             </p>
                             <p style={{ marginTop: '20px', fontSize: '0.9em', color: '#888' }}>
@@ -1015,17 +1020,6 @@ function DashboardPage() {
                                                 className="cancel-button"
                                             >
                                                 Cancelar
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setShowEditModal(false);
-                                                    openDeleteModal();
-                                                }}
-                                                className="delete-account-button"
-                                                style={{ background: '#F44336', color: '#fff', marginLeft: 8 }}
-                                            >
-                                                Excluir Conta
                                             </button>
                                         </div>
                                     </form>
@@ -1106,5 +1100,4 @@ function DashboardPage() {
         </div>
     );
 }
-
 export default DashboardPage;
