@@ -893,13 +893,28 @@ a.link-button {
 /* Novo estilo para o cartão de dados em tempo real */
 
 .energy-realtime-card {
+    background-color: #4a4a7e;
+    padding: 1.25rem;
+    /* Convertido para REM */
+    border-radius: 8px;
+    margin-bottom: 1.875rem;
+    /* Convertido para REM */
+    box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
+    /* Convertido para REM */
     display: flex;
+    /* Usar flexbox para layout */
     flex-direction: column;
-    align-items: center !important;
+    /* Colocar itens em coluna */
+    align-items: center;
+    /* Centralizar horizontalmente */
     justify-content: center;
-    text-align: center;
-    width: 100%;
-    box-sizing: border-box;
+    /* Centralizar verticalmente */
+    min-height: 21.875rem;
+    /* Convertido para REM, antes 350px. Altura mínima para o cartão */
+    position: relative;
+    /* Para posicionamento absoluto de elementos internos */
+    overflow: hidden;
+    /* Garante que nada transborde */
 }
 
 .energy-realtime-card h3 {
