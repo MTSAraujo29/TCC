@@ -193,33 +193,43 @@ export default function FullScreenChartPage() {
 
     const chartData = MOCK_DATA[viewMode];
 
-    return (
-        <div style={styles.container}>
-            <button
-                onClick={() => navigate('/dashboard')}
-                style={styles.backButton}
-            >
-                Voltar
-            </button>
-
-            <div style={styles.chartContainer}>
-                <div style={styles.viewButtonGroup}>
-                    {Object.entries(CHART_MODES).map(([key, value]) => (
-                        <button
-                            key={value}
-                            style={styles.viewButton(viewMode === value)}
-                            onClick={() => setViewMode(value)}
-                        >
-                            {key.charAt(0) + key.slice(1).toLowerCase()}
-                        </button>
-                    ))}
-                </div>
-
-                <Line
-                    data={chartData}
-                    options={getChartOptions(viewMode)}
-                />
-            </div>
-        </div>
+    return ( <
+        div style = { styles.container } >
+        <
+        div style = { styles.chartContainer } >
+        <
+        div style = { styles.viewButtonGroup } > {
+            Object.entries(CHART_MODES).map(([key, value]) => ( <
+                button key = { value }
+                style = { styles.viewButton(viewMode === value) }
+                onClick = {
+                    () => setViewMode(value)
+                } > { key.charAt(0) + key.slice(1).toLowerCase() } <
+                /button>
+            ))
+        } <
+        /div> <
+        Line data = { chartData }
+        options = { getChartOptions(viewMode) }
+        /> < /
+        div > <
+        button onClick = {
+            () => navigate('/dashboard')
+        }
+        style = {
+            {
+                ...styles.backButton,
+                    position: 'static',
+                    margin: isMobile ? '16px auto 8px' : '32px auto 0',
+                    display: 'block',
+                    left: 'unset',
+                    top: 'unset',
+                    width: isMobile ? '90vw' : 220,
+                    maxWidth: 400,
+            }
+        } >
+        Voltar <
+        /button> < /
+        div >
     );
 }
