@@ -220,7 +220,7 @@ export default function FullScreenChartPage() {
             {
                 ...styles.backButton,
                     position: 'static',
-                    margin: isMobile ? '16px auto 8px' : '70px auto 0',
+                    margin: isMobile ? '16px auto 8px' : '32px auto 0',
                     display: 'block',
                     left: 'unset',
                     top: 'unset',

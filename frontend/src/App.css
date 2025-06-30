@@ -311,9 +311,9 @@ a.link-button {
     position: sticky;
     /* Sidebar fixa na rolagem */
     top: 0;
-    height: 100vh;
+    height: 100vh !important;
     /* Ocupa toda a altura da viewport */
-    justify-content: space-between;
+    justify-content: space-between !important;
     /* Para o botão de sair ir para o final */
     z-index: 1000;
     /* Garante que a sidebar fique acima de outros elementos */
@@ -365,6 +365,8 @@ a.link-button {
     /* Convertido para REM */
     border-top: 1px solid #3a3a3a;
     text-align: center;
+    margin-bottom: 24px;
+    /* Garante espaçamento do botão Sair ao fundo */
 }
 
 .logout-link-sidebar {
