@@ -173,9 +173,35 @@ input[type="password"]:focus {
 
 /* Estilos para o botão padrão (ENTRAR) */
 
-button[type="submit"] {
-    font-size: 1.25em;
-    padding: 16px 0;
+button {
+    width: 100%;
+    padding: 1.125rem;
+    /* Convertido para REM */
+    background-color: #00bcd4;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 1.2rem;
+    /* Convertido para REM */
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+    margin-top: 1.25rem;
+    /* Convertido para REM */
+    margin-bottom: 1.25rem;
+    /* Adiciona margem na parte inferior para criar espaço, convertido para REM */
+    box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
+}
+
+button:hover {
+    background-color: #00a0b8;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 188, 212, 0.6);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 188, 212, 0.3);
 }
 
 button:disabled {
@@ -189,8 +215,19 @@ button:disabled {
 /* Estilos para o botão .link-button (CRIAR UMA CONTA) */
 
 .link-button {
-    font-size: 1.05em;
-    padding: 12px 0;
+    width: 100%;
+    padding: 0.9375rem;
+    /* Convertido para REM */
+    background-color: #4a4a7e;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    /* Convertido para REM */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    margin-top: 0;
+    /* Removido para usar a margem inferior do botão acima */
 }
 
 .link-button:hover {
