@@ -20,7 +20,7 @@ body {
     overflow-x: hidden;
     /* Evita scroll horizontal */
     box-sizing: border-box;
-    font-size: 16px;
+    font-size: clamp(1rem, 2vw, 1.25rem);
     /* Base font-size para REM */
 }
 
@@ -47,7 +47,7 @@ body {
     box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
     padding: 32px 24px 24px 24px;
     width: 100%;
-    max-width: 400px;
+    max-width: clamp(320px, 90vw, 1200px);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -63,12 +63,12 @@ form {
 
 input {
     width: 100%;
-    padding: 12px 10px;
+    padding: clamp(10px, 2vw, 18px) clamp(10px, 2vw, 24px);
     border-radius: 6px;
     border: 1px solid #444;
     background: #23243a;
     color: #fff;
-    font-size: 1em;
+    font-size: clamp(1em, 2vw, 1.2em);
     margin-bottom: 0;
     box-sizing: border-box;
 }
@@ -104,8 +104,8 @@ button:hover,
 
 @media (max-width: 600px) {
     .card {
-        max-width: 98vw;
-        padding: 18px 4vw 18px 4vw;
+        max-width: 99vw;
+        padding: 2vw 2vw 2vw 2vw;
         border-radius: 10px;
     }
     .container {
@@ -121,7 +121,7 @@ button:hover,
 
 @media (max-width: 400px) {
     .card {
-        padding: 10px 2vw 10px 2vw;
+        padding: 1vw;
         border-radius: 6px;
     }
     .logo-icon {
@@ -133,7 +133,7 @@ h2 {
     color: #FFF;
     margin-bottom: 1.875rem;
     /* Convertido para REM */
-    font-size: 1.8rem;
+    font-size: clamp(1.2rem, 3vw, 2.2rem);
     /* Convertido para REM */
 }
 
@@ -416,10 +416,8 @@ a.link-button {
 
 .metrics-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(13.75rem, 1fr));
-    /* Convertido minmax para REM, antes 220px */
-    gap: 1.25rem;
-    /* Convertido para REM */
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: clamp(12px, 2vw, 32px);
     margin-bottom: 1.875rem;
     /* Convertido para REM */
 }
@@ -552,10 +550,8 @@ a.link-button {
 
 .bottom-sections-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(18.75rem, 1fr));
-    /* Convertido minmax para REM, antes 300px */
-    gap: 1.25rem;
-    /* Convertido para REM */
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: clamp(12px, 2vw, 32px);
     margin-top: 1.875rem;
     /* Convertido para REM */
 }
@@ -2283,4 +2279,138 @@ body,
     .main-content {
         margin-top: 44px !important;
     }
+}
+
+
+/* Responsividade moderna 2025 */
+
+html {
+    font-size: clamp(14px, 1.2vw, 18px);
+}
+
+body {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.card,
+.add-device-card,
+.main-content,
+.energy-realtime-card {
+    width: 100%;
+    max-width: clamp(320px, 90vw, 1200px);
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+input,
+button,
+.link-button {
+    font-size: clamp(1em, 2vw, 1.2em);
+    padding: clamp(10px, 2vw, 18px) clamp(10px, 2vw, 24px);
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+h2,
+h3,
+h4 {
+    font-size: clamp(1.2rem, 3vw, 2.2rem);
+}
+
+.metrics-grid,
+.bottom-sections-grid,
+.device-control-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: clamp(12px, 2vw, 32px);
+}
+
+@media (max-width: 900px) {
+    .sidebar {
+        position: fixed;
+        width: 60vw;
+        min-width: 180px;
+        max-width: 320px;
+        z-index: 1000;
+    }
+    .main-content {
+        margin-left: 0 !important;
+        width: 100vw !important;
+        padding: 2vw;
+    }
+}
+
+@media (max-width: 600px) {
+    .card,
+    .add-device-card,
+    .main-content,
+    .energy-realtime-card {
+        max-width: 99vw;
+        padding: 2vw 2vw 2vw 2vw;
+        border-radius: 10px;
+    }
+    .metrics-grid,
+    .bottom-sections-grid,
+    .device-control-list {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .sidebar {
+        width: 90vw;
+        min-width: unset;
+        max-width: unset;
+    }
+    .main-content {
+        padding: 2vw 0;
+    }
+    .logo-icon {
+        font-size: 2em;
+    }
+}
+
+@media (max-width: 400px) {
+    .card,
+    .add-device-card,
+    .main-content,
+    .energy-realtime-card {
+        padding: 1vw;
+        border-radius: 6px;
+    }
+    h2,
+    h3,
+    h4 {
+        font-size: 1.1rem;
+    }
+}
+
+
+/* Garantir que gráficos e tabelas tenham rolagem horizontal se necessário */
+
+.chart-area-main,
+.energy-realtime-table,
+.chart-card-main canvas {
+    overflow-x: auto;
+    max-width: 100vw;
+}
+
+
+/* Ajuste para evitar sobreposição de botões e inputs */
+
+.button-group,
+.form-group {
+    flex-wrap: wrap;
+    gap: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* Ajuste para garantir que nada suma ou quebre */
+
+* {
+    min-width: 0;
+    min-height: 0;
+    box-sizing: border-box;
 }

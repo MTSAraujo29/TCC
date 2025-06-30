@@ -1,18 +1,18 @@
 .energy-realtime-card {
     background: #23272f;
-    border-radius: 10px;
+    border-radius: clamp(6px, 2vw, 16px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    padding: 24px 24px 12px 24px;
+    padding: clamp(8px, 2vw, 24px);
     margin: 24px 0 24px 0;
     color: #fff;
-    max-width: 420px;
+    max-width: clamp(320px, 95vw, 600px);
     width: 100%;
 }
 
 .energy-realtime-card h3 {
     margin-top: 0;
     margin-bottom: 18px;
-    font-size: 1.2em;
+    font-size: clamp(1em, 2vw, 1.5em);
     color: #00bcd4;
 }
 
@@ -20,7 +20,9 @@
     width: 100%;
     border-collapse: collapse;
     color: #fff;
-    font-size: 1em;
+    font-size: clamp(0.9em, 1.5vw, 1.1em);
+    overflow-x: auto;
+    display: block;
 }
 
 .energy-realtime-table td {
@@ -50,10 +52,10 @@
     background-color: #4CAF50;
     color: #fff;
     border: none;
-    border-radius: 5px;
-    padding: 8px 18px;
-    margin-left: 10px;
-    font-size: 1em;
+    border-radius: clamp(5px, 2vw, 12px);
+    padding: clamp(6px, 1vw, 12px) clamp(8px, 2vw, 18px);
+    margin-left: clamp(0px, 1vw, 10px);
+    font-size: clamp(0.9em, 1.5vw, 1.1em);
     cursor: pointer;
     transition: background 0.2s;
 }
@@ -73,10 +75,10 @@
 
 /* --- RESPONSIVIDADE --- */
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 600px) {
     .energy-realtime-card {
-        max-width: 98vw;
-        padding: 12px 4px 8px 4px;
+        max-width: 99vw;
+        padding: 2vw;
     }
     .energy-realtime-table {
         font-size: 0.95em;
@@ -90,23 +92,17 @@
     }
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 400px) {
     .energy-realtime-card {
         max-width: 100vw;
-        padding: 6px 2px 4px 2px;
+        padding: 1vw;
         border-radius: 6px;
     }
     .energy-realtime-card h3 {
         font-size: 1em;
-        margin-bottom: 8px;
     }
     .energy-realtime-table {
         font-size: 0.9em;
-        overflow-x: auto;
-        display: block;
-    }
-    .energy-realtime-table td {
-        padding: 4px 6px;
     }
     .device-toggle-button {
         font-size: 0.9em;
