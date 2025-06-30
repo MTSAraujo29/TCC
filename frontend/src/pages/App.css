@@ -133,3 +133,136 @@
     min-height: 350px;
     margin-bottom: 20px;
 }
+
+.energy-realtime-flex {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 32px;
+    margin-top: 12px;
+}
+
+.energy-realtime-labels,
+.energy-realtime-values {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.energy-realtime-labels {
+    align-items: flex-start;
+    font-weight: 500;
+    color: #bbb;
+}
+
+.energy-realtime-values {
+    align-items: flex-end;
+    font-family: 'Roboto Mono', monospace;
+    color: #fff;
+}
+
+
+/* Card para detalhes por dispositivo */
+
+.device-report-item {
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    padding: 24px 24px 12px 24px;
+    margin: 24px 0 24px 0;
+    color: #fff;
+    max-width: 420px;
+    width: 100%;
+}
+
+.device-report-item h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 1.1em;
+    color: #00bcd4;
+}
+
+
+/* Botões menores e alinhados */
+
+.button-group.button-group-small {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.save-btn,
+.delete-account-button,
+.cancel-button {
+    font-size: 0.95em;
+    padding: 7px 16px;
+    border-radius: 5px;
+    border: none;
+    min-width: 90px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.save-btn {
+    background: #00bcd4;
+    color: #fff;
+}
+
+.save-btn:disabled {
+    background: #5a5a8a;
+    cursor: not-allowed;
+}
+
+.delete-account-button {
+    background: #F44336;
+    color: #fff;
+}
+
+.cancel-button {
+    background: #6c757d;
+    color: #fff;
+}
+
+.save-btn:hover:not(:disabled) {
+    background: #0097a7;
+}
+
+.delete-account-button:hover:not(:disabled) {
+    background: #d32f2f;
+}
+
+.cancel-button:hover:not(:disabled) {
+    background: #5a6268;
+}
+
+@media screen and (max-width: 768px) {
+    .energy-realtime-flex {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .device-report-item {
+        max-width: 98vw;
+        padding: 12px 4px 8px 4px;
+    }
+    .button-group.button-group-small {
+        flex-direction: column;
+        gap: 6px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .energy-realtime-flex {
+        flex-direction: column;
+        gap: 4px;
+    }
+    .device-report-item {
+        max-width: 100vw;
+        padding: 6px 2px 4px 2px;
+        border-radius: 6px;
+    }
+    .button-group.button-group-small {
+        flex-direction: column;
+        gap: 4px;
+    }
+}
