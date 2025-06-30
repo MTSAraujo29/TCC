@@ -103,6 +103,9 @@ function DashboardPage() {
         return () => window.removeEventListener('resize', handleResize);
     }, [isMobileMenuOpen]);
 
+    // NOVO: Estado para controlar o modo de visualização do gráfico principal
+    const [isChartExpanded, setIsChartExpanded] = useState(false);
+
     // ALTERADO: Esta função agora deve processar os `devices` (que podem ser reais do Tasmota ou os mocks)
     const getConsumptionByTypeData = () => {
         const deviceTypeConsumption = {};
@@ -812,7 +815,7 @@ function DashboardPage() {
                 /div>
 
                 <
-                div className = "chart-area-main" >
+                div className = { isChartExpanded ? 'chart-area-main expanded' : 'chart-area-main' } >
                 <
                 div className = "chart-card-main" >
                 <
@@ -847,6 +850,23 @@ function DashboardPage() {
                         } >
                         Carregando dados do gráfico... <
                             /p>
+                    )
+                } < {!isChartExpanded && ( <
+                        button className = "expand-chart-btn"
+                        onClick = {
+                            () => setIsChartExpanded(true)
+                        } >
+                        Expandir gráfico <
+                        /button>
+                    )
+                } {
+                    isChartExpanded && ( <
+                        button className = "close-chart-btn"
+                        onClick = {
+                            () => setIsChartExpanded(false)
+                        } >
+                        Fechar gráfico <
+                        /button>
                     )
                 } <
                 /div> < /
@@ -1147,7 +1167,7 @@ function DashboardPage() {
                 )
             } <
             /div> < /
-            div >
+        div >
     )
 }
 
