@@ -17,7 +17,7 @@ function CreateAccountPage() {
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
-    // Handle input changes
+    // Event handlers
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -26,16 +26,11 @@ function CreateAccountPage() {
         }));
     };
 
-    // Form submission handler
-    const handleSubmit = async(e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
-        // Validate passwords match
-        if (formData.password !== formData.confirmPassword) {
-            setError('As senhas não coincidem!');
-            return;
-        }
+        if (!validateForm()) return;
 
         console.log('Attempting to create account:', formData);
 
@@ -51,18 +46,21 @@ function CreateAccountPage() {
             });
 
             const data = await response.json();
-
-            if (response.ok) {
-                handleRegistrationSuccess(data);
-            } else {
-                handleRegistrationError(data);
-            }
+            response.ok ? handleRegistrationSuccess(data) : handleRegistrationError(data);
         } catch (err) {
             handleNetworkError(err);
         }
     };
 
-    // Helper functions
+    // Validation and helper functions
+    const validateForm = () => {
+        if (formData.password !== formData.confirmPassword) {
+            setError('As senhas não coincidem!');
+            return false;
+        }
+        return true;
+    };
+
     const handleRegistrationSuccess = (data) => {
         setSuccessMessage('Sua conta foi criada com sucesso! Faça login agora.');
         setTimeout(() => {
@@ -82,65 +80,66 @@ function CreateAccountPage() {
     };
 
     // Render
-    return ( <
-        div className = "container" > {
-            successMessage && ( <
-                div className = "custom-toast success-toast" > { successMessage } < /div>
-            )
-        } <
-        div className = "card" >
-        <
-        div className = "logo-icon" > ⚡ < /div> <
-        h2 > Criar Conta < /h2>
+    return (
+        <div className="container">
+            {successMessage && (
+                <div className="custom-toast success-toast">
+                    {successMessage}
+                </div>
+            )}
 
-        <
-        form onSubmit = { handleSubmit } >
-        <
-        input type = "text"
-        name = "name"
-        placeholder = "Nome"
-        required value = { formData.name }
-        onChange = { handleInputChange }
-        /> <
-        input type = "email"
-        name = "email"
-        placeholder = "Email"
-        required value = { formData.email }
-        onChange = { handleInputChange }
-        /> <
-        input type = "password"
-        name = "password"
-        placeholder = "Senha"
-        required value = { formData.password }
-        onChange = { handleInputChange }
-        /> <
-        input type = "password"
-        name = "confirmPassword"
-        placeholder = "Confirmar Senha"
-        required value = { formData.confirmPassword }
-        onChange = { handleInputChange }
-        />
+            <div className="card">
+                <div className="logo-icon">⚡</div>
+                <h2>Criar Conta</h2>
 
-        {
-            error && ( <
-                p style = {
-                    { color: 'red', fontSize: '0.9em' }
-                } > { error } <
-                /p>
-            )
-        }
+                <form onSubmit={handleSubmit}>
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Nome"
+                        required
+                        value={formData.name}
+                        onChange={handleInputChange}
+                    />
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        required
+                        value={formData.email}
+                        onChange={handleInputChange}
+                    />
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Senha"
+                        required
+                        value={formData.password}
+                        onChange={handleInputChange}
+                    />
+                    <input
+                        type="password"
+                        name="confirmPassword"
+                        placeholder="Confirmar Senha"
+                        required
+                        value={formData.confirmPassword}
+                        onChange={handleInputChange}
+                    />
 
-        <
-        button type = "submit" > Criar < /button> < /
-        form >
+                    {error && (
+                        <p style={{ color: 'red', fontSize: '0.9em' }}>
+                            {error}
+                        </p>
+                    )}
 
-        <
-        Link to = "/"
-        className = "link-button" >
-        Voltar para login <
-        /Link> < /
-        div > <
-        /div>
+                    <button type="submit">Criar</button>
+                </form>
+
+                <Link to="/" className="link-button">
+                    Voltar para login
+                </Link>
+            </div>
+        </div>
     );
 }
 
