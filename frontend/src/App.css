@@ -1450,11 +1450,19 @@ a.link-button {
         height: auto;
         padding: 0 !important;
     }
+    .view-mode-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        margin-top: 0.5rem;
+    }
     .view-button,
     .active-view-button {
-        padding: 0.5rem 0.75rem;
-        /* Convertido para REM */
-        font-size: 0.8rem;
+        width: 100%;
+        min-width: 120px;
+        margin-bottom: 0.3rem;
+        font-size: 1rem;
     }
     .bottom-card {
         min-height: 15.625rem;
@@ -2288,4 +2296,47 @@ body,
     .main-content {
         margin-top: 44px !important;
     }
+}
+
+
+/* --- CORREÇÃO: Gráfico expandido deve ocupar 70% da tela SEM ser limitado pelas media queries normais --- */
+
+.chart-area-main.expanded,
+.chart-area-main.expanded .chart-card-main {
+    min-height: unset !important;
+    max-height: unset !important;
+    height: 70vh !important;
+    width: 70vw !important;
+    padding: 0 !important;
+    z-index: 9999;
+}
+
+@media (max-width: 900px) {
+    .chart-area-main.expanded,
+    .chart-area-main.expanded .chart-card-main {
+        width: 90vw !important;
+        height: 70vh !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .chart-area-main.expanded,
+    .chart-area-main.expanded .chart-card-main {
+        width: 98vw !important;
+        height: 70vh !important;
+        padding: 0 !important;
+    }
+}
+
+
+/* Garante que o canvas do gráfico ocupe o espaço expandido */
+
+.chart-area-main.expanded .chart-card-main canvas {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+}
+
+
 }
