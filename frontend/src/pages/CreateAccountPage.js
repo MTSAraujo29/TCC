@@ -15,6 +15,7 @@ function CreateAccountPage() {
         confirmPassword: ''
     });
     const [error, setError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
     // Handle input changes
     const handleInputChange = (e) => {
@@ -26,7 +27,7 @@ function CreateAccountPage() {
     };
 
     // Form submission handler
-    const handleSubmit = async (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
         setError('');
 
@@ -63,9 +64,11 @@ function CreateAccountPage() {
 
     // Helper functions
     const handleRegistrationSuccess = (data) => {
-        console.log('Account created successfully:', data);
-        alert('Sua conta foi criada com sucesso! Faça login agora.');
-        navigate('/login');
+        setSuccessMessage('Sua conta foi criada com sucesso! Faça login agora.');
+        setTimeout(() => {
+            setSuccessMessage('');
+            navigate('/login');
+        }, 2500);
     };
 
     const handleRegistrationError = (data) => {
@@ -79,60 +82,65 @@ function CreateAccountPage() {
     };
 
     // Render
-    return (
-        <div className="container">
-            <div className="card">
-                <div className="logo-icon">⚡</div>
-                <h2>Criar Conta</h2>
+    return ( <
+        div className = "container" > {
+            successMessage && ( <
+                div className = "custom-toast success-toast" > { successMessage } < /div>
+            )
+        } <
+        div className = "card" >
+        <
+        div className = "logo-icon" > ⚡ < /div> <
+        h2 > Criar Conta < /h2>
 
-                <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Nome"
-                        required
-                        value={formData.name}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        required
-                        value={formData.email}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Senha"
-                        required
-                        value={formData.password}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type="password"
-                        name="confirmPassword"
-                        placeholder="Confirmar Senha"
-                        required
-                        value={formData.confirmPassword}
-                        onChange={handleInputChange}
-                    />
+        <
+        form onSubmit = { handleSubmit } >
+        <
+        input type = "text"
+        name = "name"
+        placeholder = "Nome"
+        required value = { formData.name }
+        onChange = { handleInputChange }
+        /> <
+        input type = "email"
+        name = "email"
+        placeholder = "Email"
+        required value = { formData.email }
+        onChange = { handleInputChange }
+        /> <
+        input type = "password"
+        name = "password"
+        placeholder = "Senha"
+        required value = { formData.password }
+        onChange = { handleInputChange }
+        /> <
+        input type = "password"
+        name = "confirmPassword"
+        placeholder = "Confirmar Senha"
+        required value = { formData.confirmPassword }
+        onChange = { handleInputChange }
+        />
 
-                    {error && (
-                        <p style={{ color: 'red', fontSize: '0.9em' }}>
-                            {error}
-                        </p>
-                    )}
+        {
+            error && ( <
+                p style = {
+                    { color: 'red', fontSize: '0.9em' }
+                } > { error } <
+                /p>
+            )
+        }
 
-                    <button type="submit">Criar</button>
-                </form>
+        <
+        button type = "submit" > Criar < /button> < /
+        form >
 
-                <Link to="/" className="link-button">
-                    Voltar para login
-                </Link>
-            </div>
-        </div>
+        <
+        Link to = "/"
+        className = "link-button" >
+        Voltar para login <
+        /Link> < /
+        div > <
+        /div>
     );
 }
 

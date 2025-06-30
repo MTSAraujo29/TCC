@@ -599,9 +599,12 @@ function DashboardPage() {
             });
             const data = await response.json();
             if (response.ok) {
-                alert('Dados atualizados com sucesso! Faça login novamente.');
+                setSuccessMessage('Dados atualizados com sucesso! Faça login novamente.');
                 setShowEditModal(false);
-                handleLogout();
+                setTimeout(() => {
+                    setSuccessMessage('');
+                    handleLogout();
+                }, 2500);
             } else {
                 setEditError(data.message || 'Erro ao atualizar dados.');
             }
@@ -629,9 +632,12 @@ function DashboardPage() {
             });
             const data = await response.json();
             if (response.ok) {
-                alert('Conta excluída com sucesso!');
+                setSuccessMessage('Conta excluída com sucesso!');
                 setShowDeleteModal(false);
-                handleLogout();
+                setTimeout(() => {
+                    setSuccessMessage('');
+                    handleLogout();
+                }, 2500);
             } else {
                 setDeleteError(data.message || 'Erro ao excluir conta.');
             }
@@ -657,6 +663,8 @@ function DashboardPage() {
         setTotalConsumption('0.00 kWh');
         fetchDashboardData();
     }, [localStorage.getItem('token')]);
+
+    const [successMessage, setSuccessMessage] = useState('');
 
     return ( <
         div className = "container dashboard-container" > { /* Sidebar de Navegação - Esconde em telas <= 700px */ } <
@@ -1147,7 +1155,7 @@ function DashboardPage() {
                 )
             } <
             /div> < /
-            div >
+        div >
     )
 }
 
@@ -1320,7 +1328,11 @@ function DashboardPage() {
     )
 } <
 /div> < /
-div >
+div > {
+successMessage && ( <
+    div className = "custom-toast success-toast" > { successMessage } < /div>
+)
+}
 );
 }
 
