@@ -848,8 +848,28 @@ function DashboardPage() {
                         Carregando dados do gráfico... <
                             /p>
                     )
-                } <
-                /div> < /
+                } < { /* Botão para expandir o gráfico */ } <
+                button style = {
+                    {
+                        margin: '20px auto 0',
+                        display: 'block',
+                        padding: '10px 24px',
+                        background: '#1976d2',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '6px',
+                        fontSize: '1.1em',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+                    }
+                }
+                onClick = {
+                    () => navigate('/grafico-cheio')
+                } >
+                Expandir Gráfico <
+                /button> < /
+                div > < /
                 div >
 
                 <
@@ -1147,7 +1167,7 @@ function DashboardPage() {
                 )
             } <
             /div> < /
-            div >
+        div >
     )
 }
 
