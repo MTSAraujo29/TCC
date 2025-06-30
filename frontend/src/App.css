@@ -2205,3 +2205,105 @@ body,
 .cancel-button:hover {
     background: #555 !important;
 }
+
+
+/* Botões menores para modal de edição de conta */
+
+.small-buttons {
+    gap: 8px;
+    justify-content: center;
+}
+
+.small-btn {
+    font-size: 0.95em !important;
+    padding: 7px 16px !important;
+    min-width: 90px;
+    border-radius: 6px;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+
+
+/* Menu responsivo mobile */
+
+.mobile-menu-bar {
+    width: 100vw;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background: #1a1a2e;
+    padding: 10px 16px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1100;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+.hamburger-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    outline: none;
+}
+
+.hamburger-icon {
+    font-size: 2.1em;
+    color: #00bcd4;
+    line-height: 1;
+}
+
+.mobile-menu-box {
+    position: fixed;
+    top: 48px;
+    left: 0;
+    width: 220px;
+    background: #23243a;
+    box-shadow: 2px 0 16px rgba(0, 0, 0, 0.25);
+    border-radius: 0 10px 10px 0;
+    z-index: 1200;
+    display: flex;
+    flex-direction: column;
+    padding: 18px 0 18px 0;
+    animation: slideInMenu 0.2s;
+}
+
+.mobile-menu-box .menu-item {
+    padding: 14px 24px;
+    font-size: 1.1em;
+    color: #E0E0E0;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.mobile-menu-box .menu-item:hover,
+.mobile-menu-box .menu-item.active {
+    background: #00bcd4;
+    color: #1a1a2e;
+    font-weight: bold;
+}
+
+@keyframes slideInMenu {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 700px) {
+    .sidebar {
+        display: none !important;
+    }
+    .main-content {
+        margin-top: 60px;
+    }
+}
