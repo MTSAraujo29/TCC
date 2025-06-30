@@ -103,39 +103,6 @@ function DashboardPage() {
         return () => window.removeEventListener('resize', handleResize);
     }, [isMobileMenuOpen]);
 
-    // NOVO: Estado para controlar o modo de visualização do gráfico principal
-    const [isChartExpanded, setIsChartExpanded] = useState(false);
-
-    // NOVO: Hook para detectar tamanho da tela
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
-    useEffect(() => {
-        const handleResize = () => {
-            setWindowWidth(window.innerWidth);
-            setWindowHeight(window.innerHeight);
-        };
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    // NOVO: Função para definir tamanho do gráfico conforme regras do usuário
-    const getChartDimensions = () => {
-        const isMobile = windowWidth <= 600;
-        if (isMobile) {
-            if (isChartExpanded) {
-                return { width: Math.floor(windowWidth * 0.98), height: Math.floor(windowHeight * 0.6) };
-            } else {
-                return { width: 160, height: 80 };
-            }
-        } else {
-            if (isChartExpanded) {
-                return { width: Math.floor(windowWidth * 0.9), height: Math.floor(windowHeight * 0.9) };
-            } else {
-                return { width: 550, height: 400 };
-            }
-        }
-    };
-
     // ALTERADO: Esta função agora deve processar os `devices` (que podem ser reais do Tasmota ou os mocks)
     const getConsumptionByTypeData = () => {
         const deviceTypeConsumption = {};
@@ -691,8 +658,6 @@ function DashboardPage() {
         fetchDashboardData();
     }, [localStorage.getItem('token')]);
 
-
-
     return ( <
         div className = "container dashboard-container" > { /* Sidebar de Navegação - Esconde em telas <= 700px */ } <
         div className = "sidebar"
@@ -741,9 +706,7 @@ function DashboardPage() {
                 button > <
                 /div>
             )
-        }
-
-        { /* Menu box mobile */ } {
+        } { /* Menu box mobile */ } {
             window.innerWidth <= 700 && isMobileMenuOpen && ( <
                 div className = "mobile-menu-box" >
                 <
@@ -753,40 +716,35 @@ function DashboardPage() {
                         setActiveSection('inicio');
                         setIsMobileMenuOpen(false);
                     }
-                } > 🏠Home <
-                /div> <
+                } > 🏠Home < /div> <
                 div className = "menu-item"
                 onClick = {
                     () => {
                         setActiveSection('controle');
                         setIsMobileMenuOpen(false);
                     }
-                } > 🔌Controle de Energia <
-                /div> <
+                } > 🔌Controle de Energia < /div> <
                 div className = "menu-item"
                 onClick = {
                     () => {
                         setActiveSection('relatorios');
                         setIsMobileMenuOpen(false);
                     }
-                } > 📊Relatórios <
-                /div> <
+                } > 📊Relatórios < /div> <
                 div className = "menu-item"
                 onClick = {
                     () => {
                         setActiveSection('configuracoes');
                         setIsMobileMenuOpen(false);
                     }
-                } > ⚙️Configurações <
-                /div> <
+                } > ⚙️Configurações < /div> <
                 div className = "menu-item logout-link-sidebar"
                 onClick = {
                     () => {
                         handleLogout();
                         setIsMobileMenuOpen(false);
                     }
-                } > 🔒Sair <
-                /div> < /
+                } > 🔒Sair < /div> < /
                 div >
             )
         }
@@ -820,7 +778,10 @@ function DashboardPage() {
                 <
                 h3 > Consumo de energia atual < /h3> <
                 p > {
-                    devices.length > 0 && devices[0].powerState && devices[0].latestReading && typeof devices[0].latestReading.power === 'number' ?
+                    devices.length > 0 &&
+                    devices[0].powerState &&
+                    devices[0].latestReading &&
+                    typeof devices[0].latestReading.power === 'number' ?
                     `${devices[0].latestReading.power.toFixed(2)} W` : '0.00 W'
                 } <
                 /p> < /
@@ -833,9 +794,11 @@ function DashboardPage() {
                 div className = "metric-card" >
                 <
                 h3 > Fatura Estimada < /h3> <
-                p > R$ {
+                p >
+                R$ { ' ' } {
                     (parseFloat(currentMonthConsumption.replace(' kWh', '')) * 0.75).toFixed(2)
-                } < /p> < /
+                } <
+                /p> < /
                 div > <
                 div className = "metric-card" >
                 <
@@ -849,7 +812,7 @@ function DashboardPage() {
                 /div>
 
                 <
-                div className = { isChartExpanded ? 'chart-area-main expanded' : 'chart-area-main' } >
+                div className = "chart-area-main" >
                 <
                 div className = "chart-card-main" >
                 <
@@ -875,36 +838,15 @@ function DashboardPage() {
                 /button> < /
                 div > {
                     getChartData().labels.length > 0 ? ( <
-                        div className = "chart-canvas-wrapper" >
-                        <
                         Line data = { getChartData() }
                         options = { chartOptions }
-                        width = { getChartDimensions().width }
-                        height = { getChartDimensions().height }
-                        /> < /
-                        div >
+                        />
                     ) : ( <
                         p style = {
                             { color: '#BBB', textAlign: 'center' }
-                        } > Carregando dados do gráfico... < /p>
-                    )
-                } {
-                    !isChartExpanded && ( <
-                        button className = "expand-chart-btn"
-                        onClick = {
-                            () => setIsChartExpanded(true)
                         } >
-                        Expandir gráfico <
-                        /button>
-                    )
-                } {
-                    isChartExpanded && ( <
-                        button className = "close-chart-btn"
-                        onClick = {
-                            () => setIsChartExpanded(false)
-                        } >
-                        Fechar gráfico <
-                        /button>
+                        Carregando dados do gráfico... <
+                            /p>
                     )
                 } <
                 /div> < /
@@ -942,7 +884,9 @@ function DashboardPage() {
                     ) : ( <
                         p style = {
                             { color: '#BBB', textAlign: 'center' }
-                        } > Nenhuma sugestão no momento. < /p>
+                        } >
+                        Nenhuma sugestão no momento. <
+                        /p>
                     )
                 } <
                 /ul> < /
@@ -965,9 +909,12 @@ function DashboardPage() {
                                 div key = { device.id }
                                 className = "device-control-item" >
                                 <
-                                span className = "device-control-name" > { device.name } < /span> <
+                                span className = "device-control-name" > { device.name } < /span>
+
+                                { /* Botão "Ligar" */ } <
                                 button onClick = {
-                                    () => toggleDevicePower(device.id, device.powerState, device.name)
+                                    () =>
+                                    toggleDevicePower(device.id, device.powerState, device.name)
                                 }
                                 className = "device-toggle-button power-on"
                                 type = "button"
@@ -976,9 +923,12 @@ function DashboardPage() {
                                 }
                                 disabled = { device.powerState } >
                                 Ligar <
-                                /button> <
+                                /button>
+
+                                { /* Botão "Desligar" */ } <
                                 button onClick = {
-                                    () => toggleDevicePower(device.id, device.powerState, device.name)
+                                    () =>
+                                    toggleDevicePower(device.id, device.powerState, device.name)
                                 }
                                 className = "device-toggle-button power-off"
                                 type = "button"
@@ -995,7 +945,9 @@ function DashboardPage() {
                     ) : ( <
                         p style = {
                             { color: '#BBB', textAlign: 'center' }
-                        } > Nenhum dispositivo encontrado. < /p>
+                        } >
+                        Nenhum dispositivo encontrado. <
+                        /p>
                     )
                 } {
                     isRealData && ( <
@@ -1030,12 +982,17 @@ function DashboardPage() {
                 div className = "report-summary-card" >
                 <
                 h3 > Resumo Geral < /h3> <
-                p > Total de Dispositivos: < strong > { report.summary.totalDevices } < /strong></p >
-                <
-                p > Dispositivos com Uso Inteligente(estimado): < strong > { report.summary.smartUsageDevices } < /strong></p >
-                <
-                p > Dispositivos com Otimização Pendente(estimado): < strong > { report.summary.nonSmartUsageDevices } < /strong></p >
-                <
+                p >
+                Total de Dispositivos: < strong > { report.summary.totalDevices } < /strong> < /
+                p > <
+                p >
+                Dispositivos com Uso Inteligente(estimado): { ' ' } <
+                strong > { report.summary.smartUsageDevices } < /strong> < /
+                p > <
+                p >
+                Dispositivos com Otimização Pendente(estimado): { ' ' } <
+                strong > { report.summary.nonSmartUsageDevices } < /strong> < /
+                p > <
                 p className = "overall-report-message" > { report.summary.overallMessage } < /p> < /
                 div >
 
@@ -1048,18 +1005,105 @@ function DashboardPage() {
                         <
                         tbody >
                         <
-                        tr > < td > Tensão < /td><td>{devices[0].powerState && typeof devices[0].latestReading.voltage === 'number' ? devices[0].latestReading.voltage : 0} V</td > < /tr> <
-                        tr > < td > Corrente < /td><td>{devices[0].powerState && typeof devices[0].latestReading.current === 'number' ? devices[0].latestReading.current : 0} A</td > < /tr> <
-                        tr > < td > Potência Ativa < /td><td>{devices[0].powerState && typeof devices[0].latestReading.power === 'number' ? devices[0].latestReading.power : 0} W</td > < /tr> <
-                        tr > < td > Potência Aparente < /td><td>{devices[0].powerState && typeof devices[0].latestReading.ApparentPower === 'number' ? devices[0].latestReading.ApparentPower : 0} VA</td > < /tr> <
-                        tr > < td > Potência Reativa < /td><td>{devices[0].powerState && typeof devices[0].latestReading.ReactivePower === 'number' ? devices[0].latestReading.ReactivePower : 0} var</td > < /tr> <
-                        tr > < td > Fator de Potência < /td><td>{devices[0].powerState && typeof devices[0].latestReading.PowerFactor === 'number' ? devices[0].latestReading.PowerFactor : 0}</td > < /tr> <
-                        tr > < td > Energia Hoje < /td><td>{typeof devices[0].latestReading.EnergyToday === 'number' ? devices[0].latestReading.EnergyToday : '--'} kWh</td > < /tr> <
-                        tr > < td > Energia Ontem < /td><td>{typeof devices[0].latestReading.EnergyYesterday === 'number' ? devices[0].latestReading.EnergyYesterday : '--'} kWh</td > < /tr> <
-                        tr > < td > Energia Total < /td><td>{devices.length > 0 && devices[0].powerState && liveTotalEnergy !== null ? `${liveTotalEnergy.toFixed(2)} kWh` : '0.00 kWh'}</td > < /tr> < /
-                        tbody > <
-                        /table> < /
-                        div >
+                        tr >
+                        <
+                        td > Tensão < /td> <
+                        td > {
+                            devices[0].powerState &&
+                            typeof devices[0].latestReading.voltage === 'number' ?
+                            devices[0].latestReading.voltage : 0
+                        } { ' ' }
+                        V <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Corrente < /td> <
+                        td > {
+                            devices[0].powerState &&
+                            typeof devices[0].latestReading.current === 'number' ?
+                            devices[0].latestReading.current : 0
+                        } { ' ' }
+                        A <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Potência Ativa < /td> <
+                        td > {
+                            devices[0].powerState &&
+                            typeof devices[0].latestReading.power === 'number' ?
+                            devices[0].latestReading.power : 0
+                        } { ' ' }
+                        W <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Potência Aparente < /td> <
+                        td > {
+                            devices[0].powerState &&
+                            typeof devices[0].latestReading.ApparentPower === 'number' ?
+                            devices[0].latestReading.ApparentPower : 0
+                        } { ' ' }
+                        VA <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Potência Reativa < /td> <
+                        td > {
+                            devices[0].powerState &&
+                            typeof devices[0].latestReading.ReactivePower === 'number' ?
+                            devices[0].latestReading.ReactivePower : 0
+                        } { ' ' }
+                        var <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Fator de Potência < /td> <
+                        td > {
+                            devices[0].powerState &&
+                            typeof devices[0].latestReading.PowerFactor === 'number' ?
+                            devices[0].latestReading.PowerFactor : 0
+                        } <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Energia Hoje < /td> <
+                        td > {
+                            typeof devices[0].latestReading.EnergyToday === 'number' ?
+                            devices[0].latestReading.EnergyToday : '--'
+                        } { ' ' }
+                        kWh <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Energia Ontem < /td> <
+                        td > {
+                            typeof devices[0].latestReading.EnergyYesterday === 'number' ?
+                            devices[0].latestReading.EnergyYesterday : '--'
+                        } { ' ' }
+                        kWh <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Energia Total < /td> <
+                        td > {
+                            devices.length > 0 &&
+                            devices[0].powerState &&
+                            liveTotalEnergy !== null ?
+                            `${liveTotalEnergy.toFixed(2)} kWh` : '0.00 kWh'
+                        } <
+                        /td> < /
+                        tr > <
+                        /tbody> < /
+                        table > <
+                        /div>
                     )
                 }
 
@@ -1073,13 +1117,20 @@ function DashboardPage() {
                                 <
                                 h4 > { detail.name } < /h4> <
                                 p >
-                                Status Atual: < span className = { devices[index] && devices[index].powerState ? 'status-on-text' : 'status-off-text' } > { devices[index] && devices[index].powerState ? 'Ligado' : 'Desligado' } <
+                                Status Atual: { ' ' } <
+                                span className = {
+                                    devices[index] && devices[index].powerState ?
+                                    'status-on-text' : 'status-off-text'
+                                } > { devices[index] && devices[index].powerState ? 'Ligado' : 'Desligado' } <
                                 /span> < /
                                 p > <
                                 p > Tipo: { detail.type } < /p> <
                                 p > Recomendação: { detail.recommendation } < /p> {
                                 parseFloat(detail.potentialImpact) !== 0.00 && ( <
-                                    p className = { parseFloat(detail.potentialImpact) > 0 ? 'impact-positive' : 'impact-negative' } >
+                                    p className = {
+                                        parseFloat(detail.potentialImpact) > 0 ?
+                                        'impact-positive' : 'impact-negative'
+                                    } >
                                     Impacto Potencial: { detail.potentialImpact }
                                     kWh no próximo mês <
                                     /p>
@@ -1090,11 +1141,13 @@ function DashboardPage() {
                 ): ( <
                     p style = {
                         { color: '#BBB', textAlign: 'center' }
-                    } > Nenhum relatório disponível. < /p>
+                    } >
+                    Nenhum relatório disponível. <
+                    /p>
                 )
             } <
             /div> < /
-        div >
+            div >
     )
 }
 
@@ -1106,14 +1159,21 @@ function DashboardPage() {
         div className = "user-settings-card" >
         <
         h3 > Informações do Usuário < /h3> <
-        p > < strong > Nome de Usuário: < /strong> {userName}</p >
+        p >
         <
-        p > < strong > Email: < /strong> {userEmail}</p >
+        strong > Nome de Usuário: < /strong> {userName} < /
+        p > <
+        p >
         <
-        p > < button className = "edit-profile-button"
+        strong > Email: < /strong> {userEmail} < /
+        p > <
+        p >
+        <
+        button className = "edit-profile-button"
         onClick = { openEditModal } >
-        Editar Perfil < /button></p >
-        <
+        Editar Perfil <
+        /button> < /
+        p > <
         p style = {
             { marginTop: '20px', fontSize: '0.9em', color: '#888' }
         } >
@@ -1137,8 +1197,7 @@ function DashboardPage() {
                 onChange = {
                     (e) => setEditName(e.target.value)
                 }
-                placeholder = "Novo nome" /
-                >
+                placeholder = "Novo nome" / >
                 <
                 label > Nova Senha: < /label> <
                 input type = "password"
@@ -1146,35 +1205,26 @@ function DashboardPage() {
                 onChange = {
                     (e) => setEditPassword(e.target.value)
                 }
-                placeholder = "Nova senha" /
-                >
-                {
+                placeholder = "Nova senha" / > {
                     editError && < p className = "error-message" > { editError } < /p>} <
                     div className = "button-group small-buttons" >
                     <
                     button type = "submit"
                     disabled = { editLoading }
-                    className = "submit-button small-btn" > { editLoading ? 'Salvando...' : 'Salvar' } <
-                    /button> <
-                    button
-                    type = "button"
+                    className = "submit-button small-btn" > { editLoading ? 'Salvando...' : 'Salvar' } < /button> <
+                    button type = "button"
                     onClick = {
                         () => {
                             setShowEditModal(false);
                             openDeleteModal();
                         }
                     }
-                    className = "delete-account-button small-btn" >
-                    Excluir Conta <
-                    /button> <
-                    button
-                    type = "button"
+                    className = "delete-account-button small-btn" > Excluir Conta < /button> <
+                    button type = "button"
                     onClick = {
                         () => setShowEditModal(false)
                     }
-                    className = "cancel-button small-btn" >
-                    Cancelar <
-                    /button> < /
+                    className = "cancel-button small-btn" > Cancelar < /button> < /
                     div > <
                     /form> < /
                     div > <
@@ -1189,7 +1239,9 @@ function DashboardPage() {
                     div className = "modal-card" >
                     <
                     h3 > Excluir Conta < /h3> <
-                    p > Tem certeza que deseja excluir sua conta ? Esta ação é irreversível. < /p> {
+                    p >
+                    Tem certeza que deseja excluir sua conta ? Esta ação é irreversível. <
+                    /p> {
                     deleteError && < p className = "error-message" > { deleteError } < /p>} <
                     div className = "button-group" >
                     <

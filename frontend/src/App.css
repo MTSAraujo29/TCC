@@ -1450,23 +1450,11 @@ a.link-button {
         height: auto;
         padding: 0 !important;
     }
-    .view-mode-buttons {
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 1.2rem;
-        margin-top: 1.2rem;
-        width: 100%;
-        position: relative;
-        z-index: 2;
-    }
     .view-button,
     .active-view-button {
-        width: 100%;
-        min-width: 120px;
-        margin-bottom: 0.3rem;
-        font-size: 1.1rem;
-        box-sizing: border-box;
+        padding: 0.5rem 0.75rem;
+        /* Convertido para REM */
+        font-size: 0.8rem;
     }
     .bottom-card {
         min-height: 15.625rem;
@@ -1822,13 +1810,8 @@ body,
 .view-mode-buttons {
     display: flex;
     justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    width: 100%;
-    margin-bottom: 1.2rem;
-    margin-top: 1.2rem;
-    position: relative;
-    z-index: 2;
+    gap: 8px;
+    margin-bottom: 12px;
 }
 
 .view-button,
@@ -2305,121 +2288,4 @@ body,
     .main-content {
         margin-top: 44px !important;
     }
-}
-
-
-/* --- Centralização e background do gráfico no modo expandido e normal --- */
-
-.chart-area-main,
-.chart-area-main.expanded {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.chart-card-main {
-    background: #1a1a2e !important;
-    /* Cor de fundo do gráfico */
-    border-radius: 18px;
-    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.15);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 24px;
-}
-
-.chart-area-main.expanded .chart-card-main {
-    width: 96vw !important;
-    height: 92vh !important;
-    max-width: 1200px;
-    max-height: 98vh;
-    background: #1a1a2e !important;
-    border-radius: 18px;
-    box-shadow: 0 2px 32px rgba(0, 0, 0, 0.25);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 2vw 1vw !important;
-}
-
-@media (max-width: 900px) {
-    .chart-area-main.expanded .chart-card-main {
-        width: 99vw !important;
-        height: 92vh !important;
-        padding: 1vw 0.5vw !important;
-    }
-}
-
-@media (max-width: 600px) {
-    .chart-area-main.expanded .chart-card-main {
-        width: 100vw !important;
-        height: 98vh !important;
-        padding: 0 !important;
-        border-radius: 0;
-    }
-}
-
-.chart-area-main.expanded .chart-card-main canvas,
-.chart-card-main canvas {
-    width: 100% !important;
-    height: 80vh !important;
-    min-height: 200px !important;
-    max-height: 80vh !important;
-    background: #1a1a2e !important;
-    border-radius: 12px;
-}
-
-
-/* Centralizar botões no modo expandido e normal */
-
-.view-mode-buttons {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    width: 100%;
-    margin-bottom: 1.2rem;
-    margin-top: 1.2rem;
-    position: relative;
-    z-index: 2;
-}
-
-@media (max-width: 900px) {
-    .view-mode-buttons {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.5rem;
-        margin-bottom: 1.2rem;
-        margin-top: 1.2rem;
-        width: 100%;
-        position: relative;
-        z-index: 2;
-    }
-    .view-button,
-    .active-view-button {
-        width: 100%;
-        min-width: 120px;
-        margin-bottom: 0.3rem;
-        font-size: 1.1rem;
-        box-sizing: border-box;
-    }
-}
-
-
-/* Garante que o botão de fechar fique visível no modo expandido */
-
-.chart-area-main.expanded .close-chart-btn {
-    position: absolute;
-    top: 18px;
-    right: 18px;
-    z-index: 10001;
-    font-size: 1.1rem;
-    padding: 10px 22px;
 }
