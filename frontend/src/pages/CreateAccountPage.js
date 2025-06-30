@@ -15,9 +15,8 @@ function CreateAccountPage() {
         confirmPassword: ''
     });
     const [error, setError] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
 
-    // Event handlers
+    // Handle input changes
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -26,11 +25,16 @@ function CreateAccountPage() {
         }));
     };
 
+    // Form submission handler
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
-        if (!validateForm()) return;
+        // Validate passwords match
+        if (formData.password !== formData.confirmPassword) {
+            setError('As senhas não coincidem!');
+            return;
+        }
 
         console.log('Attempting to create account:', formData);
 
@@ -46,27 +50,22 @@ function CreateAccountPage() {
             });
 
             const data = await response.json();
-            response.ok ? handleRegistrationSuccess(data) : handleRegistrationError(data);
+
+            if (response.ok) {
+                handleRegistrationSuccess(data);
+            } else {
+                handleRegistrationError(data);
+            }
         } catch (err) {
             handleNetworkError(err);
         }
     };
 
-    // Validation and helper functions
-    const validateForm = () => {
-        if (formData.password !== formData.confirmPassword) {
-            setError('As senhas não coincidem!');
-            return false;
-        }
-        return true;
-    };
-
+    // Helper functions
     const handleRegistrationSuccess = (data) => {
-        setSuccessMessage('Sua conta foi criada com sucesso! Faça login agora.');
-        setTimeout(() => {
-            setSuccessMessage('');
-            navigate('/login');
-        }, 2500);
+        console.log('Account created successfully:', data);
+        alert('Sua conta foi criada com sucesso! Faça login agora.');
+        navigate('/login');
     };
 
     const handleRegistrationError = (data) => {
@@ -82,12 +81,6 @@ function CreateAccountPage() {
     // Render
     return (
         <div className="container">
-            {successMessage && (
-                <div className="custom-toast success-toast">
-                    {successMessage}
-                </div>
-            )}
-
             <div className="card">
                 <div className="logo-icon">⚡</div>
                 <h2>Criar Conta</h2>

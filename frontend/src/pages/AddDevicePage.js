@@ -13,10 +13,9 @@ function AddDevicePage() {
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
 
-    // Event handlers
+    // Handle input changes
     const handleInputChange = (e) => {
         const { id, value } = e.target;
         setDeviceData(prev => ({
@@ -25,6 +24,7 @@ function AddDevicePage() {
         }));
     };
 
+    // Form submission handler
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -45,7 +45,13 @@ function AddDevicePage() {
         }
     };
 
-    // API functions
+    // Helper functions
+    const handleUnauthenticated = () => {
+        setError('Você não está autenticado. Por favor, faça login.');
+        navigate('/login');
+        setLoading(false);
+    };
+
     const addDevice = async (token) => {
         const response = await fetch(`${API_ENDPOINTS.TASMOTA}/devices`, {
             method: 'POST',
@@ -65,19 +71,9 @@ function AddDevicePage() {
         handleSuccess(data);
     };
 
-    // Utility functions
-    const handleUnauthenticated = () => {
-        setError('Você não está autenticado. Por favor, faça login.');
-        navigate('/login');
-        setLoading(false);
-    };
-
     const handleSuccess = (data) => {
-        setSuccessMessage(data.message || 'Dispositivo adicionado com sucesso!');
-        setTimeout(() => {
-            setSuccessMessage('');
-            navigate('/dashboard');
-        }, 2500);
+        alert(data.message || 'Dispositivo adicionado com sucesso!');
+        navigate('/dashboard');
     };
 
     const handleDeviceError = (err) => {
@@ -88,12 +84,6 @@ function AddDevicePage() {
     // Render
     return (
         <div className="add-device-page-container">
-            {successMessage && (
-                <div className="custom-toast success-toast">
-                    {successMessage}
-                </div>
-            )}
-
             <div className="add-device-card">
                 <h2>Adicionar Novo Dispositivo Tasmota</h2>
 
@@ -146,10 +136,7 @@ function AddDevicePage() {
                     {error && <p className="error-message">{error}</p>}
 
                     <div className="button-group">
-                        <button
-                            type="submit"
-                            disabled={loading}
-                        >
+                        <button type="submit" disabled={loading}>
                             {loading ? 'Adicionando...' : 'Adicionar Dispositivo'}
                         </button>
                         <button
@@ -167,4 +154,3 @@ function AddDevicePage() {
 }
 
 export default AddDevicePage;
-
