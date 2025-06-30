@@ -180,7 +180,7 @@ button {
     background-color: #00bcd4;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 30px;
     font-size: 1.2rem;
     /* Convertido para REM */
     font-weight: bold;
@@ -221,7 +221,7 @@ button:disabled {
     background-color: #4a4a7e;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 30px;
     font-size: 1.1rem;
     /* Convertido para REM */
     cursor: pointer;
