@@ -1055,7 +1055,7 @@ function DashboardPage() {
                                 <div className="modal-card">
                                     <h3>Editar Conta</h3>
                                     <form onSubmit={handleEditAccount}>
-                                        <label>Nome:</label>
+                                        <label>Novo Nome:</label>
                                         <input
                                             type="text"
                                             value={editName}
@@ -1071,15 +1071,8 @@ function DashboardPage() {
                                         />
                                         {editError && <p className="error-message">{editError}</p>}
                                         <div className="button-group">
-                                            <button type="submit" disabled={editLoading}>
+                                            <button type="submit" disabled={editLoading} className="submit-button">
                                                 {editLoading ? 'Salvando...' : 'Salvar'}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowEditModal(false)}
-                                                className="cancel-button"
-                                            >
-                                                Cancelar
                                             </button>
                                             <button
                                                 type="button"
@@ -1091,6 +1084,13 @@ function DashboardPage() {
                                                 style={{ background: '#F44336', color: '#fff', marginLeft: 8 }}
                                             >
                                                 Excluir Conta
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowEditModal(false)}
+                                                className="cancel-button"
+                                            >
+                                                Cancelar
                                             </button>
                                         </div>
                                     </form>

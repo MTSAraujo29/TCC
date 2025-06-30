@@ -2063,6 +2063,8 @@ body,
     display: flex;
     flex-direction: column;
     gap: 8px;
+    margin-right: 12px;
+    margin-top: -17px;
 }
 
 .add-device-card button {
