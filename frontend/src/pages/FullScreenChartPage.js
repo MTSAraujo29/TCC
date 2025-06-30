@@ -26,44 +26,51 @@ ChartJS.register(
     ArcElement
 );
 
-// Mock data for the chart
-const mockDailyData = {
-    labels: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
-    datasets: [{
-        label: 'Consumo Diário (kWh)',
-        data: [3.2, 3.5, 2.9, 4.1, 3.8, 4.5, 3.9],
-        borderColor: '#00bcd4',
-        backgroundColor: 'rgba(0, 188, 212, 0.4)',
-        tension: 0.4,
-        fill: true,
-    }],
+// Constants
+const CHART_MODES = {
+    DAY: 'day',
+    WEEK: 'week',
+    MONTH: 'month'
 };
 
-const mockWeeklyData = {
-    labels: ["Semana 1", "Semana 2", "Semana 3", "Semana 4"],
-    datasets: [{
-        label: 'Consumo Semanal (kWh)',
-        data: [22.5, 24.1, 21.8, 25.3],
-        borderColor: '#ff9800',
-        backgroundColor: 'rgba(255, 152, 0, 0.4)',
-        tension: 0.4,
-        fill: true,
-    }],
+// Mock data
+const MOCK_DATA = {
+    [CHART_MODES.DAY]: {
+        labels: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+        datasets: [{
+            label: 'Consumo Diário (kWh)',
+            data: [3.2, 3.5, 2.9, 4.1, 3.8, 4.5, 3.9],
+            borderColor: '#00bcd4',
+            backgroundColor: 'rgba(0, 188, 212, 0.4)',
+            tension: 0.4,
+            fill: true,
+        }],
+    },
+    [CHART_MODES.WEEK]: {
+        labels: ["Semana 1", "Semana 2", "Semana 3", "Semana 4"],
+        datasets: [{
+            label: 'Consumo Semanal (kWh)',
+            data: [22.5, 24.1, 21.8, 25.3],
+            borderColor: '#ff9800',
+            backgroundColor: 'rgba(255, 152, 0, 0.4)',
+            tension: 0.4,
+            fill: true,
+        }],
+    },
+    [CHART_MODES.MONTH]: {
+        labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+        datasets: [{
+            label: 'Consumo Mensal (kWh)',
+            data: [90.2, 95.8, 88.5, 102.1, 99.7, 105.3, 98.0, 101.5, 93.0, 100.1, 97.5, 108.0],
+            borderColor: '#e91e63',
+            backgroundColor: 'rgba(233, 30, 99, 0.4)',
+            tension: 0.4,
+            fill: true,
+        }],
+    }
 };
 
-const mockMonthlyData = {
-    labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
-    datasets: [{
-        label: 'Consumo Mensal (kWh)',
-        data: [90.2, 95.8, 88.5, 102.1, 99.7, 105.3, 98.0, 101.5, 93.0, 100.1, 97.5, 108.0],
-        borderColor: '#e91e63',
-        backgroundColor: 'rgba(233, 30, 99, 0.4)',
-        tension: 0.4,
-        fill: true,
-    }],
-};
-
-// Chart configuration options
+// Helper functions
 const getChartOptions = (viewMode) => ({
     responsive: true,
     maintainAspectRatio: false,
@@ -71,7 +78,10 @@ const getChartOptions = (viewMode) => ({
         legend: { display: false },
         title: {
             display: true,
-            text: `Consumo de Energia - ${viewMode === 'day' ? 'Diário' : viewMode === 'week' ? 'Semanal' : 'Mensal'}`,
+            text: `Consumo de Energia - ${
+                viewMode === CHART_MODES.DAY ? 'Diário' :
+                    viewMode === CHART_MODES.WEEK ? 'Semanal' : 'Mensal'
+            }`,
             color: '#FFF',
             font: { size: 22 }
         },
@@ -106,20 +116,8 @@ const getChartOptions = (viewMode) => ({
     }
 });
 
-// FullScreenChartPage component
-export default function FullScreenChartPage() {
-    const navigate = useNavigate();
-    const [viewMode, setViewMode] = useState('day');
-
-    let chartData;
-    if (viewMode === 'day') chartData = mockDailyData;
-    else if (viewMode === 'week') chartData = mockWeeklyData;
-    else chartData = mockMonthlyData;
-
-    // Responsividade para botões
-    const isMobile = window.innerWidth <= 600;
-
-    const containerStyle = {
+const useStyles = (isMobile) => ({
+    container: {
         position: 'fixed',
         top: 0,
         left: 0,
@@ -131,9 +129,8 @@ export default function FullScreenChartPage() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-    };
-
-    const backButtonStyle = {
+    },
+    backButton: {
         position: 'absolute',
         top: isMobile ? 10 : 30,
         left: isMobile ? 10 : 30,
@@ -149,9 +146,8 @@ export default function FullScreenChartPage() {
         minWidth: isMobile ? 90 : 120,
         minHeight: isMobile ? 38 : 48,
         boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
-    };
-
-    const chartContainerStyle = {
+    },
+    chartContainer: {
         width: isMobile ? '98vw' : '90vw',
         height: isMobile ? '65vh' : '80vh',
         maxWidth: 1200,
@@ -159,9 +155,8 @@ export default function FullScreenChartPage() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-    };
-
-    const viewButtonStyle = (active) => ({
+    },
+    viewButton: (active) => ({
         margin: isMobile ? '0 2vw 8px 0' : '0 8px',
         padding: isMobile ? '10px 0' : '10px 24px',
         width: isMobile ? '30vw' : 'auto',
@@ -177,9 +172,8 @@ export default function FullScreenChartPage() {
         outline: active ? '2px solid #1976d2' : 'none',
         transition: 'background 0.2s, outline 0.2s',
         display: 'inline-block',
-    });
-
-    const viewButtonGroupStyle = {
+    }),
+    viewButtonGroup: {
         marginBottom: 24,
         textAlign: 'center',
         width: isMobile ? '100%' : 'auto',
@@ -187,46 +181,45 @@ export default function FullScreenChartPage() {
         flexDirection: isMobile ? 'row' : 'unset',
         justifyContent: isMobile ? 'space-between' : 'unset',
         gap: isMobile ? 0 : 8,
-    };
+    }
+});
 
-    return ( <
-        div style = { containerStyle } >
-        <
-        button onClick = {
-            () => navigate('/dashboard')
-        }
-        style = { backButtonStyle } >
-        Voltar <
-        /button>
+// Main Component
+export default function FullScreenChartPage() {
+    const navigate = useNavigate();
+    const [viewMode, setViewMode] = useState(CHART_MODES.DAY);
+    const isMobile = window.innerWidth <= 600;
+    const styles = useStyles(isMobile);
 
-        <
-        div style = { chartContainerStyle } >
-        <
-        div style = { viewButtonGroupStyle } >
-        <
-        button style = { viewButtonStyle(viewMode === 'day') }
-        onClick = {
-            () => setViewMode('day')
-        } >
-        Dia <
-        /button> <
-        button style = { viewButtonStyle(viewMode === 'week') }
-        onClick = {
-            () => setViewMode('week')
-        } >
-        Semana <
-        /button> <
-        button style = { viewButtonStyle(viewMode === 'month') }
-        onClick = {
-            () => setViewMode('month')
-        } >
-        Mês <
-        /button> < /
-        div > <
-        Line data = { chartData }
-        options = { getChartOptions(viewMode) }
-        /> < /
-        div > <
-        /div>
+    const chartData = MOCK_DATA[viewMode];
+
+    return (
+        <div style={styles.container}>
+            <button
+                onClick={() => navigate('/dashboard')}
+                style={styles.backButton}
+            >
+                Voltar
+            </button>
+
+            <div style={styles.chartContainer}>
+                <div style={styles.viewButtonGroup}>
+                    {Object.entries(CHART_MODES).map(([key, value]) => (
+                        <button
+                            key={value}
+                            style={styles.viewButton(viewMode === value)}
+                            onClick={() => setViewMode(value)}
+                        >
+                            {key.charAt(0) + key.slice(1).toLowerCase()}
+                        </button>
+                    ))}
+                </div>
+
+                <Line
+                    data={chartData}
+                    options={getChartOptions(viewMode)}
+                />
+            </div>
+        </div>
     );
 }
