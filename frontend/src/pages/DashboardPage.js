@@ -798,16 +798,6 @@ function DashboardPage() {
                                 <p>{currentMonthConsumption}</p>
                             </div>
                             <div className="metric-card">
-                                <h3>Fatura Estimada</h3>
-                                <p>
-                                    R${' '}
-                                    {(
-                                        parseFloat(currentMonthConsumption.replace(' kWh', '')) *
-                                        0.75
-                                    ).toFixed(2)}
-                                </p>
-                            </div>
-                            <div className="metric-card">
                                 <h3>Consumo quilowatt-hora total </h3>
                                 <p>
                                     {devices.length > 0 &&
@@ -815,6 +805,16 @@ function DashboardPage() {
                                     liveTotalEnergy !== null
                                         ? `${liveTotalEnergy.toFixed(2)} kWh`
                                         : '0.00 kWh'}
+                                </p>
+                            </div>
+                            <div className="metric-card">
+                                <h3>Fatura Estimada</h3>
+                                <p>
+                                    R${' '}
+                                    {(
+                                        parseFloat(currentMonthConsumption.replace(' kWh', '')) *
+                                        0.75
+                                    ).toFixed(2)}
                                 </p>
                             </div>
                         </div>
