@@ -24,7 +24,12 @@ const SONOFF_TOPICS = [
     'stat/tasmota_C2BE64/STATUS11',
     'stat/tasmota_C2BE64/POWER',
     'tele/tasmota_C2BE64/SENSOR',
-    'tele/tasmota_C2BE64/STATE'
+    'tele/tasmota_C2BE64/STATE',
+    'stat/tasmota_C3B7EC/STATUS10',
+    'stat/tasmota_C3B7EC/STATUS11',
+    'stat/tasmota_C3B7EC/POWER',
+    'tele/tasmota_C3B7EC/SENSOR',
+    'tele/tasmota_C3B7EC/STATE'
 ];
 
 // Client ID único para este backend MQTT
