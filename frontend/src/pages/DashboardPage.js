@@ -340,7 +340,7 @@ function DashboardPage() {
     const fetchDashboardData = useCallback(async() => {
         const token = localStorage.getItem('token');
         if (!token) {
-            navigate('/login');
+            navigate('/');
             return;
         }
 
@@ -395,7 +395,7 @@ function DashboardPage() {
                 localStorage.removeItem('token');
                 localStorage.removeItem('userName');
                 localStorage.removeItem('userEmail');
-                navigate('/login');
+                navigate('/');
             } else {
                 console.error('Erro ao carregar dados do Dashboard:', response.status);
             }
@@ -445,7 +445,7 @@ function DashboardPage() {
         const storedUserEmail = localStorage.getItem('userEmail');
 
         if (!token) {
-            navigate('/login');
+            navigate('/');
             return;
         }
 
@@ -645,7 +645,7 @@ function DashboardPage() {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
-            navigate('/login');
+            navigate('/');
             return;
         }
         // Resetar estados principais ao trocar de token (login/logout)
@@ -657,6 +657,7 @@ function DashboardPage() {
         setTotalConsumption('0.00 kWh');
         fetchDashboardData();
     }, [localStorage.getItem('token')]);
+
 
     return (
         <div className="container dashboard-container">
@@ -1175,4 +1176,5 @@ function DashboardPage() {
         </div>
     );
 }
+
 export default DashboardPage;

@@ -129,7 +129,7 @@ function CreateAccountPage() {
                 </form>
 
                 <Link to="/" className="link-button">
-                    Voltar para login
+                    Voltar Tela Inicial
                 </Link>
             </div>
         </div>
