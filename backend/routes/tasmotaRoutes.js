@@ -32,4 +32,8 @@ router.get('/devices/:deviceId/total-energy-live', authenticateToken, (req, res)
 const { getLiveTotalEnergyFromTasmota } = require('../controllers/tasmota.controller');
 router.get('/devices/:deviceId/total-energy-live', authenticateToken, getLiveTotalEnergyFromTasmota);
 
+// NOVAS ROTAS: Gerenciamento de Usuários e Duplicação de Dispositivos
+router.get('/users', authenticateToken, tasmotaController.listUsers); // Listar usuários (apenas admin)
+router.post('/devices/duplicate', authenticateToken, tasmotaController.duplicateDevicesToUser); // Duplicar dispositivos
+
 module.exports = router;

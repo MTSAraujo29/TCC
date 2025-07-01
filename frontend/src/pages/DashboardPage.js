@@ -681,6 +681,11 @@ function DashboardPage() {
             () => setActiveSection('relatorios')
         } > 📊Relatórios <
         /div> <
+        div className = "menu-item"
+        onClick = {
+            () => navigate('/device-management')
+        } > 📱Gerenciar Dispositivos <
+        /div> <
         div className = { `menu-item ${activeSection === 'configuracoes' ? 'active' : ''}` }
         onClick = {
             () => setActiveSection('configuracoes')
@@ -736,6 +741,14 @@ function DashboardPage() {
                         setIsMobileMenuOpen(false);
                     }
                 } > 📊Relatórios <
+                /div> <
+                div className = "menu-item"
+                onClick = {
+                    () => {
+                        navigate('/device-management');
+                        setIsMobileMenuOpen(false);
+                    }
+                } > 📱Gerenciar Dispositivos <
                 /div> <
                 div className = "menu-item"
                 onClick = {
