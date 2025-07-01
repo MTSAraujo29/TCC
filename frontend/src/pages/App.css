@@ -75,7 +75,7 @@
 
 /* --- RESPONSIVIDADE --- */
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 300px) {
     .energy-realtime-card {
         padding: 4vw 4vw 4vw 4vw;
         margin: 3vw 2vw;
