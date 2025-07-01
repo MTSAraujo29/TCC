@@ -58,7 +58,7 @@ model EnergyReading {
   ApparentPower Float? // Potência aparente (VA)
   ReactivePower Float? // Potência reativa (var)
   PowerFactor Float?   // Fator de potência
-  // Adicione outros campos se o Tasmota fornecer, como EnergyToday, EnergyYesterday, etc.
+  brokerLabel String? // Identificador do broker (broker1 ou broker2)
 
   @@map("energyReadings")
 }
