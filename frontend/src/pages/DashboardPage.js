@@ -894,7 +894,7 @@ function DashboardPage() {
                             <div className="energy-realtime-card">
                                 <h3>Dados em Tempo Real do Dispositivo Principal</h3>
                                 <table className="energy-realtime-table">
-                                    <tbody>
+                                    <tbody className="energy-realtime-tbody">
                                     <tr>
                                         <td>Tensão</td>
                                         <td>{devices[0].powerState && typeof devices[0].latestReading.voltage === 'number' ? devices[0].latestReading.voltage : 0} V</td>

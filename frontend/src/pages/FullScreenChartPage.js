@@ -14,26 +14,15 @@ import {
     ArcElement
 } from 'chart.js';
 
-// Register ChartJS components
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-    ArcElement
-);
-
-// Constants
+// ==============================================
+// CONSTANTS
+// ==============================================
 const CHART_MODES = {
-    DAY: 'day',
-    WEEK: 'week',
-    MONTH: 'month'
+    DAY: 'Dia',
+    WEEK: 'Semana',
+    MONTH: 'Mês'
 };
 
-// Mock data
 const MOCK_DATA = {
     [CHART_MODES.DAY]: {
         labels: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
@@ -70,7 +59,9 @@ const MOCK_DATA = {
     }
 };
 
-// Helper functions
+// ==============================================
+// UTILITY FUNCTIONS
+// ==============================================
 const getChartOptions = (viewMode) => ({
     responsive: true,
     maintainAspectRatio: false,
@@ -184,41 +175,54 @@ const useStyles = (isMobile) => ({
     }
 });
 
-// Main Component
+// ==============================================
+// MAIN COMPONENT
+// ==============================================
 export default function FullScreenChartPage() {
+    // Initialize hooks and state
     const navigate = useNavigate();
     const [viewMode, setViewMode] = useState(CHART_MODES.DAY);
     const isMobile = window.innerWidth <= 600;
     const styles = useStyles(isMobile);
-
     const chartData = MOCK_DATA[viewMode];
 
-    return ( <
-        div style = { styles.container } >
-        <
-        div style = { styles.chartContainer } >
-        <
-        div style = { styles.viewButtonGroup } > {
-            Object.entries(CHART_MODES).map(([key, value]) => ( <
-                button key = { value }
-                style = { styles.viewButton(viewMode === value) }
-                onClick = {
-                    () => setViewMode(value)
-                } > { key.charAt(0) + key.slice(1).toLowerCase() } <
-                /button>
-            ))
-        } <
-        /div> <
-        Line data = { chartData }
-        options = { getChartOptions(viewMode) }
-        /> < /
-        div > <
-        button onClick = {
-            () => navigate('/dashboard')
-        }
-        style = {
-            {
-                ...styles.backButton,
+    // Register ChartJS components
+    ChartJS.register(
+        CategoryScale,
+        LinearScale,
+        PointElement,
+        LineElement,
+        Title,
+        Tooltip,
+        Legend,
+        ArcElement
+    );
+
+    return (
+        <div style={styles.container}>
+            <div style={styles.chartContainer}>
+                <div style={styles.viewButtonGroup}>
+                    {Object.entries(CHART_MODES).map(([key, value]) => (
+                        <button
+                            key={value}
+                            style={styles.viewButton(viewMode === value)}
+                            onClick={() => setViewMode(value)}
+                        >
+                            {key.charAt(0) + key.slice(1).toLowerCase()}
+                        </button>
+                    ))}
+                </div>
+
+                <Line
+                    data={chartData}
+                    options={getChartOptions(viewMode)}
+                />
+            </div>
+
+            <button
+                onClick={() => navigate('/dashboard')}
+                style={{
+                    ...styles.backButton,
                     position: 'static',
                     margin: isMobile ? '16px auto 8px' : '32px auto 0',
                     display: 'block',
@@ -226,10 +230,10 @@ export default function FullScreenChartPage() {
                     top: 'unset',
                     width: isMobile ? '90vw' : 220,
                     maxWidth: 400,
-            }
-        } >
-        Voltar <
-        /button> < /
-        div >
+                }}
+            >
+                Voltar
+            </button>
+        </div>
     );
 }

@@ -152,3 +152,12 @@
     min-height: 350px;
     margin-bottom: 20px;
 }
+
+@media (max-width: 500px) {
+    .energy-realtime-tbody {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
