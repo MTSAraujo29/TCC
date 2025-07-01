@@ -241,9 +241,7 @@ app.delete('/api/account', authenticateToken, async(req, res) => {
 // Inicialização do Cliente MQTT
 // =========================================================================
 // Esta função será chamada uma vez quando o processo Node.js for iniciado no Render.
-tasmotaService.initializeMqttClient()
-    .then(() => console.log('Cliente MQTT inicializado com sucesso!'))
-    .catch(err => console.error('Falha ao inicializar o cliente MQTT:', err));
+tasmotaService.initializeMqttClients();
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
