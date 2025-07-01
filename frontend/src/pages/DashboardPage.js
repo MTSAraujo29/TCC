@@ -468,7 +468,7 @@ function DashboardPage() {
         localStorage.removeItem('token');
         localStorage.removeItem('userName');
         localStorage.removeItem('userEmail');
-        navigate('/login');
+        navigate('/'); // Redireciona para a HomePage
     }, [navigate]);
 
     // Logout automático após 10 minutos
@@ -661,29 +661,52 @@ function DashboardPage() {
     return (
         <div className="container dashboard-container">
             {/* Sidebar de Navegação - Esconde em telas <= 700px */}
-            <div className="sidebar" style={{ display: window.innerWidth <= 700 ? 'none' : 'flex' }}>
+            <div
+                className="sidebar"
+                style={{ display: window.innerWidth <= 700 ? 'none' : 'flex' }}
+            >
                 <div className="logo-icon-sidebar">⚡</div>
-                <div className={`menu-item ${activeSection === 'inicio' ? 'active' : ''}`} onClick={() => setActiveSection('inicio')}>
+                <div
+                    className={`menu-item ${activeSection === 'inicio' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('inicio')}
+                >
                     🏠Home
                 </div>
-                <div className={`menu-item ${activeSection === 'controle' ? 'active' : ''}`} onClick={() => setActiveSection('controle')}>
+                <div
+                    className={`menu-item ${activeSection === 'controle' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('controle')}
+                >
                     🔌Controle de Energia
                 </div>
-                <div className={`menu-item ${activeSection === 'relatorios' ? 'active' : ''}`} onClick={() => setActiveSection('relatorios')}>
+                <div
+                    className={`menu-item ${activeSection === 'relatorios' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('relatorios')}
+                >
                     📊Relatórios
                 </div>
-                <div className={`menu-item ${activeSection === 'configuracoes' ? 'active' : ''}`} onClick={() => setActiveSection('configuracoes')}>
+                <div
+                    className={`menu-item ${activeSection === 'configuracoes' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('configuracoes')}
+                >
                     ⚙️Configurações
                 </div>
                 <div className="sidebar-bottom">
-                    <button onClick={handleLogout} className="menu-item logout-link-sidebar">🔒Sair</button>
+                    <button
+                        onClick={handleLogout}
+                        className="menu-item logout-link-sidebar"
+                    >
+                        🔒Sair
+                    </button>
                 </div>
             </div>
 
             {/* Mobile Menu */}
             {window.innerWidth <= 700 && (
                 <div className="mobile-menu-bar">
-                    <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                    <button
+                        className="hamburger-btn"
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    >
                         <span className="hamburger-icon">☰</span>
                     </button>
                 </div>
@@ -691,19 +714,49 @@ function DashboardPage() {
 
             {window.innerWidth <= 700 && isMobileMenuOpen && (
                 <div className="mobile-menu-box">
-                    <div className="menu-item" onClick={() => { setActiveSection('inicio'); setIsMobileMenuOpen(false); }}>
+                    <div
+                        className="menu-item"
+                        onClick={() => {
+                            setActiveSection('inicio');
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
                         🏠Home
                     </div>
-                    <div className="menu-item" onClick={() => { setActiveSection('controle'); setIsMobileMenuOpen(false); }}>
+                    <div
+                        className="menu-item"
+                        onClick={() => {
+                            setActiveSection('controle');
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
                         🔌Controle de Energia
                     </div>
-                    <div className="menu-item" onClick={() => { setActiveSection('relatorios'); setIsMobileMenuOpen(false); }}>
+                    <div
+                        className="menu-item"
+                        onClick={() => {
+                            setActiveSection('relatorios');
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
                         📊Relatórios
                     </div>
-                    <div className="menu-item" onClick={() => { setActiveSection('configuracoes'); setIsMobileMenuOpen(false); }}>
+                    <div
+                        className="menu-item"
+                        onClick={() => {
+                            setActiveSection('configuracoes');
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
                         ⚙️Configurações
                     </div>
-                    <div className="menu-item logout-link-sidebar" onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}>
+                    <div
+                        className="menu-item logout-link-sidebar"
+                        onClick={() => {
+                            handleLogout();
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
                         🔒Sair
                     </div>
                 </div>
@@ -759,13 +812,22 @@ function DashboardPage() {
                         <div className="chart-area-main">
                             <div className="chart-card-main">
                                 <div className="view-mode-buttons">
-                                    <button onClick={() => setViewMode('day')} className={viewMode === 'day' ? 'active-view-button' : 'view-button'}>
+                                    <button
+                                        onClick={() => setViewMode('day')}
+                                        className={viewMode === 'day' ? 'active-view-button' : 'view-button'}
+                                    >
                                         Dia
                                     </button>
-                                    <button onClick={() => setViewMode('week')} className={viewMode === 'week' ? 'active-view-button' : 'view-button'}>
+                                    <button
+                                        onClick={() => setViewMode('week')}
+                                        className={viewMode === 'week' ? 'active-view-button' : 'view-button'}
+                                    >
                                         Semana
                                     </button>
-                                    <button onClick={() => setViewMode('month')} className={viewMode === 'month' ? 'active-view-button' : 'view-button'}>
+                                    <button
+                                        onClick={() => setViewMode('month')}
+                                        className={viewMode === 'month' ? 'active-view-button' : 'view-button'}
+                                    >
                                         Mês
                                     </button>
                                 </div>
@@ -793,31 +855,31 @@ function DashboardPage() {
                                     Expandir Gráfico
                                 </button>
                             </div>
-                        </div>
 
-                        <div className="bottom-sections-grid">
-                            <div className="bottom-card consumption-by-type-card">
-                                <h3>Consumo por Tipo de Dispositivo</h3>
-                                <div className="chart-wrapper">
-                                    <Doughnut data={getConsumptionByTypeData()} options={consumptionByTypeOptions} />
+                            <div className="bottom-sections-grid">
+                                <div className="bottom-card consumption-by-type-card">
+                                    <h3>Consumo por Tipo de Dispositivo</h3>
+                                    <div className="chart-wrapper">
+                                        <Doughnut data={getConsumptionByTypeData()} options={consumptionByTypeOptions} />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="bottom-card suggested-devices-card">
-                                <h3>Dispositivos Sugeridos</h3>
-                                <p style={{ color: '#BBB', fontSize: '0.9em', marginBottom: '15px' }}>
-                                    Sugestões para otimizar o consumo de energia em seus dispositivos.
-                                </p>
-                                <ul className="device-suggestion-list">
-                                    {getSuggestedDevicesData().length > 0 ? (
-                                        getSuggestedDevicesData().map((device) => (
-                                            <li key={device.id}>
-                                                <strong>{device.name}:</strong> {device.suggestion}
-                                            </li>
-                                        ))
-                                    ) : (
-                                        <p style={{ color: '#BBB', textAlign: 'center' }}>Nenhuma sugestão no momento.</p>
-                                    )}
-                                </ul>
+                                <div className="bottom-card suggested-devices-card">
+                                    <h3>Dispositivos Sugeridos</h3>
+                                    <p style={{ color: '#BBB', fontSize: '0.9em', marginBottom: '15px' }}>
+                                        Sugestões para otimizar o consumo de energia em seus dispositivos.
+                                    </p>
+                                    <ul className="device-suggestion-list">
+                                        {getSuggestedDevicesData().length > 0 ? (
+                                            getSuggestedDevicesData().map((device) => (
+                                                <li key={device.id}>
+                                                    <strong>{device.name}:</strong>{device.suggestion}
+                                                </li>
+                                            ))
+                                        ) : (
+                                            <p style={{ color: '#BBB', textAlign: 'center' }}>Nenhuma sugestão no momento.</p>
+                                        )}
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </React.Fragment>
@@ -947,7 +1009,7 @@ function DashboardPage() {
                                     <div key={index} className="device-report-item">
                                         <h4>{detail.name}</h4>
                                         <p>
-                                            Status Atual: {' '}
+                                            Status Atual: {''}
                                             <span className={devices[index] && devices[index].powerState ? 'status-on-text' : 'status-off-text'}>
                       {devices[index] && devices[index].powerState ? 'Ligado' : 'Desligado'}
                     </span>
@@ -1008,12 +1070,19 @@ function DashboardPage() {
                                         />
                                         {editError && <p className="error-message">{editError}</p>}
                                         <div className="button-group small-buttons">
-                                            <button type="submit" disabled={editLoading} className="submit-button small-btn">
+                                            <button
+                                                type="submit"
+                                                disabled={editLoading}
+                                                className="submit-button small-btn"
+                                            >
                                                 {editLoading ? 'Salvando...' : 'Salvar'}
                                             </button>
                                             <button
                                                 type="button"
-                                                onClick={() => { setShowEditModal(false); openDeleteModal(); }}
+                                                onClick={() => {
+                                                    setShowEditModal(false);
+                                                    openDeleteModal();
+                                                }}
                                                 className="delete-account-button small-btn"
                                             >
                                                 Excluir Conta
@@ -1039,10 +1108,17 @@ function DashboardPage() {
                                     <p>Tem certeza que deseja excluir sua conta? Esta ação é irreversível.</p>
                                     {deleteError && <p className="error-message">{deleteError}</p>}
                                     <div className="button-group">
-                                        <button onClick={handleDeleteAccount} disabled={deleteLoading} style={{ background: '#F44336' }}>
+                                        <button
+                                            onClick={handleDeleteAccount}
+                                            disabled={deleteLoading}
+                                            style={{ background: '#F44336' }}
+                                        >
                                             {deleteLoading ? 'Excluindo...' : 'Excluir'}
                                         </button>
-                                        <button onClick={() => setShowDeleteModal(false)} className="cancel-button">
+                                        <button
+                                            onClick={() => setShowDeleteModal(false)}
+                                            className="cancel-button"
+                                        >
                                             Cancelar
                                         </button>
                                     </div>
@@ -1099,5 +1175,4 @@ function DashboardPage() {
         </div>
     );
 }
-
 export default DashboardPage;

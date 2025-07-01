@@ -8,8 +8,9 @@ function HomePage() {
     // Carousel slides
     const slides = [
         'Bem-vindo ao Smart Energy!',
-        'Otimize o consumo de energia da sua casa com IoT',
-        'Sustentabilidade e tecnologia ao seu alcance',
+        'Reduza o desperdício e otimize sua energia doméstica com IoT.',
+        'O futuro sustentável começa com a tecnologia ao seu alcance.',
+        'Sustentabilidade inteligente na palma da sua mão.',
     ];
 
     const [currentSlide, setCurrentSlide] = React.useState(0);
@@ -63,21 +64,24 @@ function HomePage() {
                 <section className="homepage-card">
                     <h2>Olá, eu sou Matheus Araújo</h2>
                     <p className="homepage-intro">
-                        25 anos, estudante de Ciências da Computação.
+                        Tenho 25 anos, sou estudante de Ciências da Computação é fudando da ferramenta!!.
                     </p>
                 </section>
 
                 <section className="homepage-card">
                     <h2>Por que pensar em energia?</h2>
                     <p>
-                        A energia está presente em praticamente tudo o que se faz, seja quando uma luz é acesa em um local, se assiste à televisão, se usa um computador, ou se utiliza um celular, entre outras coisas do cotidiano. No entanto, em meio às ações cotidianas, surge uma questão fundamental: como podemos aproveitar esse recurso de forma mais eficaz e sustentável ao longo prazo?
+                        A energia está presente em praticamente todas as atividades do nosso dia a dia — ao acender uma luz, assistir à televisão, usar o computador ou carregar o celular. Mesmo em tarefas simples, ela é indispensável.
+                        Mas, em meio à rotina, surge uma pergunta essencial: como podemos utilizar esse recurso de maneira mais eficiente e sustentável a longo prazo? Refletir sobre isso é o primeiro passo para um futuro com mais consciência, economia e respeito ao meio ambiente.
                     </p>
                 </section>
 
                 <section className="homepage-card">
                     <h2>O que este sistema faz?</h2>
                     <p>
-                        Este é um sistema online, em formato de website, que integra dados de consumo de energia de dispositivos eletrônicos residenciais, coletados através de tecnologia IoT. A implementação do sistema utiliza metodologias de desenvolvimento de software, protocolos de criptografia e sistemas de gerenciamento de banco de dados, com o intuito de otimizar o consumo energético e fomentar práticas sustentáveis.
+                        Descubra uma nova forma de cuidar do planeta e da sua casa. Este sistema online inovador, desenvolvido em formato de website, monitora o consumo de energia de dispositivos eletrônicos residenciais por meio da tecnologia IoT.
+                        Com uma estrutura baseada em segurança digital, bancos de dados inteligentes e metodologias modernas de software, ele oferece mais do que controle: promove eficiência, economia e consciência ambiental.
+                        Uma solução pensada para quem acredita que tecnologia e sustentabilidade devem caminhar juntas.
                     </p>
                 </section>
             </main>
