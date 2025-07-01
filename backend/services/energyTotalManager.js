@@ -28,6 +28,20 @@ function isPenultimateDayOfMonth() {
 }
 
 /**
+ * Verifica se é o último minuto do último dia do mês (23:59)
+ * @returns {boolean}
+ */
+function isLastMinuteOfMonth() {
+    const now = new Date();
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    return (
+        now.getDate() === lastDay.getDate() &&
+        now.getHours() === 23 &&
+        now.getMinutes() === 59
+    );
+}
+
+/**
  * Calcula o consumo mensal de energia total
  * @param {number} currentTotalEnergy - Valor atual do totalEnergy do Tasmota
  * @param {number} lastSavedTotalEnergy - Último valor salvo no banco
@@ -63,8 +77,8 @@ async function processEnergyData(energyData, deviceId, tasmotaTopic) {
     const device = await getDevice(deviceId);
     const dataToSave = prepareBaseData(energyData, deviceId, energyData.timestamp);
 
-    // Só salva totalEnergy no último dia do mês
-    if (isLastDayOfMonth()) {
+    // Só salva totalEnergy no último minuto do último dia do mês
+    if (isLastMinuteOfMonth()) {
         const lastMonthTotal = device.lastSavedTotalEnergy || 0;
         const monthlyConsumption = calculateMonthlyConsumption(energyData.totalEnergy, lastMonthTotal);
         dataToSave.totalEnergy = monthlyConsumption;
@@ -72,7 +86,7 @@ async function processEnergyData(energyData, deviceId, tasmotaTopic) {
             where: { id: deviceId },
             data: { lastSavedTotalEnergy: energyData.totalEnergy }
         });
-        console.log(`[${tasmotaTopic}] Último dia do mês - Consumo mensal calculado: ${monthlyConsumption} kWh (Total acumulado: ${energyData.totalEnergy} kWh)`);
+        console.log(`[${tasmotaTopic}] Último minuto do mês - Consumo mensal calculado: ${monthlyConsumption} kWh (Total acumulado: ${energyData.totalEnergy} kWh)`);
     } else {
         dataToSave.totalEnergy = null;
     }
@@ -179,6 +193,7 @@ async function getAccumulatedTotalEnergy(deviceId) {
 module.exports = {
     isLastDayOfMonth,
     isPenultimateDayOfMonth,
+    isLastMinuteOfMonth,
     calculateMonthlyConsumption,
     processEnergyData,
     getCurrentTotalEnergyForDisplay,
