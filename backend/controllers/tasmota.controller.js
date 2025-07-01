@@ -29,11 +29,11 @@ async function getDevice(req, res, next) {
 
 // Adicionar um novo dispositivo Tasmota ao usuário
 async function addDevice(req, res) {
-    const { name, tasmotaTopic, macAddress, model } = req.body;
+    const { name, tasmotaTopic, macAddress, model, broker } = req.body;
     const userId = req.user.userId; // ID do usuário do token JWT
 
-    if (!name || !tasmotaTopic) {
-        return res.status(400).json({ message: 'Nome e Tópico Tasmota são obrigatórios.' });
+    if (!name || !tasmotaTopic || !broker) {
+        return res.status(400).json({ message: 'Nome, Tópico Tasmota e Broker são obrigatórios.' });
     }
 
     try {
@@ -44,8 +44,6 @@ async function addDevice(req, res) {
         });
 
         if (existingDeviceByTopic) {
-            // Se o tópico já existe e pertence ao usuário atual, é um erro de duplicação.
-            // Se o tópico existe e pertence a OUTRO usuário, é um conflito e não pode ser adicionado.
             if (existingDeviceByTopic.userId === userId) {
                 return res.status(409).json({ message: 'Este tópico Tasmota já está registrado para você.' });
             } else {
@@ -53,19 +51,17 @@ async function addDevice(req, res) {
             }
         }
 
-        // Agora, cria o dispositivo.
-        // O `powerState` inicial pode ser `false` (desligado) ou `true` (se você quiser um padrão).
-        // `lastSeen` e `ipAddress` podem ser nulos e serão preenchidos pela telemetria MQTT.
         const newDevice = await prisma.device.create({
             data: {
                 name,
                 tasmotaTopic,
-                macAddress: macAddress || null, // Permite nulo se não fornecido
-                model: model || 'Desconhecido', // Define um valor padrão
+                macAddress: macAddress || null,
+                model: model || 'Desconhecido',
                 userId,
-                powerState: false, // Estado inicial
+                powerState: false,
                 lastSeen: null,
                 ipAddress: null,
+                broker, // Salva o broker
             },
         });
         res.status(201).json({ message: 'Dispositivo adicionado com sucesso!', device: newDevice });
@@ -252,12 +248,12 @@ async function toggleDevicePower(req, res) {
         console.log(`[toggleDevicePower] Device:`, device);
         const topic = `cmnd/${device.tasmotaTopic}/POWER`;
         const command = state; // O comando é exatamente 'ON' ou 'OFF'
-        console.log(`[toggleDevicePower] Enviando comando MQTT: ${topic} -> ${command}`);
+        const broker = device.broker || 'broker1';
+        console.log(`[toggleDevicePower] Enviando comando MQTT: ${topic} -> ${command} via ${broker}`);
 
         // O tasmotaService precisa ter a função publishMqttCommand exportada
-        await tasmotaService.publishMqttCommand(topic, command);
+        await tasmotaService.publishMqttCommand(topic, command, broker);
 
-        // Mensagem simplificada
         if (state === 'ON') {
             res.status(200).json({ message: 'Dispositivo ligado com sucesso.' });
         } else {
