@@ -117,6 +117,7 @@ async function getUserDevices(req, res) {
         }));
 
         res.json(formattedDevices);
+        console.log(`Leitura enviada para o frontend do ${device.broker} referente ao ${device.name}`);
     } catch (error) {
         console.error('Erro ao obter dispositivos do usuário:', error);
         res.status(500).json({ message: 'Erro interno do servidor ao obter dispositivos.' });
@@ -161,6 +162,7 @@ async function getDeviceDetails(req, res) {
         };
 
         res.json(formattedDevice);
+        console.log(`Leitura enviada para o frontend do ${device.broker} referente ao ${device.name}`);
     } catch (error) {
         console.error('Erro ao obter detalhes do dispositivo:', error);
         res.status(500).json({ message: 'Erro interno do servidor ao obter detalhes do dispositivo.' });
@@ -195,6 +197,7 @@ async function getLatestEnergyReading(req, res) {
         };
 
         res.json(updatedReading);
+        console.log(`Leitura enviada para o frontend do ${device.broker} referente ao ${device.name}`);
     } catch (error) {
         console.error('Erro ao obter última leitura de energia:', error);
         res.status(500).json({ message: 'Erro interno do servidor ao obter a última leitura de energia.' });

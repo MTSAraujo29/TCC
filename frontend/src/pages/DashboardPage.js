@@ -1164,7 +1164,10 @@ function DashboardPage() {
                 isRealData &&
                     devices.length > 1 &&
                     devices[1].latestReading && ( <
-                        div className = "energy-realtime-card" >
+                        div className = "energy-realtime-card"
+                        style = {
+                            { marginTop: '32px' }
+                        } >
                         <
                         h3 > Dados em Tempo Real do Dispositivo Sonoff Câmera < /h3> <
                         table className = "energy-realtime-table" >

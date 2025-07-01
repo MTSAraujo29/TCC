@@ -158,7 +158,10 @@ async function handleMqttMessage(topic, message, broker) {
                 }, device.id, tasmotaTopic);
                 console.log(`[${broker}] Dados processados para salvar (STATUS10):`, JSON.stringify(processedData, null, 2));
                 const leituraSalva = await prisma.energyReading.create({
-                    data: processedData
+                    data: {
+                        ...processedData,
+                        brokerLabel: broker
+                    }
                 });
             }
         }
@@ -213,7 +216,10 @@ async function handleMqttMessage(topic, message, broker) {
                 }, device.id, tasmotaTopic);
                 console.log(`[${broker}] Dados processados para salvar (SENSOR):`, JSON.stringify(processedData, null, 2));
                 const leituraSalva = await prisma.energyReading.create({
-                    data: processedData
+                    data: {
+                        ...processedData,
+                        brokerLabel: broker
+                    }
                 });
             }
         }
