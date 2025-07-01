@@ -245,8 +245,14 @@ async function toggleDevicePower(req, res) {
     }
 
     try {
+        if (!device) {
+            console.error('[toggleDevicePower] Dispositivo não encontrado no req.device!');
+            return res.status(404).json({ message: 'Dispositivo não encontrado no req.device.' });
+        }
+        console.log(`[toggleDevicePower] Device:`, device);
         const topic = `cmnd/${device.tasmotaTopic}/POWER`;
         const command = state; // O comando é exatamente 'ON' ou 'OFF'
+        console.log(`[toggleDevicePower] Enviando comando MQTT: ${topic} -> ${command}`);
 
         // O tasmotaService precisa ter a função publishMqttCommand exportada
         await tasmotaService.publishMqttCommand(topic, command);
@@ -258,8 +264,8 @@ async function toggleDevicePower(req, res) {
             res.status(200).json({ message: 'Dispositivo desligado com sucesso.' });
         }
     } catch (error) {
-        console.error('Erro ao alternar energia do dispositivo:', error);
-        res.status(500).json({ message: 'Erro interno do servidor ao alternar energia do dispositivo.' });
+        console.error('[toggleDevicePower] Erro ao alternar energia do dispositivo:', error);
+        res.status(500).json({ message: 'Erro interno do servidor ao alternar energia do dispositivo.', error: error.message });
     }
 }
 
