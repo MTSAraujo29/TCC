@@ -56,6 +56,18 @@ const MQTT_OPTIONS = {
     rejectUnauthorized: false // Em produção, para certificados de CA confiável, pode ser true. Para desenvolvimento, false pode ser útil.
 };
 
+const MQTT_OPTIONS2 = {
+    port: MQTT_PORT2,
+    username: MQTT_USERNAME2,
+    password: MQTT_PASSWORD2,
+    clientId: CLIENT_ID,
+    clean: true,
+    keepalive: 60,
+    reconnectPeriod: 1000,
+    protocol: MQTT_PROTOCOL2,
+    rejectUnauthorized: false
+};
+
 let mqttClient = null;
 let mqttClient2 = null;
 
