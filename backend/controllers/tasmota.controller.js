@@ -251,18 +251,12 @@ async function toggleDevicePower(req, res) {
         // O tasmotaService precisa ter a função publishMqttCommand exportada
         await tasmotaService.publishMqttCommand(topic, command);
 
-        // Opcional: Atualizar o powerState do Device no DB.
-        // O ideal é que o tasmota.service.js, ao receber o status do Tasmota (stat/+/POWER),
-        // atualize o powerState no DB. Mas para feedback mais rápido, pode-se fazer aqui.
-        // Contudo, é mais seguro que o estado no DB reflita o estado REAL do dispositivo via MQTT.
-        // Portanto, a linha abaixo é comentada, confiando na atualização via MQTT de telemetria.
-        // await prisma.device.update({
-        //     where: { id: device.id },
-        //     data: { powerState: state === 'ON' }
-        // });
-
-
-        res.status(200).json({ message: `Comando '${state}' enviado com sucesso para ${device.name} (Tópico: ${topic}).` });
+        // Mensagem simplificada
+        if (state === 'ON') {
+            res.status(200).json({ message: 'Dispositivo ligado com sucesso.' });
+        } else {
+            res.status(200).json({ message: 'Dispositivo desligado com sucesso.' });
+        }
     } catch (error) {
         console.error('Erro ao alternar energia do dispositivo:', error);
         res.status(500).json({ message: 'Erro interno do servidor ao alternar energia do dispositivo.' });

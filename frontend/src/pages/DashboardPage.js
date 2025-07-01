@@ -783,7 +783,7 @@ function DashboardPage() {
                         <h2>Olá, {userName}!</h2>
                         <div className="metrics-grid">
                             <div className="metric-card">
-                                <h3>Consumo de energia atual</h3>
+                                <h3>Consumo de Watts atual</h3>
                                 <p>
                                     {devices.length > 0 &&
                                     devices[0].powerState &&
@@ -794,7 +794,7 @@ function DashboardPage() {
                                 </p>
                             </div>
                             <div className="metric-card">
-                                <h3>Consumo do mês atual</h3>
+                                <h3>Consumo de quilowatt-hora do mês atual</h3>
                                 <p>{currentMonthConsumption}</p>
                             </div>
                             <div className="metric-card">
@@ -808,7 +808,7 @@ function DashboardPage() {
                                 </p>
                             </div>
                             <div className="metric-card">
-                                <h3>Consumo total</h3>
+                                <h3>Consumo quilowatt-hora total </h3>
                                 <p>
                                     {devices.length > 0 &&
                                     devices[0].powerState &&
