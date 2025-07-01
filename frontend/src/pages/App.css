@@ -161,3 +161,20 @@
         white-space: nowrap;
     }
 }
+
+@media (max-width: 700px) {
+    .energy-realtime-table,
+    .energy-realtime-tbody {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    .energy-realtime-table td,
+    .energy-realtime-table th {
+        min-width: 140px;
+        text-align: left;
+        padding: 8px 6px;
+        white-space: nowrap;
+    }
+}
