@@ -820,126 +820,345 @@ function DashboardPage() {
             )
         }
 
-        { /* Outras sessões: layout normal do dashboard */ } {
-            activeSection !== 'inicio' && ( <
-                >
-                <
-                div className = "chart-area-main" >
-                <
-                div className = "chart-card-main" >
-                <
-                div className = "view-mode-buttons" >
-                <
-                button onClick = {
-                    () => setViewMode('day')
-                }
-                className = { viewMode === 'day' ? 'active-view-button' : 'view-button' } >
-                Dia <
-                /button> <
-                button onClick = {
-                    () => setViewMode('week')
-                }
-                className = { viewMode === 'week' ? 'active-view-button' : 'view-button' } >
-                Semana <
-                /button> <
-                button onClick = {
-                    () => setViewMode('month')
-                }
-                className = { viewMode === 'month' ? 'active-view-button' : 'view-button' } >
-                Mês <
-                /button> < /
-                div >
-
-                {
-                    getChartData().labels.length > 0 ? ( <
-                        Line data = { getChartData() }
-                        options = { chartOptions }
-                        />
-                    ) : ( <
-                        p style = {
-                            { color: '#BBB', textAlign: 'center' }
-                        } >
-                        Carregando dados do gráfico... <
-                            /p>
-                    )
-                }
-
-                <
-                button style = {
-                    {
-                        margin: '20px auto 0',
-                        display: 'block',
-                        padding: '10px 24px',
-                        background: '#1976d2',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '6px',
-                        fontSize: '1.1em',
-                        cursor: 'pointer',
-                        fontWeight: 'bold',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                    }
-                }
-                onClick = {
-                    () => navigate('/grafico-cheio')
-                } >
-                Expandir Gráfico <
-                /button> < /
-                div >
-
-                <
-                div className = "bottom-sections-grid" >
-                <
-                div className = "bottom-card consumption-by-type-card" >
-                <
-                h3 > Consumo por Tipo de Dispositivo < /h3> <
-                div className = "chart-wrapper" >
-                <
-                Doughnut data = { getConsumptionByTypeData() }
-                options = { consumptionByTypeOptions }
-                /> < /
-                div > <
-                /div>
-
-                <
-                div className = "bottom-card suggested-devices-card" >
-                <
-                h3 > Dispositivos Sugeridos < /h3> <
-                p style = {
-                    {
-                        color: '#BBB',
-                        fontSize: '0.9em',
-                        marginBottom: '15px',
-                    }
-                } >
-                Sugestões para otimizar o consumo de energia em seus dispositivos. <
-                /p> <
-                ul className = "device-suggestion-list" > {
-                    getSuggestedDevicesData().length > 0 ? (
-                        getSuggestedDevicesData().map((device) => ( <
-                            li key = { device.id } >
-                            <
-                            strong > { device.name }: < /strong> {device.suggestion} < /
-                            li >
-                        ))
-                    ) : ( <
-                        p style = {
-                            { color: '#BBB', textAlign: 'center' }
-                        } >
-                        Nenhuma sugestão no momento. <
-                        /p>
+        { /* Seção Controle de Energia */ } {
+            activeSection === 'controle' && ( <
+                    div className = "energy-control-section" >
+                    <
+                    h2 > Controle de Dispositivos < /h2> {
+                    deviceMessage && ( <
+                        p className = "device-feedback-message" > { deviceMessage } < /p>
                     )
                 } <
-                /ul> < /
-                div > <
-                /div> < /
-                div > <
-                />
+                h3 > Meus Dispositivos de Energia < /h3> {
+            devices.length > 0 ? ( <
+                div className = "device-control-list" > {
+                    devices.map((device) => ( <
+                        div key = { device.id }
+                        className = "device-control-item" >
+                        <
+                        span className = "device-control-name" > { device.name } < /span> <
+                        button onClick = {
+                            () => toggleDevicePower(device.id, device.powerState, device.name)
+                        }
+                        className = "device-toggle-button power-on"
+                        type = "button"
+                        style = {
+                            { cursor: 'pointer' }
+                        }
+                        disabled = { device.powerState } >
+                        Ligar <
+                        /button> <
+                        button onClick = {
+                            () => toggleDevicePower(device.id, device.powerState, device.name)
+                        }
+                        className = "device-toggle-button power-off"
+                        type = "button"
+                        style = {
+                            { cursor: 'pointer', marginLeft: '10px' }
+                        }
+                        disabled = {!device.powerState } >
+                        Desligar <
+                        /button> < /
+                        div >
+                    ))
+                } < /
+                div >
+            ) : ( <
+                p style = {
+                    { color: '#BBB', textAlign: 'center' }
+                } >
+                Nenhum dispositivo encontrado. <
+                /p>
+            )
+        } {
+            isRealData && ( <
+                button onClick = {
+                    () => navigate('/add-device')
+                }
+                className = "add-device-btn"
+                style = {
+                    { marginTop: '20px', padding: '10px 20px', backgroundColor: '#00bcd4', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }
+                } >
+                +Adicionar Novo Dispositivo Tasmota <
+                /button>
             )
         } <
-        /div> < /
+        /div >
+    )
+}
+
+{ /* Seção Relatórios */ } {
+    activeSection === 'relatorios' && ( <
         >
-    );
+        <
+        div className = "chart-area-main" >
+        <
+        div className = "chart-card-main" >
+        <
+        div className = "view-mode-buttons" >
+        <
+        button onClick = {
+            () => setViewMode('day')
+        }
+        className = { viewMode === 'day' ? 'active-view-button' : 'view-button' } >
+        Dia <
+        /button> <
+        button onClick = {
+            () => setViewMode('week')
+        }
+        className = { viewMode === 'week' ? 'active-view-button' : 'view-button' } >
+        Semana <
+        /button> <
+        button onClick = {
+            () => setViewMode('month')
+        }
+        className = { viewMode === 'month' ? 'active-view-button' : 'view-button' } >
+        Mês <
+        /button> < /
+        div >
+
+        {
+            getChartData().labels.length > 0 ? ( <
+                Line data = { getChartData() }
+                options = { chartOptions }
+                />
+            ) : ( <
+                p style = {
+                    { color: '#BBB', textAlign: 'center' }
+                } >
+                Carregando dados do gráfico... <
+                    /p>
+            )
+        }
+
+        <
+        button style = {
+            {
+                margin: '20px auto 0',
+                display: 'block',
+                padding: '10px 24px',
+                background: '#1976d2',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '1.1em',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            }
+        }
+        onClick = {
+            () => navigate('/grafico-cheio')
+        } >
+        Expandir Gráfico <
+        /button> < /
+        div >
+
+        <
+        div className = "bottom-sections-grid" >
+        <
+        div className = "bottom-card consumption-by-type-card" >
+        <
+        h3 > Consumo por Tipo de Dispositivo < /h3> <
+        div className = "chart-wrapper" >
+        <
+        Doughnut data = { getConsumptionByTypeData() }
+        options = { consumptionByTypeOptions }
+        /> < /
+        div > <
+        /div>
+
+        <
+        div className = "bottom-card suggested-devices-card" >
+        <
+        h3 > Dispositivos Sugeridos < /h3> <
+        p style = {
+            {
+                color: '#BBB',
+                fontSize: '0.9em',
+                marginBottom: '15px',
+            }
+        } >
+        Sugestões para otimizar o consumo de energia em seus dispositivos. <
+        /p> <
+        ul className = "device-suggestion-list" > {
+            getSuggestedDevicesData().length > 0 ? (
+                getSuggestedDevicesData().map((device) => ( <
+                    li key = { device.id } >
+                    <
+                    strong > { device.name }: < /strong> {device.suggestion} < /
+                    li >
+                ))
+            ) : ( <
+                p style = {
+                    { color: '#BBB', textAlign: 'center' }
+                } >
+                Nenhuma sugestão no momento. <
+                /p>
+            )
+        } <
+        /ul> < /
+        div > <
+        /div> < /
+        div > <
+        />
+    )
+}
+
+{ /* Seção Configurações */ } {
+    activeSection === 'configuracoes' && ( <
+            div className = "settings-section" >
+            <
+            h2 > Configurações da Conta < /h2> <
+            div className = "user-settings-card" >
+            <
+            h3 > Informações do Usuário < /h3> <
+            p > < strong > Nome de Usuário: < /strong> { userName } < /p > <
+            p > < strong > Email: < /strong> { userEmail } < /p > <
+            p >
+            <
+            button className = "edit-profile-button"
+            onClick = { openEditModal } >
+            Editar Perfil <
+            /button> < /
+            p > <
+            p style = {
+                { marginTop: '20px', fontSize: '0.9em', color: '#888' }
+            } >
+            *
+            Após editar ou excluir a conta, será necessário fazer login novamente. <
+            /p> < /
+            div > {
+                /* Modal de edição de conta */
+                showEditModal && ( <
+                    div className = "modal-overlay" >
+                    <
+                    div className = "modal-card" >
+                    <
+                    h3 > Editar Conta < /h3> <
+                    form onSubmit = { handleEditAccount } >
+                    <
+                    label > Novo Nome: < /label> <
+                    input type = "text"
+                    value = { editName }
+                    onChange = {
+                        (e) => setEditName(e.target.value)
+                    }
+                    placeholder = "Novo nome" / > <
+                    label > Nova Senha: < /label> <
+                    input type = "password"
+                    value = { editPassword }
+                    onChange = {
+                        (e) => setEditPassword(e.target.value)
+                    }
+                    placeholder = "Nova senha" / > {
+                        editError && < p className = "error-message" > { editError } < /p>
+                    } <
+                    div className = "button-group small-buttons" >
+                    <
+                    button type = "submit"
+                    disabled = { editLoading }
+                    className = "submit-button small-btn" > {
+                        editLoading ? 'Salvando...' : 'Salvar'
+                    } <
+                    /button> <
+                    button type = "button"
+                    onClick = {
+                        () => {
+                            setShowEditModal(false);
+                            openDeleteModal();
+                        }
+                    }
+                    className = "delete-account-button small-btn"
+                    style = {
+                        { backgroundColor: '#F44336', color: '#fff' }
+                    } >
+                    Excluir Conta <
+                    /button> <
+                    button type = "button"
+                    onClick = {
+                        () => setShowEditModal(false)
+                    }
+                    className = "cancel-button small-btn" >
+                    Cancelar <
+                    /button> < /
+                    div > <
+                    /form> < /
+                    div > <
+                )
+            } {
+                /* Modal de exclusão de conta */
+                showDeleteModal && ( <
+                        div className = "modal-overlay" >
+                        <
+                        div className = "modal-card" >
+                        <
+                        h3 > Excluir Conta < /h3> <
+                        p > Tem certeza que deseja excluir sua conta ? Esta ação é irreversível. < /p> {
+                        deleteError && < p className = "error-message" > { deleteError } < /p>
+                    } <
+                    div className = "button-group" >
+                    <
+                    button onClick = { handleDeleteAccount }
+                disabled = { deleteLoading }
+                style = {
+                        { background: '#F44336' }
+                    } > {
+                        deleteLoading ? 'Excluindo...' : 'Excluir'
+                    } <
+                    /button> <
+                button onClick = {
+                    () => setShowDeleteModal(false)
+                }
+                className = "cancel-button" >
+                    Cancelar <
+                    /button> < /
+                div > <
+                    /div> <
+            )
+        } <
+        div className = "tasmota-settings-card" >
+        <
+        h3 > Gerenciamento de Dispositivos < /h3> <
+    p style = {
+            { color: '#BBB', fontSize: '0.9em' }
+        } >
+        Aqui você pode gerenciar seus dispositivos Tasmota. <
+        /p> {
+    isRealData ? ( <
+        p >
+        <
+        button onClick = {
+            () => navigate('/add-device')
+        }
+        className = "add-device-btn"
+        style = {
+            { padding: '10px 15px', backgroundColor: '#00bcd4', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', marginRight: '10px' }
+        } >
+        Adicionar Novo Dispositivo <
+        /button> <
+        button onClick = { fetchDashboardData }
+        className = "refresh-devices-btn"
+        style = {
+            { padding: '10px 15px', backgroundColor: '#ff9800', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }
+        } >
+        Atualizar Lista de Dispositivos <
+        /button> < /
+        p >
+    ) : ( <
+        p style = {
+            { color: '#BBB', fontSize: '0.9em' }
+        } >
+        O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador. <
+        /p>
+    )
+} <
+/div> < /
+div > <
+)
+} <
+/div> < / >
+);
 }
 
 export default DashboardPage;
