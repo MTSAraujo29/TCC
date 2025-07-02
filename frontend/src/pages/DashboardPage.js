@@ -23,7 +23,9 @@ function DashboardPage() {
     const [totalConsumption, setTotalConsumption] = useState('0.00 kWh');
 
     // Estado para controlar a seção ativa na sidebar
-    const [activeSection, setActiveSection] = useState('inicio');
+    const [activeSection, setActiveSection] = useState(() => {
+        return localStorage.getItem('activeSection') || 'inicio';
+    });
 
     // Estado para mensagens de feedback dos dispositivos
     const [deviceMessage, setDeviceMessage] = useState('');
@@ -102,6 +104,11 @@ function DashboardPage() {
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, [isMobileMenuOpen]);
+
+    // Adicionar após a definição de activeSection:
+    useEffect(() => {
+        localStorage.setItem('activeSection', activeSection);
+    }, [activeSection]);
 
     // ALTERADO: Esta função agora deve processar os `devices` (que podem ser reais do Tasmota ou os mocks)
     const getConsumptionByTypeData = () => {
@@ -405,26 +412,7 @@ function DashboardPage() {
     }, [navigate]); // 'fetchDashboardData' agora depende apenas de 'navigate'"
 
     // Atualizar função para buscar Energia Total diretamente do endpoint live para admin
-    const fetchLiveTotalEnergy = useCallback(async(deviceId) => {
-        if (!deviceId) return;
-        const token = localStorage.getItem('token');
-        try {
-            const response = await fetch(`${API_ENDPOINTS.TASMOTA}/devices/${deviceId}/total-energy-live`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setLiveTotalEnergy(data.totalEnergy);
-            } else {
-                setLiveTotalEnergy(0);
-            }
-        } catch (err) {
-            setLiveTotalEnergy(0);
-        }
-    }, []);
-
-    // Buscar o valor em tempo real sempre que o device principal mudar
-    useEffect(() => {
+    const fetchLiveTotalEnergy = useEffect(() => {
         let intervalId;
         if (devices.length > 0 && devices[0].id) {
             // Atualiza imediatamente ao montar
