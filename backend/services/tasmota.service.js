@@ -1,5 +1,9 @@
 // backend/services/tasmota.service.js
 
+// ATENÇÃO: Este serviço utiliza o padrão Singleton para as conexões MQTT.
+// NÃO crie novas conexões MQTT em outros arquivos! Sempre utilize as instâncias mqttClient e mqttClient2 deste serviço.
+// Isso é fundamental para não exceder o limite de sessões do HiveMQ.
+
 const mqtt = require('mqtt');
 const { PrismaClient } = require('@prisma/client'); // Importa o PrismaClient
 const energyTotalManager = require('./energyTotalManager'); // Importa o novo serviço
@@ -70,6 +74,8 @@ const MQTT_OPTIONS2 = {
 
 let mqttClient = null;
 let mqttClient2 = null;
+let mqttClientInitCount = 0;
+let mqttClient2InitCount = 0;
 
 // Cache em memória para o valor mais recente de energia total de cada dispositivo
 const lastTotalEnergyCache = {};
@@ -87,6 +93,8 @@ function getTotalEnergyFromCache(deviceId) {
 async function initializeMqttClients() {
     // Broker 1
     if (!mqttClient) {
+        mqttClientInitCount++;
+        console.log(`[MQTT] Inicializando conexão MQTT 1 (vezes inicializado: ${mqttClientInitCount})`);
         console.log(`Tentando conectar ao broker MQTT 1: ${MQTT_PROTOCOL}://${MQTT_HOST}:${MQTT_PORT}`);
         mqttClient = mqtt.connect(`${MQTT_PROTOCOL}://${MQTT_HOST}:${MQTT_PORT}`, MQTT_OPTIONS);
         mqttClient.on('connect', () => {
@@ -102,9 +110,19 @@ async function initializeMqttClients() {
             });
         });
         mqttClient.on('message', (topic, message) => handleMqttMessage(topic, message, 'broker1'));
+        mqttClient.on('close', () => {
+            console.warn('[MQTT] Conexão MQTT 1 fechada!');
+        });
+        mqttClient.on('error', (err) => {
+            console.error('[MQTT] Erro na conexão MQTT 1:', err);
+        });
+    } else {
+        console.log('[MQTT] mqttClient já inicializado, reutilizando conexão existente.');
     }
     // Broker 2
     if (!mqttClient2) {
+        mqttClient2InitCount++;
+        console.log(`[MQTT] Inicializando conexão MQTT 2 (vezes inicializado: ${mqttClient2InitCount})`);
         console.log(`Tentando conectar ao broker MQTT 2: ${MQTT_PROTOCOL2}://${MQTT_HOST2}:${MQTT_PORT2}`);
         mqttClient2 = mqtt.connect(`${MQTT_PROTOCOL2}://${MQTT_HOST2}:${MQTT_PORT2}`, MQTT_OPTIONS2);
         mqttClient2.on('connect', () => {
@@ -120,6 +138,14 @@ async function initializeMqttClients() {
             });
         });
         mqttClient2.on('message', (topic, message) => handleMqttMessage(topic, message, 'broker2'));
+        mqttClient2.on('close', () => {
+            console.warn('[MQTT] Conexão MQTT 2 fechada!');
+        });
+        mqttClient2.on('error', (err) => {
+            console.error('[MQTT] Erro na conexão MQTT 2:', err);
+        });
+    } else {
+        console.log('[MQTT] mqttClient2 já inicializado, reutilizando conexão existente.');
     }
 }
 
