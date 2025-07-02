@@ -1,1036 +1,192 @@
-        /* Limpeza de App.css: Remover regras de layout, largura, padding, responsividade e containers que afetam páginas específicas. Manter apenas resets, estilos globais, botões genéricos, inputs e estilos de login/criar conta. */
-    
-    body {
-        margin: 0;
-        padding: 0;
-        font-family: 'Arial', sans-serif;
-        background: linear-gradient(to right, #2a003f, #001030);
-        color: #E0E0E0;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        min-height: 100vh;
-        overflow-x: hidden;
-        box-sizing: border-box;
-        font-size: clamp(1rem, 2vw, 1.25rem);
-    }
-    
-    .container {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        width: 100vw;
-        padding: 0;
-        box-sizing: border-box;
-    }
-    
+/* App.css limpo e corrigido: apenas blocos únicos, sem duplicatas, todas as chaves fechadas corretamente. */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #2a003f, #001030);
+    color: #E0E0E0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+}
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.card {
+    background: rgba(30, 32, 44, 0.98);
+    border-radius: 18px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+    padding: 32px 24px 24px 24px;
+    width: 100%;
+    max-width: clamp(320px, 90vw, 1200px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 24px 0;
+}
+
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+input {
+    width: 100%;
+    padding: clamp(10px, 2vw, 18px) clamp(10px, 2vw, 24px);
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #23243a;
+    color: #fff;
+    font-size: clamp(1em, 2vw, 1.2em);
+    margin-bottom: 0;
+    box-sizing: border-box;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    border-radius: 30px !important;
+    text-align: left;
+    margin-bottom: 12px;
+    padding: 14px 18px;
+    font-size: 1.1em;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #00bcd4;
+}
+
+button,
+.link-button {
+    width: 100%;
+    padding: 12px 0;
+    border-radius: 30px;
+    border: none;
+    background: #00bcd4;
+    color: #fff;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+}
+
+button {
+    font-size: 1.2rem;
+    padding: 1.125rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
+}
+
+button:hover,
+.link-button:hover {
+    background: #0097a7;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 188, 212, 0.6);
+}
+
+button:active,
+.link-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 188, 212, 0.3);
+}
+
+button:disabled,
+.link-button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+    box-shadow: none;
+}
+
+.link-button {
+    background-color: #4a4a7e;
+    font-size: 1.1rem;
+    margin-top: 0;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+a.link-button {
+    text-decoration: none;
+}
+
+.logo-icon {
+    font-size: 3em;
+    margin-bottom: 10px;
+    color: #ffeb3b;
+}
+
+h2 {
+    color: #FFF;
+    margin-bottom: 1.875rem;
+    font-size: clamp(1.2rem, 3vw, 2.2rem);
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #BBB;
+    font-size: 0.9rem;
+}
+
+.error-message {
+    color: #ff6b6b;
+    margin-top: 0.9375rem;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
     .card {
-        background: rgba(30, 32, 44, 0.98);
-        border-radius: 18px;
-        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
-        padding: 32px 24px 24px 24px;
-        width: 100%;
-        max-width: clamp(320px, 90vw, 1200px);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin: 24px 0;
+        max-width: 99vw;
+        padding: 2vw 2vw 2vw 2vw;
+        border-radius: 10px;
     }
-    
-    form {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
+    .container {
+        padding: 0;
     }
-    
-    input {
-        width: 100%;
-        padding: clamp(10px, 2vw, 18px) clamp(10px, 2vw, 24px);
-        border-radius: 6px;
-        border: 1px solid #444;
-        background: #23243a;
-        color: #fff;
-        font-size: clamp(1em, 2vw, 1.2em);
-        margin-bottom: 0;
-        box-sizing: border-box;
-    }
-    
+    input,
     button,
     .link-button {
-        width: 100%;
-        padding: 12px 0;
+        font-size: 1em;
+        padding: 10px 0;
+    }
+}
+
+@media (max-width: 400px) {
+    .card {
+        padding: 1vw;
         border-radius: 6px;
-        border: none;
-        background: #00bcd4;
-        color: #fff;
-        font-size: 1.1em;
-        font-weight: bold;
-        margin-top: 10px;
-        cursor: pointer;
-        transition: background 0.2s;
-        text-align: center;
-        text-decoration: none;
-        display: block;
     }
-    
-    button:hover,
-    .link-button:hover {
-        background: #0097a7;
-    }
-    
     .logo-icon {
-        font-size: 3em;
-        margin-bottom: 10px;
-        color: #ffeb3b;
+        font-size: 2em;
     }
-    
-    @media (max-width: 600px) {
-        .card {
-            max-width: 99vw;
-            padding: 2vw 2vw 2vw 2vw;
-            border-radius: 10px;
-        }
-        .container {
-            padding: 0;
-        }
-        input,
-        button,
-        .link-button {
-            font-size: 1em;
-            padding: 10px 0;
-        }
-    }
-    
-    @media (max-width: 400px) {
-        .card {
-            padding: 1vw;
-            border-radius: 6px;
-        }
-        .logo-icon {
-            font-size: 2em;
-        }
-    }
-    
-    h2 {
-        color: #FFF;
-        margin-bottom: 1.875rem;
-        font-size: clamp(1.2rem, 3vw, 2.2rem);
-    }
-    
-    .form-group {
-        margin-bottom: 1.25rem;
-        text-align: left;
-    }
-    
-    label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: #BBB;
-        font-size: 0.9rem;
-    }
-    
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
-        border-radius: 30px !important;
-        text-align: left;
-        margin-bottom: 12px;
-        padding: 14px 18px;
-        font-size: 1.1em;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="password"]:focus {
-        border-color: #00bcd4;
-    }
-    
-    button {
-        width: 100%;
-        padding: 1.125rem;
-        background-color: #00bcd4;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        font-size: 1.2rem;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
-        margin-top: 1.25rem;
-        margin-bottom: 1.25rem;
-        box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
-    }
-    
-    button:hover {
-        background-color: #00a0b8;
-        transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(0, 188, 212, 0.6);
-    }
-    
-    button:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 5px rgba(0, 188, 212, 0.3);
-    }
-    
-    button:disabled {
-        background-color: #555;
-        cursor: not-allowed;
-        opacity: 0.7;
-        box-shadow: none;
-    }
-    
-    .link-button {
-        width: 100%;
-        padding: 0.9375rem;
-        background-color: #4a4a7e;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.1s ease;
-        margin-top: 0;
-    }
-    
-    .link-button:hover {
-        background-color: #5a5a9e;
-        transform: translateY(-2px);
-    }
-    
-    .link-button:active {
-        transform: translateY(0);
-    }
-    
-    .link-button:disabled {
-        background-color: #555;
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-    
-    a.link-button {
-        text-decoration: none;
-    }
-    
-    .error-message {
-        color: #ff6b6b;
-        margin-top: 0.9375rem;
-        font-size: 0.9rem;
-    }
-    
-    h2 {
-        color: #FFF;
-        margin-bottom: 1.875rem;
-        font-size: clamp(1.2rem, 3vw, 2.2rem);
-    }
-    
-    .form-group {
-        margin-bottom: 1.25rem;
-        text-align: left;
-    }
-    
-    label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: #BBB;
-        font-size: 0.9rem;
-    }
-    
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
-        border-radius: 30px !important;
-        text-align: left;
-        margin-bottom: 12px;
-        padding: 14px 18px;
-        font-size: 1.1em;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="password"]:focus {
-        border-color: #00bcd4;
-    }
-    
-    button {
-        width: 100%;
-        padding: 1.125rem;
-        background-color: #00bcd4;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        font-size: 1.2rem;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
-        margin-top: 1.25rem;
-        margin-bottom: 1.25rem;
-        box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
-    }
-    
-    button:hover {
-        background-color: #00a0b8;
-        transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(0, 188, 212, 0.6);
-    }
-    
-    button:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 5px rgba(0, 188, 212, 0.3);
-    }
-    
-    button:disabled {
-        background-color: #555;
-        cursor: not-allowed;
-        opacity: 0.7;
-        box-shadow: none;
-    }
-    
-    .link-button {
-        width: 100%;
-        padding: 0.9375rem;
-        background-color: #4a4a7e;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.1s ease;
-        margin-top: 0;
-    }
-    
-    .link-button:hover {
-        background-color: #5a5a9e;
-        transform: translateY(-2px);
-    }
-    
-    .link-button:active {
-        transform: translateY(0);
-    }
-    
-    .link-button:disabled {
-        background-color: #555;
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-    
-    a.link-button {
-        text-decoration: none;
-    }
-    
-    .error-message {
-        color: #ff6b6b;
-        margin-top: 0.9375rem;
-        font-size: 0.9rem;
-    }
-    
-    h2 {
-        color: #FFF;
-        margin-bottom: 1.875rem;
-        font-size: clamp(1.2rem, 3vw, 2.2rem);
-    }
-    
-    .form-group {
-        margin-bottom: 1.25rem;
-        text-align: left;
-    }
-    
-    label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: #BBB;
-        font-size: 0.9rem;
-    }
-    
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
-        border-radius: 30px !important;
-        text-align: left;
-        margin-bottom: 12px;
-        padding: 14px 18px;
-        font-size: 1.1em;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="password"]:focus {
-        border-color: #00bcd4;
-    }
-    
-    button {
-        width: 100%;
-        padding: 1.125rem;
-        background-color: #00bcd4;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        font-size: 1.2rem;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
-        margin-top: 1.25rem;
-        margin-bottom: 1.25rem;
-        box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
-    }
-    
-    button:hover {
-        background-color: #00a0b8;
-        transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(0, 188, 212, 0.6);
-    }
-    
-    button:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 5px rgba(0, 188, 212, 0.3);
-    }
-    
-    button:disabled {
-        background-color: #555;
-        cursor: not-allowed;
-        opacity: 0.7;
-        box-shadow: none;
-    }
-    
-    .link-button {
-        width: 100%;
-        padding: 0.9375rem;
-        background-color: #4a4a7e;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.1s ease;
-        margin-top: 0;
-    }
-    
-    .link-button:hover {
-        background-color: #5a5a9e;
-        transform: translateY(-2px);
-    }
-    
-    .link-button:active {
-        transform: translateY(0);
-    }
-    
-    .link-button:disabled {
-        background-color: #555;
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-    
-    a.link-button {
-        text-decoration: none;
-    }
-    
-    .error-message {
-        color: #ff6b6b;
-        margin-top: 0.9375rem;
-        font-size: 0.9rem;
-    }
-    
-    h2 {
-        color: #FFF;
-        margin-bottom: 1.875rem;
-        font-size: clamp(1.2rem, 3vw, 2.2rem);
-    }
-    
-    .form-group {
-        margin-bottom: 1.25rem;
-        text-align: left;
-    }
-    
-    label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: #BBB;
-        font-size: 0.9rem;
-    }
-    
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
-        border-radius: 30px !important;
-        text-align: left;
-        margin-bottom: 12px;
-        padding: 14px 18px;
-        font-size: 1.1em;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="password"]:focus {
-        border-color: #00bcd4;
-    }
-    
-    button {
-        width: 100%;
-        padding: 1.125rem;
-        background-color: #00bcd4;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        font-size: 1.2rem;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
-        margin-top: 1.25rem;
-        margin-bottom: 1.25rem;
-        box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
-    }
-    
-    button:hover {
-        background-color: #00a0b8;
-        transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(0, 188, 212, 0.6);
-    }
-    
-    button:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 5px rgba(0, 188, 212, 0.3);
-    }
-    
-    button:disabled {
-        background-color: #555;
-        cursor: not-allowed;
-        opacity: 0.7;
-        box-shadow: none;
-    }
-    
-    .link-button {
-        width: 100%;
-        padding: 0.9375rem;
-        background-color: #4a4a7e;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.1s ease;
-        margin-top: 0;
-    }
-    
-    .link-button:hover {
-        background-color: #5a5a9e;
-        transform: translateY(-2px);
-    }
-    
-    .link-button:active {
-        transform: translateY(0);
-    }
-    
-    .link-button:disabled {
-        background-color: #555;
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-    
-    a.link-button {
-        text-decoration: none;
-    }
-    
-    .error-message {
-        color: #ff6b6b;
-        margin-top: 0.9375rem;
-        font-size: 0.9rem;
-    }
-    
-    h2 {
-        color: #FFF;
-        margin-bottom: 1.875rem;
-        font-size: clamp(1.2rem, 3vw, 2.2rem);
-    }
-    
-    .form-group {
-        margin-bottom: 1.25rem;
-        text-align: left;
-    }
-    
-    label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: #BBB;
-        font-size: 0.9rem;
-    }
-    
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
-        border-radius: 30px !important;
-        text-align: left;
-        margin-bottom: 12px;
-        padding: 14px 18px;
-        font-size: 1.1em;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="password"]:focus {
-        border-color: #00bcd4;
-    }
-    
-    button {
-        width: 100%;
-        padding: 1.125rem;
-        background-color: #00bcd4;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        font-size: 1.2rem;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
-        margin-top: 1.25rem;
-        margin-bottom: 1.25rem;
-        box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
-    }
-    
-    button:hover {
-        background-color: #00a0b8;
-        transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(0, 188, 212, 0.6);
-    }
-    
-    button:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 5px rgba(0, 188, 212, 0.3);
-    }
-    
-    button:disabled {
-        background-color: #555;
-        cursor: not-allowed;
-        opacity: 0.7;
-        box-shadow: none;
-    }
-    
-    .link-button {
-        width: 100%;
-        padding: 0.9375rem;
-        background-color: #4a4a7e;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.1s ease;
-        margin-top: 0;
-    }
-    
-    .link-button:hover {
-        background-color: #5a5a9e;
-        transform: translateY(-2px);
-    }
-    
-    .link-button:active {
-        transform: translateY(0);
-    }
-    
-    .link-button:disabled {
-        background-color: #555;
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-    
-    a.link-button {
-        text-decoration: none;
-    }
-    
-    .error-message {
-        color: #ff6b6b;
-        margin-top: 0.9375rem;
-        font-size: 0.9rem;
-    }
-    
-    h2 {
-        color: #FFF;
-        margin-bottom: 1.875rem;
-        font-size: clamp(1.2rem, 3vw, 2.2rem);
-    }
-    
-    .form-group {
-        margin-bottom: 1.25rem;
-        text-align: left;
-    }
-    
-    label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: #BBB;
-        font-size: 0.9rem;
-    }
-    
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
-        border-radius: 30px !important;
-        text-align: left;
-        margin-bottom: 12px;
-        padding: 14px 18px;
-        font-size: 1.1em;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="password"]:focus {
-        border-color: #00bcd4;
-    }
-    
-    button {
-        width: 100%;
-        padding: 1.125rem;
-        background-color: #00bcd4;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        font-size: 1.2rem;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
-        margin-top: 1.25rem;
-        margin-bottom: 1.25rem;
-        box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
-    }
-    
-    button:hover {
-        background-color: #00a0b8;
-        transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(0, 188, 212, 0.6);
-    }
-    
-    button:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 5px rgba(0, 188, 212, 0.3);
-    }
-    
-    button:disabled {
-        background-color: #555;
-        cursor: not-allowed;
-        opacity: 0.7;
-        box-shadow: none;
-    }
-    
-    .link-button {
-        width: 100%;
-        padding: 0.9375rem;
-        background-color: #4a4a7e;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.1s ease;
-        margin-top: 0;
-    }
-    
-    .link-button:hover {
-        background-color: #5a5a9e;
-        transform: translateY(-2px);
-    }
-    
-    .link-button:active {
-        transform: translateY(0);
-    }
-    
-    .link-button:disabled {
-        background-color: #555;
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-    
-    a.link-button {
-        text-decoration: none;
-    }
-    
-    .error-message {
-        color: #ff6b6b;
-        margin-top: 0.9375rem;
-        font-size: 0.9rem;
-    }
-    
-    h2 {
-        color: #FFF;
-        margin-bottom: 1.875rem;
-        font-size: clamp(1.2rem, 3vw, 2.2rem);
-    }
-    
-    .form-group {
-        margin-bottom: 1.25rem;
-        text-align: left;
-    }
-    
-    label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: #BBB;
-        font-size: 0.9rem;
-    }
-    
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
-        border-radius: 30px !important;
-        text-align: left;
-        margin-bottom: 12px;
-        padding: 14px 18px;
-        font-size: 1.1em;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="password"]:focus {
-        border-color: #00bcd4;
-    }
-    
-    button {
-        width: 100%;
-        padding: 1.125rem;
-        background-color: #00bcd4;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        font-size: 1.2rem;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
-        margin-top: 1.25rem;
-        margin-bottom: 1.25rem;
-        box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
-    }
-    
-    button:hover {
-        background-color: #00a0b8;
-        transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(0, 188, 212, 0.6);
-    }
-    
-    button:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 5px rgba(0, 188, 212, 0.3);
-    }
-    
-    button:disabled {
-        background-color: #555;
-        cursor: not-allowed;
-        opacity: 0.7;
-        box-shadow: none;
-    }
-    
-    .link-button {
-        width: 100%;
-        padding: 0.9375rem;
-        background-color: #4a4a7e;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.1s ease;
-        margin-top: 0;
-    }
-    
-    .link-button:hover {
-        background-color: #5a5a9e;
-        transform: translateY(-2px);
-    }
-    
-    .link-button:active {
-        transform: translateY(0);
-    }
-    
-    .link-button:disabled {
-        background-color: #555;
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-    
-    a.link-button {
-        text-decoration: none;
-    }
-    
-    .error-message {
-        color: #ff6b6b;
-        margin-top: 0.9375rem;
-        font-size: 0.9rem;
-    }
-    
-    h2 {
-        color: #FFF;
-        margin-bottom: 1.875rem;
-        font-size: clamp(1.2rem, 3vw, 2.2rem);
-    }
-    
-    .form-group {
-        margin-bottom: 1.25rem;
-        text-align: left;
-    }
-    
-    label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: #BBB;
-        font-size: 0.9rem;
-    }
-    
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
-        border-radius: 30px !important;
-        text-align: left;
-        margin-bottom: 12px;
-        padding: 14px 18px;
-        font-size: 1.1em;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="password"]:focus {
-        border-color: #00bcd4;
-    }
-    
-    button {
-        width: 100%;
-        padding: 1.125rem;
-        background-color: #00bcd4;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        font-size: 1.2rem;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
-        margin-top: 1.25rem;
-        margin-bottom: 1.25rem;
-        box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
-    }
-    
-    button:hover {
-        background-color: #00a0b8;
-        transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(0, 188, 212, 0.6);
-    }
-    
-    button:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 5px rgba(0, 188, 212, 0.3);
-    }
-    
-    button:disabled {
-        background-color: #555;
-        cursor: not-allowed;
-        opacity: 0.7;
-        box-shadow: none;
-        input,
-        button,
-        .link-button {
-            font-size: clamp(1em, 2vw, 1.2em);
-            padding: clamp(10px, 2vw, 18px) clamp(10px, 2vw, 24px);
-            min-width: 0;
-            box-sizing: border-box;
-        }
-        h2,
-        h3,
-        h4 {
-            font-size: clamp(1.2rem, 3vw, 2.2rem);
-        }
-        .metrics-grid,
-        .bottom-sections-grid,
-        .device-control-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: clamp(12px, 2vw, 32px);
-        }
-        @media (max-width: 900px) {
-            .sidebar {
-                position: fixed;
-                width: 60vw;
-                min-width: 180px;
-                max-width: 320px;
-                z-index: 1000;
-            }
-            .main-content {
-                margin-left: 0 !important;
-                width: 100vw !important;
-                padding: 2vw;
-            }
-        }
-        @media (max-width: 600px) {
-            .card,
-            .add-device-card,
-            .main-content,
-            .energy-realtime-card {
-                max-width: 99vw;
-                padding: 2vw 2vw 2vw 2vw;
-                border-radius: 10px;
-            }
-            .metrics-grid,
-            .bottom-sections-grid,
-            .device-control-list {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-            .sidebar {
-                width: 90vw;
-                min-width: unset;
-                max-width: unset;
-            }
-            .main-content {
-                padding: 2vw 0;
-            }
-            .logo-icon {
-                font-size: 2em;
-            }
-        }
-        @media (max-width: 400px) {
-            .card,
-            .add-device-card,
-            .main-content,
-            .energy-realtime-card {
-                padding: 1vw;
-                border-radius: 6px;
-            }
-            h2,
-            h3,
-            h4 {
-                font-size: 1.1rem;
-            }
-        }
-        /* Garantir que gráficos e tabelas tenham rolagem horizontal se necessário */
-        .chart-area-main,
-        .energy-realtime-table,
-        .chart-card-main canvas {
-            overflow-x: auto;
-            max-width: 100vw;
-        }
-        /* Ajuste para evitar sobreposição de botões e inputs */
-        .button-group,
-        .form-group {
-            flex-wrap: wrap;
-            gap: 8px;
-            display: flex;
-            flex-direction: column;
-        }
-        /* Ajuste para garantir que nada suma ou quebre */
-        * {
-            min-width: 0;
-            min-height: 0;
-            box-sizing: border-box;
-        }
+}
