@@ -11,18 +11,12 @@ function CreateAccountPage() {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        password: ''
+        password: '',
+        confirmPassword: ''
     });
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
-    const [loading, setLoading] = useState(false);
 
-    // Helper functions
-    const validateEmail = (email) => {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    };
-
-    // Event handlers
+    // Handle input changes
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -31,117 +25,107 @@ function CreateAccountPage() {
         }));
     };
 
+    // Form submission handler
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-        setSuccess('');
 
-        // Validation
-        if (!formData.name.trim()) {
-            setError('O nome é obrigatório.');
-            return;
-        }
-        if (!validateEmail(formData.email)) {
-            setError('Por favor, insira um email válido.');
-            return;
-        }
-        if (!formData.password || formData.password.length < 6) {
-            setError('A senha deve ter pelo menos 6 caracteres.');
+        // Validate passwords match
+        if (formData.password !== formData.confirmPassword) {
+            setError('As senhas não coincidem!');
             return;
         }
 
-        setLoading(true);
+        console.log('Attempting to create account:', formData);
 
         try {
             const response = await fetch(API_ENDPOINTS.REGISTER, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name: formData.name.trim(),
-                    email: formData.email.trim(),
+                    name: formData.name,
+                    email: formData.email,
                     password: formData.password
-                })
+                }),
             });
 
             const data = await response.json();
 
-            if (!response.ok) {
-                setError(data.message || (data.errors && data.errors[0]?.msg) || 'Erro ao criar conta.');
+            if (response.ok) {
+                handleRegistrationSuccess(data);
             } else {
-                setSuccess('Conta criada com sucesso! Faça login para continuar.');
-                setFormData({
-                    name: '',
-                    email: '',
-                    password: ''
-                });
+                handleRegistrationError(data);
             }
         } catch (err) {
-            setError('Erro de rede. Tente novamente mais tarde.');
-        } finally {
-            setLoading(false);
+            handleNetworkError(err);
         }
     };
 
+    // Helper functions
+    const handleRegistrationSuccess = (data) => {
+        console.log('Account created successfully:', data);
+        alert('Sua conta foi criada com sucesso! Faça login agora.');
+        navigate('/login');
+    };
+
+    const handleRegistrationError = (data) => {
+        console.error('Account creation failed:', data.message || 'Unknown error');
+        setError(data.message || 'Erro ao criar conta. Tente novamente.');
+    };
+
+    const handleNetworkError = (err) => {
+        console.error('Network error during registration:', err);
+        setError('Não foi possível conectar ao servidor. Verifique sua conexão ou tente mais tarde.');
+    };
+
+    // Render
     return (
         <div className="container">
             <div className="card">
                 <div className="logo-icon">⚡</div>
                 <h2>Criar Conta</h2>
 
-                <form onSubmit={handleSubmit} autoComplete="off">
-                    <label htmlFor="name">Nome:</label>
+                <form onSubmit={handleSubmit}>
                     <input
-                        id="name"
                         type="text"
                         name="name"
                         placeholder="Nome"
                         required
                         value={formData.name}
                         onChange={handleInputChange}
-                        aria-required="true"
-                        autoFocus
                     />
-
-                    <label htmlFor="email">Email:</label>
                     <input
-                        id="email"
                         type="email"
                         name="email"
                         placeholder="Email"
                         required
                         value={formData.email}
                         onChange={handleInputChange}
-                        aria-required="true"
                     />
-
-                    <label htmlFor="password">Senha:</label>
                     <input
-                        id="password"
                         type="password"
                         name="password"
                         placeholder="Senha"
                         required
                         value={formData.password}
                         onChange={handleInputChange}
-                        aria-required="true"
-                        minLength={6}
+                    />
+                    <input
+                        type="password"
+                        name="confirmPassword"
+                        placeholder="Confirmar Senha"
+                        required
+                        value={formData.confirmPassword}
+                        onChange={handleInputChange}
                     />
 
                     {error && (
-                        <div className="error" role="alert">
+                        <p style={{ color: 'red', fontSize: '0.9em' }}>
                             {error}
-                        </div>
+                        </p>
                     )}
 
-                    {success && (
-                        <div className="success" role="status">
-                            {success}
-                        </div>
-                    )}
-
-                    <button type="submit" disabled={loading}>
-                        {loading ? 'Criando...' : 'Criar'}
-                    </button>
+                    <button type="submit">Criar</button>
                 </form>
 
                 <Link to="/" className="link-button">

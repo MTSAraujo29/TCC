@@ -12,18 +12,12 @@ function AddDevicePage() {
         model: ''
     });
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
+    const [error, setError] = useState(null);
 
     // Router hooks
     const navigate = useNavigate();
     const location = useLocation();
     const [searchParams] = useSearchParams();
-
-    // Helper functions
-    function validateTopic(topic) {
-        return topic && topic.length >= 3 && !/\s/.test(topic);
-    }
 
     // Event handlers
     const handleInputChange = (e) => {
@@ -34,10 +28,61 @@ function AddDevicePage() {
         }));
     };
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            handleUnauthenticated();
+            return;
+        }
+
+        try {
+            await addDevice(token);
+        } catch (err) {
+            handleDeviceError(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // API functions
+    const addDevice = async (token) => {
+        const response = await fetch(`${API_ENDPOINTS.TASMOTA}/devices`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(deviceData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Falha ao adicionar dispositivo.');
+        }
+
+        const data = await response.json();
+        handleSuccess(data);
+    };
+
+    // Helper functions
     const handleUnauthenticated = () => {
         setError('Você não está autenticado. Por favor, faça login.');
         navigate('/login');
         setLoading(false);
+    };
+
+    const handleSuccess = (data) => {
+        alert(data.message || 'Dispositivo adicionado com sucesso!');
+        navigate('/dashboard');
+    };
+
+    const handleDeviceError = (err) => {
+        console.error('Erro ao adicionar dispositivo:', err);
+        setError(err.message);
     };
 
     const handleCancel = () => {
@@ -51,64 +96,7 @@ function AddDevicePage() {
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        setSuccess('');
-
-        if (!deviceData.name.trim()) {
-            setError('O nome do dispositivo é obrigatório.');
-            return;
-        }
-
-        if (!validateTopic(deviceData.tasmotaTopic)) {
-            setError('O tópico Tasmota é obrigatório, deve ter pelo menos 3 caracteres e não pode conter espaços.');
-            return;
-        }
-
-        if (!deviceData.model.trim()) {
-            setError('O modelo do dispositivo é obrigatório.');
-            return;
-        }
-
-        setLoading(true);
-
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                handleUnauthenticated();
-                return;
-            }
-
-            const response = await fetch(`${API_ENDPOINTS.TASMOTA}/devices`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(deviceData)
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                setError(data.message || (data.errors && data.errors[0]?.msg) || 'Erro ao adicionar dispositivo.');
-            } else {
-                setSuccess('Dispositivo adicionado com sucesso!');
-                setDeviceData({
-                    name: '',
-                    tasmotaTopic: '',
-                    macAddress: '',
-                    model: ''
-                });
-            }
-        } catch (err) {
-            setError('Erro de rede. Tente novamente mais tarde.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
+    // Render
     return (
         <div className="add-device-page-container">
             <div className="add-device-card">
@@ -123,8 +111,6 @@ function AddDevicePage() {
                             value={deviceData.name}
                             onChange={handleInputChange}
                             required
-                            aria-required="true"
-                            autoFocus
                         />
                     </div>
 
@@ -137,7 +123,6 @@ function AddDevicePage() {
                             onChange={handleInputChange}
                             placeholder="Ex: tasmota_power_monitor"
                             required
-                            aria-required="true"
                         />
                     </div>
 
@@ -160,13 +145,10 @@ function AddDevicePage() {
                             value={deviceData.model}
                             onChange={handleInputChange}
                             placeholder="Ex: Sonoff POWR316D"
-                            required
-                            aria-required="true"
                         />
                     </div>
 
                     {error && <p className="error-message">{error}</p>}
-                    {success && <p className="success-message">{success}</p>}
 
                     <div className="button-group">
                         <button type="submit" disabled={loading}>
