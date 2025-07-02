@@ -31,17 +31,17 @@
     font-size: clamp(1.1rem, 2vw, 2rem);
 }
 
-.form-group {
+.add-device-form-group {
     margin-bottom: 18px;
 }
 
-.form-group label {
+.add-device-form-group label {
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
 }
 
-.form-group input {
+.add-device-form-group input {
     width: calc(100% - 20px);
     /* 100% menos o padding */
     padding: clamp(6px, 1vw, 12px);
@@ -53,11 +53,11 @@
     font-size: clamp(0.9rem, 1.5vw, 1.1rem);
 }
 
-.form-group input::placeholder {
+.add-device-form-group input::placeholder {
     color: #bbb;
 }
 
-.error-message {
+.add-device-error-message {
     color: #ff6b6b;
     margin-bottom: 15px;
     text-align: center;
@@ -112,7 +112,7 @@
         font-size: 1.1rem;
         margin-bottom: 16px;
     }
-    .form-group input {
+    .add-device-form-group input {
         font-size: 0.95rem;
         padding: 8px;
     }
@@ -132,10 +132,10 @@
         font-size: 1rem;
         margin-bottom: 10px;
     }
-    .form-group label {
+    .add-device-form-group label {
         font-size: 0.95rem;
     }
-    .form-group input {
+    .add-device-form-group input {
         font-size: 0.9rem;
         padding: 6px;
     }
@@ -147,7 +147,7 @@
 
 .add-device-card,
 .add-device-page-container,
-.form-group input,
+.add-device-form-group input,
 .add-device-card button {
     box-sizing: border-box;
     width: 100%;
