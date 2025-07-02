@@ -662,7 +662,12 @@ function DashboardPage() {
         div className = "container dashboard-container" > { /* Sidebar de Navegação - Esconde em telas <= 700px */ } <
         div className = "sidebar"
         style = {
-            { display: window.innerWidth <= 700 ? 'none' : 'flex' }
+            {
+                display: window.innerWidth <= 700 ? 'none' : 'flex',
+                height: '100vh', // Garante altura máxima
+                minHeight: '100vh', // Garante altura mínima
+                maxHeight: '100vh', // Garante altura máxima
+            }
         } >
         <
         div className = "logo-icon-sidebar" > ⚡ < /div> <
