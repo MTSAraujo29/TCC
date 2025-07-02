@@ -13,7 +13,7 @@ function LoginPage() {
     const [error, setError] = useState('');
 
     // Event handlers
-    const handleSubmit = async(e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError(''); // Clear previous errors
 
@@ -47,9 +47,6 @@ function LoginPage() {
         localStorage.setItem('userEmail', data.user.email);
         localStorage.setItem('userName', data.user.name);
 
-        // Resetar a sessão ativa para 'inicio' ao fazer login
-        localStorage.setItem('activeSection', 'inicio');
-
         navigate('/dashboard');
     };
 
@@ -64,52 +61,42 @@ function LoginPage() {
     };
 
     // Render
-    return ( <
-        div className = "container" >
-        <
-        div className = "card" >
-        <
-        div className = "logo-icon" > ⚡ < /div> <
-        h2 > Login < /h2>
+    return (
+        <div className="container">
+            <div className="card">
+                <div className="logo-icon">⚡</div>
+                <h2>Login</h2>
 
-        <
-        form onSubmit = { handleSubmit } >
-        <
-        input type = "email"
-        placeholder = "Email"
-        required value = { email }
-        onChange = {
-            (e) => setEmail(e.target.value)
-        }
-        /> <
-        input type = "password"
-        placeholder = "Senha"
-        required value = { password }
-        onChange = {
-            (e) => setPassword(e.target.value)
-        }
-        />
+                <form onSubmit={handleSubmit}>
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <input
+                        type="password"
+                        placeholder="Senha"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
 
-        {
-            error && ( <
-                p style = {
-                    { color: 'red', fontSize: '0.9em' }
-                } > { error } <
-                /p>
-            )
-        }
+                    {error && (
+                        <p style={{ color: 'red', fontSize: '0.9em' }}>
+                            {error}
+                        </p>
+                    )}
 
-        <
-        button type = "submit" > Entrar < /button> < /
-        form >
+                    <button type="submit">Entrar</button>
+                </form>
 
-        <
-        Link to = "/create-account"
-        className = "link-button" >
-        Criar uma conta <
-        /Link> < /
-        div > <
-        /div>
+                <Link to="/create-account" className="link-button">
+                    Criar uma conta
+                </Link>
+            </div>
+        </div>
     );
 }
 
