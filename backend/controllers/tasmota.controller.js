@@ -330,11 +330,7 @@ async function duplicateDevicesToUser(req, res) {
             }
         });
 
-        if (devicesToDuplicate.length === 0) {
-            return res.status(404).json({
-                message: 'Nenhum dispositivo encontrado para duplicar.'
-            });
-        }
+        console.log('[DUPLICAÇÃO] Dispositivos a serem duplicados:', devicesToDuplicate.map(d => ({ id: d.id, tasmotaTopic: d.tasmotaTopic, name: d.name })));
 
         // Verificar se algum dos dispositivos já existe para o usuário de destino
         const existingDevices = await prisma.device.findMany({
@@ -343,6 +339,8 @@ async function duplicateDevicesToUser(req, res) {
                 userId: targetUserId
             }
         });
+
+        console.log('[DUPLICAÇÃO] Dispositivos já existentes para o usuário de destino:', existingDevices.map(d => ({ id: d.id, tasmotaTopic: d.tasmotaTopic, name: d.name })));
 
         if (existingDevices.length > 0) {
             const existingTopics = existingDevices.map(d => d.tasmotaTopic);
