@@ -577,7 +577,7 @@ a.link-button {
     height: auto;
     /* Altura automática para se adaptar ao conteúdo */
     min-height: 25rem;
-    /* Convertido para REM, altura mínima */
+    /* Convertido para REM, antes 350px. Altura mínima */
     box-sizing: border-box;
     /* Garante que padding e border sejam incluídos na altura */
     min-width: 0;
@@ -782,6 +782,21 @@ a.link-button {
 }
 
 
+/* Container para os botões "Adicionar dispositivo" e "Atualizar" */
+
+.device-action-buttons {
+    display: flex;
+    justify-content: center;
+    /* Centraliza os botões */
+    flex-wrap: wrap;
+    /* Permite que os botões quebrem linha em telas menores */
+    gap: 10px;
+    /* Espaçamento entre os botões */
+    margin-top: 1.5625rem;
+    /* Convertido para REM */
+}
+
+
 /* NOVO: Estilo para o botão de adicionar dispositivo Tasmota e atualizar lista */
 
 .add-device-btn,
@@ -797,20 +812,12 @@ a.link-button {
     /* Convertido para REM */
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.1s ease;
-    margin-top: 1.5625rem;
-    /* Convertido para REM */
     width: auto;
     /* Adapta a largura ao conteúdo */
     display: inline-block;
     /* Permite que fiquem lado a lado */
-    margin-right: 0.625rem;
-    /* Espaço entre eles se houver mais de um, convertido para REM */
-}
-
-.add-device-btn:last-child,
-.refresh-devices-btn:last-child {
-    margin-right: 0;
-    /* Remove margem do último botão */
+    margin: 0;
+    /* Remove margens extras */
 }
 
 .add-device-btn:hover,
@@ -1308,6 +1315,8 @@ a.link-button {
         /* Centraliza itens */
         gap: 0.625rem;
         /* Espaço entre itens */
+        display: none;
+        /* Esconde a sidebar padrão em mobile, será controlada por JS */
     }
     .sidebar .logo-icon-sidebar {
         display: none;
@@ -1375,15 +1384,23 @@ a.link-button {
 /* Telas menores que 768px (celulares grandes) */
 
 @media screen and (max-width: 768px) {
+    body {
+        /* Para o dashboard, o body não precisa ser flex centralizado */
+        display: block;
+        padding-top: 44px;
+        /* Adiciona padding para o menu fixo do topo */
+    }
     .container {
-        margin: 1.875rem auto;
-        /* Reduz margem superior */
-        padding: 1rem;
-        /* Reduz padding */
+        margin: 0;
+        /* Remove margem do container principal */
+        padding: 0;
+        /* Remove padding do container principal */
     }
     .card {
         max-width: 98vw;
         padding: 1.5rem;
+        margin: 1rem auto;
+        /* Centraliza cards de login/cadastro */
     }
     h2 {
         font-size: 1.5rem;
@@ -1399,7 +1416,7 @@ a.link-button {
         padding: 0.8rem;
         font-size: 0.95em;
     }
-    /* Dashboard */
+    /* Dashboard: Barra superior e Menu Hambúrguer */
     .mobile-menu-bar {
         /* Barra superior para o menu hambúrguer */
         width: 100vw;
@@ -1449,38 +1466,46 @@ a.link-button {
         display: flex;
         flex-direction: column;
         padding: 10px 0;
-        animation: slideInMenu 0.2s forwards;
-        /* Animação de entrada */
-        /* display: none; /* Inicie com display none e use JS para toggle */
+        transform: translateX(-100%);
+        /* Escondido por padrão */
+        transition: transform 0.3s ease-out;
+        /* Adiciona transição suave */
     }
-    .mobile-menu-box.hidden {
-        animation: slideOutMenu 0.2s forwards;
+    .mobile-menu-box.open {
+        /* Classe para mostrar o menu via JS */
+        transform: translateX(0);
     }
-    /* Animações (adicione ao seu CSS) */
-    @keyframes slideInMenu {
-        from {
-            transform: translateX(-100%);
-        }
-        to {
-            transform: translateX(0);
-        }
+    .mobile-menu-box .menu-item {
+        width: 100%;
+        /* Ocupa a largura total do menu box */
+        text-align: left;
+        padding: 10px 20px;
+        margin: 0;
+        border-radius: 0;
     }
-    @keyframes slideOutMenu {
-        from {
-            transform: translateX(0);
-        }
-        to {
-            transform: translateX(-100%);
-        }
+    .mobile-menu-box .logout-link-sidebar {
+        width: 90%;
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 6px;
+        align-self: center;
+        /* Centraliza o botão dentro do flex container */
     }
     .sidebar {
         display: none;
-        /* Esconde a sidebar padrão em mobile */
+        /* Garante que a sidebar de desktop não apareça */
     }
     .main-content {
-        margin-top: 44px;
-        /* Dá espaço para a barra superior */
+        margin-top: 0;
+        /* Removido, o padding no body já compensa o header fixo */
         padding: 1rem;
+        /* Remover min-height aqui para permitir que o conteúdo se ajuste */
+        min-height: auto;
+    }
+    .main-content h2 {
+        font-size: 1.8rem;
+        /* Ajusta o título do dashboard */
+        margin-bottom: 1rem;
     }
     .metrics-grid,
     .bottom-sections-grid,
@@ -1515,23 +1540,17 @@ a.link-button {
         font-size: 0.85rem;
     }
     /* Ajuste para os botões em telas menores na seção de controle de energia */
+    .device-action-buttons {
+        flex-direction: column;
+        /* Empilha os botões de ação em mobile */
+        gap: 0.625rem;
+    }
     .add-device-btn,
     .refresh-devices-btn {
         width: 100%;
         /* Ocupa a largura total */
-        margin-right: 0;
-        /* Remove margem direita */
-        margin-bottom: 0.625rem;
-        /* Adiciona margem inferior para espaçamento */
-        display: block;
-        /* Garante que cada botão ocupe sua própria linha */
-        margin-left: 0;
-        /* Alinha à esquerda em blocos */
-    }
-    .add-device-btn:last-child,
-    .refresh-devices-btn:last-child {
-        margin-bottom: 0;
-        /* Remove margem do último botão */
+        margin: 0;
+        /* Remove margens para empilhamento */
     }
     .device-control-item {
         flex-direction: column;
@@ -1568,6 +1587,28 @@ a.link-button {
         grid-template-columns: 1fr;
         /* Uma coluna para dados secundários */
         width: 90%;
+    }
+    .energy-realtime-table {
+        font-size: 0.9rem;
+        /* Reduz fonte da tabela */
+    }
+    .energy-realtime-table td {
+        padding: 0.4rem 0.5rem;
+        /* Reduz padding da tabela */
+    }
+    .user-settings-card,
+    .tasmota-settings-card {
+        padding: 1rem;
+        /* Reduz padding */
+        margin-bottom: 1rem;
+    }
+    .change-password-button,
+    .edit-profile-button {
+        width: 100%;
+        /* Ocupa largura total */
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+        display: block;
     }
 }
 
@@ -1619,6 +1660,10 @@ a.link-button {
     .consumption-by-type-card .chart-wrapper {
         height: 10rem;
     }
+    .device-suggestion-list {
+        max-height: 10rem;
+        /* Mantém o tamanho para não ficar muito curto */
+    }
     .device-suggestion-list li {
         font-size: 0.8em;
         padding: 0.4rem 0.6rem;
@@ -1635,6 +1680,10 @@ a.link-button {
     }
     .realtime-power-label {
         font-size: 1rem;
+    }
+    .realtime-secondary-data {
+        width: 95%;
+        /* Ocupa um pouco mais de largura */
     }
 }
 
