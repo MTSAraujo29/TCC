@@ -659,111 +659,97 @@ function DashboardPage() {
     }, [localStorage.getItem('token')]);
 
     return ( <
-        div className = "container dashboard-container" > { /* Sidebar de Navegação - Esconde em telas <= 700px */ } <
-        div className = "sidebar"
-        style = {
+        >
+        { /* Logo fixo no canto superior esquerdo */ } <
+        div style = {
             {
-                display: window.innerWidth <= 700 ? 'none' : 'flex',
-                height: '100vh', // Garante altura máxima
-                minHeight: '100vh', // Garante altura mínima
-                maxHeight: '100vh', // Garante altura máxima
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '70px',
+                height: '70px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 2000,
+                background: '#1a1a2e',
+                boxShadow: '2px 0 10px rgba(0,0,0,0.4)'
             }
         } >
         <
-        div className = "logo-icon-sidebar" > ⚡ < /div> <
+        div className = "logo-icon-sidebar"
+        style = {
+            { margin: 0, fontSize: '2.5rem' }
+        } > ⚡ < /div> < /
+        div >
+
+        { /* Menu horizontal fixo no topo */ } <
+        div style = {
+            {
+                position: 'fixed',
+                top: 0,
+                left: '70px',
+                right: 0,
+                height: '70px',
+                background: '#1a1a2e',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 1500,
+                boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+            }
+        } >
+        <
+        div style = {
+            { display: 'flex', gap: '2rem' }
+        } >
+        <
         div className = { `menu-item ${activeSection === 'inicio' ? 'active' : ''}` }
+        style = {
+            { cursor: 'pointer' }
+        }
         onClick = {
             () => setActiveSection('inicio')
-        } > 🏠Home <
-        /div> <
+        } > 🏠Home < /div> <
         div className = { `menu-item ${activeSection === 'controle' ? 'active' : ''}` }
+        style = {
+            { cursor: 'pointer' }
+        }
         onClick = {
             () => setActiveSection('controle')
-        } > 🔌Controle de Energia <
-        /div> <
+        } > 🔌Controle de Energia < /div> <
         div className = { `menu-item ${activeSection === 'relatorios' ? 'active' : ''}` }
+        style = {
+            { cursor: 'pointer' }
+        }
         onClick = {
             () => setActiveSection('relatorios')
-        } > 📊Relatórios <
-        /div> <
+        } > 📊Relatórios < /div> <
         div className = { `menu-item ${activeSection === 'configuracoes' ? 'active' : ''}` }
+        style = {
+            { cursor: 'pointer' }
+        }
         onClick = {
             () => setActiveSection('configuracoes')
-        } > ⚙️Configurações <
-        /div> <
-        div className = "sidebar-bottom" >
-        <
+        } > ⚙️Configurações < /div> <
         button onClick = { handleLogout }
-        className = "menu-item logout-link-sidebar" > 🔒Sair <
-        /button> < /
+        className = "menu-item logout-link-sidebar"
+        style = {
+            { marginLeft: '2rem' }
+        } > 🔒Sair < /button> < /
         div > <
         /div>
 
-        { /* Mobile Menu */ } {
-            window.innerWidth <= 700 && ( <
-                div className = "mobile-menu-bar" >
-                <
-                button className = "hamburger-btn"
-                onClick = {
-                    () => setIsMobileMenuOpen(!isMobileMenuOpen)
-                } >
-                <
-                span className = "hamburger-icon" > ☰ < /span> < /
-                button > <
-                /div>
-            )
-        }
-
-        {
-            window.innerWidth <= 700 && isMobileMenuOpen && ( <
-                div className = "mobile-menu-box" >
-                <
-                div className = "menu-item"
-                onClick = {
-                    () => {
-                        setActiveSection('inicio');
-                        setIsMobileMenuOpen(false);
-                    }
-                } > 🏠Home <
-                /div> <
-                div className = "menu-item"
-                onClick = {
-                    () => {
-                        setActiveSection('controle');
-                        setIsMobileMenuOpen(false);
-                    }
-                } > 🔌Controle de Energia <
-                /div> <
-                div className = "menu-item"
-                onClick = {
-                    () => {
-                        setActiveSection('relatorios');
-                        setIsMobileMenuOpen(false);
-                    }
-                } > 📊Relatórios <
-                /div> <
-                div className = "menu-item"
-                onClick = {
-                    () => {
-                        setActiveSection('configuracoes');
-                        setIsMobileMenuOpen(false);
-                    }
-                } > ⚙️Configurações <
-                /div> <
-                div className = "menu-item logout-link-sidebar"
-                onClick = {
-                    () => {
-                        handleLogout();
-                        setIsMobileMenuOpen(false);
-                    }
-                } > 🔒Sair <
-                /div> < /
-                div >
-            )
-        }
+        { /* Espaço para o topo fixo */ } <
+        div style = {
+            { height: '70px' }
+        } > < /div>
 
         { /* Conteúdo Principal do Dashboard */ } <
-        div className = "main-content" > {
+        div className = "container dashboard-container"
+        style = {
+            { marginTop: '0' }
+        } > {
             fictionalDataMessage && ( <
                 div style = {
                     {
@@ -835,25 +821,19 @@ function DashboardPage() {
                 button onClick = {
                     () => setViewMode('day')
                 }
-                className = {
-                    viewMode === 'day' ? 'active-view-button' : 'view-button'
-                } >
+                className = { viewMode === 'day' ? 'active-view-button' : 'view-button' } >
                 Dia <
                 /button> <
                 button onClick = {
                     () => setViewMode('week')
                 }
-                className = {
-                    viewMode === 'week' ? 'active-view-button' : 'view-button'
-                } >
+                className = { viewMode === 'week' ? 'active-view-button' : 'view-button' } >
                 Semana <
                 /button> <
                 button onClick = {
                     () => setViewMode('month')
                 }
-                className = {
-                    viewMode === 'month' ? 'active-view-button' : 'view-button'
-                } >
+                className = { viewMode === 'month' ? 'active-view-button' : 'view-button' } >
                 Mês <
                 /button> < /
                 div >
@@ -927,7 +907,7 @@ function DashboardPage() {
                         getSuggestedDevicesData().map((device) => ( <
                             li key = { device.id } >
                             <
-                            strong > { device.name }: < /strong> { device.suggestion } < /
+                            strong > { device.name }: < /strong> {device.suggestion} < /
                             li >
                         ))
                     ) : ( <
@@ -1034,19 +1014,18 @@ function DashboardPage() {
             <
             h3 > Resumo Geral < /h3> <
             p >
-            Total de Dispositivos: { ' ' } <
+            Total de Dispositivos: { '' } <
             strong > { report.summary.totalDevices } < /strong> < /
             p > <
             p >
-            Dispositivos com Uso Inteligente(estimado): { ' ' } <
+            Dispositivos com Uso Inteligente(estimado): { '' } <
             strong > { report.summary.smartUsageDevices } < /strong> < /
             p > <
             p >
-            Dispositivos com Otimização Pendente(estimado): { ' ' } <
+            Dispositivos com Otimização Pendente(estimado): { '' } <
             strong > { report.summary.nonSmartUsageDevices } < /strong> < /
             p > <
-            p className = "overall-report-message" > { report.summary.overallMessage } <
-            /p> < /
+            p className = "overall-report-message" > { report.summary.overallMessage } < /p> < /
             div >
 
             {
@@ -1067,7 +1046,7 @@ function DashboardPage() {
                         devices[0].powerState &&
                         typeof devices[0].latestReading.voltage === 'number' ?
                         devices[0].latestReading.voltage : 0
-                    } { ' ' }
+                    } { '' }
                     V <
                     /td> < /
                     tr > <
@@ -1078,7 +1057,7 @@ function DashboardPage() {
                         devices[0].powerState &&
                         typeof devices[0].latestReading.current === 'number' ?
                         devices[0].latestReading.current : 0
-                    } { ' ' }
+                    } { '' }
                     A <
                     /td> < /
                     tr > <
@@ -1089,7 +1068,7 @@ function DashboardPage() {
                         devices[0].powerState &&
                         typeof devices[0].latestReading.power === 'number' ?
                         devices[0].latestReading.power : 0
-                    } { ' ' }
+                    } { '' }
                     W <
                     /td> < /
                     tr > <
@@ -1101,7 +1080,7 @@ function DashboardPage() {
                         typeof devices[0].latestReading.ApparentPower ===
                         'number' ?
                         devices[0].latestReading.ApparentPower : 0
-                    } { ' ' }
+                    } { '' }
                     VA <
                     /td> < /
                     tr > <
@@ -1113,7 +1092,7 @@ function DashboardPage() {
                         typeof devices[0].latestReading.ReactivePower ===
                         'number' ?
                         devices[0].latestReading.ReactivePower : 0
-                    } { ' ' }
+                    } { '' }
                     var <
                     /td> < /
                     tr > <
@@ -1134,7 +1113,7 @@ function DashboardPage() {
                         typeof devices[0].latestReading.EnergyToday ===
                         'number' ?
                         devices[0].latestReading.EnergyToday : '--'
-                    } { ' ' }
+                    } { '' }
                     kWh <
                     /td> < /
                     tr > <
@@ -1145,7 +1124,7 @@ function DashboardPage() {
                         typeof devices[0].latestReading.EnergyYesterday ===
                         'number' ?
                         devices[0].latestReading.EnergyYesterday : '--'
-                    } { ' ' }
+                    } { '' }
                     kWh <
                     /td> < /
                     tr > <
@@ -1186,7 +1165,7 @@ function DashboardPage() {
                             devices[1].powerState &&
                             typeof devices[1].latestReading.voltage === 'number' ?
                             devices[1].latestReading.voltage : 0
-                        } { ' ' }
+                        } { '' }
                         V <
                         /td> < /
                         tr > <
@@ -1197,7 +1176,7 @@ function DashboardPage() {
                             devices[1].powerState &&
                             typeof devices[1].latestReading.current === 'number' ?
                             devices[1].latestReading.current : 0
-                        } { ' ' }
+                        } { '' }
                         A <
                         /td> < /
                         tr > <
@@ -1208,7 +1187,7 @@ function DashboardPage() {
                             devices[1].powerState &&
                             typeof devices[1].latestReading.power === 'number' ?
                             devices[1].latestReading.power : 0
-                        } { ' ' }
+                        } { '' }
                         W <
                         /td> < /
                         tr > <
@@ -1219,7 +1198,7 @@ function DashboardPage() {
                             devices[1].powerState &&
                             typeof devices[1].latestReading.ApparentPower === 'number' ?
                             devices[1].latestReading.ApparentPower : 0
-                        } { ' ' }
+                        } { '' }
                         VA <
                         /td> < /
                         tr > <
@@ -1230,7 +1209,7 @@ function DashboardPage() {
                             devices[1].powerState &&
                             typeof devices[1].latestReading.ReactivePower === 'number' ?
                             devices[1].latestReading.ReactivePower : 0
-                        } { ' ' }
+                        } { '' }
                         var <
                         /td> < /
                         tr > <
@@ -1250,7 +1229,7 @@ function DashboardPage() {
                         td > {
                             typeof devices[1].latestReading.EnergyToday === 'number' ?
                             devices[1].latestReading.EnergyToday : '--'
-                        } { ' ' }
+                        } { '' }
                         kWh <
                         /td> < /
                         tr > <
@@ -1260,7 +1239,7 @@ function DashboardPage() {
                         td > {
                             typeof devices[1].latestReading.EnergyYesterday === 'number' ?
                             devices[1].latestReading.EnergyYesterday : '--'
-                        } { ' ' }
+                        } { '' }
                         kWh <
                         /td> < /
                         tr > <
@@ -1329,195 +1308,192 @@ function DashboardPage() {
 
 { /* Seção "Configurações" */ } {
     activeSection === 'configuracoes' && ( <
-        div className = "settings-section" >
-        <
-        h2 > Configurações da Conta < /h2> <
-        div className = "user-settings-card" >
-        <
-        h3 > Informações do Usuário < /h3> <
-        p >
-        <
-        strong > Nome de Usuário: < /strong> {userName} < /
-        p > <
-        p >
-        <
-        strong > Email: < /strong> {userEmail} < /
-        p > <
-        p >
-        <
-        button className = "edit-profile-button"
-        onClick = { openEditModal } >
-        Editar Perfil <
-        /button> < /
-        p > <
-        p style = {
-            {
-                marginTop: '20px',
-                fontSize: '0.9em',
-                color: '#888',
-            }
-        } >
-        *
-        Após editar ou excluir a conta, será necessário fazer login novamente. <
-        /p> < /
-        div >
-
-        { /* Modal de edição de conta */ } {
-            showEditModal && ( <
-                div className = "modal-overlay" >
-                <
-                div className = "modal-card" >
-                <
-                h3 > Editar Conta < /h3> <
-                form onSubmit = { handleEditAccount } >
-                <
-                label > Novo Nome: < /label> <
-                input type = "text"
-                value = { editName }
-                onChange = {
-                    (e) => setEditName(e.target.value)
-                }
-                placeholder = "Novo nome" /
-                >
-                <
-                label > Nova Senha: < /label> <
-                input type = "password"
-                value = { editPassword }
-                onChange = {
-                    (e) => setEditPassword(e.target.value)
-                }
-                placeholder = "Nova senha" /
-                >
+            div className = "settings-section" >
+            <
+            h2 > Configurações da Conta < /h2> <
+            div className = "user-settings-card" >
+            <
+            h3 > Informações do Usuário < /h3> <
+            p >
+            <
+            strong > Nome de Usuário: < /strong> {userName} < /
+            p > <
+            p >
+            <
+            strong > Email: < /strong> {userEmail} < /
+            p > <
+            p >
+            <
+            button className = "edit-profile-button"
+            onClick = { openEditModal } >
+            Editar Perfil <
+            /button> < /
+            p > <
+            p style = {
                 {
-                    editError && ( <
-                        p className = "error-message" > { editError } < /p>
-                    )
-                } <
-                div className = "button-group small-buttons" >
-                <
-                button type = "submit"
-                disabled = { editLoading }
-                className = "submit-button small-btn" > { editLoading ? 'Salvando...' : 'Salvar' } <
-                /button> <
-                button type = "button"
-                onClick = {
-                    () => {
-                        setShowEditModal(false);
-                        openDeleteModal();
-                    }
+                    marginTop: '20px',
+                    fontSize: '0.9em',
+                    color: '#888',
                 }
-                className = "delete-account-button small-btn"
-                style = {
-                    { backgroundColor: '#F44336', color: '#fff' }
-                } >
-                Excluir Conta <
-                /button> <
-                button type = "button"
-                onClick = {
-                    () => setShowEditModal(false)
-                }
-                className = "cancel-button small-btn" >
-                Cancelar <
-                /button> < /
-                div > <
-                /form> < /
-                div > <
-                /div>
-            )
-        }
+            } >
+            *
+            Após editar ou excluir a conta, será necessário fazer login novamente. <
+            /p> < /
+            div >
 
-        { /* Modal de exclusão de conta */ } {
-            showDeleteModal && ( <
+            { /* Modal de edição de conta */ } {
+                showEditModal && ( <
                     div className = "modal-overlay" >
                     <
                     div className = "modal-card" >
                     <
-                    h3 > Excluir Conta < /h3> <
-                    p >
-                    Tem certeza que deseja excluir sua conta ? Esta ação é irreversível. <
-                    /p> {
-                    deleteError && ( <
-                        p className = "error-message" > { deleteError } < /p>
-                    )
-                } <
-                div className = "button-group" >
-                <
-                button onClick = { handleDeleteAccount }
-            disabled = { deleteLoading }
-            style = {
-                    { background: '#F44336' }
-                } > { deleteLoading ? 'Excluindo...' : 'Excluir' } <
-                /button> <
-            button onClick = {
-                () => setShowDeleteModal(false)
+                    h3 > Editar Conta < /h3> <
+                    form onSubmit = { handleEditAccount } >
+                    <
+                    label > Novo Nome: < /label> <
+                    input type = "text"
+                    value = { editName }
+                    onChange = {
+                        (e) => setEditName(e.target.value)
+                    }
+                    placeholder = "Novo nome" / >
+                    <
+                    label > Nova Senha: < /label> <
+                    input type = "password"
+                    value = { editPassword }
+                    onChange = {
+                        (e) => setEditPassword(e.target.value)
+                    }
+                    placeholder = "Nova senha" / > {
+                        editError && ( <
+                            p className = "error-message" > { editError } < /p>
+                        )
+                    } <
+                    div className = "button-group small-buttons" >
+                    <
+                    button type = "submit"
+                    disabled = { editLoading }
+                    className = "submit-button small-btn" > { editLoading ? 'Salvando...' : 'Salvar' } <
+                    /button> <
+                    button type = "button"
+                    onClick = {
+                        () => {
+                            setShowEditModal(false);
+                            openDeleteModal();
+                        }
+                    }
+                    className = "delete-account-button small-btn"
+                    style = {
+                        { backgroundColor: '#F44336', color: '#fff' }
+                    } >
+                    Excluir Conta <
+                    /button> <
+                    button type = "button"
+                    onClick = {
+                        () => setShowEditModal(false)
+                    }
+                    className = "cancel-button small-btn" >
+                    Cancelar <
+                    /button> < /
+                    div > <
+                    /form> < /
+                    div > <
+                    /div>
+                )
             }
-            className = "cancel-button" >
-                Cancelar <
-                /button> < /
-            div > <
-                /div> < /
-            div >
-        )
-    }
 
+            { /* Modal de exclusão de conta */ } {
+                showDeleteModal && ( <
+                        div className = "modal-overlay" >
+                        <
+                        div className = "modal-card" >
+                        <
+                        h3 > Excluir Conta < /h3> <
+                        p >
+                        Tem certeza que deseja excluir sua conta ? Esta ação é irreversível. <
+                        /p> {
+                        deleteError && ( <
+                            p className = "error-message" > { deleteError } < /p>
+                        )
+                    } <
+                    div className = "button-group" >
+                    <
+                    button onClick = { handleDeleteAccount }
+                disabled = { deleteLoading }
+                style = {
+                        { background: '#F44336' }
+                    } > { deleteLoading ? 'Excluindo...' : 'Excluir' } <
+                    /button> <
+                button onClick = {
+                    () => setShowDeleteModal(false)
+                }
+                className = "cancel-button" >
+                    Cancelar <
+                    /button> < /
+                div > <
+                    /div> < /
+                div >
+            )
+        } <
+        /div>
+)
+}
+
+<
+div className = "tasmota-settings-card" >
     <
-    div className = "tasmota-settings-card" >
-        <
-        h3 > Gerenciamento de Dispositivos < /h3> <
-    p style = {
-            { color: '#BBB', fontSize: '0.9em' }
-        } >
-        Aqui você pode gerenciar seus dispositivos Tasmota. <
-        /p> {
-    isRealData ? ( <
-        p >
-        <
-        button onClick = {
-            () => navigate('/add-device')
+    h3 > Gerenciamento de Dispositivos < /h3> <
+p style = {
+        { color: '#BBB', fontSize: '0.9em' }
+    } >
+    Aqui você pode gerenciar seus dispositivos Tasmota. <
+    /p> {
+isRealData ? ( <
+    p >
+    <
+    button onClick = {
+        () => navigate('/add-device')
+    }
+    className = "add-device-btn"
+    style = {
+        {
+            padding: '10px 15px',
+            backgroundColor: '#00bcd4',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            marginRight: '10px',
         }
-        className = "add-device-btn"
-        style = {
-            {
-                padding: '10px 15px',
-                backgroundColor: '#00bcd4',
-                color: 'white',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer',
-                marginRight: '10px',
-            }
-        } >
-        Adicionar Novo Dispositivo <
-        /button> <
-        button onClick = { fetchDashboardData }
-        className = "refresh-devices-btn"
-        style = {
-            {
-                padding: '10px 15px',
-                backgroundColor: '#ff9800',
-                color: 'white',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer',
-            }
-        } >
-        Atualizar Lista de Dispositivos <
-        /button> < /
-        p >
-    ) : ( <
-        p style = {
-            { color: '#BBB', fontSize: '0.9em' }
-        } >
-        O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador. <
-        /p>
-    )
-} <
-/div> < /
-div >
+    } >
+    Adicionar Novo Dispositivo <
+    /button> <
+    button onClick = { fetchDashboardData }
+    className = "refresh-devices-btn"
+    style = {
+        {
+            padding: '10px 15px',
+            backgroundColor: '#ff9800',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+        }
+    } >
+    Atualizar Lista de Dispositivos <
+    /button> < /
+    p >
+) : ( <
+    p style = {
+        { color: '#BBB', fontSize: '0.9em' }
+    } >
+    O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador. <
+    /p>
 )
 } <
 /div> < /
-div >
+div > <
+    /div>
 );
 }
 

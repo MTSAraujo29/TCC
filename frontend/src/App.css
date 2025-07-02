@@ -280,93 +280,56 @@ a.link-button {
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
+    margin-top: 70px !important;
 }
 
 
-/* Sidebar */
-
-.sidebar {
-    width: 250px;
-    background-color: #1a1a2e;
-    padding: 1.25rem 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.4);
-    height: 100%;
-    /* Ocupa toda a altura do container pai */
-    justify-content: space-between !important;
-    z-index: 1000;
-}
+/* Sidebar removida - agora menu é horizontal no topo */
 
 .logo-icon-sidebar {
-    font-size: 3rem;
-    /* Convertido para REM */
+    font-size: 2.5rem;
     color: #00bcd4;
-    /* Cor vibrante para o ícone */
-    margin-bottom: 1.875rem;
-    /* Convertido para REM */
-    margin-top: 0.625rem;
-    /* Convertido para REM */
+    margin: 0;
+    padding: 0;
+    /* Logo sempre no topo esquerdo, já tratado inline no componente */
 }
 
 .menu-item {
-    width: 100%;
-    padding: 0.9375rem 1.5625rem;
-    /* Convertido para REM */
     color: #E0E0E0;
     text-decoration: none;
     font-size: 1.1rem;
-    /* Convertido para REM */
     cursor: pointer;
     transition: background-color 0.3s ease;
-    text-align: left;
-    /* Alinhar texto à esquerda */
+    text-align: center;
     box-sizing: border-box;
-    /* Incluir padding na largura */
+    padding: 0.7rem 1.5rem;
+    border-radius: 6px;
+    background: none;
+    border: none;
+    display: inline-block;
 }
 
-.menu-item:hover {
-    background-color: #2b2b4d;
-    /* Cor mais clara no hover */
-}
-
+.menu-item:hover,
 .menu-item.active {
     background-color: #00bcd4;
-    /* Cor de destaque para o item ativo */
     color: #1a1a2e;
-    /* Texto escuro no item ativo para contraste */
     font-weight: bold;
 }
 
-.sidebar-bottom {
-    width: 100%;
-    padding: 1.25rem 0;
-    /* Convertido para REM */
-    border-top: 1px solid #3a3a3a;
-    text-align: center;
-    margin-bottom: 24px;
-    /* Garante espaçamento do botão Sair ao fundo */
-}
-
 .logout-link-sidebar {
-    background: none;
-    /* Reset do estilo de botão */
+    background: #F44336;
+    color: #fff;
     border: none;
-    color: #E0E0E0;
-    cursor: pointer;
+    border-radius: 6px;
+    padding: 0.7rem 1.5rem;
     font-size: 1.1rem;
-    /* Convertido para REM */
-    padding: 0.9375rem 1.5625rem;
-    /* Convertido para REM */
-    width: 100%;
-    text-align: left;
-    transition: background-color 0.3s ease;
+    margin-left: 2rem;
+    cursor: pointer;
+    transition: background 0.3s;
 }
 
 .logout-link-sidebar:hover {
-    background-color: #5a1010;
-    /* Cor de hover mais forte para sair */
+    background: #b71c1c;
 }
 
 
@@ -2402,6 +2365,12 @@ h4 {
     box-sizing: border-box;
 }
 
+box-sizing: border-box;
+
+}
+box-sizing: border-box;
+
+}
 box-sizing: border-box;
 
 }
