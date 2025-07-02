@@ -76,6 +76,9 @@ let mqttClient = null;
 let mqttClient2 = null;
 let mqttClientInitCount = 0;
 let mqttClient2InitCount = 0;
+let mqttClientInactivityTimer = null;
+let mqttClient2InactivityTimer = null;
+const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutos
 
 // Cache em memória para o valor mais recente de energia total de cada dispositivo
 const lastTotalEnergyCache = {};
@@ -86,6 +89,26 @@ function updateTotalEnergyCache(deviceId, valor) {
 
 function getTotalEnergyFromCache(deviceId) {
     return lastTotalEnergyCache[deviceId] || null;
+}
+
+function resetMqttClientInactivityTimer(client, clientName) {
+    if (clientName === 'mqttClient') {
+        if (mqttClientInactivityTimer) clearTimeout(mqttClientInactivityTimer);
+        mqttClientInactivityTimer = setTimeout(() => {
+            console.warn(`[MQTT] ${clientName} inativo por mais de 5 minutos. Desconectando...`);
+            client.end(true, () => {
+                console.log(`[MQTT] ${clientName} desconectado por inatividade.`);
+            });
+        }, INACTIVITY_TIMEOUT_MS);
+    } else if (clientName === 'mqttClient2') {
+        if (mqttClient2InactivityTimer) clearTimeout(mqttClient2InactivityTimer);
+        mqttClient2InactivityTimer = setTimeout(() => {
+            console.warn(`[MQTT] ${clientName} inativo por mais de 5 minutos. Desconectando...`);
+            client.end(true, () => {
+                console.log(`[MQTT] ${clientName} desconectado por inatividade.`);
+            });
+        }, INACTIVITY_TIMEOUT_MS);
+    }
 }
 
 // --- Funções de Serviço Tasmota ---
@@ -108,8 +131,15 @@ async function initializeMqttClients() {
                     }
                 });
             });
+            resetMqttClientInactivityTimer(mqttClient, 'mqttClient');
         });
-        mqttClient.on('message', (topic, message) => handleMqttMessage(topic, message, 'broker1'));
+        mqttClient.on('message', (topic, message) => {
+            resetMqttClientInactivityTimer(mqttClient, 'mqttClient');
+            handleMqttMessage(topic, message, 'broker1');
+        });
+        mqttClient.on('packetsend', () => {
+            resetMqttClientInactivityTimer(mqttClient, 'mqttClient');
+        });
         mqttClient.on('close', () => {
             console.warn('[MQTT] Conexão MQTT 1 fechada!');
         });
@@ -136,8 +166,15 @@ async function initializeMqttClients() {
                     }
                 });
             });
+            resetMqttClientInactivityTimer(mqttClient2, 'mqttClient2');
         });
-        mqttClient2.on('message', (topic, message) => handleMqttMessage(topic, message, 'broker2'));
+        mqttClient2.on('message', (topic, message) => {
+            resetMqttClientInactivityTimer(mqttClient2, 'mqttClient2');
+            handleMqttMessage(topic, message, 'broker2');
+        });
+        mqttClient2.on('packetsend', () => {
+            resetMqttClientInactivityTimer(mqttClient2, 'mqttClient2');
+        });
         mqttClient2.on('close', () => {
             console.warn('[MQTT] Conexão MQTT 2 fechada!');
         });
