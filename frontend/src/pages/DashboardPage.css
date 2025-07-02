@@ -201,3 +201,24 @@
 .modal-card {
     box-sizing: border-box;
 }
+
+.text-muted {
+    color: #BBB;
+    font-size: 0.9em;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.mb-15 {
+    margin-bottom: 15px;
+}
+
+.bold {
+    font-weight: bold;
+}

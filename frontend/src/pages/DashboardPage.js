@@ -878,9 +878,7 @@ function DashboardPage() {
                         options = { chartOptions }
                         />
                     ) : ( <
-                        p style = {
-                            { color: '#BBB', textAlign: 'center' }
-                        } >
+                        p className = "text-muted text-center" >
                         Carregando dados do gráfico... <
                             /p>
                     )
@@ -928,13 +926,7 @@ function DashboardPage() {
                 div className = "bottom-card suggested-devices-card" >
                 <
                 h3 > Dispositivos Sugeridos < /h3> <
-                p style = {
-                    {
-                        color: '#BBB',
-                        fontSize: '0.9em',
-                        marginBottom: '15px',
-                    }
-                } >
+                p className = "text-muted" >
                 Sugestões para otimizar o consumo de energia em seus dispositivos. <
                 /p> <
                 ul className = "device-suggestion-list" > {
@@ -946,9 +938,7 @@ function DashboardPage() {
                             li >
                         ))
                     ) : ( <
-                        p style = {
-                            { color: '#BBB', textAlign: 'center' }
-                        } >
+                        p className = "text-muted text-center" >
                         Nenhuma sugestão no momento. <
                         /p>
                     )
@@ -1009,9 +999,7 @@ function DashboardPage() {
                 } <
                 /div>
             ) : ( <
-                p style = {
-                    { color: '#BBB', textAlign: 'center' }
-                } >
+                p className = "text-muted text-center" >
                 Nenhum dispositivo encontrado. <
                 /p>
             )
@@ -1370,9 +1358,7 @@ function DashboardPage() {
                         /div>
                     ))
             ): ( <
-                p style = {
-                    { color: '#BBB', textAlign: 'center' }
-                } >
+                p className = "text-muted text-center" >
                 Nenhum relatório disponível. <
                 /p>
             )
@@ -1407,13 +1393,7 @@ function DashboardPage() {
         /button> < /
         p >
         <
-        p style = {
-            {
-                marginTop: '20px',
-                fontSize: '0.9em',
-                color: '#888',
-            }
-        } >
+        p className = "text-muted" >
         *
         Após editar ou excluir a conta, será necessário fazer login novamente. <
         /p>< /
@@ -1523,9 +1503,7 @@ function DashboardPage() {
     div className = "tasmota-settings-card" >
         <
         h3 > Gerenciamento de Dispositivos < /h3> <
-    p style = {
-            { color: '#BBB', fontSize: '0.9em' }
-        } >
+    p className = "text-muted" >
         Aqui você pode gerenciar seus dispositivos Tasmota. <
         /p> {
     isRealData ? ( <
@@ -1564,9 +1542,7 @@ function DashboardPage() {
         /button> < /
         p >
     ) : ( <
-        p style = {
-            { color: '#BBB', fontSize: '0.9em' }
-        } >
+        p className = "text-muted" >
         O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador. <
         /p>
     )
