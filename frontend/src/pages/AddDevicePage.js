@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import './AddDevicePage.css';
-import { API_ENDPOINTS } from '../config/api';
+import api from '../config/api';
 
 function AddDevicePage() {
-    // State management
+    // ---------------------------
+    // Hooks e Estados
+    // ---------------------------
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [searchParams] = useSearchParams();
+
     const [deviceData, setDeviceData] = useState({
         name: '',
         tasmotaTopic: '',
@@ -12,15 +18,13 @@ function AddDevicePage() {
         model: '',
         broker: ''
     });
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // Router hooks
-    const navigate = useNavigate();
-    const location = useLocation();
-    const [searchParams] = useSearchParams();
-
-    // Event handlers
+    // ---------------------------
+    // Manipuladores de Eventos
+    // ---------------------------
     const handleInputChange = (e) => {
         const { id, value } = e.target;
         setDeviceData(prev => ({
@@ -41,7 +45,7 @@ function AddDevicePage() {
         setLoading(true);
         setError(null);
 
-        if (!deviceData.broker) {
+        if (!deviceData.broker || !deviceData.name || !deviceData.tasmotaTopic) {
             setError('Nome, Tópico Tasmota e Broker são obrigatórios.');
             setLoading(false);
             return;
@@ -73,31 +77,12 @@ function AddDevicePage() {
         }
     };
 
-    // API functions
+    // ---------------------------
+    // Funções auxiliares e de API
+    // ---------------------------
     const addDevice = async (token) => {
-        const response = await fetch(`${API_ENDPOINTS.TASMOTA}/devices`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(deviceData)
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Falha ao adicionar dispositivo.');
-        }
-
-        const data = await response.json();
-        handleSuccess(data);
-    };
-
-    // Helper functions
-    const handleUnauthenticated = () => {
-        setError('Você não está autenticado. Por favor, faça login.');
-        navigate('/login');
-        setLoading(false);
+        const response = await api.post('/tasmota/devices', deviceData);
+        handleSuccess(response.data);
     };
 
     const handleSuccess = (data) => {
@@ -110,6 +95,15 @@ function AddDevicePage() {
         setError(err.message);
     };
 
+    const handleUnauthenticated = () => {
+        setError('Você não está autenticado. Por favor, faça login.');
+        navigate('/login');
+        setLoading(false);
+    };
+
+    // ---------------------------
+    // Renderização
+    // ---------------------------
     return (
         <div className="add-device-page-container">
             <div className="add-device-card">
@@ -128,7 +122,7 @@ function AddDevicePage() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="tasmotaTopic">Tópico Tasmota(MQTT Topic):</label>
+                        <label htmlFor="tasmotaTopic">Tópico Tasmota (MQTT Topic):</label>
                         <input
                             type="text"
                             id="tasmotaTopic"
@@ -140,7 +134,7 @@ function AddDevicePage() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="macAddress">Endereço MAC(Opcional):</label>
+                        <label htmlFor="macAddress">Endereço MAC (Opcional):</label>
                         <input
                             type="text"
                             id="macAddress"
@@ -151,7 +145,7 @@ function AddDevicePage() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="model">Modelo(Opcional):</label>
+                        <label htmlFor="model">Modelo (Opcional):</label>
                         <input
                             type="text"
                             id="model"
@@ -162,7 +156,7 @@ function AddDevicePage() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="broker">Broker(obrigatório):</label>
+                        <label htmlFor="broker">Broker (Obrigatório):</label>
                         <select
                             id="broker"
                             value={deviceData.broker}

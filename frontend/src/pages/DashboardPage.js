@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../App.css'; // Certifique-se de que este caminho está correto
-import { API_ENDPOINTS } from '../config/api';
+import api from '../config/api';
 
 // Importações do Chart.js
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
@@ -290,14 +290,7 @@ function DashboardPage() {
         setDeviceMessage(`Enviando comando para ${deviceName}: ${newState}...`);
 
         try {
-            const response = await fetch(`${API_ENDPOINTS.TASMOTA}/devices/${deviceId}/power`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ state: newState })
-            });
+            const response = await api.post(`/tasmota/devices/${deviceId}/power`, { state: newState });
 
             const data = await response.json();
 
@@ -345,13 +338,7 @@ function DashboardPage() {
         }
 
         try {
-            const response = await fetch(`${API_ENDPOINTS.DASHBOARD}/data`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const response = await api.get('/dashboard/data');
 
             if (response.ok) {
                 const data = await response.json();
@@ -409,9 +396,7 @@ function DashboardPage() {
         if (!deviceId) return;
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`${API_ENDPOINTS.TASMOTA}/devices/${deviceId}/total-energy-live`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const response = await api.get(`/tasmota/devices/${deviceId}/total-energy-live`);
             if (response.ok) {
                 const data = await response.json();
                 setLiveTotalEnergy(data.totalEnergy);
@@ -586,16 +571,9 @@ function DashboardPage() {
             return;
         }
         try {
-            const response = await fetch(API_ENDPOINTS.ACCOUNT, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    name: editName !== userName ? editName : undefined,
-                    password: editPassword || undefined
-                })
+            const response = await api.put('/account', {
+                name: editName !== userName ? editName : undefined,
+                password: editPassword || undefined
             });
             const data = await response.json();
             if (response.ok) {
@@ -621,12 +599,7 @@ function DashboardPage() {
         setDeleteError('');
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch(API_ENDPOINTS.ACCOUNT, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const response = await api.delete('/account');
             const data = await response.json();
             if (response.ok) {
                 alert('Conta excluída com sucesso!');
@@ -1165,24 +1138,15 @@ function DashboardPage() {
                                         <h4>{detail.name}</h4>
                                         <p>
                                             Status Atual:{' '}
-                                            <span
-                                                className={
-                                                    devices[index] && devices[index].powerState ? 'status-on-text' : 'status-off-text'
-                                                }
-                                            >
+                                            <span className={devices[index] && devices[index].powerState ? 'status-on-text' : 'status-off-text'}>
                       {devices[index] && devices[index].powerState ? 'Ligado' : 'Desligado'}
                     </span>
                                         </p>
                                         <p>Tipo: {detail.type}</p>
                                         <p>Recomendação: {detail.recommendation}</p>
                                         {parseFloat(detail.potentialImpact) !== 0.00 && (
-                                            <p
-                                                className={
-                                                    parseFloat(detail.potentialImpact) > 0 ? 'impact-positive' : 'impact-negative'
-                                                }
-                                            >
-                                                Impacto Potencial: {detail.potentialImpact}
-                                                kWh no próximo mês
+                                            <p className={parseFloat(detail.potentialImpact) > 0 ? 'impact-positive' : 'impact-negative'}>
+                                                Impacto Potencial: {detail.potentialImpact}kWh no próximo mês
                                             </p>
                                         )}
                                     </div>
@@ -1238,11 +1202,7 @@ function DashboardPage() {
                                         />
                                         {editError && <p className="error-message">{editError}</p>}
                                         <div className="button-group small-buttons">
-                                            <button
-                                                type="submit"
-                                                disabled={editLoading}
-                                                className="submit-button small-btn"
-                                            >
+                                            <button type="submit" disabled={editLoading} className="submit-button small-btn">
                                                 {editLoading ? 'Salvando...' : 'Salvar'}
                                             </button>
                                             <button
@@ -1256,11 +1216,7 @@ function DashboardPage() {
                                             >
                                                 Excluir Conta
                                             </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowEditModal(false)}
-                                                className="cancel-button small-btn"
-                                            >
+                                            <button type="button" onClick={() => setShowEditModal(false)} className="cancel-button small-btn">
                                                 Cancelar
                                             </button>
                                         </div>
@@ -1277,11 +1233,7 @@ function DashboardPage() {
                                     <p>Tem certeza que deseja excluir sua conta? Esta ação é irreversível.</p>
                                     {deleteError && <p className="error-message">{deleteError}</p>}
                                     <div className="button-group">
-                                        <button
-                                            onClick={handleDeleteAccount}
-                                            disabled={deleteLoading}
-                                            style={{ background: '#F44336' }}
-                                        >
+                                        <button onClick={handleDeleteAccount} disabled={deleteLoading} style={{ background: '#F44336' }}>
                                             {deleteLoading ? 'Excluindo...' : 'Excluir'}
                                         </button>
                                         <button onClick={() => setShowDeleteModal(false)} className="cancel-button">

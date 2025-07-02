@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../App.css';
-import { API_ENDPOINTS } from '../config/api';
+import api from '../config/api';
 
 function CreateAccountPage() {
     // Hooks
@@ -15,8 +15,10 @@ function CreateAccountPage() {
         confirmPassword: ''
     });
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    // Handle input changes
+    // Event handlers
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -25,57 +27,38 @@ function CreateAccountPage() {
         }));
     };
 
-    // Form submission handler
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setSuccess('');
 
-        // Validate passwords match
+        // Validation
         if (formData.password !== formData.confirmPassword) {
             setError('As senhas não coincidem!');
             return;
         }
 
+        setLoading(true);
         console.log('Attempting to create account:', formData);
 
         try {
-            const response = await fetch(API_ENDPOINTS.REGISTER, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    password: formData.password
-                }),
+            const response = await api.post('/register', {
+                name: formData.name,
+                email: formData.email,
+                password: formData.password
             });
 
-            const data = await response.json();
-
-            if (response.ok) {
-                handleRegistrationSuccess(data);
+            if (response.data.message) {
+                setSuccess(response.data.message);
+                setTimeout(() => navigate('/login'), 2000);
             } else {
-                handleRegistrationError(data);
+                setError('Erro ao criar conta.');
             }
         } catch (err) {
-            handleNetworkError(err);
+            setError(err.response?.data?.error || 'Erro ao criar conta ou conexão.');
+        } finally {
+            setLoading(false);
         }
-    };
-
-    // Helper functions
-    const handleRegistrationSuccess = (data) => {
-        console.log('Account created successfully:', data);
-        alert('Sua conta foi criada com sucesso! Faça login agora.');
-        navigate('/login');
-    };
-
-    const handleRegistrationError = (data) => {
-        console.error('Account creation failed:', data.message || 'Unknown error');
-        setError(data.message || 'Erro ao criar conta. Tente novamente.');
-    };
-
-    const handleNetworkError = (err) => {
-        console.error('Network error during registration:', err);
-        setError('Não foi possível conectar ao servidor. Verifique sua conexão ou tente mais tarde.');
     };
 
     // Render
@@ -84,6 +67,10 @@ function CreateAccountPage() {
             <div className="card">
                 <div className="logo-icon">⚡</div>
                 <h2>Criar Conta</h2>
+
+                {success && (
+                    <p className="success-message">{success}</p>
+                )}
 
                 <form onSubmit={handleSubmit}>
                     <input
@@ -120,12 +107,12 @@ function CreateAccountPage() {
                     />
 
                     {error && (
-                        <p style={{ color: 'red', fontSize: '0.9em' }}>
-                            {error}
-                        </p>
+                        <p className="error-message">{error}</p>
                     )}
 
-                    <button type="submit">Criar</button>
+                    <button type="submit" disabled={loading}>
+                        {loading ? 'Criando...' : 'Criar'}
+                    </button>
                 </form>
 
                 <Link to="/" className="link-button">
