@@ -1,0 +1,203 @@
+/* DashboardPage.css - Estilos modernos e responsivos */
+
+.dashboard-container {
+    width: 100%;
+    min-height: 100vh;
+    background: #181c2a;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 16px 32px 16px;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+.metric-card {
+    background: #23272f;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+    padding: 18px 12px;
+    color: #fff;
+    text-align: center;
+    font-size: 1.1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.metric-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.1em;
+    color: #00bcd4;
+}
+
+.chart-area-main {
+    margin-bottom: 32px;
+}
+
+.chart-card-main {
+    background: #23272f;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+    padding: 18px 12px 24px 12px;
+    margin-bottom: 18px;
+    min-height: 320px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.view-mode-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.view-button,
+.active-view-button {
+    padding: 7px 18px;
+    border-radius: 6px;
+    border: none;
+    background: #222b3a;
+    color: #fff;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.active-view-button {
+    background: #00bcd4;
+    color: #181c2a;
+}
+
+.bottom-sections-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.bottom-card {
+    background: #23272f;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+    padding: 18px 12px 24px 12px;
+    color: #fff;
+    min-height: 220px;
+}
+
+.chart-wrapper {
+    width: 100%;
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.device-suggestion-list {
+    padding-left: 18px;
+    margin: 0;
+}
+
+
+/* Modais */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-card {
+    background: #23272f;
+    border-radius: 12px;
+    padding: 32px 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    color: #fff;
+    min-width: 280px;
+    max-width: 95vw;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.small-buttons {
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+/* Responsividade */
+
+@media (max-width: 900px) {
+    .main-content {
+        padding: 16px 4vw 24px 4vw;
+    }
+    .bottom-sections-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .main-content {
+        padding: 8px 2vw 16px 2vw;
+    }
+    .metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .chart-card-main {
+        min-height: 220px;
+        padding: 10px 4px 16px 4px;
+    }
+    .bottom-card {
+        min-height: 160px;
+        padding: 10px 4px 16px 4px;
+    }
+    .modal-card {
+        padding: 18px 6px;
+    }
+}
+
+@media (max-width: 400px) {
+    .main-content {
+        padding: 2px 1vw 8px 1vw;
+    }
+    .modal-card {
+        min-width: 90vw;
+        padding: 8px 2px;
+    }
+}
+
+
+/* Ajustes gerais */
+
+.metrics-grid,
+.bottom-sections-grid,
+.main-content,
+.chart-area-main,
+.chart-card-main,
+.bottom-card,
+.modal-card {
+    box-sizing: border-box;
+}

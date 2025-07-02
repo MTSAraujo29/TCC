@@ -2,9 +2,20 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../App.css'; // Certifique-se de que este caminho está correto
 import { API_ENDPOINTS } from '../config/api';
+import './DashboardPage.css';
 
 // Importações do Chart.js
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement
+} from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
 
 // Registra os componentes necessários do Chart.js
@@ -665,7 +676,9 @@ function DashboardPage() {
             { display: window.innerWidth <= 700 ? 'none' : 'flex' }
         } >
         <
-        div className = "logo-icon-sidebar" > ⚡ < /div> <
+        div className = "logo-icon-sidebar" > ⚡
+        <
+        /div> <
         div className = { `menu-item ${activeSection === 'inicio' ? 'active' : ''}` }
         onClick = {
             () => setActiveSection('inicio')
@@ -691,7 +704,8 @@ function DashboardPage() {
         button onClick = { handleLogout }
         className = "menu-item logout-link-sidebar" > 🔒Sair <
         /button> < /
-        div > <
+        div >
+        <
         /div>
 
         { /* Mobile Menu */ } {
@@ -703,8 +717,9 @@ function DashboardPage() {
                     () => setIsMobileMenuOpen(!isMobileMenuOpen)
                 } >
                 <
-                span className = "hamburger-icon" > ☰ < /span> < /
-                button > <
+                span className = "hamburger-icon" > ☰ < /span>< /
+                button >
+                <
                 /div>
             )
         }
@@ -789,13 +804,15 @@ function DashboardPage() {
                     devices.length > 0 ?
                     devices.reduce((sum, d) => sum + (d.latestReading && d.powerState && typeof d.latestReading.power === 'number' ? d.latestReading.power : 0), 0).toFixed(2) + ' W' : '0.00 W'
                 } <
-                /p> < /
-                div > <
+                /p>< /
+                div >
+                <
                 div className = "metric-card" >
                 <
                 h3 > Consumo de quilowatt - hora do mês atual < /h3> <
-                p > { currentMonthConsumption } < /p> < /
-                div > <
+                p > { currentMonthConsumption } < /p>< /
+                div >
+                <
                 div className = "metric-card" >
                 <
                 h3 > Consumo quilowatt - hora total < /h3> <
@@ -803,8 +820,9 @@ function DashboardPage() {
                     devices.length > 0 ?
                     devices.reduce((sum, d) => sum + (d.latestReading && d.powerState && typeof d.latestReading.totalEnergy === 'number' ? d.latestReading.totalEnergy : 0), 0).toFixed(2) + ' kWh' : '0.00 kWh'
                 } <
-                /p> < /
-                div > <
+                /p>< /
+                div >
+                <
                 div className = "metric-card" >
                 <
                 h3 > Fatura Estimada < /h3> <
@@ -816,8 +834,9 @@ function DashboardPage() {
                         0
                     ).toFixed(2)
                 } <
-                /p> < /
-                div > <
+                /p>< /
+                div >
+                <
                 /div>
 
                 <
@@ -900,8 +919,9 @@ function DashboardPage() {
                 <
                 Doughnut data = { getConsumptionByTypeData() }
                 options = { consumptionByTypeOptions }
-                /> < /
-                div > <
+                />< /
+                div >
+                <
                 /div>
 
                 <
@@ -922,7 +942,7 @@ function DashboardPage() {
                         getSuggestedDevicesData().map((device) => ( <
                             li key = { device.id } >
                             <
-                            strong > { device.name }: < /strong> { device.suggestion } < /
+                            strong > { device.name }: < /strong> {device.suggestion} < /
                             li >
                         ))
                     ) : ( <
@@ -934,9 +954,11 @@ function DashboardPage() {
                     )
                 } <
                 /ul> < /
-                div > <
+                div >
+                <
                 /div> < /
-                div > <
+                div >
+                <
                 /React.Fragment>
             )
         }
@@ -1030,18 +1052,18 @@ function DashboardPage() {
             h3 > Resumo Geral < /h3> <
             p >
             Total de Dispositivos: { ' ' } <
-            strong > { report.summary.totalDevices } < /strong> < /
+            strong > { report.summary.totalDevices } < /strong>< /
             p > <
             p >
             Dispositivos com Uso Inteligente(estimado): { ' ' } <
-            strong > { report.summary.smartUsageDevices } < /strong> < /
+            strong > { report.summary.smartUsageDevices } < /strong>< /
             p > <
             p >
             Dispositivos com Otimização Pendente(estimado): { ' ' } <
-            strong > { report.summary.nonSmartUsageDevices } < /strong> < /
+            strong > { report.summary.nonSmartUsageDevices } < /strong>< /
             p > <
             p className = "overall-report-message" > { report.summary.overallMessage } <
-            /p> < /
+            /p>< /
             div >
 
             {
@@ -1057,7 +1079,8 @@ function DashboardPage() {
                     <
                     tr >
                     <
-                    td > Tensão < /td> <
+                    td > Tensão <
+                    /td> <
                     td > {
                         devices[0].powerState &&
                         typeof devices[0].latestReading.voltage === 'number' ?
@@ -1065,10 +1088,12 @@ function DashboardPage() {
                     } { ' ' }
                     V <
                     /td> < /
-                    tr > <
                     tr >
                     <
-                    td > Corrente < /td> <
+                    tr >
+                    <
+                    td > Corrente <
+                    /td> <
                     td > {
                         devices[0].powerState &&
                         typeof devices[0].latestReading.current === 'number' ?
@@ -1076,10 +1101,12 @@ function DashboardPage() {
                     } { ' ' }
                     A <
                     /td> < /
-                    tr > <
                     tr >
                     <
-                    td > Potência Ativa < /td> <
+                    tr >
+                    <
+                    td > Potência Ativa <
+                    /td> <
                     td > {
                         devices[0].powerState &&
                         typeof devices[0].latestReading.power === 'number' ?
@@ -1087,10 +1114,12 @@ function DashboardPage() {
                     } { ' ' }
                     W <
                     /td> < /
-                    tr > <
                     tr >
                     <
-                    td > Potência Aparente < /td> <
+                    tr >
+                    <
+                    td > Potência Aparente <
+                    /td> <
                     td > {
                         devices[0].powerState &&
                         typeof devices[0].latestReading.ApparentPower ===
@@ -1099,10 +1128,12 @@ function DashboardPage() {
                     } { ' ' }
                     VA <
                     /td> < /
-                    tr > <
                     tr >
                     <
-                    td > Potência Reativa < /td> <
+                    tr >
+                    <
+                    td > Potência Reativa <
+                    /td> <
                     td > {
                         devices[0].powerState &&
                         typeof devices[0].latestReading.ReactivePower ===
@@ -1111,20 +1142,24 @@ function DashboardPage() {
                     } { ' ' }
                     var <
                     /td> < /
-                    tr > <
                     tr >
                     <
-                    td > Fator de Potência < /td> <
+                    tr >
+                    <
+                    td > Fator de Potência <
+                    /td> <
                     td > {
                         devices[0].powerState &&
                         typeof devices[0].latestReading.PowerFactor === 'number' ?
                         devices[0].latestReading.PowerFactor : 0
                     } <
                     /td> < /
-                    tr > <
                     tr >
                     <
-                    td > Energia Hoje < /td> <
+                    tr >
+                    <
+                    td > Energia Hoje <
+                    /td> <
                     td > {
                         typeof devices[0].latestReading.EnergyToday ===
                         'number' ?
@@ -1132,10 +1167,12 @@ function DashboardPage() {
                     } { ' ' }
                     kWh <
                     /td> < /
-                    tr > <
                     tr >
                     <
-                    td > Energia Ontem < /td> <
+                    tr >
+                    <
+                    td > Energia Ontem <
+                    /td> <
                     td > {
                         typeof devices[0].latestReading.EnergyYesterday ===
                         'number' ?
@@ -1143,19 +1180,23 @@ function DashboardPage() {
                     } { ' ' }
                     kWh <
                     /td> < /
-                    tr > <
                     tr >
                     <
-                    td > Energia Total < /td> <
+                    tr >
+                    <
+                    td > Energia Total <
+                    /td> <
                     td > {
                         devices[0].powerState &&
                         typeof devices[0].latestReading.totalEnergy === 'number' ?
                         devices[0].latestReading.totalEnergy.toFixed(2) + ' kWh' : '0.00 kWh'
                     } <
                     /td> < /
-                    tr > <
+                    tr >
+                    <
                     /tbody> < /
-                    table > <
+                    table >
+                    <
                     /div>
                 )
             }
@@ -1176,7 +1217,8 @@ function DashboardPage() {
                         <
                         tr >
                         <
-                        td > Tensão < /td> <
+                        td > Tensão <
+                        /td> <
                         td > {
                             devices[1].powerState &&
                             typeof devices[1].latestReading.voltage === 'number' ?
@@ -1184,10 +1226,12 @@ function DashboardPage() {
                         } { ' ' }
                         V <
                         /td> < /
-                        tr > <
                         tr >
                         <
-                        td > Corrente < /td> <
+                        tr >
+                        <
+                        td > Corrente <
+                        /td> <
                         td > {
                             devices[1].powerState &&
                             typeof devices[1].latestReading.current === 'number' ?
@@ -1195,10 +1239,12 @@ function DashboardPage() {
                         } { ' ' }
                         A <
                         /td> < /
-                        tr > <
                         tr >
                         <
-                        td > Potência Ativa < /td> <
+                        tr >
+                        <
+                        td > Potência Ativa <
+                        /td> <
                         td > {
                             devices[1].powerState &&
                             typeof devices[1].latestReading.power === 'number' ?
@@ -1206,10 +1252,12 @@ function DashboardPage() {
                         } { ' ' }
                         W <
                         /td> < /
-                        tr > <
                         tr >
                         <
-                        td > Potência Aparente < /td> <
+                        tr >
+                        <
+                        td > Potência Aparente <
+                        /td> <
                         td > {
                             devices[1].powerState &&
                             typeof devices[1].latestReading.ApparentPower === 'number' ?
@@ -1217,10 +1265,12 @@ function DashboardPage() {
                         } { ' ' }
                         VA <
                         /td> < /
-                        tr > <
                         tr >
                         <
-                        td > Potência Reativa < /td> <
+                        tr >
+                        <
+                        td > Potência Reativa <
+                        /td> <
                         td > {
                             devices[1].powerState &&
                             typeof devices[1].latestReading.ReactivePower === 'number' ?
@@ -1228,49 +1278,59 @@ function DashboardPage() {
                         } { ' ' }
                         var <
                         /td> < /
-                        tr > <
                         tr >
                         <
-                        td > Fator de Potência < /td> <
+                        tr >
+                        <
+                        td > Fator de Potência <
+                        /td> <
                         td > {
                             devices[1].powerState &&
                             typeof devices[1].latestReading.PowerFactor === 'number' ?
                             devices[1].latestReading.PowerFactor : 0
                         } <
                         /td> < /
-                        tr > <
                         tr >
                         <
-                        td > Energia Hoje < /td> <
+                        tr >
+                        <
+                        td > Energia Hoje <
+                        /td> <
                         td > {
                             typeof devices[1].latestReading.EnergyToday === 'number' ?
                             devices[1].latestReading.EnergyToday : '--'
                         } { ' ' }
                         kWh <
                         /td> < /
-                        tr > <
                         tr >
                         <
-                        td > Energia Ontem < /td> <
+                        tr >
+                        <
+                        td > Energia Ontem <
+                        /td> <
                         td > {
                             typeof devices[1].latestReading.EnergyYesterday === 'number' ?
                             devices[1].latestReading.EnergyYesterday : '--'
                         } { ' ' }
                         kWh <
                         /td> < /
-                        tr > <
                         tr >
                         <
-                        td > Energia Total < /td> <
+                        tr >
+                        <
+                        td > Energia Total <
+                        /td> <
                         td > {
                             devices[1].powerState &&
                             typeof devices[1].latestReading.totalEnergy === 'number' ?
                             devices[1].latestReading.totalEnergy.toFixed(2) + ' kWh' : '0.00 kWh'
                         } <
                         /td> < /
-                        tr > <
+                        tr >
+                        <
                         /tbody> < /
-                        table > <
+                        table >
+                        <
                         /div>
                     )
             }
@@ -1293,7 +1353,7 @@ function DashboardPage() {
                                 devices[index] && devices[index].powerState ?
                                 'Ligado' : 'Desligado'
                             } <
-                            /span> < /
+                            /span>< /
                             p > <
                             p > Tipo: { detail.type } < /p> <
                             p > Recomendação: { detail.recommendation } < /p> {
@@ -1337,14 +1397,16 @@ function DashboardPage() {
         p >
         <
         strong > Email: < /strong> {userEmail} < /
-        p > <
+        p >
+        <
         p >
         <
         button className = "edit-profile-button"
         onClick = { openEditModal } >
         Editar Perfil <
         /button> < /
-        p > <
+        p >
+        <
         p style = {
             {
                 marginTop: '20px',
@@ -1354,7 +1416,7 @@ function DashboardPage() {
         } >
         *
         Após editar ou excluir a conta, será necessário fazer login novamente. <
-        /p> < /
+        /p>< /
         div >
 
         { /* Modal de edição de conta */ } {
@@ -1416,7 +1478,8 @@ function DashboardPage() {
                 /button> < /
                 div > <
                 /form> < /
-                div > <
+                div >
+                <
                 /div>
             )
         }
@@ -1449,7 +1512,8 @@ function DashboardPage() {
             className = "cancel-button" >
                 Cancelar <
                 /button> < /
-            div > <
+            div >
+                <
                 /div> < /
             div >
         )
