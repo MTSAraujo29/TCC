@@ -1,6 +1,8 @@
 /* frontend/src/App.css */
 
+
 /* ========== GLOBAL STYLES & RESET ========== */
+
 * {
     min-width: 0;
     min-height: 0;
@@ -25,8 +27,12 @@ body {
     font-size: clamp(1rem, 2vw, 1.25rem);
 }
 
+
 /* ========== TYPOGRAPHY ========== */
-h2, h3, h4 {
+
+h2,
+h3,
+h4 {
     color: #FFF;
     font-size: clamp(1.2rem, 3vw, 2.2rem);
 }
@@ -36,7 +42,9 @@ h2 {
     text-align: center;
 }
 
+
 /* ========== UTILITY CLASSES ========== */
+
 .error-message {
     color: #ff6b6b;
     margin-top: 0.9375rem;
@@ -67,8 +75,13 @@ h2 {
     color: white;
 }
 
+
 /* ========== FORM ELEMENTS ========== */
-input, button, select, textarea {
+
+input,
+button,
+select,
+textarea {
     max-width: 100vw;
     box-sizing: border-box;
 }
@@ -100,7 +113,8 @@ input[type="password"]:focus {
     border-color: #00bcd4;
 }
 
-button, .link-button {
+button,
+.link-button {
     width: 100%;
     padding: 12px 0;
     border-radius: 6px;
@@ -117,17 +131,21 @@ button, .link-button {
     display: block;
 }
 
-button:hover, .link-button:hover {
+button:hover,
+.link-button:hover {
     background: #0097a7;
 }
 
-button:disabled, .link-button:disabled {
+button:disabled,
+.link-button:disabled {
     background-color: #555;
     cursor: not-allowed;
     opacity: 0.7;
 }
 
+
 /* Specific button styles */
+
 button {
     padding: 1.125rem;
     background-color: #00bcd4;
@@ -167,8 +185,12 @@ button:active {
     transform: translateY(0);
 }
 
+
 /* ========== LAYOUT COMPONENTS ========== */
+
+
 /* Container for Login/Create Account */
+
 .container {
     min-height: 100vh;
     display: flex;
@@ -207,14 +229,18 @@ label {
     font-size: 0.9rem;
 }
 
+
 /* Logo styles */
+
 .logo-icon {
     font-size: 3em;
     margin-bottom: 10px;
     color: #ffeb3b;
 }
 
+
 /* ========== DASHBOARD LAYOUT ========== */
+
 .dashboard-container {
     display: flex;
     flex-direction: row;
@@ -222,7 +248,9 @@ label {
     width: 100vw;
 }
 
+
 /* Sidebar */
+
 .sidebar {
     min-width: 220px;
     background: #181a23;
@@ -258,7 +286,8 @@ label {
     margin: 6px 0;
 }
 
-.menu-item:hover, .menu-item.active {
+.menu-item:hover,
+.menu-item.active {
     background-color: #00bcd4;
     color: #1a1a2e;
     font-weight: bold;
@@ -288,7 +317,9 @@ label {
     padding-bottom: 24px;
 }
 
+
 /* Main Content */
+
 .main-content {
     flex-grow: 1;
     padding: 1.875rem;
@@ -298,21 +329,30 @@ label {
     box-sizing: border-box;
 }
 
+
 /* Metrics Grid */
+
 .metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: clamp(12px, 2vw, 32px);
-    margin-bottom: 1.875rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin: 2rem auto 0 auto;
+    max-width: 900px;
 }
 
 .metric-card {
     background-color: #3a3a5e;
     border-radius: 8px;
-    padding: 1.25rem;
+    padding: 1.5rem 2.5rem;
     text-align: center;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     border: 1px solid #4a4a7e;
+    min-width: 250px;
+    min-height: 110px;
+    flex: 1 1 250px;
+    margin: 0.5rem;
 }
 
 .metric-card h3 {
@@ -329,8 +369,11 @@ label {
     margin: 0;
 }
 
+
 /* Chart Area */
-.chart-area-main, .chart-card-main {
+
+.chart-area-main,
+.chart-card-main {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -359,7 +402,9 @@ label {
     max-height: 220px;
 }
 
+
 /* View Mode Buttons */
+
 .view-mode-buttons {
     display: flex;
     justify-content: center;
@@ -369,7 +414,8 @@ label {
     width: 100%;
 }
 
-.view-button, .active-view-button {
+.view-button,
+.active-view-button {
     padding: 0.625rem 1.25rem;
     border: 1px solid #00bcd4;
     border-radius: 5px;
@@ -398,7 +444,9 @@ label {
     color: #FFF;
 }
 
+
 /* Bottom Sections Grid */
+
 .bottom-sections-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -428,7 +476,9 @@ label {
     margin-bottom: 0.9375rem;
 }
 
+
 /* Consumption by Type Card */
+
 .consumption-by-type-card .chart-wrapper {
     width: 100%;
     max-width: 18.75rem;
@@ -438,7 +488,9 @@ label {
     align-items: center;
 }
 
+
 /* Device Suggestion List */
+
 .device-suggestion-list {
     list-style: none;
     padding: 0;
@@ -465,8 +517,12 @@ label {
     color: #00bcd4;
 }
 
+
 /* ========== SPECIFIC SECTIONS ========== */
+
+
 /* Energy Control Section */
+
 .energy-control-section {
     padding: 1.25rem;
     background-color: #3a3a5e;
@@ -493,7 +549,9 @@ label {
     opacity: 0.9;
 }
 
+
 /* Device Control List */
+
 .device-control-list {
     display: flex;
     flex-direction: column;
@@ -564,8 +622,11 @@ label {
     background-color: #B71C1C;
 }
 
+
 /* Add Device and Refresh Buttons */
-.add-device-btn, .refresh-devices-btn {
+
+.add-device-btn,
+.refresh-devices-btn {
     background-color: #00bcd4;
     color: white;
     padding: 0.625rem 0.9375rem;
@@ -580,20 +641,25 @@ label {
     margin-right: 0.625rem;
 }
 
-.add-device-btn:last-child, .refresh-devices-btn:last-child {
+.add-device-btn:last-child,
+.refresh-devices-btn:last-child {
     margin-right: 0;
 }
 
-.add-device-btn:hover, .refresh-devices-btn:hover {
+.add-device-btn:hover,
+.refresh-devices-btn:hover {
     background-color: #00a0b8;
     transform: translateY(-2px);
 }
 
-.add-device-btn:active, .refresh-devices-btn:active {
+.add-device-btn:active,
+.refresh-devices-btn:active {
     transform: translateY(0);
 }
 
+
 /* Reports Section */
+
 .reports-section {
     padding: 1.25rem;
     background-color: #3a3a5e;
@@ -637,7 +703,9 @@ label {
     padding-top: 0.9375rem;
 }
 
+
 /* Realtime Energy Card */
+
 .energy-realtime-card {
     background-color: #4a4a7e;
     padding: 1.25rem;
@@ -713,7 +781,9 @@ label {
     font-size: 1rem;
 }
 
+
 /* Energy Realtime Table */
+
 .energy-realtime-table {
     width: 100%;
     border-collapse: collapse;
@@ -731,7 +801,9 @@ label {
     color: #4CAF50;
 }
 
+
 /* Device Report List */
+
 .device-report-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr));
@@ -781,7 +853,9 @@ label {
     margin-top: 0.625rem;
 }
 
+
 /* Settings Section */
+
 .settings-section {
     padding: 1.25rem;
     background-color: #3a3a5e;
@@ -823,7 +897,8 @@ label {
     color: #00bcd4;
 }
 
-.change-password-button, .edit-profile-button {
+.change-password-button,
+.edit-profile-button {
     background-color: #00bcd4;
     color: white;
     border: none;
@@ -837,11 +912,14 @@ label {
     width: auto;
 }
 
-.change-password-button:hover, .edit-profile-button:hover {
+.change-password-button:hover,
+.edit-profile-button:hover {
     background-color: #00a0b8;
 }
 
+
 /* Tasmota Settings Card */
+
 .tasmota-settings-card {
     background-color: #4a4a7e;
     padding: 1.25rem;
@@ -864,7 +942,9 @@ label {
     text-align: center;
 }
 
+
 /* ========== ADD DEVICE PAGE ========== */
+
 .add-device-page-container {
     display: flex;
     justify-content: center;
@@ -932,7 +1012,9 @@ label {
     background-color: #5a6268 !important;
 }
 
+
 /* ========== MODAL STYLES ========== */
+
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -964,7 +1046,9 @@ label {
     color: #00bcd4;
 }
 
+
 /* Small buttons for account edit modal */
+
 .small-buttons {
     gap: 8px;
     justify-content: center;
@@ -979,7 +1063,9 @@ label {
     box-shadow: none !important;
 }
 
+
 /* ========== MOBILE MENU ========== */
+
 .mobile-menu-bar {
     width: 100vw;
     display: flex;
@@ -1035,11 +1121,19 @@ label {
     font-size: 1em;
 }
 
+
 /* ========== RESPONSIVE MEDIA QUERIES ========== */
+
+
 /* General adjustments for all screen sizes */
+
 @media (max-width: 900px) {
-    .main-content, .bottom-card, .energy-realtime-card,
-    .settings-section, .reports-section, .energy-control-section {
+    .main-content,
+    .bottom-card,
+    .energy-realtime-card,
+    .settings-section,
+    .reports-section,
+    .energy-control-section {
         width: 100% !important;
         max-width: 100vw !important;
         min-width: 0 !important;
@@ -1048,46 +1142,54 @@ label {
         padding-left: 0.5rem !important;
         padding-right: 0.5rem !important;
     }
-
-    .chart-wrapper, .chart-card-main {
+    .chart-wrapper,
+    .chart-card-main {
         width: 100% !important;
         max-width: 100vw !important;
         min-width: 0 !important;
         box-sizing: border-box;
     }
+    .metrics-grid {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.2rem;
+    }
+    .metric-card {
+        min-width: 200px;
+        padding: 1.2rem 1.2rem;
+    }
+    .container.dashboard-container h2 {
+        font-size: 2rem;
+    }
 }
 
+
 /* Tablets and smaller screens */
+
 @media (max-width: 768px) {
     body {
         align-items: flex-start;
     }
-
     .container {
         margin: 3.125rem auto;
         padding: 1.875rem;
     }
-
     h2 {
         font-size: 1.5rem;
         margin-bottom: 1.5rem;
     }
-
     button {
         padding: 1rem;
         font-size: 1.1rem;
     }
-
     .link-button {
         padding: 0.8rem;
         font-size: 1rem;
     }
-
     /* Dashboard adjustments */
     .container.dashboard-container {
         flex-direction: column;
     }
-
     .sidebar {
         width: 100%;
         height: auto;
@@ -1099,11 +1201,9 @@ label {
         justify-content: center;
         gap: 0.625rem;
     }
-
     .sidebar .logo-icon-sidebar {
         display: none;
     }
-
     .menu-item {
         width: auto;
         padding: 0.625rem 0.9375rem;
@@ -1111,11 +1211,9 @@ label {
         text-align: center;
         flex-grow: 1;
     }
-
     .sidebar-bottom {
         display: none;
     }
-
     .logout-link-sidebar {
         display: block;
         width: 100%;
@@ -1123,158 +1221,135 @@ label {
         margin-top: 1.25rem;
         padding: 0.9375rem;
     }
-
     .main-content {
         padding: 1.25rem;
         min-height: auto;
     }
-
     .main-content h2 {
         font-size: 2rem;
         margin-bottom: 1.25rem;
     }
-
     .metrics-grid {
         grid-template-columns: 1fr;
     }
-
     .metric-card {
         padding: 0.9375rem;
     }
-
     .metric-card p {
         font-size: 1.8rem;
     }
-
-    .chart-area-main, .chart-card-main {
+    .chart-area-main,
+    .chart-card-main {
         min-height: 120px;
         max-height: 180px;
         height: auto;
         padding: 0 !important;
     }
-
     .chart-card-main canvas {
         min-height: 80px;
         max-height: 120px;
     }
-
     .bottom-sections-grid {
         grid-template-columns: 1fr;
     }
-
     .bottom-card {
         height: auto;
         min-height: 18.75rem;
         padding: 0.9375rem;
     }
-
     .consumption-by-type-card .chart-wrapper {
         height: 15.625rem;
     }
-
     .device-suggestion-list {
         max-height: 12.5rem;
     }
-
     .energy-control-section {
         padding: 0.9375rem;
         border-radius: 0.625rem;
     }
-
     .device-feedback-message {
         padding: 0.5rem 0.9375rem;
         font-size: 0.9rem;
     }
-
     /* Adjust buttons in energy control section */
-    .add-device-btn, .refresh-devices-btn {
+    .add-device-btn,
+    .refresh-devices-btn {
         width: 100%;
         margin-right: 0;
         margin-bottom: 0.625rem;
         display: block;
         margin-left: 0;
     }
-
-    .add-device-btn:last-child, .refresh-devices-btn:last-child {
+    .add-device-btn:last-child,
+    .refresh-devices-btn:last-child {
         margin-bottom: 0;
     }
 }
 
+
 /* Very small screens (phones) */
+
 @media (max-width: 480px) {
     body {
         font-size: 14px;
     }
-
     .container {
         padding: 1.25rem;
         margin: 1.875rem auto;
     }
-
     h2 {
         font-size: 1.3rem;
     }
-
     input[type="text"],
     input[type="email"],
     input[type="password"] {
         padding: 0.6rem;
         font-size: 0.9rem;
     }
-
     button {
         padding: 0.9rem;
         font-size: 1rem;
     }
-
     .link-button {
         padding: 0.7rem;
         font-size: 0.9rem;
     }
-
     .main-content h2 {
         font-size: 1.8rem;
     }
-
     .metric-card p {
         font-size: 1.5rem;
     }
-
-    .chart-area-main, .chart-card-main {
+    .chart-area-main,
+    .chart-card-main {
         min-height: 120px;
         max-height: 180px;
         height: auto;
         padding: 0 !important;
     }
-
-    .view-button, .active-view-button {
+    .view-button,
+    .active-view-button {
         padding: 0.5rem 0.75rem;
         font-size: 0.8rem;
     }
-
     .bottom-card {
         min-height: 15.625rem;
     }
-
     .consumption-by-type-card .chart-wrapper {
         height: 11.25rem;
     }
-
     .device-suggestion-list li {
         font-size: 0.85rem;
         padding: 0.5rem 0.75rem;
     }
-
     .device-feedback-message {
         font-size: 0.85rem;
     }
-
     .device-control-item {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.625rem;
     }
-
     .device-control-name,
     .device-status-indicator,
     .device-toggle-button {
@@ -1282,58 +1357,67 @@ label {
         text-align: center;
         margin: 0;
     }
-
     .device-status-indicator {
         margin-top: 0.3125rem;
     }
-
     .device-toggle-button {
         margin-top: 0.625rem;
     }
 }
 
+
 /* Ultra-wide screens */
+
 @media screen and (min-width: 1600px) {
-    .main-content, .container.dashboard-container {
+    .main-content,
+    .container.dashboard-container {
         max-width: 1400px;
         margin: 0 auto;
     }
 }
 
+
 /* Screens between 1200px and 1600px */
+
 @media screen and (max-width: 1600px) and (min-width: 1200px) {
-    .main-content, .container.dashboard-container {
+    .main-content,
+    .container.dashboard-container {
         max-width: 1100px;
         margin: 0 auto;
     }
 }
 
+
 /* Tablets (up to 1024px) */
+
 @media screen and (max-width: 1024px) {
-    .metrics-grid, .bottom-sections-grid, .device-report-list {
+    .metrics-grid,
+    .bottom-sections-grid,
+    .device-report-list {
         grid-template-columns: 1fr 1fr !important;
     }
-
     .sidebar {
         width: 180px;
         font-size: 0.95rem;
     }
-
     .main-content {
         padding: 1rem;
     }
 }
 
+
 /* Large phones (up to 768px) */
+
 @media screen and (max-width: 768px) {
-    .metrics-grid, .bottom-sections-grid, .device-report-list {
+    .metrics-grid,
+    .bottom-sections-grid,
+    .device-report-list {
         grid-template-columns: 1fr !important;
     }
-
-    .main-content, .container.dashboard-container {
+    .main-content,
+    .container.dashboard-container {
         padding: 0.5rem !important;
     }
-
     .sidebar {
         width: 100vw;
         min-width: unset;
@@ -1346,40 +1430,36 @@ label {
         padding: 0.5rem 0;
         gap: 0.5rem;
     }
-
     .sidebar .logo-icon-sidebar {
         display: none;
     }
-
     .menu-item {
         font-size: 0.95rem;
         padding: 0.5rem 0.5rem;
         text-align: center;
     }
-
     .sidebar-bottom {
         display: none;
     }
-
-    .energy-realtime-card, .bottom-card, .metric-card {
+    .energy-realtime-card,
+    .bottom-card,
+    .metric-card {
         max-width: 100vw;
         min-width: 0;
         width: 100%;
         padding: 0.5rem;
     }
-
-    .chart-area-main, .chart-card-main {
+    .chart-area-main,
+    .chart-card-main {
         min-height: 120px;
         max-height: 180px;
         height: auto;
         padding: 0 !important;
     }
-
     .chart-card-main canvas {
         min-height: 80px;
         max-height: 120px;
     }
-
     .realtime-secondary-data {
         width: 100%;
         max-width: 100vw;
@@ -1387,71 +1467,78 @@ label {
     }
 }
 
+
 /* Small phones (up to 480px) */
+
 @media screen and (max-width: 480px) {
     body {
         font-size: 13px;
     }
-
-    .container, .main-content, .energy-realtime-card, .bottom-card, .metric-card {
+    .container,
+    .main-content,
+    .energy-realtime-card,
+    .bottom-card,
+    .metric-card {
         padding: 0.25rem !important;
         margin: 0.25rem 0 !important;
         max-width: 100vw;
     }
-
-    .energy-realtime-table, .realtime-secondary-data {
+    .energy-realtime-table,
+    .realtime-secondary-data {
         font-size: 0.9em;
         width: 100vw;
         overflow-x: auto;
         display: block;
     }
-
-    .energy-realtime-table td, .realtime-data-item {
+    .energy-realtime-table td,
+    .realtime-data-item {
         padding: 0.25rem 0.5rem;
     }
-
     .device-control-item {
         flex-direction: column;
         align-items: stretch;
         gap: 0.5rem;
     }
-
-    .device-toggle-button, .device-status-indicator, .device-control-name {
+    .device-toggle-button,
+    .device-status-indicator,
+    .device-control-name {
         width: 100%;
         margin: 0;
         text-align: center;
     }
-
-    .chart-area-main, .chart-card-main {
+    .chart-area-main,
+    .chart-card-main {
         min-height: 120px;
         max-height: 180px;
         height: auto;
         padding: 0 !important;
     }
-
     .chart-card-main canvas {
         min-height: 80px;
         max-height: 120px;
     }
-
-    .metrics-grid, .bottom-sections-grid {
+    .metrics-grid,
+    .bottom-sections-grid {
         grid-template-columns: 1fr;
         gap: 8px;
     }
 }
 
+
 /* Mobile menu visibility */
+
 @media (max-width: 700px) {
     .sidebar {
         display: none !important;
     }
-
     .main-content {
         margin-top: 44px !important;
     }
 }
 
+
 /* Ensure tables and grids never overflow */
+
 .energy-realtime-table,
 .realtime-secondary-data,
 .metrics-grid,
@@ -1462,7 +1549,9 @@ label {
     box-sizing: border-box;
 }
 
+
 /* Adjust to prevent layout break in cards and tables */
+
 .metric-card,
 .bottom-card,
 .energy-realtime-card,
@@ -1472,14 +1561,20 @@ label {
     box-sizing: border-box;
 }
 
+
 /* Final overflow protection */
-html, body, #root {
+
+html,
+body,
+#root {
     width: 100vw;
     overflow-x: hidden;
     box-sizing: border-box;
 }
 
+
 /* Animation for mobile menu */
+
 @keyframes slideInMenu {
     from {
         transform: translateX(-100%);
@@ -1487,4 +1582,15 @@ html, body, #root {
     to {
         transform: translateX(0);
     }
+}
+
+
+/* Centralizar o texto de boas-vindas */
+
+.container.dashboard-container h2 {
+    text-align: center;
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 2.5rem;
+    color: #fff;
 }
