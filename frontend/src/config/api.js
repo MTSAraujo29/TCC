@@ -1,19 +1,13 @@
-// Configuração centralizada para API usando axios
-import axios from 'axios';
+// Configuração centralizada para URLs da API
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://tcc-ft7k.onrender.com';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://tcc-ft7k.onrender.com/api';
+export const API_ENDPOINTS = {
+    LOGIN: `${API_BASE_URL}/api/login`,
+    REGISTER: `${API_BASE_URL}/api/register`,
+    TASMOTA: `${API_BASE_URL}/api/tasmota`,
+    DASHBOARD: `${API_BASE_URL}/api/dashboard`,
+    HEALTH: `${API_BASE_URL}/health`,
+    ACCOUNT: `${API_BASE_URL}/api/account`
+};
 
-const api = axios.create({
-    baseURL: API_BASE_URL,
-});
-
-// Interceptor para adicionar o token JWT automaticamente
-api.interceptors.request.use(config => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
-
-export default api;
+export default API_BASE_URL;

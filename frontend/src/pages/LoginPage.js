@@ -1,45 +1,66 @@
-// Importações
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../App.css';
-import api from '../config/api';
+import { API_ENDPOINTS } from '../config/api';
 
 function LoginPage() {
     // Hooks
     const navigate = useNavigate();
 
-    // Estados
+    // State management
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
 
-    // Função para lidar com envio do formulário
+    // Event handlers
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setError(null);
+        setError(''); // Clear previous errors
+
+        console.log('Attempting login with:', { email, password });
 
         try {
-            const response = await api.post('/login', { email, password });
-            const data = response.data;
+            const response = await fetch(API_ENDPOINTS.LOGIN, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            });
 
-            if (data.token) {
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('userEmail', data.user.email);
-                localStorage.setItem('userName', data.user.name);
-                navigate('/dashboard');
+            const data = await response.json();
+
+            if (response.ok) {
+                handleSuccessfulLogin(data);
             } else {
-                setError('Credenciais inválidas.');
+                handleLoginError(data);
             }
         } catch (err) {
-            setError('Credenciais inválidas ou erro de conexão.');
-        } finally {
-            setLoading(false);
+            handleNetworkError(err);
         }
     };
 
-    // Renderização
+    // Helper functions
+    const handleSuccessfulLogin = (data) => {
+        console.log('Login successful:', data);
+
+        // Store user data
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userEmail', data.user.email);
+        localStorage.setItem('userName', data.user.name);
+
+        navigate('/dashboard');
+    };
+
+    const handleLoginError = (data) => {
+        console.error('Login failed:', data.message || 'Unknown error');
+        setError(data.message || 'Email ou senha inválidos.');
+    };
+
+    const handleNetworkError = (err) => {
+        console.error('Network error during login:', err);
+        setError('Não foi possível conectar ao servidor. Verifique sua conexão ou tente mais tarde.');
+    };
+
+    // Render
     return (
         <div className="container">
             <div className="card">
@@ -63,12 +84,12 @@ function LoginPage() {
                     />
 
                     {error && (
-                        <p style={{ color: 'red', fontSize: '0.9em' }}>{error}</p>
+                        <p style={{ color: 'red', fontSize: '0.9em' }}>
+                            {error}
+                        </p>
                     )}
 
-                    <button type="submit" disabled={loading}>
-                        Entrar
-                    </button>
+                    <button type="submit">Entrar</button>
                 </form>
 
                 <Link to="/create-account" className="link-button">

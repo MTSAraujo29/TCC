@@ -1,30 +1,25 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import './AddDevicePage.css';
-import api from '../config/api';
+import { API_ENDPOINTS } from '../config/api';
 
 function AddDevicePage() {
-    // ---------------------------
-    // Hooks e Estados
-    // ---------------------------
-    const navigate = useNavigate();
-    const location = useLocation();
-    const [searchParams] = useSearchParams();
-
+    // State management
     const [deviceData, setDeviceData] = useState({
         name: '',
         tasmotaTopic: '',
         macAddress: '',
-        model: '',
-        broker: ''
+        model: ''
     });
-
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // ---------------------------
-    // Manipuladores de Eventos
-    // ---------------------------
+    // Router hooks
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [searchParams] = useSearchParams();
+
+    // Event handlers
     const handleInputChange = (e) => {
         const { id, value } = e.target;
         setDeviceData(prev => ({
@@ -33,23 +28,10 @@ function AddDevicePage() {
         }));
     };
 
-    const handleBrokerChange = (e) => {
-        setDeviceData(prev => ({
-            ...prev,
-            broker: e.target.value
-        }));
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
-
-        if (!deviceData.broker || !deviceData.name || !deviceData.tasmotaTopic) {
-            setError('Nome, Tópico Tasmota e Broker são obrigatórios.');
-            setLoading(false);
-            return;
-        }
 
         const token = localStorage.getItem('token');
         if (!token) {
@@ -66,23 +48,31 @@ function AddDevicePage() {
         }
     };
 
-    const handleCancel = () => {
-        const from = searchParams.get('from');
-        if (from === 'configuracao') {
-            navigate('/dashboard?tab=configuracao');
-        } else if (from === 'controle') {
-            navigate('/dashboard?tab=controle');
-        } else {
-            navigate('/dashboard');
+    // API functions
+    const addDevice = async (token) => {
+        const response = await fetch(`${API_ENDPOINTS.TASMOTA}/devices`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(deviceData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Falha ao adicionar dispositivo.');
         }
+
+        const data = await response.json();
+        handleSuccess(data);
     };
 
-    // ---------------------------
-    // Funções auxiliares e de API
-    // ---------------------------
-    const addDevice = async (token) => {
-        const response = await api.post('/tasmota/devices', deviceData);
-        handleSuccess(response.data);
+    // Helper functions
+    const handleUnauthenticated = () => {
+        setError('Você não está autenticado. Por favor, faça login.');
+        navigate('/login');
+        setLoading(false);
     };
 
     const handleSuccess = (data) => {
@@ -95,15 +85,18 @@ function AddDevicePage() {
         setError(err.message);
     };
 
-    const handleUnauthenticated = () => {
-        setError('Você não está autenticado. Por favor, faça login.');
-        navigate('/login');
-        setLoading(false);
+    const handleCancel = () => {
+        const from = searchParams.get('from');
+        if (from === 'configuracao') {
+            navigate('/dashboard?tab=configuracao');
+        } else if (from === 'controle') {
+            navigate('/dashboard?tab=controle');
+        } else {
+            navigate('/dashboard');
+        }
     };
 
-    // ---------------------------
-    // Renderização
-    // ---------------------------
+    // Render
     return (
         <div className="add-device-page-container">
             <div className="add-device-card">
@@ -153,20 +146,6 @@ function AddDevicePage() {
                             onChange={handleInputChange}
                             placeholder="Ex: Sonoff POWR316D"
                         />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="broker">Broker (Obrigatório):</label>
-                        <select
-                            id="broker"
-                            value={deviceData.broker}
-                            onChange={handleBrokerChange}
-                            required
-                        >
-                            <option value="">Selecione o broker...</option>
-                            <option value="broker1">Broker 1</option>
-                            <option value="broker2">Broker 2</option>
-                        </select>
                     </div>
 
                     {error && <p className="error-message">{error}</p>}

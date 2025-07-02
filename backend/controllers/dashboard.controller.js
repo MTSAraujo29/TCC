@@ -156,12 +156,12 @@ async function getDashboardData(req, res) {
                 where: { userId: userId },
                 include: {
                     readings: {
+                        where: { power: { gt: 0 } }, // Filtra apenas leituras reais
                         orderBy: { timestamp: 'desc' },
-                        take: 1, // Pega apenas a última leitura (sem filtro de power)
+                        take: 1, // Pega apenas a última leitura real
                     },
                 },
             });
-            console.log('[DASHBOARD] Dispositivos encontrados para o usuário', userEmail, ':', userDevices.map(d => ({ id: d.id, tasmotaTopic: d.tasmotaTopic, name: d.name, broker: d.broker })));
 
             const realDevicesData = [];
             let currentRealPower = 0; // Potência instantânea total
@@ -459,7 +459,7 @@ async function getDashboardData(req, res) {
             };
         }
 
-        console.log('[DASHBOARD] Dados enviados para o frontend:', JSON.stringify(dashboardData, null, 2));
+        // console.log('Dados enviados para o frontend:', JSON.stringify(dashboardData, null, 2));
         res.json(dashboardData);
 
     } catch (error) {

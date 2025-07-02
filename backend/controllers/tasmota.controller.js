@@ -117,6 +117,7 @@ async function getUserDevices(req, res) {
         }));
 
         res.json(formattedDevices);
+        console.log(`Leitura enviada para o frontend do ${device.broker} referente ao ${device.name}`);
     } catch (error) {
         console.error('Erro ao obter dispositivos do usuário:', error);
         res.status(500).json({ message: 'Erro interno do servidor ao obter dispositivos.' });
@@ -161,6 +162,7 @@ async function getDeviceDetails(req, res) {
         };
 
         res.json(formattedDevice);
+        console.log(`Leitura enviada para o frontend do ${device.broker} referente ao ${device.name}`);
     } catch (error) {
         console.error('Erro ao obter detalhes do dispositivo:', error);
         res.status(500).json({ message: 'Erro interno do servidor ao obter detalhes do dispositivo.' });
@@ -195,6 +197,7 @@ async function getLatestEnergyReading(req, res) {
         };
 
         res.json(updatedReading);
+        console.log(`Leitura enviada para o frontend do ${device.broker} referente ao ${device.name}`);
     } catch (error) {
         console.error('Erro ao obter última leitura de energia:', error);
         res.status(500).json({ message: 'Erro interno do servidor ao obter a última leitura de energia.' });
@@ -290,155 +293,6 @@ async function getLiveTotalEnergyFromTasmota(req, res) {
     }
 }
 
-// NOVA FUNÇÃO: Duplicar dispositivos para outro usuário
-async function duplicateDevicesToUser(req, res) {
-    const { targetUserId, deviceIds } = req.body;
-    const sourceUserId = req.user.userId; // ID do usuário que está fazendo a duplicação
-
-    if (!targetUserId || !deviceIds || !Array.isArray(deviceIds) || deviceIds.length === 0) {
-        return res.status(400).json({
-            message: 'ID do usuário de destino e lista de IDs dos dispositivos são obrigatórios.'
-        });
-    }
-
-    try {
-        // Verificar se o usuário de destino existe
-        const targetUser = await prisma.user.findUnique({
-            where: { id: targetUserId }
-        });
-
-        if (!targetUser) {
-            return res.status(404).json({ message: 'Usuário de destino não encontrado.' });
-        }
-
-        // Verificar se o usuário atual é admin ou se está duplicando para si mesmo
-        const currentUser = await prisma.user.findUnique({
-            where: { id: sourceUserId }
-        });
-
-        if (!currentUser.isAdmin && sourceUserId !== targetUserId) {
-            return res.status(403).json({
-                message: 'Você não tem permissão para duplicar dispositivos para outros usuários.'
-            });
-        }
-
-        // Buscar os dispositivos que serão duplicados
-        const devicesToDuplicate = await prisma.device.findMany({
-            where: {
-                id: { in: deviceIds },
-                userId: sourceUserId
-            }
-        });
-
-        console.log('[DUPLICAÇÃO] Dispositivos a serem duplicados:', devicesToDuplicate.map(d => ({ id: d.id, tasmotaTopic: d.tasmotaTopic, name: d.name })));
-
-        // Verificar se algum dos dispositivos já existe para o usuário de destino
-        const existingDevices = await prisma.device.findMany({
-            where: {
-                tasmotaTopic: { in: devicesToDuplicate.map(d => d.tasmotaTopic) },
-                userId: targetUserId
-            }
-        });
-
-        console.log('[DUPLICAÇÃO] Dispositivos já existentes para o usuário de destino:', existingDevices.map(d => ({ id: d.id, tasmotaTopic: d.tasmotaTopic, name: d.name })));
-
-        if (existingDevices.length > 0) {
-            const existingTopics = existingDevices.map(d => d.tasmotaTopic);
-            return res.status(409).json({
-                message: `Os seguintes dispositivos já existem para o usuário de destino: ${existingTopics.join(', ')}`
-            });
-        }
-
-        // Duplicar os dispositivos
-        const duplicatedDevices = [];
-        for (const device of devicesToDuplicate) {
-            try {
-                const newDevice = await prisma.device.create({
-                    data: {
-                        name: device.name,
-                        tasmotaTopic: device.tasmotaTopic,
-                        macAddress: device.macAddress,
-                        model: device.model,
-                        userId: targetUserId,
-                        powerState: device.powerState,
-                        lastSeen: device.lastSeen,
-                        ipAddress: device.ipAddress,
-                        lastSavedTotalEnergy: device.lastSavedTotalEnergy,
-                        broker: device.broker,
-                    }
-                });
-                duplicatedDevices.push(newDevice);
-            } catch (err) {
-                // Captura erro de unique constraint e retorna mensagem amigável
-                if (err.code === 'P2002') {
-                    return res.status(409).json({
-                        message: `O dispositivo com tópico ${device.tasmotaTopic} já existe para o usuário de destino.`
-                    });
-                } else {
-                    throw err;
-                }
-            }
-        }
-
-        console.log(`Dispositivos duplicados do usuário ${sourceUserId} para o usuário ${targetUserId}:`,
-            duplicatedDevices.map(d => d.name));
-
-        res.status(201).json({
-            message: `${duplicatedDevices.length} dispositivo(s) duplicado(s) com sucesso!`,
-            duplicatedDevices: duplicatedDevices.map(d => ({
-                id: d.id,
-                name: d.name,
-                tasmotaTopic: d.tasmotaTopic,
-                broker: d.broker
-            }))
-        });
-
-    } catch (error) {
-        console.error('Erro ao duplicar dispositivos:', error);
-        res.status(500).json({ message: 'Erro interno do servidor ao duplicar dispositivos.' });
-    }
-}
-
-// NOVA FUNÇÃO: Listar usuários (apenas para admins)
-async function listUsers(req, res) {
-    const userId = req.user.userId;
-
-    try {
-        // Verificar se o usuário atual é admin
-        const currentUser = await prisma.user.findUnique({
-            where: { id: userId }
-        });
-
-        if (!currentUser.isAdmin) {
-            return res.status(403).json({
-                message: 'Você não tem permissão para listar usuários.'
-            });
-        }
-
-        const users = await prisma.user.findMany({
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                isAdmin: true,
-                createdAt: true,
-                _count: {
-                    select: {
-                        devices: true
-                    }
-                }
-            },
-            orderBy: { name: 'asc' }
-        });
-
-        res.json(users);
-
-    } catch (error) {
-        console.error('Erro ao listar usuários:', error);
-        res.status(500).json({ message: 'Erro interno do servidor ao listar usuários.' });
-    }
-}
-
 // Exportar funções
 module.exports = {
     getDevice, // Middleware para verificar posse do dispositivo (usado nas rotas)
@@ -449,6 +303,4 @@ module.exports = {
     getHistoricalEnergyReadings,
     toggleDevicePower,
     getLiveTotalEnergyFromTasmota,
-    duplicateDevicesToUser,
-    listUsers,
 };
