@@ -7,6 +7,10 @@ const { PrismaClient } = require('@prisma/client');
 const mqtt = require('mqtt'); // Importa o módulo MQTT
 // Importa o serviço MQTT, ajustando o caminho para o nível correto
 const tasmotaService = require('../services/tasmota.service');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const { body, validationResult } = require('express-validator');
+const winston = require('winston');
 
 // Carrega as variáveis de ambiente. No Render, elas são injetadas diretamente.
 // Esta linha é mantida por compatibilidade ou para uso em outros ambientes.
@@ -36,6 +40,18 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Inclua todos os métodos HTTP que seu frontend usará
     credentials: true // Se você usa cookies, sessões ou headers de autorização
 }));
+
+// Configuração do logger Winston
+const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+    ),
+    transports: [
+        new winston.transports.Console(),
+    ],
+});
 
 // =========================================================================
 // Middleware de Autenticação JWT
@@ -107,8 +123,25 @@ app.get('/', (req, res) => {
     res.send('Servidor Backend (Node.js com Express) rodando com Prisma, Hashing e JWT, e integração Tasmota/MQTT!');
 });
 
-// Rota para CRIAR CONTA (Registro de Usuário)
-app.post('/api/register', async(req, res) => {
+// Rate limiting para rotas de autenticação
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 5, // Limite de 5 tentativas por IP
+    message: { message: 'Muitas tentativas de login/registro. Tente novamente em 15 minutos.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+// Rotas de autenticação com rate limit e validação
+app.post('/api/register', authLimiter, [
+    body('name').trim().notEmpty().withMessage('Nome é obrigatório.'),
+    body('email').isEmail().withMessage('Email inválido.').normalizeEmail(),
+    body('password').isLength({ min: 6 }).withMessage('A senha deve ter pelo menos 6 caracteres.'),
+], async(req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
         return res.status(400).json({ message: 'Todos os campos (Nome, Email, Senha) são obrigatórios.' });
@@ -150,8 +183,14 @@ app.post('/api/register', async(req, res) => {
     }
 });
 
-// Rota para LOGIN de Usuário
-app.post('/api/login', async(req, res) => {
+app.post('/api/login', authLimiter, [
+    body('email').isEmail().withMessage('Email inválido.').normalizeEmail(),
+    body('password').notEmpty().withMessage('Senha é obrigatória.'),
+], async(req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     const { email, password } = req.body;
     if (!email || !password) {
         return res.status(400).json({ message: 'Email e Senha são obrigatórios.' });
@@ -242,6 +281,19 @@ app.delete('/api/account', authenticateToken, async(req, res) => {
 // =========================================================================
 // Esta função será chamada uma vez quando o processo Node.js for iniciado no Render.
 tasmotaService.initializeMqttClients();
+
+// Middleware global de tratamento de erros
+app.use((err, req, res, next) => {
+    logger.error({
+        message: err.message,
+        stack: err.stack,
+        url: req.originalUrl,
+        method: req.method,
+        body: req.body,
+        user: req.user || null
+    });
+    res.status(500).json({ message: 'Erro interno do servidor.' });
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
