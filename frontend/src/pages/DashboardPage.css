@@ -222,3 +222,65 @@
 .bold {
     font-weight: bold;
 }
+
+.main-content,
+.energy-control-section,
+.reports-section,
+.settings-section,
+.tasmota-settings-card {
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.bottom-card,
+.modal-card,
+.user-settings-card,
+.report-summary-card,
+.energy-realtime-card {
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+}
+
+.energy-realtime-table,
+.energy-realtime-tbody {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.energy-realtime-table td,
+.energy-realtime-table th {
+    min-width: 120px;
+    text-align: left;
+    padding: 8px 6px;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+@media (max-width: 700px) {
+    .main-content,
+    .energy-control-section,
+    .reports-section,
+    .settings-section,
+    .tasmota-settings-card {
+        max-width: 100vw;
+        width: 100vw;
+        padding: 0 2vw;
+        box-sizing: border-box;
+    }
+    .bottom-card,
+    .modal-card,
+    .user-settings-card,
+    .report-summary-card,
+    .energy-realtime-card {
+        max-width: 100vw;
+        width: 100vw;
+        padding: 10px 2vw;
+        box-sizing: border-box;
+    }
+}
