@@ -1,89 +1,64 @@
 /* frontend/src/App.css */
 
 
-/* ========== GLOBAL STYLES & RESET ========== */
-
-* {
-    min-width: 0;
-    min-height: 0;
-    box-sizing: border-box;
-}
-
-html {
-    font-size: clamp(14px, 1.2vw, 18px);
-}
+/* Estilos Globais e Reset */
 
 body {
     margin: 0;
     padding: 0;
     font-family: 'Arial', sans-serif;
     background: linear-gradient(to right, #2a003f, #001030);
+    /* Fundo escuro gradient */
     color: #E0E0E0;
+    /* Cor do texto padrão para o tema escuro */
     display: flex;
+    /* Para centralizar o conteúdo do login/criar conta ou o dashboard */
     justify-content: center;
     align-items: flex-start;
+    /* Alinha no topo para o dashboard (irá se ajustar para o centro no login) */
     min-height: 100vh;
     overflow-x: hidden;
-    font-size: clamp(1rem, 2vw, 1.25rem);
-}
-
-
-/* ========== TYPOGRAPHY ========== */
-
-h2,
-h3,
-h4 {
-    color: #FFF;
-    font-size: clamp(1.2rem, 3vw, 2.2rem);
-}
-
-h2 {
-    margin-bottom: 1.875rem;
-    text-align: center;
-}
-
-
-/* ========== UTILITY CLASSES ========== */
-
-.error-message {
-    color: #ff6b6b;
-    margin-top: 0.9375rem;
-    font-size: 0.9rem;
-}
-
-.message {
-    padding: 0.625rem 0.9375rem;
-    border-radius: 5px;
-    margin: 0.9375rem 0;
-    font-size: 0.95rem;
-    text-align: center;
-    font-weight: bold;
-}
-
-.message.info {
-    background-color: #2196F3;
-    color: white;
-}
-
-.message.success {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.message.error {
-    background-color: #F44336;
-    color: white;
-}
-
-
-/* ========== FORM ELEMENTS ========== */
-
-input,
-button,
-select,
-textarea {
-    max-width: 100vw;
+    /* Evita scroll horizontal */
     box-sizing: border-box;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    /* Base font-size para REM */
+}
+
+
+/* Estilos para as Páginas de Login e Criar Conta */
+
+
+/* Container para Login/Criar Conta (centralizado) */
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.card {
+    background: rgba(30, 32, 44, 0.98);
+    border-radius: 18px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+    padding: 32px 24px 24px 24px;
+    width: 100%;
+    max-width: clamp(320px, 90vw, 1200px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 24px 0;
+}
+
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
 input {
@@ -95,22 +70,7 @@ input {
     color: #fff;
     font-size: clamp(1em, 2vw, 1.2em);
     margin-bottom: 0;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="password"] {
-    border-radius: 30px;
-    text-align: left;
-    margin-bottom: 12px;
-    padding: 14px 18px;
-    font-size: 1.1em;
-}
-
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus {
-    border-color: #00bcd4;
+    box-sizing: border-box;
 }
 
 button,
@@ -136,24 +96,100 @@ button:hover,
     background: #0097a7;
 }
 
-button:disabled,
-.link-button:disabled {
-    background-color: #555;
-    cursor: not-allowed;
-    opacity: 0.7;
+.logo-icon {
+    font-size: 3em;
+    margin-bottom: 10px;
+    color: #ffeb3b;
+}
+
+@media (max-width: 600px) {
+    .card {
+        max-width: 99vw;
+        padding: 2vw 2vw 2vw 2vw;
+        border-radius: 10px;
+    }
+    .container {
+        padding: 0;
+    }
+    input,
+    button,
+    .link-button {
+        font-size: 1em;
+        padding: 10px 0;
+    }
+}
+
+@media (max-width: 400px) {
+    .card {
+        padding: 1vw;
+        border-radius: 6px;
+    }
+    .logo-icon {
+        font-size: 2em;
+    }
+}
+
+h2 {
+    color: #FFF;
+    margin-bottom: 1.875rem;
+    /* Convertido para REM */
+    font-size: clamp(1.2rem, 3vw, 2.2rem);
+    /* Convertido para REM */
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+    /* Convertido para REM */
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    /* Convertido para REM */
+    color: #BBB;
+    font-size: 0.9rem;
+    /* Convertido para REM */
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    border-radius: 30px !important;
+    text-align: left;
+    margin-bottom: 12px;
+    padding: 14px 18px;
+    font-size: 1.1em;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #00bcd4;
 }
 
 
-/* Specific button styles */
+/* Estilos para o botão padrão (ENTRAR) */
 
 button {
+    width: 100%;
     padding: 1.125rem;
+    /* Convertido para REM */
     background-color: #00bcd4;
+    color: white;
+    border: none;
     border-radius: 30px;
     font-size: 1.2rem;
+    /* Convertido para REM */
+    font-weight: bold;
+    cursor: pointer;
     transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
     margin-top: 1.25rem;
+    /* Convertido para REM */
     margin-bottom: 1.25rem;
+    /* Adiciona margem na parte inferior para criar espaço, convertido para REM */
     box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
 }
 
@@ -168,12 +204,30 @@ button:active {
     box-shadow: 0 2px 5px rgba(0, 188, 212, 0.3);
 }
 
+button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+    box-shadow: none;
+}
+
+
+/* Estilos para o botão .link-button (CRIAR UMA CONTA) */
+
 .link-button {
+    width: 100%;
     padding: 0.9375rem;
+    /* Convertido para REM */
     background-color: #4a4a7e;
+    color: white;
+    border: none;
     border-radius: 30px;
     font-size: 1.1rem;
+    /* Convertido para REM */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
     margin-top: 0;
+    /* Removido para usar a margem inferior do botão acima */
 }
 
 .link-button:hover {
@@ -185,192 +239,220 @@ button:active {
     transform: translateY(0);
 }
 
-
-/* ========== LAYOUT COMPONENTS ========== */
-
-
-/* Container for Login/Create Account */
-
-.container {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100vw;
-    padding: 0;
+.link-button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 
-.card {
-    background: rgba(30, 32, 44, 0.98);
-    border-radius: 18px;
-    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
-    padding: 32px 24px 24px 24px;
-    width: 100%;
-    max-width: clamp(320px, 90vw, 1200px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 24px 0;
+
+/* Para remover qualquer linha padrão que possa aparecer, embora 'border: none' já devesse resolver */
+
+a.link-button {
+    text-decoration: none;
 }
 
-.form-group {
-    margin-bottom: 1.25rem;
-    text-align: left;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #BBB;
+.error-message {
+    color: #ff6b6b;
+    margin-top: 0.9375rem;
+    /* Convertido para REM */
     font-size: 0.9rem;
+    /* Convertido para REM */
 }
 
 
-/* Logo styles */
-
-.logo-icon {
-    font-size: 3em;
-    margin-bottom: 10px;
-    color: #ffeb3b;
-}
+/* --- Estilos para o Dashboard --- */
 
 
-/* ========== DASHBOARD LAYOUT ========== */
+/* Container Principal do Dashboard (Flexbox para sidebar e main-content) */
 
-.dashboard-container {
-    display: flex;
-    flex-direction: row;
+.container.dashboard-container {
+    /* Usa ambas as classes para especificidade */
+    background: none;
+    /* Remove background do container original */
+    box-shadow: none;
+    /* Remove sombra do container original */
+    border-radius: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 100vw;
+    /* Ocupa toda a largura da tela */
     min-height: 100vh;
-    width: 100vw;
+    /* Ocupa toda a altura */
+    display: flex;
+    /* Habilita flexbox para layout sidebar/main */
+    justify-content: flex-start;
+    /* Alinha o conteúdo à esquerda */
+    align-items: flex-start;
+    /* Alinha o conteúdo ao topo */
 }
 
 
 /* Sidebar */
 
 .sidebar {
-    min-width: 220px;
-    background: #181a23;
-    color: #fff;
+    width: 250px;
+    /* Largura fixa da sidebar em telas maiores */
+    background-color: #1a1a2e;
+    /* Cor escura para a sidebar */
+    padding: 1.25rem 0;
+    /* Convertido para REM */
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 24px 0 0 0;
-    position: relative;
-    z-index: 2;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.4);
+    position: sticky;
+    /* Sidebar fixa na rolagem */
+    top: 0;
+    height: 100vh !important;
+    /* Ocupa toda a altura da viewport */
+    justify-content: space-between !important;
+    /* Para o botão de sair ir para o final */
+    z-index: 1000;
+    /* Garante que a sidebar fique acima de outros elementos */
 }
 
 .logo-icon-sidebar {
-    font-size: 2.5rem;
+    font-size: 3rem;
+    /* Convertido para REM */
     color: #00bcd4;
-    margin: 0 0 18px 0;
-    padding: 0;
+    /* Cor vibrante para o ícone */
+    margin-bottom: 1.875rem;
+    /* Convertido para REM */
+    margin-top: 0.625rem;
+    /* Convertido para REM */
 }
 
 .menu-item {
+    width: 100%;
+    padding: 0.9375rem 1.5625rem;
+    /* Convertido para REM */
     color: #E0E0E0;
     text-decoration: none;
     font-size: 1.1rem;
+    /* Convertido para REM */
     cursor: pointer;
     transition: background-color 0.3s ease;
-    text-align: center;
+    text-align: left;
+    /* Alinhar texto à esquerda */
     box-sizing: border-box;
-    padding: 0.7rem 1.5rem;
-    border-radius: 6px;
-    background: none;
-    border: none;
-    width: 90%;
-    margin: 6px 0;
+    /* Incluir padding na largura */
 }
 
-.menu-item:hover,
+.menu-item:hover {
+    background-color: #2b2b4d;
+    /* Cor mais clara no hover */
+}
+
 .menu-item.active {
     background-color: #00bcd4;
+    /* Cor de destaque para o item ativo */
     color: #1a1a2e;
+    /* Texto escuro no item ativo para contraste */
     font-weight: bold;
 }
 
+.sidebar-bottom {
+    width: 100%;
+    padding: 1.25rem 0;
+    /* Convertido para REM */
+    border-top: 1px solid #3a3a3a;
+    text-align: center;
+    margin-bottom: 24px;
+    /* Garante espaçamento do botão Sair ao fundo */
+}
+
 .logout-link-sidebar {
-    background: #F44336;
-    color: #fff;
+    background: none;
+    /* Reset do estilo de botão */
     border: none;
-    border-radius: 6px;
-    padding: 0.7rem 1.5rem;
-    font-size: 1.1rem;
-    margin-left: 2rem;
+    color: #E0E0E0;
     cursor: pointer;
-    transition: background 0.3s;
+    font-size: 1.1rem;
+    /* Convertido para REM */
+    padding: 0.9375rem 1.5625rem;
+    /* Convertido para REM */
+    width: 100%;
+    text-align: left;
+    transition: background-color 0.3s ease;
 }
 
 .logout-link-sidebar:hover {
-    background: #b71c1c;
-}
-
-.sidebar-bottom {
-    margin-top: auto;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding-bottom: 24px;
+    background-color: #5a1010;
+    /* Cor de hover mais forte para sair */
 }
 
 
-/* Main Content */
+/* Conteúdo Principal do Dashboard */
 
 .main-content {
     flex-grow: 1;
+    /* Ocupa o restante do espaço disponível */
     padding: 1.875rem;
+    /* Convertido para REM */
     background-color: #2a2a4e;
+    /* Fundo do conteúdo principal, um pouco mais claro que a sidebar */
     min-height: 100vh;
+    /* Garante que o conteúdo principal ocupe toda a altura */
     overflow-y: auto;
+    /* Permite rolagem se o conteúdo for muito longo */
     box-sizing: border-box;
+    /* Incluir padding na largura e altura */
+}
+
+.main-content h2 {
+    color: #FFF;
+    margin-top: 0;
+    margin-bottom: 1.875rem;
+    /* Convertido para REM */
+    font-size: 2.5rem;
+    /* Convertido para REM */
+    text-align: center;
+    /* Centraliza o título */
 }
 
 
-/* Metrics Grid */
+/* Grid de Métricas (Cards no topo) */
 
 .metrics-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 2rem;
-    margin: 2rem auto 0 auto;
-    max-width: 900px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: clamp(12px, 2vw, 32px);
+    margin-bottom: 1.875rem;
+    /* Convertido para REM */
 }
 
 .metric-card {
     background-color: #3a3a5e;
+    /* Fundo dos cards de métricas */
     border-radius: 8px;
-    padding: 1.5rem 2.5rem;
+    padding: 1.25rem;
+    /* Convertido para REM */
     text-align: center;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     border: 1px solid #4a4a7e;
-    min-width: 250px;
-    min-height: 110px;
-    flex: 1 1 250px;
-    margin: 0.5rem;
 }
 
 .metric-card h3 {
     color: #AAA;
     font-size: 1rem;
+    /* Convertido para REM */
     margin-top: 0;
     margin-bottom: 0.625rem;
+    /* Convertido para REM */
 }
 
 .metric-card p {
     color: #00bcd4;
+    /* Cor vibrante para os valores */
     font-size: 2rem;
+    /* Convertido para REM */
     font-weight: bold;
     margin: 0;
 }
 
 
-/* Chart Area */
+/* Área do Gráfico Principal */
 
 .chart-area-main,
 .chart-card-main {
@@ -385,11 +467,6 @@ label {
     box-sizing: border-box;
     padding-left: 0 !important;
     padding-right: 0 !important;
-    background: #23272f;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    padding: 18px 12px 12px 12px;
-    margin-bottom: 24px;
 }
 
 .chart-card-main canvas {
@@ -402,30 +479,52 @@ label {
     max-height: 220px;
 }
 
+@media (max-width: 600px) {
+    .chart-area-main,
+    .chart-card-main {
+        min-height: 120px;
+        max-height: 180px;
+        height: auto;
+        padding: 0 !important;
+    }
+    .chart-card-main canvas {
+        min-height: 80px;
+        max-height: 120px;
+    }
+}
 
-/* View Mode Buttons */
+
+/* Estilos para os botões de seleção de modo de visualização (Dia, Semana, Mês) */
 
 .view-mode-buttons {
     display: flex;
     justify-content: center;
     gap: 0.625rem;
+    /* Convertido para REM */
     margin-bottom: -0.625rem;
+    /* Convertido para REM */
     margin-top: -1.25rem;
+    /* Convertido para REM */
     width: 100%;
+    /* Ocupa a largura total para centralizar */
 }
 
 .view-button,
 .active-view-button {
     padding: 0.625rem 1.25rem;
+    /* Convertido para REM */
     border: 1px solid #00bcd4;
     border-radius: 5px;
     background-color: transparent;
     color: #00bcd4;
     font-size: 0.9rem;
+    /* Convertido para REM */
     cursor: pointer;
     transition: all 0.3s ease;
     margin-top: 0;
+    /* Remover margin-top herdado de 'button' */
     width: auto;
+    /* Deixa o botão se ajustar ao conteúdo */
 }
 
 .view-button:hover {
@@ -436,60 +535,77 @@ label {
 .active-view-button {
     background-color: #00bcd4;
     color: #1a1a2e;
+    /* Texto escuro para contraste no botão ativo */
     font-weight: bold;
 }
 
 .active-view-button:hover {
     background-color: #00a0b8;
+    /* Escurece um pouco no hover do ativo */
     color: #FFF;
 }
 
 
-/* Bottom Sections Grid */
+/* Grid Inferior (para os novos cards) */
 
 .bottom-sections-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: clamp(12px, 2vw, 32px);
     margin-top: 1.875rem;
+    /* Convertido para REM */
 }
 
 .bottom-card {
     background-color: #3a3a5e;
+    /* Fundo dos cards inferiores */
     border-radius: 8px;
     padding: 1.25rem;
+    /* Convertido para REM */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     border: 1px solid #4a4a7e;
     display: flex;
+    /* Habilita flexbox */
     flex-direction: column;
+    /* Conteúdo em coluna */
     justify-content: flex-start;
+    /* Alinha o conteúdo ao topo */
     align-items: center;
+    /* Centraliza horizontalmente */
     text-align: center;
     height: 25rem;
+    /* Convertido para REM, antes 400px. Pode ser ajustado via media query. */
     box-sizing: border-box;
+    /* Garante que padding e border sejam incluídos na altura */
 }
 
 .bottom-card h3 {
     color: #FFF;
     font-size: 1.3rem;
+    /* Convertido para REM */
     margin-top: 0;
     margin-bottom: 0.9375rem;
+    /* Convertido para REM */
 }
 
 
-/* Consumption by Type Card */
+/* Estilo para o gráfico de consumo por tipo */
 
 .consumption-by-type-card .chart-wrapper {
     width: 100%;
+    /* Ocupa a largura do card */
     max-width: 18.75rem;
+    /* Convertido para REM, antes 300px. Limita o tamanho do gráfico para não ficar muito grande */
     height: 17.5rem;
+    /* Convertido para REM, antes 280px. Altura para o gráfico de donut */
     display: flex;
+    /* Para centralizar o canvas do chart */
     justify-content: center;
     align-items: center;
 }
 
 
-/* Device Suggestion List */
+/* Estilo para a lista de dispositivos sugeridos */
 
 .device-suggestion-list {
     list-style: none;
@@ -497,20 +613,27 @@ label {
     margin: 0;
     width: 100%;
     text-align: left;
+    /* Alinha o texto das sugestões à esquerda */
     overflow-y: auto;
+    /* Adiciona scroll se a lista for muito longa */
     max-height: 15.625rem;
+    /* Convertido para REM, antes 250px. Altura máxima para a lista */
     margin-top: 0.625rem;
-    padding-left: 18px;
+    /* Convertido para REM */
 }
 
 .device-suggestion-list li {
     background-color: #4a4a7e;
     padding: 0.625rem 0.9375rem;
+    /* Convertido para REM */
     border-radius: 5px;
     margin-bottom: 0.5rem;
+    /* Convertido para REM */
     font-size: 0.95rem;
+    /* Convertido para REM */
     color: #E0E0E0;
     border-left: 3px solid #ff9800;
+    /* Borda de destaque */
 }
 
 .device-suggestion-list li strong {
@@ -518,49 +641,52 @@ label {
 }
 
 
-/* ========== SPECIFIC SECTIONS ========== */
-
-
-/* Energy Control Section */
+/* Seção de Controle de Energia */
 
 .energy-control-section {
     padding: 1.25rem;
+    /* Convertido para REM */
     background-color: #3a3a5e;
     border-radius: 1.25rem;
+    /* Convertido para REM, antes 20px */
     box-shadow: 0 0.9375rem 0.9375rem rgba(0, 0, 0, 0.3);
+    /* Convertido para REM */
     border: 2px solid #4a4a7e;
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto 24px auto;
 }
 
 .energy-control-section h2 {
     text-align: center;
+    color: #FFF;
     margin-bottom: 1.5625rem;
+    /* Convertido para REM */
 }
 
 .device-feedback-message {
     background-color: #4CAF50;
     color: white;
     padding: 0.625rem 1.25rem;
+    /* Convertido para REM */
     border-radius: 5px;
     text-align: center;
     margin-bottom: 1.25rem;
+    /* Convertido para REM */
     opacity: 0.9;
 }
 
 
-/* Device Control List */
+/* --- Início da Parte 2 (com adaptações para responsividade) --- */
 
 .device-control-list {
     display: flex;
     flex-direction: column;
     gap: 0.9375rem;
+    /* Convertido para REM */
 }
 
 .device-control-item {
     background-color: #4a4a7e;
     padding: 0.9375rem 1.25rem;
+    /* Convertido para REM */
     border-radius: 8px;
     display: flex;
     justify-content: space-between;
@@ -570,42 +696,58 @@ label {
 
 .device-control-name {
     font-size: 1.1rem;
+    /* Convertido para REM */
     color: #FFF;
     flex-grow: 1;
+    /* Permite que o nome ocupe espaço */
     text-align: left;
 }
 
 .device-status-indicator {
     padding: 0.3125rem 0.625rem;
+    /* Convertido para REM */
     border-radius: 5px;
     font-size: 0.85rem;
+    /* Convertido para REM */
     font-weight: bold;
     margin-left: 0.9375rem;
+    /* Convertido para REM */
     margin-right: 0.9375rem;
+    /* Convertido para REM */
 }
 
 .device-status-indicator.on {
     background-color: #4CAF50;
+    /* Verde para ligado */
     color: white;
 }
 
 .device-status-indicator.off {
     background-color: #F44306;
+    /* Vermelho para desligado */
     color: white;
 }
 
 .device-toggle-button {
     padding: 0.5rem 0.9375rem;
+    /* Convertido para REM */
     border-radius: 5px;
     font-size: 0.9rem;
+    /* Convertido para REM */
     cursor: pointer;
     transition: background-color 0.3s ease;
     width: auto;
+    /* Reset para não herdar width: 100% */
     margin-top: 0;
+    /* Reset para não herdar margin-top */
 }
+
+
+/* Estilo para o botão "Ligar" - sempre verde */
 
 .device-toggle-button.power-on {
     background-color: #388E3C;
+    /* Verde mais escuro para Ligar */
     color: white;
 }
 
@@ -613,8 +755,12 @@ label {
     background-color: #2E7D32;
 }
 
+
+/* Estilo para o botão "Desligar" - sempre vermelho */
+
 .device-toggle-button.power-off {
     background-color: #D32F2F;
+    /* Vermelho mais escuro para Desligar */
     color: white;
 }
 
@@ -623,27 +769,38 @@ label {
 }
 
 
-/* Add Device and Refresh Buttons */
+/* NOVO: Estilo para o botão de adicionar dispositivo Tasmota e atualizar lista */
 
 .add-device-btn,
 .refresh-devices-btn {
+    /* Combinado os estilos */
     background-color: #00bcd4;
+    /* Cor principal de ação */
     color: white;
     padding: 0.625rem 0.9375rem;
+    /* Convertido para REM */
     border: none;
     border-radius: 8px;
     font-size: 0.95rem;
+    /* Convertido para REM */
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.1s ease;
     margin-top: 1.5625rem;
+    /* Convertido para REM */
     width: auto;
+    /* Adapta a largura ao conteúdo */
     display: inline-block;
+    /* Permite que fiquem lado a lado */
+    margin-left: auto;
+    /* Alinha à direita se estiver sozinho */
     margin-right: 0.625rem;
+    /* Espaço entre eles se houver mais de um, convertido para REM */
 }
 
 .add-device-btn:last-child,
 .refresh-devices-btn:last-child {
     margin-right: 0;
+    /* Remove margem do último botão */
 }
 
 .add-device-btn:hover,
@@ -658,35 +815,52 @@ label {
 }
 
 
-/* Reports Section */
+/* Seção de Relatórios */
 
 .reports-section {
     padding: 1.25rem;
+    /* Convertido para REM */
     background-color: #3a3a5e;
     border-radius: 8px;
     box-shadow: 0 0.25rem 0.9375rem rgba(0, 0, 0, 0.3);
+    /* Convertido para REM */
     border: 1px solid #4a4a7e;
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto 24px auto;
 }
 
 .reports-section h2 {
     text-align: center;
+    color: #FFF;
     margin-bottom: 1.5625rem;
+    /* Convertido para REM */
+}
+
+.reports-section h3 {
+    color: #FFF;
+    font-size: 1.5rem;
+    /* Convertido para REM */
+    margin-top: 1.875rem;
+    /* Convertido para REM */
+    margin-bottom: 0.9375rem;
+    /* Convertido para REM */
+    text-align: center;
 }
 
 .report-summary-card {
     background-color: #4a4a7e;
     padding: 1.25rem;
+    /* Convertido para REM */
     border-radius: 8px;
     margin-bottom: 1.875rem;
+    /* Convertido para REM */
     box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
+    /* Convertido para REM */
 }
 
 .report-summary-card p {
     margin-bottom: 0.625rem;
+    /* Convertido para REM */
     font-size: 1.1rem;
+    /* Convertido para REM */
     color: #E0E0E0;
 }
 
@@ -696,36 +870,54 @@ label {
 
 .overall-report-message {
     margin-top: 1.25rem;
+    /* Convertido para REM */
     font-style: italic;
     font-size: 1.1rem;
+    /* Convertido para REM */
     color: #B0B0B0;
     border-top: 1px dashed #5a5a8e;
     padding-top: 0.9375rem;
+    /* Convertido para REM */
 }
 
 
-/* Realtime Energy Card */
+/* Novo estilo para o cartão de dados em tempo real */
 
 .energy-realtime-card {
     background-color: #4a4a7e;
     padding: 1.25rem;
+    /* Convertido para REM */
     border-radius: 8px;
     margin-bottom: 1.875rem;
+    /* Convertido para REM */
     box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
+    /* Convertido para REM */
     display: flex;
+    /* Usar flexbox para layout */
     flex-direction: column;
+    /* Colocar itens em coluna */
     align-items: center;
+    /* Centralizar horizontalmente */
     justify-content: center;
+    /* Centralizar verticalmente */
     min-height: 21.875rem;
+    /* Convertido para REM, antes 350px. Altura mínima para o cartão */
     position: relative;
+    /* Para posicionamento absoluto de elementos internos */
     overflow: hidden;
+    /* Garante que nada transborde */
 }
 
 .energy-realtime-card h3 {
     position: absolute;
+    /* Posição absoluta para o título */
     top: 1.25rem;
+    /* Convertido para REM */
     width: 100%;
     text-align: center;
+    color: #FFF;
+    font-size: 1.5rem;
+    /* Convertido para REM */
     margin: 0;
 }
 
@@ -735,30 +927,42 @@ label {
     align-items: center;
     justify-content: center;
     flex-grow: 1;
+    /* Permite que ocupe o espaço disponível */
     margin-top: 2.5rem;
+    /* Convertido para REM */
 }
 
 .realtime-power-value {
     font-size: 5rem;
+    /* Convertido para REM */
     font-weight: bold;
     color: #00bcd4;
+    /* Cor para o valor principal */
     margin: 0;
     line-height: 1;
+    /* Remove espaçamento extra */
 }
 
 .realtime-power-label {
     font-size: 1.5rem;
+    /* Convertido para REM */
     color: #E0E0E0;
     margin-top: 0.3125rem;
+    /* Convertido para REM */
 }
 
 .realtime-secondary-data {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    /* Duas colunas para os dados secundários */
     gap: 0.9375rem 1.875rem;
+    /* Convertido para REM */
     margin-top: 1.875rem;
+    /* Convertido para REM */
     width: 80%;
+    /* Ajuste a largura conforme necessário */
     max-width: 25rem;
+    /* Convertido para REM, antes 400px. Limita a largura máxima */
 }
 
 .realtime-data-item {
@@ -766,32 +970,39 @@ label {
     justify-content: space-between;
     align-items: center;
     padding-bottom: 0.3125rem;
+    /* Convertido para REM */
     border-bottom: 1px dashed #5a5a8e;
+    /* Linha tracejada para separar */
 }
 
 .realtime-data-label {
     color: #B0B0B0;
     font-size: 0.9rem;
+    /* Convertido para REM */
     white-space: nowrap;
+    /* Evita quebra de linha */
 }
 
 .realtime-data-value {
     color: #FFF;
     font-weight: bold;
     font-size: 1rem;
+    /* Convertido para REM */
 }
 
 
-/* Energy Realtime Table */
+/* Seção relatorio Dados em Tempo Real do Dispositivo Principal */
 
 .energy-realtime-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 1.875rem;
+    /* Convertido para REM */
 }
 
 .energy-realtime-table td {
     padding: 0.625rem 0.75rem;
+    /* Convertido para REM */
     border-bottom: 3px solid #5a5a8e;
     color: #00bcd4;
 }
@@ -801,20 +1012,21 @@ label {
     color: #4CAF50;
 }
 
-
-/* Device Report List */
-
 .device-report-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr));
+    /* Convertido minmax para REM, antes 280px */
     gap: 1.25rem;
+    /* Convertido para REM */
 }
 
 .device-report-item {
     background-color: #4a4a7e;
     padding: 1.25rem;
+    /* Convertido para REM */
     border-radius: 8px;
     box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.2);
+    /* Convertido para REM */
     border: 1px solid #5a5a8e;
 }
 
@@ -822,74 +1034,91 @@ label {
     color: #00bcd4;
     margin-top: 0;
     margin-bottom: 0.9375rem;
+    /* Convertido para REM */
     font-size: 1.2rem;
+    /* Convertido para REM */
 }
 
 .device-report-item p {
     font-size: 0.95rem;
+    /* Convertido para REM */
     color: #E0E0E0;
     margin-bottom: 0.5rem;
+    /* Convertido para REM */
 }
 
 .status-on-text {
     color: #4CAF50;
+    /* Verde para economia */
     font-weight: bold;
 }
 
 .status-off-text {
     color: #F44336;
+    /* Vermelho para gasto excessivo */
     font-weight: bold;
 }
 
 .impact-positive {
     color: #4CAF50;
+    /* Verde para economia */
     font-weight: bold;
     margin-top: 0.625rem;
+    /* Convertido para REM */
 }
 
 .impact-negative {
     color: #F44336;
+    /* Vermelho para gasto excessivo */
     font-weight: bold;
     margin-top: 0.625rem;
+    /* Convertido para REM */
 }
 
 
-/* Settings Section */
+/* Seção de Configurações */
 
 .settings-section {
     padding: 1.25rem;
+    /* Convertido para REM */
     background-color: #3a3a5e;
     border-radius: 8px;
     box-shadow: 0 0.25rem 0.9375rem rgba(0, 0, 0, 0.3);
+    /* Convertido para REM */
     border: 1px solid #4a4a7e;
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto 24px auto;
 }
 
 .settings-section h2 {
     text-align: center;
+    color: #FFF;
     margin-bottom: 1.5625rem;
+    /* Convertido para REM */
 }
 
 .user-settings-card {
     background-color: #4a4a7e;
     padding: 1.25rem;
+    /* Convertido para REM */
     border-radius: 8px;
     box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
+    /* Convertido para REM */
     margin-bottom: 1.875rem;
+    /* Adicionado para separar do card da eWeLink, convertido para REM */
 }
 
 .user-settings-card h3 {
     color: #FFF;
     margin-top: 0;
     margin-bottom: 1.25rem;
+    /* Convertido para REM */
     text-align: center;
 }
 
 .user-settings-card p {
     margin-bottom: 0.625rem;
+    /* Convertido para REM */
     font-size: 1.1rem;
+    /* Convertido para REM */
     color: #E0E0E0;
 }
 
@@ -903,13 +1132,18 @@ label {
     color: white;
     border: none;
     padding: 0.625rem 1.25rem;
+    /* Convertido para REM */
     border-radius: 5px;
     cursor: pointer;
     font-size: 0.9rem;
+    /* Convertido para REM */
     margin-right: 0.625rem;
+    /* Espaço entre os botões, convertido para REM */
     margin-top: 0.9375rem;
+    /* Adicionado para separar do texto, convertido para REM */
     transition: background-color 0.3s ease;
     width: auto;
+    /* Ajusta a largura para o conteúdo */
 }
 
 .change-password-button:hover,
@@ -918,325 +1152,187 @@ label {
 }
 
 
-/* Tasmota Settings Card */
+/* NOVO: Estilos para a seção de Gerenciamento de Dispositivos (Tasmota) */
 
 .tasmota-settings-card {
+    /* Renomeado de .ewelink-settings-card */
     background-color: #4a4a7e;
     padding: 1.25rem;
+    /* Convertido para REM */
     border-radius: 8px;
     box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
+    /* Convertido para REM */
     margin-top: 1.25rem;
+    /* Convertido para REM */
 }
 
 .tasmota-settings-card h3 {
     color: #FFF;
     margin-top: 0;
     margin-bottom: 1.25rem;
+    /* Convertido para REM */
     text-align: center;
 }
 
 .tasmota-settings-card p {
     margin-bottom: 0.625rem;
+    /* Convertido para REM */
     font-size: 1rem;
+    /* Convertido para REM */
     color: #E0E0E0;
     text-align: center;
 }
 
 
-/* ========== ADD DEVICE PAGE ========== */
+/* NOVO: Estilos para as mensagens de feedback (sucesso, erro, info) */
 
-.add-device-page-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #2c2c54;
-    padding: 20px;
-    box-sizing: border-box;
-    width: 100vw;
-}
-
-.add-device-card {
-    background-color: #3e3e70;
-    padding: 32px 24px 24px 24px;
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
-    width: 100%;
-    max-width: 420px;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.add-device-card h2 {
+.message {
+    padding: 0.625rem 0.9375rem;
+    /* Convertido para REM */
+    border-radius: 5px;
+    margin-top: 0.9375rem;
+    /* Convertido para REM */
+    margin-bottom: 0.9375rem;
+    /* Convertido para REM */
+    font-size: 0.95rem;
+    /* Convertido para REM */
     text-align: center;
-    margin-bottom: 22px;
-    color: #8a2be2;
-    font-size: 1.3em;
-}
-
-.button-group {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-right: 12px;
-    margin-top: -17px;
-}
-
-.add-device-card button {
-    width: 100%;
-    padding: 12px 0;
-    border: none;
-    border-radius: 6px;
-    background-color: #8a2be2;
-    color: #fff;
-    font-size: 1.1em;
     font-weight: bold;
-    cursor: pointer;
-    margin-top: 0;
-    transition: background 0.2s;
 }
 
-.add-device-card button:hover:not(:disabled) {
-    background-color: #6a0fdc;
+.message.info {
+    background-color: #2196F3;
+    /* Azul */
+    color: white;
 }
 
-.cancel-button {
-    background-color: #6c757d !important;
-    margin-top: 0 !important;
+.message.success {
+    background-color: #4CAF50;
+    /* Verde */
+    color: white;
 }
 
-.cancel-button:hover:not(:disabled) {
-    background-color: #5a6268 !important;
-}
-
-
-/* ========== MODAL STYLES ========== */
-
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.modal-card {
-    background: #23243a;
-    border-radius: 12px;
-    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
-    padding: 32px 24px 24px 24px;
-    min-width: 320px;
-    max-width: 95vw;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.modal-card h3 {
-    margin-bottom: 1.25rem;
-    color: #00bcd4;
+.message.error {
+    background-color: #F44336;
+    /* Vermelho */
+    color: white;
 }
 
 
-/* Small buttons for account edit modal */
-
-.small-buttons {
-    gap: 8px;
-    justify-content: center;
-}
-
-.small-btn {
-    font-size: 0.95em !important;
-    padding: 7px 16px !important;
-    min-width: 90px;
-    border-radius: 6px;
-    margin: 0 !important;
-    box-shadow: none !important;
-}
+/* --- Media Queries para Responsividade --- */
 
 
-/* ========== MOBILE MENU ========== */
+/* Telas menores que 768px (tablets em modo retrato, celulares maiores) */
 
-.mobile-menu-bar {
-    width: 100vw;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    background: #1a1a2e;
-    padding: 4px 8px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1100;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
-    height: 38px;
-}
-
-.hamburger-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 2px 6px;
-    border-radius: 6px;
-    outline: none;
-    height: 30px;
-    width: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.hamburger-icon {
-    font-size: 1.7em;
-    color: #00bcd4;
-    line-height: 1;
-}
-
-.mobile-menu-box {
-    position: fixed;
-    top: 38px;
-    left: 0;
-    width: 180px;
-    background: #23243a;
-    box-shadow: 2px 0 16px rgba(0, 0, 0, 0.25);
-    border-radius: 0 10px 10px 0;
-    z-index: 1200;
-    display: flex;
-    flex-direction: column;
-    padding: 10px 0 10px 0;
-    animation: slideInMenu 0.2s;
-}
-
-.mobile-menu-box .menu-item {
-    padding: 10px 18px;
-    font-size: 1em;
-}
-
-
-/* ========== RESPONSIVE MEDIA QUERIES ========== */
-
-
-/* General adjustments for all screen sizes */
-
-@media (max-width: 900px) {
-    .main-content,
-    .bottom-card,
-    .energy-realtime-card,
-    .settings-section,
-    .reports-section,
-    .energy-control-section {
-        width: 100% !important;
-        max-width: 100vw !important;
-        min-width: 0 !important;
-        box-sizing: border-box;
-        margin: 0 auto 12px auto !important;
-        padding-left: 0.5rem !important;
-        padding-right: 0.5rem !important;
-    }
-    .chart-wrapper,
-    .chart-card-main {
-        width: 100% !important;
-        max-width: 100vw !important;
-        min-width: 0 !important;
-        box-sizing: border-box;
-    }
-    .metrics-grid {
-        flex-direction: column;
-        align-items: center;
-        gap: 1.2rem;
-    }
-    .metric-card {
-        min-width: 200px;
-        padding: 1.2rem 1.2rem;
-    }
-    .container.dashboard-container h2 {
-        font-size: 2rem;
-    }
-}
-
-
-/* Tablets and smaller screens */
-
-@media (max-width: 768px) {
+@media screen and (max-width: 768px) {
     body {
+        /* Ajusta o alinhamento para o dashboard em telas menores */
         align-items: flex-start;
     }
     .container {
+        /* Container de login/cadastro */
         margin: 3.125rem auto;
+        /* Reduz margem superior para celulares, convertido para REM */
         padding: 1.875rem;
+        /* Reduz padding, convertido para REM */
     }
     h2 {
         font-size: 1.5rem;
+        /* Diminui o tamanho do título principal */
         margin-bottom: 1.5rem;
     }
     button {
         padding: 1rem;
+        /* Reduz padding do botão principal */
         font-size: 1.1rem;
+        /* Reduz fonte */
     }
     .link-button {
         padding: 0.8rem;
+        /* Reduz padding do botão secundário */
         font-size: 1rem;
+        /* Reduz fonte */
     }
-    /* Dashboard adjustments */
+    /* Dashboard */
     .container.dashboard-container {
         flex-direction: column;
+        /* Coloca a sidebar acima do conteúdo principal */
     }
     .sidebar {
         width: 100%;
+        /* Sidebar ocupa toda a largura */
         height: auto;
+        /* Altura automática para a sidebar */
         position: relative;
+        /* Remove sticky em telas pequenas se preferir, ou ajuste */
         padding: 0.9375rem 0;
+        /* Reduz padding, convertido para REM */
         box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.4);
+        /* Convertido para REM */
         flex-direction: row;
+        /* Itens do menu em linha */
         flex-wrap: wrap;
+        /* Permite quebrar linha */
         justify-content: center;
+        /* Centraliza itens */
         gap: 0.625rem;
+        /* Espaço entre itens, convertido para REM */
     }
     .sidebar .logo-icon-sidebar {
         display: none;
+        /* Esconde o logo grande em telas pequenas para economizar espaço */
     }
     .menu-item {
         width: auto;
+        /* Menu items se ajustam ao conteúdo */
         padding: 0.625rem 0.9375rem;
+        /* Reduz padding, convertido para REM */
         font-size: 0.95rem;
+        /* Reduz fonte */
         text-align: center;
+        /* Centraliza o texto do menu item */
         flex-grow: 1;
+        /* Permite que ocupem espaço igualmente */
     }
     .sidebar-bottom {
         display: none;
+        /* Esconde a parte de baixo da sidebar (logout) em telas menores */
     }
     .logout-link-sidebar {
         display: block;
+        /* Garante que o botão de logout esteja visível, pode ser movido para o topo do menu principal ou um botão "..." */
         width: 100%;
+        /* Ocupa a largura total */
         text-align: center;
+        /* Centraliza o texto */
         margin-top: 1.25rem;
+        /* Adiciona margem, convertido para REM */
         padding: 0.9375rem;
+        /* Reduz padding, convertido para REM */
     }
     .main-content {
         padding: 1.25rem;
+        /* Reduz padding do conteúdo principal, convertido para REM */
         min-height: auto;
+        /* Remove min-height fixo */
     }
     .main-content h2 {
         font-size: 2rem;
+        /* Ajusta o título do dashboard */
         margin-bottom: 1.25rem;
+        /* Convertido para REM */
     }
     .metrics-grid {
         grid-template-columns: 1fr;
+        /* Uma coluna em telas muito pequenas */
     }
     .metric-card {
         padding: 0.9375rem;
+        /* Reduz padding do card de métrica, convertido para REM */
     }
     .metric-card p {
         font-size: 1.8rem;
+        /* Ajusta a fonte dos valores */
     }
     .chart-area-main,
     .chart-card-main {
@@ -1251,51 +1347,69 @@ label {
     }
     .bottom-sections-grid {
         grid-template-columns: 1fr;
+        /* Uma coluna para os cards inferiores */
     }
     .bottom-card {
         height: auto;
+        /* Altura automática para se adaptar ao conteúdo */
         min-height: 18.75rem;
+        /* Altura mínima para não ficar muito pequeno, convertido para REM */
         padding: 0.9375rem;
+        /* Convertido para REM */
     }
     .consumption-by-type-card .chart-wrapper {
         height: 15.625rem;
+        /* Ajusta a altura do gráfico de donut, convertido para REM */
     }
     .device-suggestion-list {
         max-height: 12.5rem;
+        /* Reduz max-height para lista de sugestões, convertido para REM */
     }
     .energy-control-section {
         padding: 0.9375rem;
+        /* Convertido para REM */
         border-radius: 0.625rem;
+        /* Diminui o border-radius, convertido para REM */
     }
     .device-feedback-message {
         padding: 0.5rem 0.9375rem;
+        /* Reduz padding, convertido para REM */
         font-size: 0.9rem;
     }
-    /* Adjust buttons in energy control section */
+    /* Ajuste para os botões em telas menores na seção de controle de energia */
     .add-device-btn,
     .refresh-devices-btn {
         width: 100%;
+        /* Ocupa a largura total */
         margin-right: 0;
+        /* Remove margem direita */
         margin-bottom: 0.625rem;
+        /* Adiciona margem inferior para espaçamento, convertido para REM */
         display: block;
+        /* Garante que cada botão ocupe sua própria linha */
         margin-left: 0;
+        /* Alinha à esquerda em blocos */
     }
     .add-device-btn:last-child,
     .refresh-devices-btn:last-child {
         margin-bottom: 0;
+        /* Remove margem do último botão */
     }
 }
 
 
-/* Very small screens (phones) */
+/* Telas muito pequenas (celulares) */
 
-@media (max-width: 480px) {
+@media screen and (max-width: 480px) {
     body {
         font-size: 14px;
+        /* Base font-size menor para telas muito pequenas */
     }
     .container {
         padding: 1.25rem;
+        /* Convertido para REM */
         margin: 1.875rem auto;
+        /* Convertido para REM */
     }
     h2 {
         font-size: 1.3rem;
@@ -1330,25 +1444,31 @@ label {
     .view-button,
     .active-view-button {
         padding: 0.5rem 0.75rem;
+        /* Convertido para REM */
         font-size: 0.8rem;
     }
     .bottom-card {
         min-height: 15.625rem;
+        /* Altura mínima para cards inferiores, convertido para REM */
     }
     .consumption-by-type-card .chart-wrapper {
         height: 11.25rem;
+        /* Ajusta a altura do gráfico de donut, convertido para REM */
     }
     .device-suggestion-list li {
         font-size: 0.85rem;
         padding: 0.5rem 0.75rem;
+        /* Convertido para REM */
     }
     .device-feedback-message {
         font-size: 0.85rem;
     }
     .device-control-item {
         flex-direction: column;
+        /* Empilha itens do controle de dispositivos */
         align-items: flex-start;
         gap: 0.625rem;
+        /* Convertido para REM */
     }
     .device-control-name,
     .device-status-indicator,
@@ -1359,14 +1479,19 @@ label {
     }
     .device-status-indicator {
         margin-top: 0.3125rem;
+        /* Convertido para REM */
     }
     .device-toggle-button {
         margin-top: 0.625rem;
+        /* Convertido para REM */
     }
 }
 
 
-/* Ultra-wide screens */
+/* --- MELHORIAS DE RESPONSIVIDADE E GRÁFICO --- */
+
+
+/* Ajuste para telas ultrawide (acima de 1600px) */
 
 @media screen and (min-width: 1600px) {
     .main-content,
@@ -1377,7 +1502,7 @@ label {
 }
 
 
-/* Screens between 1200px and 1600px */
+/* Ajuste para telas entre 1200px e 1600px */
 
 @media screen and (max-width: 1600px) and (min-width: 1200px) {
     .main-content,
@@ -1388,7 +1513,7 @@ label {
 }
 
 
-/* Tablets (up to 1024px) */
+/* Ajuste para tablets (até 1024px) */
 
 @media screen and (max-width: 1024px) {
     .metrics-grid,
@@ -1406,7 +1531,7 @@ label {
 }
 
 
-/* Large phones (up to 768px) */
+/* Ajuste para celulares grandes (até 768px) */
 
 @media screen and (max-width: 768px) {
     .metrics-grid,
@@ -1468,7 +1593,7 @@ label {
 }
 
 
-/* Small phones (up to 480px) */
+/* Ajuste para celulares pequenos (até 480px) */
 
 @media screen and (max-width: 480px) {
     body {
@@ -1525,19 +1650,7 @@ label {
 }
 
 
-/* Mobile menu visibility */
-
-@media (max-width: 700px) {
-    .sidebar {
-        display: none !important;
-    }
-    .main-content {
-        margin-top: 44px !important;
-    }
-}
-
-
-/* Ensure tables and grids never overflow */
+/* Garantir que tabelas e grids nunca estourem a tela */
 
 .energy-realtime-table,
 .realtime-secondary-data,
@@ -1550,7 +1663,7 @@ label {
 }
 
 
-/* Adjust to prevent layout break in cards and tables */
+/* Ajuste para evitar quebra de layout em cards e tabelas */
 
 .metric-card,
 .bottom-card,
@@ -1562,7 +1675,18 @@ label {
 }
 
 
-/* Final overflow protection */
+/* Ajuste para inputs e botões em telas pequenas */
+
+input,
+button,
+select,
+textarea {
+    max-width: 100vw;
+    box-sizing: border-box;
+}
+
+
+/* Ajuste para garantir que nada vaze da tela */
 
 html,
 body,
@@ -1573,24 +1697,720 @@ body,
 }
 
 
-/* Animation for mobile menu */
+/* --- RESPONSIVIDADE DASHBOARD --- */
 
-@keyframes slideInMenu {
-    from {
-        transform: translateX(-100%);
+.dashboard-container {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    width: 100vw;
+    box-sizing: border-box;
+}
+
+.sidebar {
+    min-width: 220px;
+    background: #181a23;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0 0 0;
+    position: relative;
+    z-index: 2;
+}
+
+.sidebar .logo-icon-sidebar {
+    font-size: 2.2em;
+    margin-bottom: 18px;
+}
+
+.menu-item {
+    width: 90%;
+    padding: 12px 0;
+    margin: 6px 0;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    background: none;
+    color: #fff;
+    font-size: 1.1em;
+    transition: background 0.2s, color 0.2s;
+}
+
+.menu-item.active,
+.menu-item:hover {
+    background: #00bcd4;
+    color: #181a23;
+}
+
+.logout-link-sidebar {
+    background: #f44336;
+    color: #fff;
+    margin-top: 24px;
+}
+
+.sidebar-bottom {
+    margin-top: auto;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 24px;
+}
+
+.main-content {
+    flex: 1;
+    padding: 32px 32px 32px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.metrics-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.metric-card {
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    padding: 18px 24px;
+    min-width: 180px;
+    text-align: center;
+    color: #fff;
+    flex: 1 1 180px;
+    max-width: 220px;
+}
+
+.chart-area-main,
+.chart-card-main {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 24px auto;
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    padding: 18px 12px 12px 12px;
+}
+
+.view-mode-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.view-button,
+.active-view-button {
+    padding: 8px 18px;
+    border-radius: 6px;
+    border: none;
+    background: #23243a;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.active-view-button {
+    background: #00bcd4;
+    color: #181a23;
+}
+
+.bottom-sections-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: center;
+    margin-top: 18px;
+}
+
+.bottom-card {
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    padding: 18px 18px 12px 18px;
+    min-width: 220px;
+    flex: 1 1 320px;
+    max-width: 420px;
+    margin-bottom: 12px;
+}
+
+.chart-wrapper {
+    width: 100%;
+    min-height: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.device-suggestion-list {
+    padding-left: 18px;
+    font-size: 1em;
+}
+
+.energy-control-section,
+.reports-section,
+.settings-section {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    padding: 24px 18px 18px 18px;
+    margin-bottom: 24px;
+}
+
+.device-control-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.device-control-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    background: #23243a;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+}
+
+.device-control-name {
+    flex: 1 1 120px;
+    font-weight: bold;
+    color: #00bcd4;
+}
+
+
+/* Responsividade para telas menores */
+
+@media (max-width: 900px) {
+    .main-content,
+    .bottom-card,
+    .energy-realtime-card,
+    .settings-section,
+    .reports-section,
+    .energy-control-section {
+        width: 100% !important;
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+        margin: 0 auto 12px auto !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
     }
-    to {
-        transform: translateX(0);
+    .chart-wrapper,
+    .chart-card-main {
+        width: 100% !important;
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content,
+    .bottom-card,
+    .energy-realtime-card,
+    .settings-section,
+    .reports-section,
+    .energy-control-section {
+        width: 100% !important;
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+        margin: 0 auto 8px auto !important;
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+    }
+    .chart-wrapper,
+    .chart-card-main {
+        width: 100% !important;
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 600px) {
+    .main-content,
+    .bottom-card,
+    .energy-realtime-card,
+    .settings-section,
+    .reports-section,
+    .energy-control-section {
+        width: 100% !important;
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+        margin: 0 auto 4px auto !important;
+        padding-left: 0.1rem !important;
+        padding-right: 0.1rem !important;
+    }
+    .chart-wrapper,
+    .chart-card-main {
+        width: 100% !important;
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
     }
 }
 
 
-/* Centralizar o texto de boas-vindas */
+/* Garantir que texto nunca seja cortado */
 
-.container.dashboard-container h2 {
-    text-align: center;
-    margin-top: 2.5rem;
-    margin-bottom: 1.5rem;
-    font-size: 2.5rem;
+.main-content,
+.bottom-card,
+.energy-realtime-card,
+.settings-section,
+.reports-section,
+.energy-control-section,
+.chart-wrapper,
+.chart-card-main {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+
+/* --- ESTILOS PARA AddDevicePage (UNIFICADO) --- */
+
+.add-device-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #2c2c54;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100vw;
+}
+
+.add-device-card {
+    background-color: #3e3e70;
+    padding: 32px 24px 24px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    width: 100%;
+    max-width: 420px;
     color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.add-device-card h2 {
+    text-align: center;
+    margin-bottom: 22px;
+    color: #8a2be2;
+    font-size: 1.3em;
+}
+
+.form-group {
+    width: 100%;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #5a5a8a;
+    border-radius: 5px;
+    background-color: #4a4a7e;
+    color: #fff;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.form-group input::placeholder {
+    color: #bbb;
+}
+
+.error-message {
+    color: #ff6b6b;
+    margin-bottom: 12px;
+    text-align: center;
+    font-size: 1em;
+}
+
+.button-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-right: 12px;
+    margin-top: -17px;
+}
+
+.add-device-card button {
+    width: 100%;
+    padding: 12px 0;
+    border: none;
+    border-radius: 6px;
+    background-color: #8a2be2;
+    color: #fff;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 0;
+    transition: background 0.2s;
+}
+
+.add-device-card button:hover:not(:disabled) {
+    background-color: #6a0fdc;
+}
+
+.add-device-card button:disabled {
+    background-color: #5a5a8a;
+    cursor: not-allowed;
+}
+
+.cancel-button {
+    background-color: #6c757d !important;
+    margin-top: 0 !important;
+}
+
+.cancel-button:hover:not(:disabled) {
+    background-color: #5a6268 !important;
+}
+
+
+/* Responsividade AddDevicePage */
+
+@media (max-width: 768px) {
+    .add-device-page-container {
+        padding: 8px;
+        min-height: 100vh;
+    }
+    .add-device-card {
+        max-width: 98vw;
+        padding: 16px;
+    }
+    .add-device-card h2 {
+        font-size: 1.1em;
+        margin-bottom: 14px;
+    }
+    .form-group input {
+        font-size: 0.95em;
+        padding: 8px;
+    }
+    .add-device-card button {
+        font-size: 1em;
+        padding: 10px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .add-device-card {
+        max-width: 100vw;
+        padding: 8px;
+        border-radius: 6px;
+    }
+    .add-device-card h2 {
+        font-size: 1em;
+        margin-bottom: 8px;
+    }
+    .form-group label {
+        font-size: 0.95em;
+    }
+    .form-group input {
+        font-size: 0.9em;
+        padding: 6px;
+    }
+    .add-device-card button {
+        font-size: 0.95em;
+        padding: 8px 0;
+    }
+}
+
+
+/* Modal Overlay e Card */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-card {
+    background: #23243a;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
+    padding: 32px 24px 24px 24px;
+    min-width: 320px;
+    max-width: 95vw;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal-card h3 {
+    margin-bottom: 1.25rem;
+    color: #00bcd4;
+}
+
+.button-group {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 1rem;
+    justify-content: center;
+}
+
+.cancel-button {
+    background: #888 !important;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 18px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.cancel-button:hover {
+    background: #555 !important;
+}
+
+
+/* Botões menores para modal de edição de conta */
+
+.small-buttons {
+    gap: 8px;
+    justify-content: center;
+}
+
+.small-btn {
+    font-size: 0.95em !important;
+    padding: 7px 16px !important;
+    min-width: 90px;
+    border-radius: 6px;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+
+
+/* Menu responsivo mobile */
+
+.mobile-menu-bar {
+    width: 100vw;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background: #1a1a2e;
+    padding: 4px 8px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1100;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    height: 38px;
+}
+
+.hamburger-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 6px;
+    outline: none;
+    height: 30px;
+    width: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hamburger-icon {
+    font-size: 1.7em;
+    color: #00bcd4;
+    line-height: 1;
+}
+
+.mobile-menu-box {
+    position: fixed;
+    top: 38px;
+    left: 0;
+    width: 180px;
+    background: #23243a;
+    box-shadow: 2px 0 16px rgba(0, 0, 0, 0.25);
+    border-radius: 0 10px 10px 0;
+    z-index: 1200;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0 10px 0;
+    animation: slideInMenu 0.2s;
+}
+
+.mobile-menu-box .menu-item {
+    padding: 10px 18px;
+    font-size: 1em;
+}
+
+@media (max-width: 700px) {
+    .sidebar {
+        display: none !important;
+    }
+    .main-content {
+        margin-top: 44px !important;
+    }
+}
+
+
+/* Responsividade moderna 2025 */
+
+html {
+    font-size: clamp(14px, 1.2vw, 18px);
+}
+
+body {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.card,
+.add-device-card,
+.main-content,
+.energy-realtime-card {
+    width: 100%;
+    max-width: clamp(320px, 90vw, 1200px);
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+input,
+button,
+.link-button {
+    font-size: clamp(1em, 2vw, 1.2em);
+    padding: clamp(10px, 2vw, 18px) clamp(10px, 2vw, 24px);
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+h2,
+h3,
+h4 {
+    font-size: clamp(1.2rem, 3vw, 2.2rem);
+}
+
+.metrics-grid,
+.bottom-sections-grid,
+.device-control-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: clamp(12px, 2vw, 32px);
+}
+
+@media (max-width: 900px) {
+    .sidebar {
+        position: fixed;
+        width: 60vw;
+        min-width: 180px;
+        max-width: 320px;
+        z-index: 1000;
+    }
+    .main-content {
+        margin-left: 0 !important;
+        width: 100vw !important;
+        padding: 2vw;
+    }
+}
+
+@media (max-width: 600px) {
+    .card,
+    .add-device-card,
+    .main-content,
+    .energy-realtime-card {
+        max-width: 99vw;
+        padding: 2vw 2vw 2vw 2vw;
+        border-radius: 10px;
+    }
+    .metrics-grid,
+    .bottom-sections-grid,
+    .device-control-list {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .sidebar {
+        width: 90vw;
+        min-width: unset;
+        max-width: unset;
+    }
+    .main-content {
+        padding: 2vw 0;
+    }
+    .logo-icon {
+        font-size: 2em;
+    }
+}
+
+@media (max-width: 400px) {
+    .card,
+    .add-device-card,
+    .main-content,
+    .energy-realtime-card {
+        padding: 1vw;
+        border-radius: 6px;
+    }
+    h2,
+    h3,
+    h4 {
+        font-size: 1.1rem;
+    }
+}
+
+
+/* Garantir que gráficos e tabelas tenham rolagem horizontal se necessário */
+
+.chart-area-main,
+.energy-realtime-table,
+.chart-card-main canvas {
+    overflow-x: auto;
+    max-width: 100vw;
+}
+
+
+/* Ajuste para evitar sobreposição de botões e inputs */
+
+.button-group,
+.form-group {
+    flex-wrap: wrap;
+    gap: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* Ajuste para garantir que nada suma ou quebre */
+
+* {
+    min-width: 0;
+    min-height: 0;
+    box-sizing: border-box;
 }
