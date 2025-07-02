@@ -672,6 +672,9 @@ function DashboardPage() {
     return ( <
         div className = "dashboard-container" >
         <
+        h1 style = {
+            { color: 'white', textAlign: 'center', marginTop: '40px' }
+        } > Teste: Renderização da Dashboard funcionando! < /h1> <
         Sidebar activeSection = { activeSection }
         setActiveSection = { setActiveSection }
         isMobileMenuOpen = { isMobileMenuOpen }
@@ -711,7 +714,7 @@ function DashboardPage() {
                 handleDeleteAccount = { handleDeleteAccount }
                 />
             )
-        } { /* Outras seções, como início, podem ser renderizadas aqui */ } <
+        } <
         /main> < /
         div >
     );
