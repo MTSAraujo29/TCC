@@ -156,9 +156,8 @@ async function getDashboardData(req, res) {
                 where: { userId: userId },
                 include: {
                     readings: {
-                        where: { power: { gt: 0 } }, // Filtra apenas leituras reais
                         orderBy: { timestamp: 'desc' },
-                        take: 1, // Pega apenas a última leitura real
+                        take: 1, // Pega apenas a última leitura (sem filtro de power)
                     },
                 },
             });
