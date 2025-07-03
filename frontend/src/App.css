@@ -1281,9 +1281,9 @@ a.link-button {
 }
 
 
-/* Telas menores que 900px (tablets em modo retrato) */
+/* Telas menores que 700px (tablets em modo retrato) */
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 700px) {
     .container.dashboard-container {
         flex-direction: column;
         /* Sidebar acima do conteúdo principal */
@@ -1292,81 +1292,55 @@ a.link-button {
     }
     .sidebar {
         width: 100%;
-        /* Sidebar ocupa toda a largura */
         height: auto;
-        /* Altura automática */
         position: relative;
-        /* Remove sticky */
         padding: 0.9375rem 0;
-        /* Reduz padding */
         box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.4);
         flex-direction: row;
-        /* Itens do menu em linha */
         flex-wrap: wrap;
-        /* Permite quebrar linha */
         justify-content: center;
-        /* Centraliza itens */
         gap: 0.625rem;
-        /* Espaço entre itens */
     }
     .sidebar .logo-icon-sidebar {
         display: none;
-        /* Esconde o logo grande em telas pequenas */
     }
     .menu-item {
         width: auto;
-        /* Menu items se ajustam ao conteúdo */
         padding: 0.625rem 0.9375rem;
-        /* Reduz padding */
         font-size: 0.95rem;
-        /* Reduz fonte */
         text-align: center;
-        /* Centraliza o texto do menu item */
         flex-grow: 1;
-        /* Permite que ocupem espaço igualmente */
     }
     .sidebar-bottom {
         display: none;
-        /* Esconde a parte de baixo da sidebar (logout) */
     }
     .main-content {
         padding: 1.25rem;
-        /* Reduz padding do conteúdo principal */
         min-height: auto;
-        /* Remove min-height fixo */
         margin-top: 0;
-        /* Garante que não haja margem superior extra */
     }
     .main-content h2 {
         font-size: 2rem;
-        /* Ajusta o título do dashboard */
         margin-bottom: 1.25rem;
     }
     .metrics-grid,
     .bottom-sections-grid,
     .device-report-list {
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        /* 2 colunas se houver espaço */
         gap: 1rem;
     }
-    /* Ajustes para todas as seções */
     .energy-control-section,
     .reports-section,
     .settings-section,
     .energy-realtime-card {
         padding: 0.9375rem;
-        /* Reduz padding */
         border-radius: 0.625rem;
-        /* Diminui o border-radius */
         margin-bottom: 1.25rem;
-        /* Reduz margem inferior */
         max-width: 100%;
-        /* Garante que ocupem a largura total */
     }
     .chart-area-main,
     .chart-card-main {
         max-width: 100%;
-        /* Ocupa a largura total */
         padding: 12px;
     }
 }
