@@ -27,6 +27,9 @@ body {
     justify-content: center;
     align-items: flex-start;
     /* Alinha no topo para o dashboard por padrão */
+    /* NOVO: Padding no body para compensar a barra de navegação fixa no topo */
+    padding-top: 50px;
+    /* Altura da barra de navegação padrão */
 }
 
 
@@ -273,6 +276,8 @@ a.link-button {
     /* Ocupa toda a altura */
     display: flex;
     /* Habilita flexbox para layout sidebar/main */
+    flex-direction: column;
+    /* Conteúdo em coluna, já que a nav está no topo */
     justify-content: flex-start;
     /* Alinha o conteúdo à esquerda */
     align-items: flex-start;
@@ -280,97 +285,80 @@ a.link-button {
 }
 
 
-/* Sidebar */
+/* Sidebar (ESCONDIDA - SUBSTITUÍDA PELA BARRA TOP) */
 
 .sidebar {
-    min-width: 220px;
-    /* Largura mínima da sidebar em telas maiores */
-    background: #181a23;
-    /* Cor escura para a sidebar */
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 24px 0 0 0;
-    position: sticky;
-    /* Sidebar fixa na rolagem */
+    display: none;
+    /* ESCONDIDA PERMANENTEMENTE */
+}
+
+.sidebar .logo-icon-sidebar,
+.menu-item,
+.sidebar-bottom,
+.logout-link-sidebar {
+    display: none;
+    /* Garante que nenhum elemento da sidebar apareça */
+}
+
+
+/* NOVO: Barra de Navegação Superior Fixa para as Seções */
+
+.top-navigation-bar {
+    position: fixed;
     top: 0;
-    height: 100vh;
-    /* Ocupa toda a altura da viewport */
-    justify-content: space-between;
-    /* Para o botão de sair ir para o final */
-    z-index: 1000;
-    /* Garante que a sidebar fique acima de outros elementos */
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.4);
-}
-
-.sidebar .logo-icon-sidebar {
-    font-size: 2.2em;
-    margin-bottom: 18px;
-    color: #00bcd4;
-    /* Cor vibrante para o ícone */
-}
-
-.menu-item {
-    width: 90%;
-    padding: 12px 0;
-    margin: 6px 0;
-    border-radius: 6px;
-    text-align: center;
-    cursor: pointer;
-    background: none;
-    color: #fff;
-    font-size: 1.1em;
-    transition: background 0.2s, color 0.2s;
-    box-sizing: border-box;
-    /* Incluir padding na largura */
-}
-
-.menu-item:hover {
-    background: #2b2b4d;
-    /* Cor mais clara no hover */
-}
-
-.menu-item.active {
-    background: #00bcd4;
-    /* Cor de destaque para o item ativo */
-    color: #1a1a2e;
-    /* Texto escuro no item ativo para contraste */
-    font-weight: bold;
-}
-
-.sidebar-bottom {
-    margin-top: auto;
-    /* Empurra para o final */
+    left: 0;
     width: 100%;
+    background: #1a1a2e;
+    /* Cor escura para a barra de navegação */
+    color: #fff;
+    z-index: 1100;
+    /* Garante que a barra fique acima de tudo */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    display: flex;
+    justify-content: space-around;
+    /* Distribui os itens uniformemente */
+    align-items: center;
+    height: 50px;
+    /* Altura fixa da barra */
+    padding: 0 10px;
+    /* Espaçamento interno */
+    box-sizing: border-box;
+}
+
+.top-nav-link {
     display: flex;
     justify-content: center;
-    padding-bottom: 24px;
-    border-top: 1px solid #3a3a3a;
-}
-
-.logout-link-sidebar {
-    background: #f44336;
-    /* Cor de destaque para sair */
-    color: #fff;
-    margin-top: 24px;
-    width: 90%;
-    /* Ajusta a largura para o botão dentro da sidebar */
-    padding: 12px 0;
-    border-radius: 6px;
-    border: none;
-    font-size: 1.1em;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s;
-    text-align: center;
+    align-items: center;
+    flex: 1;
+    /* Faz com que cada link ocupe o mesmo espaço disponível */
+    color: #e0e0e0;
     text-decoration: none;
-    display: block;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 10px 5px;
+    /* Ajusta padding para caber mais itens */
+    border-radius: 5px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    text-align: center;
+    white-space: nowrap;
+    /* Evita que o texto do link quebre linha */
+    overflow: hidden;
+    /* Oculta o que transborda se o texto for muito longo */
+    text-overflow: ellipsis;
+    /* Adiciona reticências se o texto for cortado */
+    height: 100%;
+    /* Garante que o link ocupe a altura total da barra para clique */
 }
 
-.logout-link-sidebar:hover {
-    background-color: #d32f2f;
-    /* Escurece no hover */
+.top-nav-link:hover {
+    background-color: #2b2b4d;
+    color: #fff;
+}
+
+.top-nav-link.active {
+    background-color: #00bcd4;
+    color: #1a1a2e;
+    /* Texto escuro no item ativo para contraste */
 }
 
 
@@ -382,8 +370,8 @@ a.link-button {
     padding: 32px 32px 32px 32px;
     background-color: #2a2a4e;
     /* Fundo do conteúdo principal */
-    min-height: 100vh;
-    /* Garante que o conteúdo principal ocupe toda a altura */
+    min-height: calc(100vh - 50px);
+    /* Ocupa a altura restante da viewport, descontando a nav bar */
     overflow-y: auto;
     /* Permite rolagem se o conteúdo for muito longo */
     box-sizing: border-box;
@@ -393,6 +381,8 @@ a.link-button {
     align-items: center;
     min-width: 0;
     /* Permite que o flex item encolha */
+    width: 100%;
+    /* Garante que ocupe a largura total */
 }
 
 .main-content h2 {
@@ -1270,10 +1260,7 @@ a.link-button {
 /* Ajuste para telas entre 1024px e 1200px (desktop compacto/tablets grandes) */
 
 @media screen and (max-width: 1200px) {
-    .sidebar {
-        min-width: 180px;
-        /* Reduz um pouco a largura da sidebar */
-    }
+    /* Não há sidebar para ajustar aqui, pois ela foi removida */
     .main-content {
         padding: 24px;
         /* Reduz o padding do conteúdo principal */
@@ -1291,52 +1278,30 @@ a.link-button {
 /* Telas menores que 900px (tablets em modo retrato) */
 
 @media screen and (max-width: 900px) {
-    .container.dashboard-container {
-        flex-direction: column;
-        /* Sidebar acima do conteúdo principal */
-        align-items: center;
-        justify-content: flex-start;
-    }
-    .sidebar {
-        width: 100%;
-        /* Sidebar ocupa toda a largura */
+    /* Ajustes para a barra de navegação superior em telas menores */
+    .top-navigation-bar {
         height: auto;
-        /* Altura automática */
-        position: relative;
-        /* Remove sticky */
-        padding: 0.9375rem 0;
-        /* Reduz padding */
-        box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.4);
-        flex-direction: row;
-        /* Itens do menu em linha */
-        flex-wrap: wrap;
-        /* Permite quebrar linha */
-        justify-content: center;
-        /* Centraliza itens */
-        gap: 0.625rem;
-        /* Espaço entre itens */
-        display: none;
-        /* Esconde a sidebar padrão em mobile, será controlada por JS */
+        /* Altura automática para o menu em coluna */
+        flex-direction: column;
+        /* Botões em coluna */
+        padding: 5px;
+        align-items: stretch;
+        /* Estica os botões para preencher a largura */
     }
-    .sidebar .logo-icon-sidebar {
-        display: none;
-        /* Esconde o logo grande em telas pequenas */
+    .top-nav-link {
+        padding: 10px 5px;
+        /* Ajusta padding para mobile */
+        width: 100%;
+        margin-bottom: 5px;
+        /* Espaço entre os botões empilhados */
+        border-radius: 0;
+        /* Remove border-radius para visualização empilhada */
     }
-    .menu-item {
-        width: auto;
-        /* Menu items se ajustam ao conteúdo */
-        padding: 0.625rem 0.9375rem;
-        /* Reduz padding */
-        font-size: 0.95rem;
-        /* Reduz fonte */
-        text-align: center;
-        /* Centraliza o texto do menu item */
-        flex-grow: 1;
-        /* Permite que ocupem espaço igualmente */
-    }
-    .sidebar-bottom {
-        display: none;
-        /* Esconde a parte de baixo da sidebar (logout) */
+    /* Ajusta o padding do body para a nova altura da barra */
+    body {
+        padding-top: 250px;
+        /* Aprox. 5 links * 50px (altura do link + margem) + altura da barra */
+        /* Isso é uma estimativa. Se o número de links mudar, ajuste este valor. */
     }
     .main-content {
         padding: 1.25rem;
@@ -1385,10 +1350,9 @@ a.link-button {
 
 @media screen and (max-width: 768px) {
     body {
-        /* Para o dashboard, o body não precisa ser flex centralizado */
-        display: block;
-        padding-top: 44px;
-        /* Adiciona padding para o menu fixo do topo */
+        /* Padding superior dinâmico, baseado na altura dos links na barra de navegação */
+        padding-top: 250px;
+        /* Ajuste se o número de links ou padding dos links mudar */
     }
     .container {
         margin: 0;
@@ -1416,90 +1380,24 @@ a.link-button {
         padding: 0.8rem;
         font-size: 0.95em;
     }
-    /* Dashboard: Barra superior e Menu Hambúrguer */
-    .mobile-menu-bar {
-        /* Barra superior para o menu hambúrguer */
-        width: 100vw;
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        background: #1a1a2e;
-        padding: 4px 8px;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 1100;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
-        height: 44px;
-        /* Altura da barra */
-    }
-    .hamburger-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 2px 6px;
-        border-radius: 6px;
-        outline: none;
-        height: 36px;
-        width: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .hamburger-icon {
-        font-size: 1.7em;
-        color: #00bcd4;
-        line-height: 1;
-    }
-    .mobile-menu-box {
-        /* Menu que desliza (off-canvas) */
-        position: fixed;
-        top: 44px;
-        /* Abaixo da barra superior */
-        left: 0;
-        width: 220px;
-        /* Largura do menu mobile */
-        background: #23243a;
-        box-shadow: 2px 0 16px rgba(0, 0, 0, 0.25);
-        border-radius: 0 10px 10px 0;
-        z-index: 1200;
-        display: flex;
+    /* Ajustes para a barra de navegação em telas menores */
+    .top-navigation-bar {
+        height: auto;
+        /* Altura automática */
         flex-direction: column;
-        padding: 10px 0;
-        transform: translateX(-100%);
-        /* Escondido por padrão */
-        transition: transform 0.3s ease-out;
-        /* Adiciona transição suave */
+        /* Força os links a ficarem em coluna */
+        padding: 5px;
     }
-    .mobile-menu-box.open {
-        /* Classe para mostrar o menu via JS */
-        transform: translateX(0);
-    }
-    .mobile-menu-box .menu-item {
-        width: 100%;
-        /* Ocupa a largura total do menu box */
-        text-align: left;
-        padding: 10px 20px;
-        margin: 0;
-        border-radius: 0;
-    }
-    .mobile-menu-box .logout-link-sidebar {
-        width: 90%;
-        margin-top: 15px;
-        padding: 10px;
-        border-radius: 6px;
-        align-self: center;
-        /* Centraliza o botão dentro do flex container */
-    }
-    .sidebar {
-        display: none;
-        /* Garante que a sidebar de desktop não apareça */
+    .top-nav-link {
+        font-size: 0.9em;
+        padding: 8px 5px;
+        /* Reduz padding ainda mais */
+        margin-bottom: 5px;
     }
     .main-content {
         margin-top: 0;
         /* Removido, o padding no body já compensa o header fixo */
         padding: 1rem;
-        /* Remover min-height aqui para permitir que o conteúdo se ajuste */
         min-height: auto;
     }
     .main-content h2 {
@@ -1619,6 +1517,11 @@ a.link-button {
     html {
         font-size: 13px;
         /* Base font-size menor ainda */
+    }
+    /* Padding superior do body se a barra de navegação ficar muito grande em altura */
+    body {
+        padding-top: 250px;
+        /* Ajuste conforme a altura da barra de navegação empilhada */
     }
     .container,
     .add-device-page-container {
