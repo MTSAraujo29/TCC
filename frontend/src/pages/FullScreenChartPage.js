@@ -208,7 +208,7 @@ export default function FullScreenChartPage() {
                             style={styles.viewButton(viewMode === value)}
                             onClick={() => setViewMode(value)}
                         >
-                            {key.charAt(0) + key.slice(1).toLowerCase()}
+                            {value}
                         </button>
                     ))}
                 </div>

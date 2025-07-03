@@ -771,7 +771,10 @@ function DashboardPage() {
                                         ? devices
                                         .reduce(
                                             (sum, d) =>
-                                                sum + (d.latestReading && d.powerState && typeof d.latestReading.power === 'number' ? d.latestReading.power : 0),
+                                                sum +
+                                                (d.latestReading && d.powerState && typeof d.latestReading.power === 'number'
+                                                    ? d.latestReading.power
+                                                    : 0),
                                             0
                                         )
                                         .toFixed(2) + ' W'
@@ -790,7 +793,9 @@ function DashboardPage() {
                                         .reduce(
                                             (sum, d) =>
                                                 sum +
-                                                (d.latestReading && d.powerState && typeof d.latestReading.totalEnergy === 'number' ? d.latestReading.totalEnergy : 0),
+                                                (d.latestReading && d.powerState && typeof d.latestReading.totalEnergy === 'number'
+                                                    ? d.latestReading.totalEnergy
+                                                    : 0),
                                             0
                                         )
                                         .toFixed(2) + ' kWh'
@@ -801,14 +806,30 @@ function DashboardPage() {
                                 <h3>Fatura Estimada</h3>
                                 <p>
                                     R${' '}
-                                    {(devices.length > 0
+                                    {(
+                                        devices.length > 0
                                             ? devices.reduce(
                                             (sum, d) =>
-                                                sum + (d.latestReading && d.powerState && typeof d.latestReading.totalEnergy === 'number' ? d.latestReading.totalEnergy : 0),
+                                                sum +
+                                                (d.latestReading && d.powerState && typeof d.latestReading.totalEnergy === 'number'
+                                                    ? d.latestReading.totalEnergy
+                                                    : 0),
                                             0
                                         ) * 0.75
                                             : 0
                                     ).toFixed(2)}
+                                </p>
+                            </div>
+                            <div className="metric-card">
+                                <h3>Consumo de Amperes atual</h3>
+                                <p>
+
+                                </p>
+                            </div>
+                            <div className="metric-card">
+                                <h3>Gasto reduzido</h3>
+                                <p>
+
                                 </p>
                             </div>
                         </div>
@@ -964,7 +985,7 @@ function DashboardPage() {
                                 Total de Dispositivos: <strong>{report.summary.totalDevices}</strong>
                             </p>
                             <p>
-                                Dispositivos com Uso Inteligente(estimado): <strong>{report.summary.smartUsageDevices}</strong>
+                                Com uso Inteligente(estimado): <strong>{report.summary.smartUsageDevices}</strong>
                             </p>
                             <p>
                                 Dispositivos com Otimização Pendente(estimado): <strong>{report.summary.nonSmartUsageDevices}</strong>
@@ -1033,7 +1054,10 @@ function DashboardPage() {
                                     <tr>
                                         <td>Energia Hoje</td>
                                         <td>
-                                            {typeof devices[0].latestReading.EnergyToday === 'number' ? devices[0].latestReading.EnergyToday : '--'} kWh
+                                            {typeof devices[0].latestReading.EnergyToday === 'number'
+                                                ? devices[0].latestReading.EnergyToday
+                                                : '--'}{' '}
+                                            kWh
                                         </td>
                                     </tr>
                                     <tr>
@@ -1119,7 +1143,10 @@ function DashboardPage() {
                                     <tr>
                                         <td>Energia Hoje</td>
                                         <td>
-                                            {typeof devices[1].latestReading.EnergyToday === 'number' ? devices[1].latestReading.EnergyToday : '--'} kWh
+                                            {typeof devices[1].latestReading.EnergyToday === 'number'
+                                                ? devices[1].latestReading.EnergyToday
+                                                : '--'}{' '}
+                                            kWh
                                         </td>
                                     </tr>
                                     <tr>
@@ -1152,14 +1179,22 @@ function DashboardPage() {
                                         <h4>{detail.name}</h4>
                                         <p>
                                             Status Atual:{' '}
-                                            <span className={devices[index] && devices[index].powerState ? 'status-on-text' : 'status-off-text'}>
+                                            <span
+                                                className={
+                                                    devices[index] && devices[index].powerState ? 'status-on-text' : 'status-off-text'
+                                                }
+                                            >
                       {devices[index] && devices[index].powerState ? 'Ligado' : 'Desligado'}
                     </span>
                                         </p>
                                         <p>Tipo: {detail.type}</p>
                                         <p>Recomendação: {detail.recommendation}</p>
                                         {parseFloat(detail.potentialImpact) !== 0.00 && (
-                                            <p className={parseFloat(detail.potentialImpact) > 0 ? 'impact-positive' : 'impact-negative'}>
+                                            <p
+                                                className={
+                                                    parseFloat(detail.potentialImpact) > 0 ? 'impact-positive' : 'impact-negative'
+                                                }
+                                            >
                                                 Impacto Potencial: {detail.potentialImpact}
                                                 kWh no próximo mês
                                             </p>
@@ -1223,7 +1258,11 @@ function DashboardPage() {
                                         />
                                         {editError && <p className="error-message">{editError}</p>}
                                         <div className="button-group small-buttons">
-                                            <button type="submit" disabled={editLoading} className="submit-button small-btn">
+                                            <button
+                                                type="submit"
+                                                disabled={editLoading}
+                                                className="submit-button small-btn"
+                                            >
                                                 {editLoading ? 'Salvando...' : 'Salvar'}
                                             </button>
                                             <button
@@ -1237,7 +1276,11 @@ function DashboardPage() {
                                             >
                                                 Excluir Conta
                                             </button>
-                                            <button type="button" onClick={() => setShowEditModal(false)} className="cancel-button small-btn">
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowEditModal(false)}
+                                                className="cancel-button small-btn"
+                                            >
                                                 Cancelar
                                             </button>
                                         </div>
@@ -1254,7 +1297,11 @@ function DashboardPage() {
                                     <p>Tem certeza que deseja excluir sua conta? Esta ação é irreversível.</p>
                                     {deleteError && <p className="error-message">{deleteError}</p>}
                                     <div className="button-group">
-                                        <button onClick={handleDeleteAccount} disabled={deleteLoading} style={{ background: '#F44336' }}>
+                                        <button
+                                            onClick={handleDeleteAccount}
+                                            disabled={deleteLoading}
+                                            style={{ background: '#F44336' }}
+                                        >
                                             {deleteLoading ? 'Excluindo...' : 'Excluir'}
                                         </button>
                                         <button onClick={() => setShowDeleteModal(false)} className="cancel-button">
@@ -1267,7 +1314,9 @@ function DashboardPage() {
 
                         <div className="tasmota-settings-card">
                             <h3>Gerenciamento de Dispositivos</h3>
-                            <p style={{ color: '#BBB', fontSize: '0.9em' }}>Aqui você pode gerenciar seus dispositivos Tasmota.</p>
+                            <p style={{ color: '#BBB', fontSize: '0.9em' }}>
+                                Aqui você pode gerenciar seus dispositivos Tasmota.
+                            </p>
                             {isRealData ? (
                                 <p>
                                     <button
@@ -1311,7 +1360,6 @@ function DashboardPage() {
             </div>
         </div>
     );
-
 }
 
 export default DashboardPage;

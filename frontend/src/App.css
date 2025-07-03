@@ -1,1760 +1,1497 @@
-            /* frontend/src/App.css */
-        /* Estilos Globais e Reset */
-        
-        html {
-            /* Base font-size para REM, ajusta o tamanho da fonte em geral */
-            font-size: clamp(14px, 1.2vw, 18px);
-        }
-        
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(to right, #2a003f, #001030);
-            /* Fundo escuro gradient */
-            color: #E0E0E0;
-            /* Cor do texto padrão para o tema escuro */
-            min-height: 100vh;
-            overflow-x: hidden;
-            /* Evita scroll horizontal em todo o corpo */
-            box-sizing: border-box;
-            font-size: clamp(1rem, 2vw, 1.25rem);
-            /* Base font-size para REM */
-            display: flex;
-            /* Para o layout de login/criar conta */
-            justify-content: center;
-            align-items: flex-start;
-            /* Alinha no topo para o dashboard por padrão */
-        }
-        /* Garante que nada vaze da tela */
-        
-        html,
-        body,
-        #root {
-            width: 100vw;
-            overflow-x: hidden;
-            box-sizing: border-box;
-        }
-        /* Estilos para as Páginas de Login e Criar Conta */
-        /* Container para Login/Criar Conta (centralizado) */
-        
-        .container {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 100vw;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        .card {
-            background: rgba(30, 32, 44, 0.98);
-            border-radius: 18px;
-            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
-            padding: 32px 24px 24px 24px;
-            width: 100%;
-            max-width: clamp(320px, 90vw, 1200px);
-            /* Usando clamp para max-width */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 24px 0;
-        }
-        
-        form {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-        
-        input {
-            width: 100%;
-            padding: clamp(10px, 2vw, 18px) clamp(10px, 2vw, 24px);
-            border-radius: 6px;
-            border: 1px solid #444;
-            background: #23243a;
-            color: #fff;
-            font-size: clamp(1em, 2vw, 1.2em);
-            margin-bottom: 0;
-            box-sizing: border-box;
-        }
-        
-        button,
-        .link-button {
-            width: 100%;
-            padding: 12px 0;
-            border-radius: 6px;
-            border: none;
-            background: #00bcd4;
-            color: #fff;
-            font-size: 1.1em;
-            font-weight: bold;
-            margin-top: 10px;
-            cursor: pointer;
-            transition: background 0.2s;
-            text-align: center;
-            text-decoration: none;
-            display: block;
-        }
-        
-        button:hover,
-        .link-button:hover {
-            background: #0097a7;
-        }
-        
-        .logo-icon {
-            font-size: 3em;
-            margin-bottom: 10px;
-            color: #ffeb3b;
-        }
-        /* Ajustes de layout para h2, form-group, label e input */
-        
-        h2 {
-            color: #FFF;
-            margin-bottom: 1.875rem;
-            /* Convertido para REM */
-            font-size: clamp(1.2rem, 3vw, 2.2rem);
-            /* Convertido para REM */
-        }
-        
-        .form-group {
-            margin-bottom: 1.25rem;
-            /* Convertido para REM */
-            text-align: left;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            /* Convertido para REM */
-            color: #BBB;
-            font-size: 0.9rem;
-            /* Convertido para REM */
-        }
-        
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
-            border-radius: 30px !important;
-            text-align: left;
-            margin-bottom: 12px;
-            padding: 14px 18px;
-            font-size: 1.1em;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="password"]:focus {
-            border-color: #00bcd4;
-        }
-        /* Estilos para o botão padrão (ENTRAR) */
-        
-        button {
-            width: 100%;
-            padding: 1.125rem;
-            /* Convertido para REM */
-            background-color: #00bcd4;
-            color: white;
-            border: none;
-            border-radius: 30px;
-            font-size: 1.2rem;
-            /* Convertido para REM */
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
-            margin-top: 1.25rem;
-            /* Convertido para REM */
-            margin-bottom: 1.25rem;
-            /* Adiciona margem na parte inferior para criar espaço, convertido para REM */
-            box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
-        }
-        
-        button:hover {
-            background-color: #00a0b8;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 188, 212, 0.6);
-        }
-        
-        button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 5px rgba(0, 188, 212, 0.3);
-        }
-        
-        button:disabled {
-            background-color: #555;
-            cursor: not-allowed;
-            opacity: 0.7;
-            box-shadow: none;
-        }
-        /* Estilos para o botão .link-button (CRIAR UMA CONTA) */
-        
-        .link-button {
-            width: 100%;
-            padding: 0.9375rem;
-            /* Convertido para REM */
-            background-color: #4a4a7e;
-            color: white;
-            border: none;
-            border-radius: 30px;
-            font-size: 1.1rem;
-            /* Convertido para REM */
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-            margin-top: 0;
-            /* Removido para usar a margem inferior do botão acima */
-        }
-        
-        .link-button:hover {
-            background-color: #5a5a9e;
-            transform: translateY(-2px);
-        }
-        
-        .link-button:active {
-            transform: translateY(0);
-        }
-        
-        .link-button:disabled {
-            background-color: #555;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-        /* Para remover qualquer linha padrão que possa aparecer, embora 'border: none' já devesse resolver */
-        
-        a.link-button {
-            text-decoration: none;
-        }
-        
-        .error-message {
-            color: #ff6b6b;
-            margin-top: 0.9375rem;
-            /* Convertido para REM */
-            font-size: 0.9rem;
-            /* Convertido para REM */
-        }
-        /* --- Estilos para o Dashboard --- */
-        /* Container Principal do Dashboard (Flexbox para sidebar e main-content) */
-        
-        .container.dashboard-container {
-            background: none;
-            /* Remove background do container original */
-            box-shadow: none;
-            /* Remove sombra do container original */
-            border-radius: 0;
-            padding: 0;
-            width: 100%;
-            max-width: 100vw;
-            /* Ocupa toda a largura da tela */
-            min-height: 100vh;
-            /* Ocupa toda a altura */
-            display: flex;
-            /* Habilita flexbox para layout sidebar/main */
-            justify-content: flex-start;
-            /* Alinha o conteúdo à esquerda */
-            align-items: flex-start;
-            /* Alinha o conteúdo ao topo */
-        }
-        /* Sidebar */
-        
-        .sidebar {
-            min-width: 220px;
-            /* Largura mínima da sidebar em telas maiores */
-            background: #181a23;
-            /* Cor escura para a sidebar */
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 24px 0 0 0;
-            position: sticky;
-            /* Sidebar fixa na rolagem */
-            top: 0;
-            height: 100vh;
-            /* Ocupa toda a altura da viewport */
-            justify-content: space-between;
-            /* Para o botão de sair ir para o final */
-            z-index: 1000;
-            /* Garante que a sidebar fique acima de outros elementos */
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.4);
-        }
-        
-        .sidebar .logo-icon-sidebar {
-            font-size: 2.2em;
-            margin-bottom: 18px;
-            color: #00bcd4;
-            /* Cor vibrante para o ícone */
-        }
-        
-        .menu-item {
-            width: 90%;
-            padding: 12px 0;
-            margin: 6px 0;
-            border-radius: 6px;
-            text-align: center;
-            cursor: pointer;
-            background: none;
-            color: #fff;
-            font-size: 1.1em;
-            transition: background 0.2s, color 0.2s;
-            box-sizing: border-box;
-            /* Incluir padding na largura */
-        }
-        
-        .menu-item:hover {
-            background: #2b2b4d;
-            /* Cor mais clara no hover */
-        }
-        
-        .menu-item.active {
-            background: #00bcd4;
-            /* Cor de destaque para o item ativo */
-            color: #1a1a2e;
-            /* Texto escuro no item ativo para contraste */
-            font-weight: bold;
-        }
-        
-        .sidebar-bottom {
-            margin-top: auto;
-            /* Empurra para o final */
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            padding-bottom: 24px;
-            border-top: 1px solid #3a3a3a;
-        }
-        
-        .logout-link-sidebar {
-            background: #f44336;
-            /* Cor de destaque para sair */
-            color: #fff;
-            margin-top: 24px;
-            width: 90%;
-            /* Ajusta a largura para o botão dentro da sidebar */
-            padding: 12px 0;
-            border-radius: 6px;
-            border: none;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-            text-align: center;
-            text-decoration: none;
-            display: block;
-        }
-        
-        .logout-link-sidebar:hover {
-            background-color: #d32f2f;
-            /* Escurece no hover */
-        }
-        /* Conteúdo Principal do Dashboard */
-        
-        .main-content {
-            flex: 1;
-            /* Ocupa o restante do espaço disponível */
-            padding: 32px 32px 32px 32px;
-            background-color: #2a2a4e;
-            /* Fundo do conteúdo principal */
-            min-height: 100vh;
-            /* Garante que o conteúdo principal ocupe toda a altura */
-            overflow-y: auto;
-            /* Permite rolagem se o conteúdo for muito longo */
-            box-sizing: border-box;
-            /* Incluir padding na largura e altura */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 0;
-            /* Permite que o flex item encolha */
-        }
-        
-        .main-content h2 {
-            color: #FFF;
-            margin-top: 0;
-            margin-bottom: 1.875rem;
-            /* Convertido para REM */
-            font-size: 2.5rem;
-            /* Convertido para REM */
-            text-align: center;
-            /* Centraliza o título */
-        }
-        /* Grid de Métricas (Cards no topo) */
-        
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: clamp(12px, 2vw, 32px);
-            margin-bottom: 1.875rem;
-            /* Convertido para REM */
-            width: 100%;
-            /* Garante que ocupe a largura disponível */
-        }
-        
-        .metric-card {
-            background-color: #3a3a5e;
-            /* Fundo dos cards de métricas */
-            border-radius: 8px;
-            padding: 1.25rem;
-            /* Convertido para REM */
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            border: 1px solid #4a4a7e;
-            flex: 1 1 180px;
-            /* Flexbox fallback */
-            max-width: 220px;
-            /* Limite de largura para cartões de métrica */
-            margin: 0 auto;
-            /* Centraliza cartões no grid */
-        }
-        
-        .metric-card h3 {
-            color: #AAA;
-            font-size: 1rem;
-            /* Convertido para REM */
-            margin-top: 0;
-            margin-bottom: 0.625rem;
-            /* Convertido para REM */
-        }
-        
-        .metric-card p {
-            color: #00bcd4;
-            /* Cor vibrante para os valores */
-            font-size: 2rem;
-            /* Convertido para REM */
-            font-weight: bold;
-            margin: 0;
-        }
-        /* Área do Gráfico Principal */
-        
-        .chart-area-main,
-        .chart-card-main {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 24px auto;
-            width: 100%;
-            min-width: 0;
-            max-width: 800px;
-            /* Aumentado max-width para o gráfico principal */
-            box-sizing: border-box;
-            padding: 18px 12px 12px 12px;
-            background: #23272f;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-            overflow-x: auto;
-            /* Adicionado para permitir rolagem se o gráfico for muito largo */
-        }
-        
-        .chart-card-main canvas {
-            display: block;
-            margin: 0 auto;
-            width: 100% !important;
-            /* Força 100% de largura do pai */
-            max-width: 100% !important;
-            min-width: 0;
-            min-height: 180px;
-            /* Ajuste min-height */
-            max-height: 300px;
-            /* Ajuste max-height */
-        }
-        /* Estilos para os botões de seleção de modo de visualização (Dia, Semana, Mês) */
-        
-        .view-mode-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 0.625rem;
-            /* Convertido para REM */
-            margin-bottom: -0.625rem;
-            /* Convertido para REM */
-            margin-top: -1.25rem;
-            /* Convertido para REM */
-            width: 100%;
-            /* Ocupa a largura total para centralizar */
-            flex-wrap: wrap;
-            /* Permite que os botões quebrem linha */
-        }
-        
-        .view-button,
-        .active-view-button {
-            padding: 0.625rem 1.25rem;
-            /* Convertido para REM */
-            border: 1px solid #00bcd4;
-            border-radius: 5px;
-            background-color: transparent;
-            color: #00bcd4;
-            font-size: 0.9rem;
-            /* Convertido para REM */
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 0;
-            /* Remover margin-top herdado de 'button' */
-            width: auto;
-            /* Deixa o botão se ajustar ao conteúdo */
-        }
-        
-        .view-button:hover {
-            background-color: rgba(0, 188, 212, 0.1);
-            color: #00e0ff;
-        }
-        
-        .active-view-button {
-            background-color: #00bcd4;
-            color: #1a1a2e;
-            /* Texto escuro para contraste no botão ativo */
-            font-weight: bold;
-        }
-        
-        .active-view-button:hover {
-            background-color: #00a0b8;
-            /* Escurece um pouco no hover do ativo */
-            color: #FFF;
-        }
-        /* Grid Inferior (para os novos cards) */
-        
-        .bottom-sections-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: clamp(12px, 2vw, 32px);
-            margin-top: 1.875rem;
-            /* Convertido para REM */
-            width: 100%;
-            /* Ocupa a largura total */
-        }
-        
-        .bottom-card {
-            background-color: #3a3a5e;
-            /* Fundo dos cards inferiores */
-            border-radius: 8px;
-            padding: 1.25rem;
-            /* Convertido para REM */
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            border: 1px solid #4a4a7e;
-            display: flex;
-            /* Habilita flexbox */
-            flex-direction: column;
-            /* Conteúdo em coluna */
-            justify-content: flex-start;
-            /* Alinha o conteúdo ao topo */
-            align-items: center;
-            /* Centraliza horizontalmente */
-            text-align: center;
-            height: auto;
-            /* Altura automática para se adaptar ao conteúdo */
-            min-height: 25rem;
-            /* Convertido para REM, altura mínima */
-            box-sizing: border-box;
-            /* Garante que padding e border sejam incluídos na altura */
-            min-width: 0;
-            /* Permite que o flex item encolha */
-        }
-        
-        .bottom-card h3 {
-            color: #FFF;
-            font-size: 1.3rem;
-            /* Convertido para REM */
-            margin-top: 0;
-            margin-bottom: 0.9375rem;
-            /* Convertido para REM */
-        }
-        /* Estilo para o gráfico de consumo por tipo */
-        
-        .consumption-by-type-card .chart-wrapper {
-            width: 100%;
-            /* Ocupa a largura do card */
-            max-width: 18.75rem;
-            /* Convertido para REM, antes 300px. Limita o tamanho do gráfico para não ficar muito grande */
-            height: 17.5rem;
-            /* Convertido para REM, antes 280px. Altura para o gráfico de donut */
-            display: flex;
-            /* Para centralizar o canvas do chart */
-            justify-content: center;
-            align-items: center;
-        }
-        /* Estilo para a lista de dispositivos sugeridos */
-        
-        .device-suggestion-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            width: 100%;
-            text-align: left;
-            /* Alinha o texto das sugestões à esquerda */
-            overflow-y: auto;
-            /* Adiciona scroll se a lista for muito longa */
-            max-height: 15.625rem;
-            /* Convertido para REM, antes 250px. Altura máxima para a lista */
-            margin-top: 0.625rem;
-            /* Convertido para REM */
-        }
-        
-        .device-suggestion-list li {
-            background-color: #4a4a7e;
-            padding: 0.625rem 0.9375rem;
-            /* Convertido para REM */
-            border-radius: 5px;
-            margin-bottom: 0.5rem;
-            /* Convertido para REM */
-            font-size: 0.95rem;
-            /* Convertido para REM */
-            color: #E0E0E0;
-            border-left: 3px solid #ff9800;
-            /* Borda de destaque */
-        }
-        
-        .device-suggestion-list li strong {
-            color: #00bcd4;
-        }
-        /* Seção de Controle de Energia */
-        
-        .energy-control-section {
-            padding: 1.25rem;
-            /* Convertido para REM */
-            background-color: #3a3a5e;
-            border-radius: 1.25rem;
-            /* Convertido para REM, antes 20px */
-            box-shadow: 0 0.9375rem 0.9375rem rgba(0, 0, 0, 0.3);
-            /* Convertido para REM */
-            border: 2px solid #4a4a7e;
-            width: 100%;
-            /* Ocupa a largura total */
-            max-width: 900px;
-            margin: 0 auto 24px auto;
-            /* Centraliza e adiciona margem inferior */
-        }
-        
-        .energy-control-section h2 {
-            text-align: center;
-            color: #FFF;
-            margin-bottom: 1.5625rem;
-            /* Convertido para REM */
-        }
-        
-        .device-feedback-message {
-            background-color: #4CAF50;
-            color: white;
-            padding: 0.625rem 1.25rem;
-            /* Convertido para REM */
-            border-radius: 5px;
-            text-align: center;
-            margin-bottom: 1.25rem;
-            /* Convertido para REM */
-            opacity: 0.9;
-        }
-        
-        .device-control-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.9375rem;
-            /* Convertido para REM */
-        }
-        
-        .device-control-item {
-            background-color: #4a4a7e;
-            padding: 0.9375rem 1.25rem;
-            /* Convertido para REM */
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #5a5a8e;
-            flex-wrap: wrap;
-            /* Permite que os itens quebrem linha */
-            gap: 10px;
-            /* Espaçamento entre os itens internos */
-        }
-        
-        .device-control-name {
-            font-size: 1.1rem;
-            /* Convertido para REM */
-            color: #FFF;
-            flex-grow: 1;
-            /* Permite que o nome ocupe espaço */
-            text-align: left;
-            min-width: 120px;
-            /* Largura mínima para o nome */
-        }
-        
-        .device-status-indicator {
-            padding: 0.3125rem 0.625rem;
-            /* Convertido para REM */
-            border-radius: 5px;
-            font-size: 0.85rem;
-            /* Convertido para REM */
-            font-weight: bold;
-            margin-left: 0.9375rem;
-            /* Convertido para REM */
-            margin-right: 0.9375rem;
-            /* Convertido para REM */
-        }
-        
-        .device-status-indicator.on {
-            background-color: #4CAF50;
-            /* Verde para ligado */
-            color: white;
-        }
-        
-        .device-status-indicator.off {
-            background-color: #F44306;
-            /* Vermelho para desligado */
-            color: white;
-        }
-        
-        .device-toggle-button {
-            padding: 0.5rem 0.9375rem;
-            /* Convertido para REM */
-            border-radius: 5px;
-            font-size: 0.9rem;
-            /* Convertido para REM */
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            width: auto;
-            /* Reset para não herdar width: 100% */
-            margin-top: 0;
-            /* Reset para não herdar margin-top */
-        }
-        /* Estilo para o botão "Ligar" - sempre verde */
-        
-        .device-toggle-button.power-on {
-            background-color: #388E3C;
-            /* Verde mais escuro para Ligar */
-            color: white;
-        }
-        
-        .device-toggle-button.power-on:hover {
-            background-color: #2E7D32;
-        }
-        /* Estilo para o botão "Desligar" - sempre vermelho */
-        
-        .device-toggle-button.power-off {
-            background-color: #D32F2F;
-            /* Vermelho mais escuro para Desligar */
-            color: white;
-        }
-        
-        .device-toggle-button.power-off:hover {
-            background-color: #B71C1C;
-        }
-        /* NOVO: Estilo para o botão de adicionar dispositivo Tasmota e atualizar lista */
-        
-        .add-device-btn,
-        .refresh-devices-btn {
-            background-color: #00bcd4;
-            /* Cor principal de ação */
-            color: white;
-            padding: 0.625rem 0.9375rem;
-            /* Convertido para REM */
-            border: none;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            /* Convertido para REM */
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-            margin-top: 1.5625rem;
-            /* Convertido para REM */
-            width: auto;
-            /* Adapta a largura ao conteúdo */
-            display: inline-block;
-            /* Permite que fiquem lado a lado */
-            margin-right: 0.625rem;
-            /* Espaço entre eles se houver mais de um, convertido para REM */
-        }
-        
-        .add-device-btn:last-child,
-        .refresh-devices-btn:last-child {
-            margin-right: 0;
-            /* Remove margem do último botão */
-        }
-        
-        .add-device-btn:hover,
-        .refresh-devices-btn:hover {
-            background-color: #00a0b8;
-            transform: translateY(-2px);
-        }
-        
-        .add-device-btn:active,
-        .refresh-devices-btn:active {
-            transform: translateY(0);
-        }
-        /* Seção de Relatórios */
-        
-        .reports-section {
-            padding: 1.25rem;
-            /* Convertido para REM */
-            background-color: #3a3a5e;
-            border-radius: 8px;
-            box-shadow: 0 0.25rem 0.9375rem rgba(0, 0, 0, 0.3);
-            /* Convertido para REM */
-            border: 1px solid #4a4a7e;
-            width: 100%;
-            /* Ocupa a largura total */
-            max-width: 900px;
-            margin: 0 auto 24px auto;
-            /* Centraliza e adiciona margem inferior */
-        }
-        
-        .reports-section h2 {
-            text-align: center;
-            color: #FFF;
-            margin-bottom: 1.5625rem;
-            /* Convertido para REM */
-        }
-        
-        .reports-section h3 {
-            color: #FFF;
-            font-size: 1.5rem;
-            /* Convertido para REM */
-            margin-top: 1.875rem;
-            /* Convertido para REM */
-            margin-bottom: 0.9375rem;
-            /* Convertido para REM */
-            text-align: center;
-        }
-        
-        .report-summary-card {
-            background-color: #4a4a7e;
-            padding: 1.25rem;
-            /* Convertido para REM */
-            border-radius: 8px;
-            margin-bottom: 1.875rem;
-            /* Convertido para REM */
-            box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
-            /* Convertido para REM */
-        }
-        
-        .report-summary-card p {
-            margin-bottom: 0.625rem;
-            /* Convertido para REM */
-            font-size: 1.1rem;
-            /* Convertido para REM */
-            color: #E0E0E0;
-        }
-        
-        .report-summary-card strong {
-            color: #00bcd4;
-        }
-        
-        .overall-report-message {
-            margin-top: 1.25rem;
-            /* Convertido para REM */
-            font-style: italic;
-            font-size: 1.1rem;
-            /* Convertido para REM */
-            color: #B0B0B0;
-            border-top: 1px dashed #5a5a8e;
-            padding-top: 0.9375rem;
-            /* Convertido para REM */
-        }
-        /* Novo estilo para o cartão de dados em tempo real */
-        
-        .energy-realtime-card {
-            background-color: #4a4a7e;
-            padding: 1.25rem;
-            /* Convertido para REM */
-            border-radius: 8px;
-            margin-bottom: 1.875rem;
-            /* Convertido para REM */
-            box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
-            /* Convertido para REM */
-            display: flex;
-            /* Usar flexbox para layout */
-            flex-direction: column;
-            /* Colocar itens em coluna */
-            align-items: center;
-            /* Centralizar horizontalmente */
-            justify-content: center;
-            /* Centralizar verticalmente */
-            min-height: 21.875rem;
-            /* Convertido para REM, antes 350px. Altura mínima para o cartão */
-            position: relative;
-            /* Para posicionamento absoluto de elementos internos */
-            overflow: hidden;
-            /* Garante que nada transborde */
-            width: 100%;
-            /* Ocupa a largura total */
-            max-width: 900px;
-            margin: 0 auto 24px auto;
-            /* Centraliza e adiciona margem inferior */
-        }
-        
-        .energy-realtime-card h3 {
-            position: absolute;
-            /* Posição absoluta para o título */
-            top: 1.25rem;
-            /* Convertido para REM */
-            width: 100%;
-            text-align: center;
-            color: #FFF;
-            font-size: 1.5rem;
-            /* Convertido para REM */
-            margin: 0;
-        }
-        
-        .realtime-main-display {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex-grow: 1;
-            /* Permite que ocupe o espaço disponível */
-            margin-top: 2.5rem;
-            /* Convertido para REM */
-        }
-        
-        .realtime-power-value {
-            font-size: 5rem;
-            /* Convertido para REM */
-            font-weight: bold;
-            color: #00bcd4;
-            /* Cor para o valor principal */
-            margin: 0;
-            line-height: 1;
-            /* Remove espaçamento extra */
-        }
-        
-        .realtime-power-label {
-            font-size: 1.5rem;
-            /* Convertido para REM */
-            color: #E0E0E0;
-            margin-top: 0.3125rem;
-            /* Convertido para REM */
-        }
-        
-        .realtime-secondary-data {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            /* Duas colunas para os dados secundários */
-            gap: 0.9375rem 1.875rem;
-            /* Convertido para REM */
-            margin-top: 1.875rem;
-            /* Convertido para REM */
-            width: 80%;
-            /* Ajuste a largura conforme necessário */
-            max-width: 25rem;
-            /* Convertido para REM, antes 400px. Limita a largura máxima */
-            overflow-x: auto;
-            /* Permite rolagem horizontal se o conteúdo for muito largo */
-        }
-        
-        .realtime-data-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 0.3125rem;
-            /* Convertido para REM */
-            border-bottom: 1px dashed #5a5a8e;
-            /* Linha tracejada para separar */
-        }
-        
-        .realtime-data-label {
-            color: #B0B0B0;
-            font-size: 0.9rem;
-            /* Convertido para REM */
-            white-space: normal;
-            /* PERMITE QUEBRA DE LINHA PARA EVITAR CORTE */
-            word-break: break-word;
-            /* Garante que palavras longas sejam quebradas */
-        }
-        
-        .realtime-data-value {
-            color: #FFF;
-            font-weight: bold;
-            font-size: 1rem;
-            /* Convertido para REM */
-        }
-        /* Seção relatorio Dados em Tempo Real do Dispositivo Principal */
-        
-        .energy-realtime-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1.875rem;
-            /* Convertido para REM */
-            overflow-x: auto;
-            /* Permite rolagem horizontal para tabelas */
-            display: block;
-            /* Necessário para overflow-x em tabelas */
-        }
-        
-        .energy-realtime-table td {
-            padding: 0.625rem 0.75rem;
-            /* Convertido para REM */
-            border-bottom: 3px solid #5a5a8e;
-            color: #00bcd4;
-        }
-        
-        .energy-realtime-table td:first-child {
-            font-weight: bold;
-            color: #4CAF50;
-        }
-        
-        .device-report-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr));
-            /* Convertido minmax para REM, antes 280px */
-            gap: 1.25rem;
-            /* Convertido para REM */
-            width: 100%;
-            /* Ocupa a largura total */
-        }
-        
-        .device-report-item {
-            background-color: #4a4a7e;
-            padding: 1.25rem;
-            /* Convertido para REM */
-            border-radius: 8px;
-            box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.2);
-            /* Convertido para REM */
-            border: 1px solid #5a5a8e;
-            min-width: 0;
-            /* Permite encolher */
-            word-break: break-word;
-            /* Garante que texto longo quebre */
-            box-sizing: border-box;
-        }
-        
-        .device-report-item h4 {
-            color: #00bcd4;
-            margin-top: 0;
-            margin-bottom: 0.9375rem;
-            /* Convertido para REM */
-            font-size: 1.2rem;
-            /* Convertido para REM */
-        }
-        
-        .device-report-item p {
-            font-size: 0.95rem;
-            /* Convertido para REM */
-            color: #E0E0E0;
-            margin-bottom: 0.5rem;
-            /* Convertido para REM */
-        }
-        
-        .status-on-text {
-            color: #4CAF50;
-            /* Verde para economia */
-            font-weight: bold;
-        }
-        
-        .status-off-text {
-            color: #F44336;
-            /* Vermelho para gasto excessivo */
-            font-weight: bold;
-        }
-        
-        .impact-positive {
-            color: #4CAF50;
-            /* Verde para economia */
-            font-weight: bold;
-            margin-top: 0.625rem;
-            /* Convertido para REM */
-        }
-        
-        .impact-negative {
-            color: #F44336;
-            /* Vermelho para gasto excessivo */
-            font-weight: bold;
-            margin-top: 0.625rem;
-            /* Convertido para REM */
-        }
-        /* Seção de Configurações */
-        
-        .settings-section {
-            padding: 1.25rem;
-            /* Convertido para REM */
-            background-color: #3a3a5e;
-            border-radius: 8px;
-            box-shadow: 0 0.25rem 0.9375rem rgba(0, 0, 0, 0.3);
-            /* Convertido para REM */
-            border: 1px solid #4a4a7e;
-            width: 100%;
-            /* Ocupa a largura total */
-            max-width: 900px;
-            margin: 0 auto 24px auto;
-            /* Centraliza e adiciona margem inferior */
-        }
-        
-        .settings-section h2 {
-            text-align: center;
-            color: #FFF;
-            margin-bottom: 1.5625rem;
-            /* Convertido para REM */
-        }
-        
-        .user-settings-card {
-            background-color: #4a4a7e;
-            padding: 1.25rem;
-            /* Convertido para REM */
-            border-radius: 8px;
-            box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
-            /* Convertido para REM */
-            margin-bottom: 1.875rem;
-            /* Adicionado para separar do card da eWeLink, convertido para REM */
-        }
-        
-        .user-settings-card h3 {
-            color: #FFF;
-            margin-top: 0;
-            margin-bottom: 1.25rem;
-            /* Convertido para REM */
-            text-align: center;
-        }
-        
-        .user-settings-card p {
-            margin-bottom: 0.625rem;
-            /* Convertido para REM */
-            font-size: 1.1rem;
-            /* Convertido para REM */
-            color: #E0E0E0;
-        }
-        
-        .user-settings-card strong {
-            color: #00bcd4;
-        }
-        
-        .change-password-button,
-        .edit-profile-button {
-            background-color: #00bcd4;
-            color: white;
-            border: none;
-            padding: 0.625rem 1.25rem;
-            /* Convertido para REM */
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            /* Convertido para REM */
-            margin-right: 0.625rem;
-            /* Espaço entre os botões, convertido para REM */
-            margin-top: 0.9375rem;
-            /* Adicionado para separar do texto, convertido para REM */
-            transition: background-color 0.3s ease;
-            width: auto;
-            /* Ajusta a largura para o conteúdo */
-        }
-        
-        .change-password-button:hover,
-        .edit-profile-button:hover {
-            background-color: #00a0b8;
-        }
-        /* NOVO: Estilos para a seção de Gerenciamento de Dispositivos (Tasmota) */
-        
-        .tasmota-settings-card {
-            background-color: #4a4a7e;
-            padding: 1.25rem;
-            /* Convertido para REM */
-            border-radius: 8px;
-            box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
-            /* Convertido para REM */
-            margin-top: 1.25rem;
-        }
-        
-        .tasmota-settings-card h3 {
-            color: #FFF;
-            margin-top: 0;
-            margin-bottom: 1.25rem;
-            /* Convertido para REM */
-            text-align: center;
-        }
-        
-        .tasmota-settings-card p {
-            margin-bottom: 0.625rem;
-            /* Convertido para REM */
-            font-size: 1rem;
-            /* Convertido para REM */
-            color: #E0E0E0;
-            text-align: center;
-        }
-        /* NOVO: Estilos para as mensagens de feedback (sucesso, erro, info) */
-        
-        .message {
-            padding: 0.625rem 0.9375rem;
-            /* Convertido para REM */
-            border-radius: 5px;
-            margin-top: 0.9375rem;
-            /* Convertido para REM */
-            margin-bottom: 0.9375rem;
-            /* Convertido para REM */
-            font-size: 0.95rem;
-            /* Convertido para REM */
-            text-align: center;
-            font-weight: bold;
-        }
-        
-        .message.info {
-            background-color: #2196F3;
-            /* Azul */
-            color: white;
-        }
-        
-        .message.success {
-            background-color: #4CAF50;
-            /* Verde */
-            color: white;
-        }
-        
-        .message.error {
-            background-color: #F44336;
-            /* Vermelho */
-            color: white;
-        }
-        /* --- Media Queries para Responsividade --- */
-        /* Ajuste para telas entre 1024px e 1200px (desktop compacto/tablets grandes) */
-        
-        @media screen and (max-width: 1200px) {
-            .sidebar {
-                min-width: 180px;
-                /* Reduz um pouco a largura da sidebar */
-            }
-            .main-content {
-                padding: 24px;
-                /* Reduz o padding do conteúdo principal */
-            }
-            .metrics-grid {
-                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-                /* Permite cards menores */
-            }
-            .bottom-sections-grid {
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            }
-        }
-        /* Telas menores que 700px (tablets em modo retrato) */
-        
-        @media screen and (max-width: 700px) {
-            .container.dashboard-container {
-                flex-direction: column;
-                /* Sidebar acima do conteúdo principal */
-                align-items: center;
-                justify-content: flex-start;
-            }
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                padding: 0.9375rem 0;
-                box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.4);
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 0.625rem;
-            }
-            .sidebar .logo-icon-sidebar {
-                display: none;
-            }
-            .menu-item {
-                width: auto;
-                padding: 0.625rem 0.9375rem;
-                font-size: 0.95rem;
-                text-align: center;
-                flex-grow: 1;
-            }
-            .sidebar-bottom {
-                display: none;
-            }
-            .main-content {
-                padding: 1.25rem;
-                min-height: auto;
-                margin-top: 0;
-            }
-            .main-content h2 {
-                font-size: 2rem;
-                margin-bottom: 1.25rem;
-            }
-            .metrics-grid,
-            .bottom-sections-grid,
-            .device-report-list {
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-                gap: 1rem;
-            }
-            .energy-control-section,
-            .reports-section,
-            .settings-section,
-            .energy-realtime-card {
-                padding: 0.9375rem;
-                border-radius: 0.625rem;
-                margin-bottom: 1.25rem;
-                max-width: 100%;
-            }
-            .chart-area-main,
-            .chart-card-main {
-                max-width: 100%;
-                padding: 12px;
-            }
-        }
-        /* Telas menores que 768px (celulares grandes) */
-        
-        @media screen and (max-width: 768px) {
-            .container {
-                margin: 1.875rem auto;
-                /* Reduz margem superior */
-                padding: 1rem;
-                /* Reduz padding */
-            }
-            .card {
-                max-width: 98vw;
-                padding: 1.5rem;
-            }
-            h2 {
-                font-size: 1.5rem;
-                /* Diminui o tamanho do título principal */
-                margin-bottom: 1rem;
-            }
-            button,
-            .link-button {
-                padding: 0.9rem 0;
-                font-size: 1em;
-            }
-            input {
-                padding: 0.8rem;
-                font-size: 0.95em;
-            }
-            /* Dashboard */
-            .mobile-menu-bar {
-                /* Barra superior para o menu hambúrguer */
-                width: 100vw;
-                display: flex;
-                justify-content: flex-start;
-                align-items: center;
-                background: #1a1a2e;
-                padding: 4px 8px;
-                position: fixed;
-                top: 0;
-                left: 0;
-                z-index: 1100;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
-                height: 44px;
-                /* Altura da barra */
-            }
-            .hamburger-btn {
-                background: none;
-                border: none;
-                cursor: pointer;
-                padding: 2px 6px;
-                border-radius: 6px;
-                outline: none;
-                height: 36px;
-                width: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            .hamburger-icon {
-                font-size: 1.7em;
-                color: #00bcd4;
-                line-height: 1;
-            }
-            .mobile-menu-box {
-                /* Menu que desliza (off-canvas) */
-                position: fixed;
-                top: 44px;
-                /* Abaixo da barra superior */
-                left: 0;
-                width: 220px;
-                /* Largura do menu mobile */
-                background: #23243a;
-                box-shadow: 2px 0 16px rgba(0, 0, 0, 0.25);
-                border-radius: 0 10px 10px 0;
-                z-index: 1200;
-                display: flex;
-                flex-direction: column;
-                padding: 10px 0;
-                animation: slideInMenu 0.2s forwards;
-                /* Animação de entrada */
-                /* display: none; /* Inicie com display none e use JS para toggle */
-            }
-            .mobile-menu-box.hidden {
-                animation: slideOutMenu 0.2s forwards;
-            }
-            /* Animações (adicione ao seu CSS) */
-            @keyframes slideInMenu {
-                from {
-                    transform: translateX(-100%);
-                }
-                to {
-                    transform: translateX(0);
-                }
-            }
-            @keyframes slideOutMenu {
-                from {
-                    transform: translateX(0);
-                }
-                to {
-                    transform: translateX(-100%);
-                }
-            }
-            .sidebar {
-                display: none;
-                /* Esconde a sidebar padrão em mobile */
-            }
-            .main-content {
-                margin-top: 44px;
-                /* Dá espaço para a barra superior */
-                padding: 1rem;
-            }
-            .metrics-grid,
-            .bottom-sections-grid,
-            .device-report-list {
-                grid-template-columns: 1fr;
-                /* Uma coluna em telas muito pequenas */
-                gap: 0.8rem;
-            }
-            .metric-card {
-                padding: 0.8rem;
-                /* Reduz padding */
-            }
-            .metric-card p {
-                font-size: 1.6rem;
-                /* Ajusta a fonte dos valores */
-            }
-            .bottom-card {
-                min-height: 15rem;
-                /* Altura mínima para não ficar muito pequeno */
-                padding: 0.8rem;
-            }
-            .consumption-by-type-card .chart-wrapper {
-                height: 14rem;
-                /* Ajusta a altura do gráfico de donut */
-            }
-            .device-suggestion-list {
-                max-height: 10rem;
-                /* Reduz max-height para lista de sugestões */
-            }
-            .device-feedback-message {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.85rem;
-            }
-            /* Ajuste para os botões em telas menores na seção de controle de energia */
-            .add-device-btn,
-            .refresh-devices-btn {
-                width: 100%;
-                /* Ocupa a largura total */
-                margin-right: 0;
-                /* Remove margem direita */
-                margin-bottom: 0.625rem;
-                /* Adiciona margem inferior para espaçamento */
-                display: block;
-                /* Garante que cada botão ocupe sua própria linha */
-                margin-left: 0;
-                /* Alinha à esquerda em blocos */
-            }
-            .add-device-btn:last-child,
-            .refresh-devices-btn:last-child {
-                margin-bottom: 0;
-                /* Remove margem do último botão */
-            }
-            .device-control-item {
-                flex-direction: column;
-                /* Empilha itens do controle de dispositivos */
-                align-items: stretch;
-                /* Estica para preencher a largura */
-                gap: 0.5rem;
-            }
-            .device-control-name,
-            .device-status-indicator,
-            .device-toggle-button {
-                width: 100%;
-                text-align: center;
-                margin: 0;
-            }
-            .device-status-indicator {
-                margin-top: 0.3rem;
-            }
-            .device-toggle-button {
-                margin-top: 0.6rem;
-            }
-            .energy-realtime-card {
-                min-height: 18rem;
-                /* Reduz altura mínima do card de tempo real */
-            }
-            .realtime-power-value {
-                font-size: 3.5rem;
-                /* Diminui fonte do valor de potência */
-            }
-            .realtime-power-label {
-                font-size: 1.2rem;
-            }
-            .realtime-secondary-data {
-                grid-template-columns: 1fr;
-                /* Uma coluna para dados secundários */
-                width: 90%;
-            }
-        }
-        /* Telas muito pequenas (celulares menores) */
-        
-        @media screen and (max-width: 480px) {
-            html {
-                font-size: 13px;
-                /* Base font-size menor ainda */
-            }
-            .container,
-            .add-device-page-container {
-                padding: 0.5rem;
-                margin: 0.5rem auto;
-            }
-            .card,
-            .add-device-card {
-                padding: 1rem;
-                border-radius: 8px;
-            }
-            h2 {
-                font-size: 1.2rem;
-            }
-            input,
-            button,
-            .link-button {
-                font-size: 0.9em;
-                padding: 0.7rem;
-            }
-            .main-content {
-                padding: 0.5rem;
-            }
-            .metrics-grid,
-            .bottom-sections-grid,
-            .device-report-list {
-                gap: 0.5rem;
-            }
-            .metric-card {
-                padding: 0.6rem;
-            }
-            .metric-card p {
-                font-size: 1.4rem;
-            }
-            .bottom-card {
-                min-height: 12rem;
-                padding: 0.6rem;
-            }
-            .consumption-by-type-card .chart-wrapper {
-                height: 10rem;
-            }
-            .device-suggestion-list li {
-                font-size: 0.8em;
-                padding: 0.4rem 0.6rem;
-            }
-            .energy-control-section,
-            .reports-section,
-            .settings-section,
-            .energy-realtime-card {
-                padding: 0.6rem;
-                margin-bottom: 0.8rem;
-            }
-            .realtime-power-value {
-                font-size: 3rem;
-            }
-            .realtime-power-label {
-                font-size: 1rem;
-            }
-        }
-        /* Modal Overlay e Card */
-        
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-card {
-            background: #23243a;
-            border-radius: 12px;
-            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
-            padding: 32px 24px 24px 24px;
-            min-width: 320px;
-            max-width: 95vw;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .modal-card h3 {
-            margin-bottom: 1.25rem;
-            color: #00bcd4;
-        }
-        
-        .button-group {
-            width: 100%;
-            display: flex;
-            flex-direction: row;
-            gap: 10px;
-            margin-top: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            /* Adicionado para responsividade */
-        }
-        
-        .cancel-button {
-            background: #888 !important;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            padding: 10px 18px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        .cancel-button:hover {
-            background: #555 !important;
-        }
-        /* Botões menores para modal de edição de conta */
-        
-        .small-buttons {
-            gap: 8px;
-            justify-content: center;
-        }
-        
-        .small-btn {
-            font-size: 0.95em !important;
-            padding: 7px 16px !important;
-            min-width: 90px;
-            border-radius: 6px;
-            margin: 0 !important;
-            box-shadow: none !important;
-        }
-        /* Ajuste para inputs e botões em telas pequenas */
-        
-        input,
-        button,
-        select,
-        textarea {
-            max-width: 100%;
-            /* Use 100% em vez de 100vw para evitar estouro com padding */
-            box-sizing: border-box;
-        }
-        /* Ajuste para garantir que nada suma ou quebre */
-        
-        * {
-            min-width: 0;
-            /* Permite que os elementos encolham para caber no espaço */
-            min-height: 0;
-            box-sizing: border-box;
-            word-break: break-word;
-            /* Garante que qualquer texto longo seja quebrado */
-            overflow-wrap: anywhere;
-            /* Outra propriedade para quebra de texto */
-        }
-        
-        .dashboard-root {
-            min-height: 100vh;
-            background: linear-gradient(to right, #2a003f, #001030);
-        }
-        
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 64px;
-            background: #181a23;
-            display: flex;
-            align-items: center;
-            z-index: 1000;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
-            padding: 0 32px;
-        }
-        
-        .logo-icon-navbar {
-            font-size: 2em;
-            margin-right: 24px;
-            color: #00bcd4;
-        }
-        
-        .nav-item {
-            margin: 0 8px;
-            padding: 8px 16px;
-            border-radius: 6px;
-            color: #fff;
-            font-size: 1em;
-            cursor: pointer;
-            background: none;
-            border: none;
-            transition: background 0.2s, color 0.2s;
-            display: flex;
-            align-items: center;
-            height: 40px;
-            min-width: 80px;
-            justify-content: center;
-        }
-        
-        .nav-item.active,
-        .nav-item:hover {
-            background: #00bcd4;
-            color: #181a23;
-            font-weight: bold;
-        }
-        
-        .logout-link-navbar {
-            background: #f44336;
-            color: #fff;
-            margin-left: auto;
-            min-width: 100px;
-            max-width: 140px;
-            font-weight: bold;
-            justify-content: center;
-        }
-        
-        .main-content-centered {
-            margin-top: 80px;
-            /* espaço para a navbar */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            min-height: calc(100vh - 80px);
-            width: 100vw;
-            box-sizing: border-box;
-        }
-        
-        .main-content-centered>* {
-            width: 100%;
-            max-width: 1000px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 64px;
-            background: #181a23;
-            display: flex;
-            align-items: center;
-            z-index: 1000;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
-            padding: 0 32px;
-        }
-        
-        .logo-icon-navbar {
-            font-size: 2em;
-            /* Remover ou ajustar estilos antigos da sidebar para não conflitar */
-            .sidebar,
-            .sidebar-bottom,
-            .logout-link-sidebar,
-            .logo-icon-sidebar {
-                display: none !important;
-            }
-            @media (max-width: 900px) {
-                .navbar {
-                    flex-wrap: wrap;
-                    padding: 0 8px;
-                    height: auto;
-                }
-                .nav-item {
-                    min-width: 60px;
-                    font-size: 0.95em;
-                    padding: 8px 8px;
-                }
-                .logo-icon-navbar {
-                    font-size: 1.5em;
-                    margin-right: 10px;
-                }
-            }
+/* frontend/src/App.css */
+
+/* Estilos Globais e Reset */
+html {
+    /* Base font-size para REM, ajusta o tamanho da fonte em geral */
+    font-size: clamp(14px, 1.2vw, 18px);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #2a003f, #001030); /* Fundo escuro gradient */
+    color: #E0E0E0; /* Cor do texto padrão para o tema escuro */
+    min-height: 100vh;
+    overflow-x: hidden; /* Evita scroll horizontal em todo o corpo */
+    box-sizing: border-box;
+    font-size: clamp(1rem, 2vw, 1.25rem); /* Base font-size para REM */
+    display: flex; /* Para o layout de login/criar conta */
+    justify-content: center;
+    align-items: flex-start; /* Alinha no topo para o dashboard por padrão */
+}
+
+/* Garante que nada vaze da tela */
+html,
+body,
+#root {
+    width: 100vw;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+/* Estilos para as Páginas de Login e Criar Conta */
+
+/* Container para Login/Criar Conta (centralizado) */
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.card {
+    background: rgba(30, 32, 44, 0.98);
+    border-radius: 18px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+    padding: 32px 24px 24px 24px;
+    width: 100%;
+    max-width: clamp(320px, 90vw, 1200px); /* Usando clamp para max-width */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 24px 0;
+}
+
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+input {
+    width: 100%;
+    padding: clamp(10px, 2vw, 18px) clamp(10px, 2vw, 24px);
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #23243a;
+    color: #fff;
+    font-size: clamp(1em, 2vw, 1.2em);
+    margin-bottom: 0;
+    box-sizing: border-box;
+}
+
+button,
+.link-button {
+    width: 100%;
+    padding: 12px 0;
+    border-radius: 6px;
+    border: none;
+    background: #00bcd4;
+    color: #fff;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+}
+
+button:hover,
+.link-button:hover {
+    background: #0097a7;
+}
+
+.logo-icon {
+    font-size: 3em;
+    margin-bottom: 10px;
+    color: #ffeb3b;
+}
+
+/* Ajustes de layout para h2, form-group, label e input */
+h2 {
+    color: #FFF;
+    margin-bottom: 1.875rem; /* Convertido para REM */
+    font-size: clamp(1.2rem, 3vw, 2.2rem); /* Convertido para REM */
+}
+
+.form-group {
+    margin-bottom: 1.25rem; /* Convertido para REM */
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem; /* Convertido para REM */
+    color: #BBB;
+    font-size: 0.9rem; /* Convertido para REM */
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    border-radius: 30px !important;
+    text-align: left;
+    margin-bottom: 12px;
+    padding: 14px 18px;
+    font-size: 1.1em;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #00bcd4;
+}
+
+/* Estilos para o botão padrão (ENTRAR) */
+button {
+    width: 100%;
+    padding: 1.125rem; /* Convertido para REM */
+    background-color: #00bcd4;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 1.2rem; /* Convertido para REM */
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+    margin-top: 1.25rem; /* Convertido para REM */
+    margin-bottom: 1.25rem; /* Adiciona margem na parte inferior para criar espaço, convertido para REM */
+    box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
+}
+
+button:hover {
+    background-color: #00a0b8;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 188, 212, 0.6);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 188, 212, 0.3);
+}
+
+button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+    box-shadow: none;
+}
+
+/* Estilos para o botão .link-button (CRIAR UMA CONTA) */
+.link-button {
+    width: 100%;
+    padding: 0.9375rem; /* Convertido para REM */
+    background-color: #4a4a7e;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 1.1rem; /* Convertido para REM */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    margin-top: 0; /* Removido para usar a margem inferior do botão acima */
+}
+
+.link-button:hover {
+    background-color: #5a5a9e;
+    transform: translateY(-2px);
+}
+
+.link-button:active {
+    transform: translateY(0);
+}
+
+.link-button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Para remover qualquer linha padrão que possa aparecer, embora 'border: none' já devesse resolver */
+a.link-button {
+    text-decoration: none;
+}
+
+.error-message {
+    color: #ff6b6b;
+    margin-top: 0.9375rem; /* Convertido para REM */
+    font-size: 0.9rem; /* Convertido para REM */
+}
+
+/* --- Estilos para o Dashboard --- */
+
+/* Container Principal do Dashboard (Flexbox para sidebar e main-content) */
+.container.dashboard-container {
+    background: none; /* Remove background do container original */
+    box-shadow: none; /* Remove sombra do container original */
+    border-radius: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 100vw; /* Ocupa toda a largura da tela */
+    min-height: 100vh; /* Ocupa toda a altura */
+    display: flex; /* Habilita flexbox para layout sidebar/main */
+    justify-content: flex-start; /* Alinha o conteúdo à esquerda */
+    align-items: flex-start; /* Alinha o conteúdo ao topo */
+}
+
+/* Sidebar */
+
+/* Navbar fixa no topo */
+.sidebar {
+    width: 100%; /* Ocupa toda a largura da tela */
+    height: 70px; /* Altura da navbar */
+    background: #181a23; /* Cor escura para a navbar */
+    color: #fff;
+    display: flex;
+    flex-direction: row; /* Alinha os itens na horizontal */
+    align-items: center;
+    justify-content: space-between; /* Espaço entre os itens */
+    padding: 0 24px; /* Espaçamento interno horizontal */
+    position: fixed; /* Fixa no topo */
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* Ícone da logo no canto esquerdo */
+.sidebar .logo-icon-sidebar {
+    font-size: 2.2em;
+    color: #00bcd4;
+    margin: 0; /* Remove margem inferior */
+}
+
+/* Container para os itens do menu centralizados */
+.menu-container {
+    display: flex;
+    gap: 24px;
+}
+
+/* Estilo dos itens do menu */
+.menu-item {
+    padding: 10px 16px;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    background: none;
+    color: #fff;
+    font-size: 1em;
+    transition: background 0.2s, color 0.2s;
+}
+
+.menu-item:hover {
+    background: #2b2b4d;
+}
+
+.menu-item.active {
+    background: #00bcd4;
+    color: #1a1a2e;
+    font-weight: bold;
+}
+
+/* Área do botão de logout à direita */
+.sidebar-bottom {
+    display: flex;
+    align-items: center;
+}
+
+/* Botão de logout */
+.logout-link-sidebar {
+    background: #f44336;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 6px;
+    border: none;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+}
+
+.logout-link-sidebar:hover {
+    background-color: #d32f2f;
+}
+
+
+/* Conteúdo Principal do Dashboard */
+.main-content {
+    flex: 1; /* Ocupa o restante do espaço disponível */
+    padding: 32px;
+    margin-left: 480px;
+    margin-top: 65px;
+    background-color: #2a2a4e; /* Fundo do conteúdo principal */
+    min-height: calc(100vh - 70px); /* Subtrai a altura da navbar */
+    overflow-y: auto; /* Permite rolagem se o conteúdo for muito longo */
+    box-sizing: border-box; /* Incluir padding na largura e altura */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centraliza conteúdo horizontalmente */
+    min-width: 0; /* Permite que o flex item encolha */
+}
+
+.main-content h2 {
+    color: #FFF;
+    margin-top: 0;
+    margin-bottom: 1.875rem; /* Convertido para REM */
+    font-size: 2.5rem; /* Convertido para REM */
+    text-align: center; /* Centraliza o título */
+}
+
+/* Grid de Métricas (Cards no topo) */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 200px fixo */
+    gap: 10px;
+    margin-bottom: 1.875rem;
+    width: 100%; /* Melhor manter 100% para ocupar espaço disponível */
+    justify-content: center; /* Centraliza os cards horizontalmente */
+}
+
+.metric-card {
+    width: 200px;
+    height: 130px;
+    background-color: #23272f;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid #4a4a7e;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.metric-card h3 {
+    color: #AAA;
+    font-size: 1rem; /* Convertido para REM */
+    margin-top: 0;
+    margin-bottom: 0.625rem; /* Convertido para REM */
+}
+
+.metric-card p {
+    color: #00bcd4; /* Cor vibrante para os valores */
+    font-size: 2rem; /* Convertido para REM */
+    font-weight: bold;
+    margin: 0;
+}
+
+/* Área do Gráfico Principal */
+.chart-area-main,
+.chart-card-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px auto;
+    width: 100%;
+    min-width: 0;
+    max-width: 800px; /* Aumentado max-width para o gráfico principal */
+    box-sizing: border-box;
+    padding: 18px 12px 12px 12px;
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    overflow-x: auto; /* Adicionado para permitir rolagem se o gráfico for muito largo */
+}
+
+.chart-card-main canvas {
+    display: block;
+    margin: 0 auto;
+    width: 100% !important; /* Força 100% de largura do pai */
+    max-width: 100% !important;
+    min-width: 0;
+    min-height: 180px; /* Ajuste min-height */
+    max-height: 300px; /* Ajuste max-height */
+}
+
+/* Estilos para os botões de seleção de modo de visualização (Dia, Semana, Mês) */
+.view-mode-buttons {
+    display: flex;
+    padding-top: 14px;
+    justify-content: center;
+    gap: 0.625rem; /* Convertido para REM */
+    margin-bottom: -0.625rem; /* Convertido para REM */
+    margin-top: -1.25rem; /* Convertido para REM */
+    width: 100%; /* Ocupa a largura total para centralizar */
+    flex-wrap: wrap; /* Permite que os botões quebrem linha */
+}
+
+.view-button,
+.active-view-button {
+    padding: 0.625rem 1.25rem; /* Convertido para REM */
+    border: 1px solid #00bcd4;
+    border-radius: 5px;
+    background-color: transparent;
+    color: #00bcd4;
+    font-size: 0.9rem; /* Convertido para REM */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 0; /* Remover margin-top herdado de 'button' */
+    width: auto; /* Deixa o botão se ajustar ao conteúdo */
+}
+
+.view-button:hover {
+    background-color: rgba(0, 188, 212, 0.1);
+    color: #00e0ff;
+}
+
+.active-view-button {
+    background-color: #00bcd4;
+    color: #1a1a2e; /* Texto escuro para contraste no botão ativo */
+    font-weight: bold;
+}
+
+.active-view-button:hover {
+    background-color: #00a0b8; /* Escurece um pouco no hover do ativo */
+    color: #FFF;
+}
+
+/* Grid Inferior (para os novos cards) */
+.bottom-sections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: clamp(12px, 2vw, 32px);
+    margin-top: 1.875rem; /* Convertido para REM */
+    width: 100%; /* Ocupa a largura total */
+}
+
+.bottom-card {
+    background-color: #23272f; /* Fundo dos cards inferiores */
+    border-radius: 8px;
+    padding: 1.25rem; /* Convertido para REM */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid #4a4a7e;
+    display: flex; /* Habilita flexbox */
+    flex-direction: column; /* Conteúdo em coluna */
+    justify-content: flex-start; /* Alinha o conteúdo ao topo */
+    align-items: center; /* Centraliza horizontalmente */
+    text-align: center;
+    height: auto; /* Altura automática para se adaptar ao conteúdo */
+    min-height: 25rem; /* Convertido para REM, altura mínima */
+    box-sizing: border-box; /* Garante que padding e border sejam incluídos na altura */
+    min-width: 0; /* Permite que o flex item encolha */
+}
+
+.bottom-card h3 {
+    color: #FFF;
+    font-size: 1.3rem; /* Convertido para REM */
+    margin-top: 0;
+    margin-bottom: 0.9375rem; /* Convertido para REM */
+}
+
+/* Estilo para o gráfico de consumo por tipo */
+.consumption-by-type-card .chart-wrapper {
+    width: 100%; /* Ocupa a largura do card */
+    max-width: 18.75rem; /* Convertido para REM, antes 300px. Limita o tamanho do gráfico para não ficar muito grande */
+    height: 17.5rem; /* Convertido para REM, antes 280px. Altura para o gráfico de donut */
+    display: flex; /* Para centralizar o canvas do chart */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Estilo para a lista de dispositivos sugeridos */
+.device-suggestion-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    text-align: left; /* Alinha o texto das sugestões à esquerda */
+    overflow-y: auto; /* Adiciona scroll se a lista for muito longa */
+    max-height: 15.625rem; /* Convertido para REM, antes 250px. Altura máxima para a lista */
+    margin-top: 0.625rem; /* Convertido para REM */
+}
+
+.device-suggestion-list li {
+    background-color: #4a4a7e;
+    padding: 0.625rem 0.9375rem; /* Convertido para REM */
+    border-radius: 5px;
+    margin-bottom: 0.5rem; /* Convertido para REM */
+    font-size: 0.95rem; /* Convertido para REM */
+    color: #E0E0E0;
+    border-left: 3px solid #ff9800; /* Borda de destaque */
+}
+
+.device-suggestion-list li strong {
+    color: #00bcd4;
+}
+
+/* Seção de Controle de Energia */
+.energy-control-section {
+    padding: 1.25rem; /* Convertido para REM */
+    background-color: #3a3a5e;
+    border-radius: 1.25rem; /* Convertido para REM, antes 20px */
+    box-shadow: 0 0.9375rem 0.9375rem rgba(0, 0, 0, 0.3); /* Convertido para REM */
+    border: 2px solid #4a4a7e;
+    width: 100%; /* Ocupa a largura total */
+    max-width: 900px;
+    margin: 0 auto 24px auto; /* Centraliza e adiciona margem inferior */
+}
+
+.energy-control-section h2 {
+    text-align: center;
+    color: #FFF;
+    margin-bottom: 1.5625rem; /* Convertido para REM */
+}
+
+.device-feedback-message {
+    background-color: #4CAF50;
+    color: white;
+    padding: 0.625rem 1.25rem; /* Convertido para REM */
+    border-radius: 5px;
+    text-align: center;
+    margin-bottom: 1.25rem; /* Convertido para REM */
+    opacity: 0.9;
+}
+
+.device-control-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9375rem; /* Convertido para REM */
+}
+
+.device-control-item {
+    background-color: #4a4a7e;
+    padding: 0.9375rem 1.25rem; /* Convertido para REM */
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #5a5a8e;
+    flex-wrap: wrap; /* Permite que os itens quebrem linha */
+    gap: 10px; /* Espaçamento entre os itens internos */
+}
+
+.device-control-name {
+    font-size: 1.1rem; /* Convertido para REM */
+    color: #FFF;
+    flex-grow: 1; /* Permite que o nome ocupe espaço */
+    text-align: left;
+    min-width: 120px; /* Largura mínima para o nome */
+}
+
+.device-status-indicator {
+    padding: 0.3125rem 0.625rem; /* Convertido para REM */
+    border-radius: 5px;
+    font-size: 0.85rem; /* Convertido para REM */
+    font-weight: bold;
+    margin-left: 0.9375rem; /* Convertido para REM */
+    margin-right: 0.9375rem; /* Convertido para REM */
+}
+
+.device-status-indicator.on {
+    background-color: #4CAF50; /* Verde para ligado */
+    color: white;
+}
+
+.device-status-indicator.off {
+    background-color: #F44306; /* Vermelho para desligado */
+    color: white;
+}
+
+.device-toggle-button {
+    padding: 0.5rem 0.9375rem; /* Convertido para REM */
+    border-radius: 5px;
+    font-size: 0.9rem; /* Convertido para REM */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: auto; /* Reset para não herdar width: 100% */
+    margin-top: 0; /* Reset para não herdar margin-top */
+}
+
+/* Estilo para o botão "Ligar" - sempre verde */
+.device-toggle-button.power-on {
+    background-color: #388E3C; /* Verde mais escuro para Ligar */
+    color: white;
+}
+
+.device-toggle-button.power-on:hover {
+    background-color: #2E7D32;
+}
+
+/* Estilo para o botão "Desligar" - sempre vermelho */
+.device-toggle-button.power-off {
+    background-color: #D32F2F; /* Vermelho mais escuro para Desligar */
+    color: white;
+}
+
+.device-toggle-button.power-off:hover {
+    background-color: #B71C1C;
+}
+
+/* NOVO: Estilo para o botão de adicionar dispositivo Tasmota e atualizar lista */
+.add-device-btn,
+.refresh-devices-btn {
+    background-color: #00bcd4; /* Cor principal de ação */
+    color: white;
+    padding: 0.625rem 0.9375rem; /* Convertido para REM */
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem; /* Convertido para REM */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    margin-top: 1.5625rem; /* Convertido para REM */
+    width: auto; /* Adapta a largura ao conteúdo */
+    display: inline-block; /* Permite que fiquem lado a lado */
+    margin-right: 0.625rem; /* Espaço entre eles se houver mais de um, convertido para REM */
+}
+
+.add-device-btn:last-child,
+.refresh-devices-btn:last-child {
+    margin-right: 0; /* Remove margem do último botão */
+}
+
+.add-device-btn:hover,
+.refresh-devices-btn:hover {
+    background-color: #00a0b8;
+    transform: translateY(-2px);
+}
+
+.add-device-btn:active,
+.refresh-devices-btn:active {
+    transform: translateY(0);
+}
+
+/* Seção de Relatórios */
+.reports-section {
+    padding: 1.25rem; /* Convertido para REM */
+    background-color: #3a3a5e;
+    border-radius: 8px;
+    box-shadow: 0 0.25rem 0.9375rem rgba(0, 0, 0, 0.3); /* Convertido para REM */
+    border: 1px solid #4a4a7e;
+    width: 100%; /* Ocupa a largura total */
+    max-width: 900px;
+    margin: 0 auto 24px auto; /* Centraliza e adiciona margem inferior */
+}
+
+.reports-section h2 {
+    text-align: center;
+    color: #FFF;
+    margin-bottom: 1.5625rem; /* Convertido para REM */
+}
+
+.reports-section h3 {
+    color: #FFF;
+    font-size: 1.5rem; /* Convertido para REM */
+    margin-top: 1.875rem; /* Convertido para REM */
+    margin-bottom: 0.9375rem; /* Convertido para REM */
+    text-align: center;
+}
+
+.report-summary-card {
+    background-color: #4a4a7e;
+    padding: 1.25rem; /* Convertido para REM */
+    border-radius: 8px;
+    margin-bottom: 1.875rem; /* Convertido para REM */
+    box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2); /* Convertido para REM */
+}
+
+.report-summary-card p {
+    margin-bottom: 0.625rem; /* Convertido para REM */
+    font-size: 1.1rem; /* Convertido para REM */
+    color: #E0E0E0;
+}
+
+.report-summary-card strong {
+    color: #00bcd4;
+}
+
+.overall-report-message {
+    margin-top: 1.25rem; /* Convertido para REM */
+    font-style: italic;
+    font-size: 1.1rem; /* Convertido para REM */
+    color: #B0B0B0;
+    border-top: 1px dashed #5a5a8e;
+    padding-top: 0.9375rem; /* Convertido para REM */
+}
+
+/* Novo estilo para o cartão de dados em tempo real */
+.energy-realtime-card {
+    background-color: #4a4a7e;
+    padding: 1.25rem; /* Convertido para REM */
+    border-radius: 8px;
+    margin-bottom: 1.875rem; /* Convertido para REM */
+    box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2); /* Convertido para REM */
+    display: flex; /* Usar flexbox para layout */
+    flex-direction: column; /* Colocar itens em coluna */
+    align-items: center; /* Centralizar horizontalmente */
+    justify-content: center; /* Centralizar verticalmente */
+    min-height: 21.875rem; /* Convertido para REM, antes 350px. Altura mínima para o cartão */
+    position: relative; /* Para posicionamento absoluto de elementos internos */
+    overflow: hidden; /* Garante que nada transborde */
+    width: 100%; /* Ocupa a largura total */
+    max-width: 900px;
+    margin: 0 auto 24px auto; /* Centraliza e adiciona margem inferior */
+}
+
+.energy-realtime-card h3 {
+    position: absolute; /* Posição absoluta para o título */
+    top: 0.8rem; /* Convertido para REM */
+    width: 100%;
+    text-align: center;
+    color: #FFF;
+    font-size: 1.5rem; /* Convertido para REM */
+    margin: 0;
+}
+
+.realtime-main-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1; /* Permite que ocupe o espaço disponível */
+    margin-top: 2.5rem; /* Convertido para REM */
+}
+
+.realtime-power-value {
+    font-size: 5rem; /* Convertido para REM */
+    font-weight: bold;
+    color: #00bcd4; /* Cor para o valor principal */
+    margin: 0;
+    line-height: 1; /* Remove espaçamento extra */
+}
+
+.realtime-power-label {
+    font-size: 1.5rem; /* Convertido para REM */
+    color: #E0E0E0;
+    margin-top: 0.3125rem; /* Convertido para REM */
+}
+
+.realtime-secondary-data {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Duas colunas para os dados secundários */
+    gap: 0.9375rem 1.875rem; /* Convertido para REM */
+    margin-top: 1.875rem; /* Convertido para REM */
+    width: 80%; /* Ajuste a largura conforme necessário */
+    max-width: 25rem; /* Convertido para REM, antes 400px. Limita a largura máxima */
+    overflow-x: auto; /* Permite rolagem horizontal se o conteúdo for muito largo */
+}
+
+.realtime-data-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.3125rem; /* Convertido para REM */
+    border-bottom: 1px dashed #5a5a8e; /* Linha tracejada para separar */
+}
+
+.realtime-data-label {
+    color: #B0B0B0;
+    font-size: 0.9rem; /* Convertido para REM */
+    white-space: normal; /* PERMITE QUEBRA DE LINHA PARA EVITAR CORTE */
+    word-break: break-word; /* Garante que palavras longas sejam quebradas */
+}
+
+.realtime-data-value {
+    color: #FFF;
+    font-weight: bold;
+    font-size: 1rem; /* Convertido para REM */
+}
+
+/* Seção relatorio Dados em Tempo Real do Dispositivo Principal */
+.energy-realtime-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.875rem; /* Convertido para REM */
+    overflow-x: auto; /* Permite rolagem horizontal para tabelas */
+    display: block; /* Necessário para overflow-x em tabelas */
+}
+
+.energy-realtime-table td {
+    padding:  0.7rem 5rem; /* Convertido para REM */
+    border-bottom: 3px solid #5a5a8e;
+    color: #00bcd4;
+}
+
+
+.energy-realtime-table td:first-child {
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+.device-report-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr)); /* Convertido minmax para REM, antes 280px */
+    gap: 1.25rem; /* Convertido para REM */
+    width: 100%; /* Ocupa a largura total */
+}
+
+.device-report-item {
+    background-color: #4a4a7e;
+    padding: 1.25rem; /* Convertido para REM */
+    border-radius: 8px;
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.2); /* Convertido para REM */
+    border: 1px solid #5a5a8e;
+    min-width: 0; /* Permite encolher */
+    word-break: break-word; /* Garante que texto longo quebre */
+    box-sizing: border-box;
+}
+
+.device-report-item h4 {
+    color: #00bcd4;
+    margin-top: 0;
+    margin-bottom: 0.9375rem; /* Convertido para REM */
+    font-size: 1.2rem; /* Convertido para REM */
+}
+
+.device-report-item p {
+    font-size: 0.95rem; /* Convertido para REM */
+    color: #E0E0E0;
+    margin-bottom: 0.5rem; /* Convertido para REM */
+}
+
+.status-on-text {
+    color: #4CAF50; /* Verde para economia */
+    font-weight: bold;
+}
+
+.status-off-text {
+    color: #F44336; /* Vermelho para gasto excessivo */
+    font-weight: bold;
+}
+
+.impact-positive {
+    color: #4CAF50; /* Verde para economia */
+    font-weight: bold;
+    margin-top: 0.625rem; /* Convertido para REM */
+}
+
+.impact-negative {
+    color: #F44336; /* Vermelho para gasto excessivo */
+    font-weight: bold;
+    margin-top: 0.625rem; /* Convertido para REM */
+}
+
+/* Seção de Configurações */
+.settings-section {
+    padding: 1.25rem; /* Convertido para REM */
+    background-color: #3a3a5e;
+    border-radius: 8px;
+    box-shadow: 0 0.25rem 0.9375rem rgba(0, 0, 0, 0.3); /* Convertido para REM */
+    border: 1px solid #4a4a7e;
+    width: 100%; /* Ocupa a largura total */
+    max-width: 900px;
+    margin: 0 auto 24px auto; /* Centraliza e adiciona margem inferior */
+}
+
+.settings-section h2 {
+    text-align: center;
+    color: #FFF;
+    margin-bottom: 1.5625rem; /* Convertido para REM */
+}
+
+.user-settings-card {
+    background-color: #4a4a7e;
+    padding: 1.25rem; /* Convertido para REM */
+    border-radius: 8px;
+    box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2); /* Convertido para REM */
+    margin-bottom: 1.875rem; /* Adicionado para separar do card da eWeLink, convertido para REM */
+}
+
+.user-settings-card h3 {
+    color: #FFF;
+    margin-top: 0;
+    margin-bottom: 1.25rem; /* Convertido para REM */
+    text-align: center;
+}
+
+.user-settings-card p {
+    margin-bottom: 0.625rem; /* Convertido para REM */
+    font-size: 1.1rem; /* Convertido para REM */
+    color: #E0E0E0;
+}
+
+.user-settings-card strong {
+    color: #00bcd4;
+}
+
+.change-password-button,
+.edit-profile-button {
+    background-color: #00bcd4;
+    color: white;
+    border: none;
+    padding: 0.625rem 1.25rem; /* Convertido para REM */
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem; /* Convertido para REM */
+    margin-right: 0.625rem; /* Espaço entre os botões, convertido para REM */
+    margin-top: 0.9375rem; /* Adicionado para separar do texto, convertido para REM */
+    transition: background-color 0.3s ease;
+    width: auto; /* Ajusta a largura para o conteúdo */
+}
+
+.change-password-button:hover,
+.edit-profile-button:hover {
+    background-color: #00a0b8;
+}
+
+/* NOVO: Estilos para a seção de Gerenciamento de Dispositivos (Tasmota) */
+.tasmota-settings-card {
+    background-color: #4a4a7e;
+    padding: 1.25rem; /* Convertido para REM */
+    border-radius: 8px;
+    box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2); /* Convertido para REM */
+    margin-top: 1.25rem;
+}
+
+.tasmota-settings-card h3 {
+    color: #FFF;
+    margin-top: 0;
+    margin-bottom: 1.25rem; /* Convertido para REM */
+    text-align: center;
+}
+
+.tasmota-settings-card p {
+    margin-bottom: 0.625rem; /* Convertido para REM */
+    font-size: 1rem; /* Convertido para REM */
+    color: #E0E0E0;
+    text-align: center;
+}
+
+/* NOVO: Estilos para as mensagens de feedback (sucesso, erro, info) */
+.message {
+    padding: 0.625rem 0.9375rem; /* Convertido para REM */
+    border-radius: 5px;
+    margin-top: 0.9375rem; /* Convertido para REM */
+    margin-bottom: 0.9375rem; /* Convertido para REM */
+    font-size: 0.95rem; /* Convertido para REM */
+    text-align: center;
+    font-weight: bold;
+}
+
+.message.info {
+    background-color: #2196F3; /* Azul */
+    color: white;
+}
+
+.message.success {
+    background-color: #4CAF50; /* Verde */
+    color: white;
+}
+
+.message.error {
+    background-color: #F44336; /* Vermelho */
+    color: white;
+}
+
+/* --- Media Queries para Responsividade --- */
+
+/* Ajuste para telas entre 1024px e 1200px (desktop compacto/tablets grandes) */
+@media screen and (max-width: 1200px) {
+    .sidebar {
+        min-width: 180px; /* Reduz um pouco a largura da sidebar */
+    }
+    .main-content {
+        padding: 24px; /* Reduz o padding do conteúdo principal */
+    }
+    .metrics-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Permite cards menores */
+    }
+    .bottom-sections-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+}
+
+/* Telas menores que 900px (tablets em modo retrato) */
+@media screen and (max-width: 900px) {
+    .container.dashboard-container {
+        flex-direction: column; /* Sidebar acima do conteúdo principal */
+        align-items: center;
+        justify-content: flex-start;
+    }
+    .sidebar {
+        width: 100%; /* Sidebar ocupa toda a largura */
+        height: auto; /* Altura automática */
+        position: relative; /* Remove sticky */
+        padding: 0.9375rem 0; /* Reduz padding */
+        box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.4);
+        flex-direction: row; /* Itens do menu em linha */
+        flex-wrap: wrap; /* Permite quebrar linha */
+        justify-content: center; /* Centraliza itens */
+        gap: 0.625rem; /* Espaço entre itens */
+    }
+    .sidebar .logo-icon-sidebar {
+        display: none; /* Esconde o logo grande em telas pequenas */
+    }
+    .menu-item {
+        width: auto; /* Menu items se ajustam ao conteúdo */
+        padding: 0.625rem 0.9375rem; /* Reduz padding */
+        font-size: 0.95rem; /* Reduz fonte */
+        text-align: center; /* Centraliza o texto do menu item */
+        flex-grow: 1; /* Permite que ocupem espaço igualmente */
+    }
+    .sidebar-bottom {
+        display: none; /* Esconde a parte de baixo da sidebar (logout) */
+    }
+    .main-content {
+        padding: 1.25rem; /* Reduz padding do conteúdo principal */
+        min-height: auto; /* Remove min-height fixo */
+        margin-top: 0; /* Garante que não haja margem superior extra */
+    }
+    .main-content h2 {
+        font-size: 2rem; /* Ajusta o título do dashboard */
+        margin-bottom: 1.25rem;
+    }
+    .metrics-grid,
+    .bottom-sections-grid,
+    .device-report-list {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 2 colunas se houver espaço */
+        gap: 1rem;
+    }
+    /* Ajustes para todas as seções */
+    .energy-control-section,
+    .reports-section,
+    .settings-section,
+    .energy-realtime-card {
+        padding: 0.9375rem; /* Reduz padding */
+        border-radius: 0.625rem; /* Diminui o border-radius */
+        margin-bottom: 1.25rem; /* Reduz margem inferior */
+        max-width: 100%; /* Garante que ocupem a largura total */
+    }
+    .chart-area-main,
+    .chart-card-main {
+        max-width: 100%; /* Ocupa a largura total */
+        padding: 12px;
+    }
+}
+
+/* Telas menores que 768px (celulares grandes) */
+@media screen and (max-width: 768px) {
+    .container {
+        margin: 1.875rem auto; /* Reduz margem superior */
+        padding: 1rem; /* Reduz padding */
+    }
+    .card {
+        max-width: 98vw;
+        padding: 1.5rem;
+    }
+    h2 {
+        font-size: 1.5rem; /* Diminui o tamanho do título principal */
+        margin-bottom: 1rem;
+    }
+    button, .link-button {
+        padding: 0.9rem 0;
+        font-size: 1em;
+    }
+    input {
+        padding: 0.8rem;
+        font-size: 0.95em;
+    }
+
+    /* Dashboard */
+    .mobile-menu-bar { /* Barra superior para o menu hambúrguer */
+        width: 100vw;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        background: #1a1a2e;
+        padding: 4px 8px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1100;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+        height: 44px; /* Altura da barra */
+    }
+
+    .hamburger-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 2px 6px;
+        border-radius: 6px;
+        outline: none;
+        height: 36px;
+        width: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hamburger-icon {
+        font-size: 1.7em;
+        color: #00bcd4;
+        line-height: 1;
+    }
+
+    .mobile-menu-box { /* Menu que desliza (off-canvas) */
+        position: fixed;
+        top: 44px; /* Abaixo da barra superior */
+        left: 0;
+        width: 220px; /* Largura do menu mobile */
+        background: #23243a;
+        box-shadow: 2px 0 16px rgba(0, 0, 0, 0.25);
+        border-radius: 0 10px 10px 0;
+        z-index: 1200;
+        display: flex;
+        flex-direction: column;
+        padding: 10px 0;
+        animation: slideInMenu 0.2s forwards; /* Animação de entrada */
+        /* display: none; /* Inicie com display none e use JS para toggle */
+    }
+
+    .mobile-menu-box.hidden {
+        animation: slideOutMenu 0.2s forwards;
+    }
+
+    /* Animações (adicione ao seu CSS) */
+    @keyframes slideInMenu {
+        from { transform: translateX(-100%); }
+        to { transform: translateX(0); }
+    }
+    @keyframes slideOutMenu {
+        from { transform: translateX(0); }
+        to { transform: translateX(-100%); }
+    }
+
+    .sidebar {
+        display: none; /* Esconde a sidebar padrão em mobile */
+    }
+    .main-content {
+        margin-top: 44px; /* Dá espaço para a barra superior */
+        padding: 1rem;
+        margin-left: 20px;
+        margin-right: 20px;
+        border-radius: 10px;
+
+    }
+    .metrics-grid,
+    .bottom-sections-grid,
+    .device-report-list {
+        grid-template-columns: 1fr; /* Uma coluna em telas muito pequenas */
+        gap: 0.8rem;
+    }
+    .metric-card {
+        padding: 0.8rem; /* Reduz padding */
+    }
+    .metric-card p {
+        font-size: 1.6rem; /* Ajusta a fonte dos valores */
+    }
+    .bottom-card {
+        min-height: 15rem; /* Altura mínima para não ficar muito pequeno */
+        padding: 0.8rem;
+    }
+    .consumption-by-type-card .chart-wrapper {
+        height: 14rem; /* Ajusta a altura do gráfico de donut */
+    }
+    .device-suggestion-list {
+        max-height: 10rem; /* Reduz max-height para lista de sugestões */
+    }
+    .device-feedback-message {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+    /* Ajuste para os botões em telas menores na seção de controle de energia */
+    .add-device-btn,
+    .refresh-devices-btn {
+        width: 100%; /* Ocupa a largura total */
+        margin-right: 0; /* Remove margem direita */
+        margin-bottom: 0.625rem; /* Adiciona margem inferior para espaçamento */
+        display: block; /* Garante que cada botão ocupe sua própria linha */
+        margin-left: 0; /* Alinha à esquerda em blocos */
+    }
+    .add-device-btn:last-child,
+    .refresh-devices-btn:last-child {
+        margin-bottom: 0; /* Remove margem do último botão */
+    }
+    .device-control-item {
+        flex-direction: column; /* Empilha itens do controle de dispositivos */
+        align-items: stretch; /* Estica para preencher a largura */
+        gap: 0.5rem;
+    }
+    .device-control-name,
+    .device-status-indicator,
+    .device-toggle-button {
+        width: 100%;
+        text-align: center;
+        margin: 0;
+    }
+    .device-status-indicator {
+        margin-top: 0.3rem;
+    }
+    .device-toggle-button {
+        margin-top: 0.6rem;
+    }
+    .energy-realtime-card {
+        min-height: 18rem; /* Reduz altura mínima do card de tempo real */
+    }
+    .realtime-power-value {
+        font-size: 3.5rem; /* Diminui fonte do valor de potência */
+    }
+    .realtime-power-label {
+        font-size: 1.2rem;
+    }
+    .realtime-secondary-data {
+        grid-template-columns: 1fr; /* Uma coluna para dados secundários */
+        width: 90%;
+    }
+}
+
+/* Telas muito pequenas (celulares menores) */
+@media screen and (max-width: 480px) {
+    html {
+        font-size: 13px; /* Base font-size menor ainda */
+    }
+    .container,
+    .add-device-page-container {
+        padding: 0.5rem;
+        margin: 0.5rem auto;
+    }
+    .card,
+    .add-device-card {
+        padding: 1rem;
+        border-radius: 8px;
+    }
+    h2 {
+        font-size: 1.2rem;
+    }
+    input, button, .link-button {
+        font-size: 0.9em;
+        padding: 0.7rem;
+    }
+    .main-content {
+        padding: 0.5rem;
+        margin-left: 20px;
+        margin-right: 20px;
+        border-radius: 10px;
+    }
+    .metrics-grid,
+    .bottom-sections-grid,
+    .device-report-list {
+        gap: 0.5rem;
+    }
+    .metric-card {
+        padding: 0.6rem;
+    }
+    .metric-card p {
+        font-size: 1.4rem;
+    }
+    .bottom-card {
+        min-height: 12rem;
+        padding: 0.6rem;
+    }
+    .consumption-by-type-card .chart-wrapper {
+        height: 10rem;
+    }
+    .device-suggestion-list li {
+        font-size: 0.8em;
+        padding: 0.4rem 0.6rem;
+    }
+    .energy-control-section,
+    .reports-section,
+    .settings-section,
+    .energy-realtime-card {
+        padding: 0.6rem;
+        margin-bottom: 0.8rem;
+    }
+    .realtime-power-value {
+        font-size: 3rem;
+    }
+    .realtime-power-label {
+        font-size: 1rem;
+    }
+}
+
+/* CELULARES - até 699px */
+@media screen and (max-width: 699px) {
+    .main-content {
+        margin-left: 20px;
+        margin-right: 20px;
+        border-radius: 10px;
+    }
+}
+
+/* TABLETS - 700px a 849px */
+@media screen and (min-width: 700px) and (max-width: 849px) {
+    .main-content {
+        margin-left: 40px;
+        margin-right: 20px;
+        margin-top: -1px;
+        border-radius: 10px;
+    }
+}
+
+/* NOTEBOOKS PEQUENOS - 850px a 1279px */
+@media screen and (min-width: 850px) and (max-width: 1279px) {
+    .main-content {
+        margin-left: 160px;
+        margin-right: 20px;
+        border-radius: 10px;
+    }
+}
+
+/* tablet- 850px a 1279px */
+@media screen and (min-width: 880px) and (max-width: 1000px)  {
+    .main-content {
+        margin-left: 40px;
+        margin-right: 20px;
+        border-radius: 10px;
+    }
+}
+
+/* NOTEBOOK MODERNO - 1280px a 1919px */
+@media screen and (min-width: 1280px) and (max-width: 1919px) {
+    .main-content {
+        margin-left: 265px;
+        margin-right: 20px;
+        border-radius: 10px;
+    }
+}
+
+/* TELAS GRANDES (FULL HD e superiores) */
+@media screen and (min-width: 1600px) {
+    .main-content {
+        margin-left: 480px;
+        margin-right: 20px;
+        border-radius: 10px;
+    }
+}
+
+/* TABLETS - 700px a 849px */
+@media screen and (min-width: 700px) and (max-width: 799px) {
+    .sidebar {
+        margin-top: -25px;
+    }
+}
+
+/* NOTEBOOK MODERNO - 1280px a 1919px */
+@media screen and (min-width: 1280px) and (max-width: 1919px) {
+    .energy-control-section {
+        margin-right: 80px;
+        margin-left: 80px;
+    }
+}
+
+/* TELAS GRANDES (FULL HD e superiores) */
+@media screen and (min-width: 1600px) {
+    .energy-control-section {
+        margin-right: 80px;
+        margin-left: 80px;
+    }
+}
+
+@media (min-width: 300px) {
+    .energy-realtime-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 4rem;
+        overflow-x: auto;
+        display: block;
+    }
+
+    .energy-realtime-table td {
+        padding: 0.3rem 2.4rem;
+        border-bottom: 3px solid #5a5a8e;
+        color: #00bcd4;
+    }
+}
+
+@media (min-width: 760px) {
+    .energy-realtime-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 2rem;
+        overflow-x: auto;
+        display: block;
+    }
+
+    .energy-realtime-table td {
+        padding: 0.5rem 6rem;
+        border-bottom: 3px solid #5a5a8e;
+        color: #00bcd4;
+    }
+}
+
+/* Modal Overlay e Card */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-card {
+    background: #23243a;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
+    padding: 32px 24px 24px 24px;
+    min-width: 320px;
+    max-width: 95vw;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal-card h3 {
+    margin-bottom: 1.25rem;
+    color: #00bcd4;
+}
+
+.button-group {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 1rem;
+    justify-content: center;
+    flex-wrap: wrap; /* Adicionado para responsividade */
+}
+
+.cancel-button {
+    background: #888 !important;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 18px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.cancel-button:hover {
+    background: #555 !important;
+}
+
+/* Botões menores para modal de edição de conta */
+.small-buttons {
+    gap: 8px;
+    justify-content: center;
+}
+
+.small-btn {
+    font-size: 0.95em !important;
+    padding: 7px 16px !important;
+    min-width: 90px;
+    border-radius: 6px;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Ajuste para inputs e botões em telas pequenas */
+input,
+button,
+select,
+textarea {
+    max-width: 100%; /* Use 100% em vez de 100vw para evitar estouro com padding */
+    box-sizing: border-box;
+}
+
+/* Ajuste para garantir que nada suma ou quebre */
+* {
+    min-width: 0; /* Permite que os elementos encolham para caber no espaço */
+    min-height: 0;
+    box-sizing: border-box;
+    word-break: break-word; /* Garante que qualquer texto longo seja quebrado */
+    overflow-wrap: anywhere; /* Outra propriedade para quebra de texto */
+}
