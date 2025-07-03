@@ -3,11 +3,6 @@
 
 /* Estilos Globais e Reset */
 
-html {
-    /* Base font-size para REM, ajusta o tamanho da fonte em geral */
-    font-size: clamp(14px, 1.2vw, 18px);
-}
-
 body {
     margin: 0;
     padding: 0;
@@ -16,31 +11,17 @@ body {
     /* Fundo escuro gradient */
     color: #E0E0E0;
     /* Cor do texto padrão para o tema escuro */
+    display: flex;
+    /* Para centralizar o conteúdo do login/criar conta ou o dashboard */
+    justify-content: center;
+    align-items: flex-start;
+    /* Alinha no topo para o dashboard (irá se ajustar para o centro no login) */
     min-height: 100vh;
     overflow-x: hidden;
-    /* Evita scroll horizontal em todo o corpo */
+    /* Evita scroll horizontal */
     box-sizing: border-box;
     font-size: clamp(1rem, 2vw, 1.25rem);
     /* Base font-size para REM */
-    display: flex;
-    /* Para o layout de login/criar conta */
-    justify-content: center;
-    align-items: flex-start;
-    /* Alinha no topo para o dashboard por padrão */
-    /* NOVO: Padding no body para compensar a barra de navegação fixa no topo */
-    padding-top: 50px;
-    /* Altura da barra de navegação padrão */
-}
-
-
-/* Garante que nada vaze da tela */
-
-html,
-body,
-#root {
-    width: 100vw;
-    overflow-x: hidden;
-    box-sizing: border-box;
 }
 
 
@@ -67,7 +48,6 @@ body,
     padding: 32px 24px 24px 24px;
     width: 100%;
     max-width: clamp(320px, 90vw, 1200px);
-    /* Usando clamp para max-width */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -122,8 +102,32 @@ button:hover,
     color: #ffeb3b;
 }
 
+@media (max-width: 600px) {
+    .card {
+        max-width: 99vw;
+        padding: 2vw 2vw 2vw 2vw;
+        border-radius: 10px;
+    }
+    .container {
+        padding: 0;
+    }
+    input,
+    button,
+    .link-button {
+        font-size: 1em;
+        padding: 10px 0;
+    }
+}
 
-/* Ajustes de layout para h2, form-group, label e input */
+@media (max-width: 400px) {
+    .card {
+        padding: 1vw;
+        border-radius: 6px;
+    }
+    .logo-icon {
+        font-size: 2em;
+    }
+}
 
 h2 {
     color: #FFF;
@@ -263,6 +267,7 @@ a.link-button {
 /* Container Principal do Dashboard (Flexbox para sidebar e main-content) */
 
 .container.dashboard-container {
+    /* Usa ambas as classes para especificidade */
     background: none;
     /* Remove background do container original */
     box-shadow: none;
@@ -276,8 +281,6 @@ a.link-button {
     /* Ocupa toda a altura */
     display: flex;
     /* Habilita flexbox para layout sidebar/main */
-    flex-direction: column;
-    /* Conteúdo em coluna, já que a nav está no topo */
     justify-content: flex-start;
     /* Alinha o conteúdo à esquerda */
     align-items: flex-start;
@@ -285,104 +288,116 @@ a.link-button {
 }
 
 
-/* Sidebar (ESCONDIDA - SUBSTITUÍDA PELA BARRA TOP) */
+/* Sidebar */
 
 .sidebar {
-    display: none;
-    /* ESCONDIDA PERMANENTEMENTE */
-}
-
-.sidebar .logo-icon-sidebar,
-.menu-item,
-.sidebar-bottom,
-.logout-link-sidebar {
-    display: none;
-    /* Garante que nenhum elemento da sidebar apareça */
-}
-
-
-/* NOVO: Barra de Navegação Superior Fixa para as Seções */
-
-.top-navigation-bar {
-    position: fixed;
+    width: 250px;
+    /* Largura fixa da sidebar em telas maiores */
+    background-color: #1a1a2e;
+    /* Cor escura para a sidebar */
+    padding: 1.25rem 0;
+    /* Convertido para REM */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.4);
+    position: sticky;
+    /* Sidebar fixa na rolagem */
     top: 0;
-    left: 0;
+    height: 100vh !important;
+    /* Ocupa toda a altura da viewport */
+    justify-content: space-between !important;
+    /* Para o botão de sair ir para o final */
+    z-index: 1000;
+    /* Garante que a sidebar fique acima de outros elementos */
+}
+
+.logo-icon-sidebar {
+    font-size: 3rem;
+    /* Convertido para REM */
+    color: #00bcd4;
+    /* Cor vibrante para o ícone */
+    margin-bottom: 1.875rem;
+    /* Convertido para REM */
+    margin-top: 0.625rem;
+    /* Convertido para REM */
+}
+
+.menu-item {
     width: 100%;
-    background: #1a1a2e;
-    /* Cor escura para a barra de navegação */
-    color: #fff;
-    z-index: 1100;
-    /* Garante que a barra fique acima de tudo */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
-    display: flex;
-    justify-content: space-around;
-    /* Distribui os itens uniformemente */
-    align-items: center;
-    height: 50px;
-    /* Altura fixa da barra */
-    padding: 0 10px;
-    /* Espaçamento interno */
-    box-sizing: border-box;
-}
-
-.top-nav-link {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex: 1;
-    /* Faz com que cada link ocupe o mesmo espaço disponível */
-    color: #e0e0e0;
+    padding: 0.9375rem 1.5625rem;
+    /* Convertido para REM */
+    color: #E0E0E0;
     text-decoration: none;
-    font-size: 1em;
-    font-weight: bold;
-    padding: 10px 5px;
-    /* Ajusta padding para caber mais itens */
-    border-radius: 5px;
-    transition: background-color 0.2s ease, color 0.2s ease;
-    text-align: center;
-    white-space: nowrap;
-    /* Evita que o texto do link quebre linha */
-    overflow: hidden;
-    /* Oculta o que transborda se o texto for muito longo */
-    text-overflow: ellipsis;
-    /* Adiciona reticências se o texto for cortado */
-    height: 100%;
-    /* Garante que o link ocupe a altura total da barra para clique */
+    font-size: 1.1rem;
+    /* Convertido para REM */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: left;
+    /* Alinhar texto à esquerda */
+    box-sizing: border-box;
+    /* Incluir padding na largura */
 }
 
-.top-nav-link:hover {
+.menu-item:hover {
     background-color: #2b2b4d;
-    color: #fff;
+    /* Cor mais clara no hover */
 }
 
-.top-nav-link.active {
+.menu-item.active {
     background-color: #00bcd4;
+    /* Cor de destaque para o item ativo */
     color: #1a1a2e;
     /* Texto escuro no item ativo para contraste */
+    font-weight: bold;
+}
+
+.sidebar-bottom {
+    width: 100%;
+    padding: 1.25rem 0;
+    /* Convertido para REM */
+    border-top: 1px solid #3a3a3a;
+    text-align: center;
+    margin-bottom: 24px;
+    /* Garante espaçamento do botão Sair ao fundo */
+}
+
+.logout-link-sidebar {
+    background: none;
+    /* Reset do estilo de botão */
+    border: none;
+    color: #E0E0E0;
+    cursor: pointer;
+    font-size: 1.1rem;
+    /* Convertido para REM */
+    padding: 0.9375rem 1.5625rem;
+    /* Convertido para REM */
+    width: 100%;
+    text-align: left;
+    transition: background-color 0.3s ease;
+}
+
+.logout-link-sidebar:hover {
+    background-color: #5a1010;
+    /* Cor de hover mais forte para sair */
 }
 
 
 /* Conteúdo Principal do Dashboard */
 
 .main-content {
-    flex: 1;
+    flex-grow: 1;
     /* Ocupa o restante do espaço disponível */
-    padding: 32px 32px 32px 32px;
+    padding: 1.875rem;
+    /* Convertido para REM */
     background-color: #2a2a4e;
-    /* Fundo do conteúdo principal */
-    min-height: calc(100vh - 50px);
-    /* Ocupa a altura restante da viewport, descontando a nav bar */
+    /* Fundo do conteúdo principal, um pouco mais claro que a sidebar */
+    min-height: 100vh;
+    /* Garante que o conteúdo principal ocupe toda a altura */
     overflow-y: auto;
     /* Permite rolagem se o conteúdo for muito longo */
     box-sizing: border-box;
     /* Incluir padding na largura e altura */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 0;
-    /* Permite que o flex item encolha */
-    width: 100%;
-    /* Garante que ocupe a largura total */
 }
 
 .main-content h2 {
@@ -405,8 +420,6 @@ a.link-button {
     gap: clamp(12px, 2vw, 32px);
     margin-bottom: 1.875rem;
     /* Convertido para REM */
-    width: 100%;
-    /* Garante que ocupe a largura disponível */
 }
 
 .metric-card {
@@ -418,12 +431,6 @@ a.link-button {
     text-align: center;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     border: 1px solid #4a4a7e;
-    flex: 1 1 180px;
-    /* Flexbox fallback */
-    max-width: 220px;
-    /* Limite de largura para cartões de métrica */
-    margin: 0 auto;
-    /* Centraliza cartões no grid */
 }
 
 .metric-card h3 {
@@ -453,31 +460,37 @@ a.link-button {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 24px auto;
+    margin: 0 auto;
     width: 100%;
     min-width: 0;
-    max-width: 800px;
-    /* Aumentado max-width para o gráfico principal */
+    max-width: 100vw;
     box-sizing: border-box;
-    padding: 18px 12px 12px 12px;
-    background: #23272f;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    overflow-x: auto;
-    /* Adicionado para permitir rolagem se o gráfico for muito largo */
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
 .chart-card-main canvas {
     display: block;
     margin: 0 auto;
     width: 100% !important;
-    /* Força 100% de largura do pai */
     max-width: 100% !important;
     min-width: 0;
-    min-height: 180px;
-    /* Ajuste min-height */
-    max-height: 300px;
-    /* Ajuste max-height */
+    min-height: 100px;
+    max-height: 220px;
+}
+
+@media (max-width: 600px) {
+    .chart-area-main,
+    .chart-card-main {
+        min-height: 120px;
+        max-height: 180px;
+        height: auto;
+        padding: 0 !important;
+    }
+    .chart-card-main canvas {
+        min-height: 80px;
+        max-height: 120px;
+    }
 }
 
 
@@ -494,8 +507,6 @@ a.link-button {
     /* Convertido para REM */
     width: 100%;
     /* Ocupa a largura total para centralizar */
-    flex-wrap: wrap;
-    /* Permite que os botões quebrem linha */
 }
 
 .view-button,
@@ -543,8 +554,6 @@ a.link-button {
     gap: clamp(12px, 2vw, 32px);
     margin-top: 1.875rem;
     /* Convertido para REM */
-    width: 100%;
-    /* Ocupa a largura total */
 }
 
 .bottom-card {
@@ -564,14 +573,10 @@ a.link-button {
     align-items: center;
     /* Centraliza horizontalmente */
     text-align: center;
-    height: auto;
-    /* Altura automática para se adaptar ao conteúdo */
-    min-height: 25rem;
-    /* Convertido para REM, antes 350px. Altura mínima */
+    height: 25rem;
+    /* Convertido para REM, antes 400px. Pode ser ajustado via media query. */
     box-sizing: border-box;
     /* Garante que padding e border sejam incluídos na altura */
-    min-width: 0;
-    /* Permite que o flex item encolha */
 }
 
 .bottom-card h3 {
@@ -647,11 +652,6 @@ a.link-button {
     box-shadow: 0 0.9375rem 0.9375rem rgba(0, 0, 0, 0.3);
     /* Convertido para REM */
     border: 2px solid #4a4a7e;
-    width: 100%;
-    /* Ocupa a largura total */
-    max-width: 900px;
-    margin: 0 auto 24px auto;
-    /* Centraliza e adiciona margem inferior */
 }
 
 .energy-control-section h2 {
@@ -673,6 +673,9 @@ a.link-button {
     opacity: 0.9;
 }
 
+
+/* --- Início da Parte 2 (com adaptações para responsividade) --- */
+
 .device-control-list {
     display: flex;
     flex-direction: column;
@@ -689,10 +692,6 @@ a.link-button {
     justify-content: space-between;
     align-items: center;
     border: 1px solid #5a5a8e;
-    flex-wrap: wrap;
-    /* Permite que os itens quebrem linha */
-    gap: 10px;
-    /* Espaçamento entre os itens internos */
 }
 
 .device-control-name {
@@ -702,8 +701,6 @@ a.link-button {
     flex-grow: 1;
     /* Permite que o nome ocupe espaço */
     text-align: left;
-    min-width: 120px;
-    /* Largura mínima para o nome */
 }
 
 .device-status-indicator {
@@ -772,25 +769,11 @@ a.link-button {
 }
 
 
-/* Container para os botões "Adicionar dispositivo" e "Atualizar" */
-
-.device-action-buttons {
-    display: flex;
-    justify-content: center;
-    /* Centraliza os botões */
-    flex-wrap: wrap;
-    /* Permite que os botões quebrem linha em telas menores */
-    gap: 10px;
-    /* Espaçamento entre os botões */
-    margin-top: 1.5625rem;
-    /* Convertido para REM */
-}
-
-
 /* NOVO: Estilo para o botão de adicionar dispositivo Tasmota e atualizar lista */
 
 .add-device-btn,
 .refresh-devices-btn {
+    /* Combinado os estilos */
     background-color: #00bcd4;
     /* Cor principal de ação */
     color: white;
@@ -802,12 +785,22 @@ a.link-button {
     /* Convertido para REM */
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.1s ease;
+    margin-top: 1.5625rem;
+    /* Convertido para REM */
     width: auto;
     /* Adapta a largura ao conteúdo */
     display: inline-block;
     /* Permite que fiquem lado a lado */
-    margin: 0;
-    /* Remove margens extras */
+    margin-left: auto;
+    /* Alinha à direita se estiver sozinho */
+    margin-right: 0.625rem;
+    /* Espaço entre eles se houver mais de um, convertido para REM */
+}
+
+.add-device-btn:last-child,
+.refresh-devices-btn:last-child {
+    margin-right: 0;
+    /* Remove margem do último botão */
 }
 
 .add-device-btn:hover,
@@ -832,11 +825,6 @@ a.link-button {
     box-shadow: 0 0.25rem 0.9375rem rgba(0, 0, 0, 0.3);
     /* Convertido para REM */
     border: 1px solid #4a4a7e;
-    width: 100%;
-    /* Ocupa a largura total */
-    max-width: 900px;
-    margin: 0 auto 24px auto;
-    /* Centraliza e adiciona margem inferior */
 }
 
 .reports-section h2 {
@@ -918,11 +906,6 @@ a.link-button {
     /* Para posicionamento absoluto de elementos internos */
     overflow: hidden;
     /* Garante que nada transborde */
-    width: 100%;
-    /* Ocupa a largura total */
-    max-width: 900px;
-    margin: 0 auto 24px auto;
-    /* Centraliza e adiciona margem inferior */
 }
 
 .energy-realtime-card h3 {
@@ -980,8 +963,6 @@ a.link-button {
     /* Ajuste a largura conforme necessário */
     max-width: 25rem;
     /* Convertido para REM, antes 400px. Limita a largura máxima */
-    overflow-x: auto;
-    /* Permite rolagem horizontal se o conteúdo for muito largo */
 }
 
 .realtime-data-item {
@@ -998,10 +979,8 @@ a.link-button {
     color: #B0B0B0;
     font-size: 0.9rem;
     /* Convertido para REM */
-    white-space: normal;
-    /* PERMITE QUEBRA DE LINHA PARA EVITAR CORTE */
-    word-break: break-word;
-    /* Garante que palavras longas sejam quebradas */
+    white-space: nowrap;
+    /* Evita quebra de linha */
 }
 
 .realtime-data-value {
@@ -1019,10 +998,6 @@ a.link-button {
     border-collapse: collapse;
     margin-top: 1.875rem;
     /* Convertido para REM */
-    overflow-x: auto;
-    /* Permite rolagem horizontal para tabelas */
-    display: block;
-    /* Necessário para overflow-x em tabelas */
 }
 
 .energy-realtime-table td {
@@ -1043,8 +1018,6 @@ a.link-button {
     /* Convertido minmax para REM, antes 280px */
     gap: 1.25rem;
     /* Convertido para REM */
-    width: 100%;
-    /* Ocupa a largura total */
 }
 
 .device-report-item {
@@ -1055,11 +1028,6 @@ a.link-button {
     box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.2);
     /* Convertido para REM */
     border: 1px solid #5a5a8e;
-    min-width: 0;
-    /* Permite encolher */
-    word-break: break-word;
-    /* Garante que texto longo quebre */
-    box-sizing: border-box;
 }
 
 .device-report-item h4 {
@@ -1118,11 +1086,6 @@ a.link-button {
     box-shadow: 0 0.25rem 0.9375rem rgba(0, 0, 0, 0.3);
     /* Convertido para REM */
     border: 1px solid #4a4a7e;
-    width: 100%;
-    /* Ocupa a largura total */
-    max-width: 900px;
-    margin: 0 auto 24px auto;
-    /* Centraliza e adiciona margem inferior */
 }
 
 .settings-section h2 {
@@ -1192,6 +1155,7 @@ a.link-button {
 /* NOVO: Estilos para a seção de Gerenciamento de Dispositivos (Tasmota) */
 
 .tasmota-settings-card {
+    /* Renomeado de .ewelink-settings-card */
     background-color: #4a4a7e;
     padding: 1.25rem;
     /* Convertido para REM */
@@ -1199,6 +1163,7 @@ a.link-button {
     box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
     /* Convertido para REM */
     margin-top: 1.25rem;
+    /* Convertido para REM */
 }
 
 .tasmota-settings-card h3 {
@@ -1257,205 +1222,253 @@ a.link-button {
 /* --- Media Queries para Responsividade --- */
 
 
-/* Ajuste para telas entre 1024px e 1200px (desktop compacto/tablets grandes) */
+/* Telas menores que 768px (tablets em modo retrato, celulares maiores) */
 
-@media screen and (max-width: 1200px) {
-    /* Não há sidebar para ajustar aqui, pois ela foi removida */
-    .main-content {
-        padding: 24px;
-        /* Reduz o padding do conteúdo principal */
-    }
-    .metrics-grid {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        /* Permite cards menores */
-    }
-    .bottom-sections-grid {
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    }
-}
-
-
-/* Telas menores que 900px (tablets em modo retrato) */
-
-@media screen and (max-width: 900px) {
-    /* Ajustes para a barra de navegação superior em telas menores */
-    .top-navigation-bar {
-        height: auto;
-        /* Altura automática para o menu em coluna */
-        flex-direction: column;
-        /* Botões em coluna */
-        padding: 5px;
-        align-items: stretch;
-        /* Estica os botões para preencher a largura */
-    }
-    .top-nav-link {
-        padding: 10px 5px;
-        /* Ajusta padding para mobile */
-        width: 100%;
-        margin-bottom: 5px;
-        /* Espaço entre os botões empilhados */
-        border-radius: 0;
-        /* Remove border-radius para visualização empilhada */
-    }
-    /* Ajusta o padding do body para a nova altura da barra */
+@media screen and (max-width: 768px) {
     body {
-        padding-top: 250px;
-        /* Aprox. 5 links * 50px (altura do link + margem) + altura da barra */
-        /* Isso é uma estimativa. Se o número de links mudar, ajuste este valor. */
+        /* Ajusta o alinhamento para o dashboard em telas menores */
+        align-items: flex-start;
+    }
+    .container {
+        /* Container de login/cadastro */
+        margin: 3.125rem auto;
+        /* Reduz margem superior para celulares, convertido para REM */
+        padding: 1.875rem;
+        /* Reduz padding, convertido para REM */
+    }
+    h2 {
+        font-size: 1.5rem;
+        /* Diminui o tamanho do título principal */
+        margin-bottom: 1.5rem;
+    }
+    button {
+        padding: 1rem;
+        /* Reduz padding do botão principal */
+        font-size: 1.1rem;
+        /* Reduz fonte */
+    }
+    .link-button {
+        padding: 0.8rem;
+        /* Reduz padding do botão secundário */
+        font-size: 1rem;
+        /* Reduz fonte */
+    }
+    /* Dashboard */
+    .container.dashboard-container {
+        flex-direction: column;
+        /* Coloca a sidebar acima do conteúdo principal */
+    }
+    .sidebar {
+        width: 100%;
+        /* Sidebar ocupa toda a largura */
+        height: auto;
+        /* Altura automática para a sidebar */
+        position: relative;
+        /* Remove sticky em telas pequenas se preferir, ou ajuste */
+        padding: 0.9375rem 0;
+        /* Reduz padding, convertido para REM */
+        box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.4);
+        /* Convertido para REM */
+        flex-direction: row;
+        /* Itens do menu em linha */
+        flex-wrap: wrap;
+        /* Permite quebrar linha */
+        justify-content: center;
+        /* Centraliza itens */
+        gap: 0.625rem;
+        /* Espaço entre itens, convertido para REM */
+    }
+    .sidebar .logo-icon-sidebar {
+        display: none;
+        /* Esconde o logo grande em telas pequenas para economizar espaço */
+    }
+    .menu-item {
+        width: auto;
+        /* Menu items se ajustam ao conteúdo */
+        padding: 0.625rem 0.9375rem;
+        /* Reduz padding, convertido para REM */
+        font-size: 0.95rem;
+        /* Reduz fonte */
+        text-align: center;
+        /* Centraliza o texto do menu item */
+        flex-grow: 1;
+        /* Permite que ocupem espaço igualmente */
+    }
+    .sidebar-bottom {
+        display: none;
+        /* Esconde a parte de baixo da sidebar (logout) em telas menores */
+    }
+    .logout-link-sidebar {
+        display: block;
+        /* Garante que o botão de logout esteja visível, pode ser movido para o topo do menu principal ou um botão "..." */
+        width: 100%;
+        /* Ocupa a largura total */
+        text-align: center;
+        /* Centraliza o texto */
+        margin-top: 1.25rem;
+        /* Adiciona margem, convertido para REM */
+        padding: 0.9375rem;
+        /* Reduz padding, convertido para REM */
     }
     .main-content {
         padding: 1.25rem;
-        /* Reduz padding do conteúdo principal */
+        /* Reduz padding do conteúdo principal, convertido para REM */
         min-height: auto;
         /* Remove min-height fixo */
-        margin-top: 0;
-        /* Garante que não haja margem superior extra */
     }
     .main-content h2 {
         font-size: 2rem;
         /* Ajusta o título do dashboard */
         margin-bottom: 1.25rem;
+        /* Convertido para REM */
     }
-    .metrics-grid,
-    .bottom-sections-grid,
-    .device-report-list {
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        /* 2 colunas se houver espaço */
-        gap: 1rem;
+    .metrics-grid {
+        grid-template-columns: 1fr;
+        /* Uma coluna em telas muito pequenas */
     }
-    /* Ajustes para todas as seções */
-    .energy-control-section,
-    .reports-section,
-    .settings-section,
-    .energy-realtime-card {
+    .metric-card {
         padding: 0.9375rem;
-        /* Reduz padding */
-        border-radius: 0.625rem;
-        /* Diminui o border-radius */
-        margin-bottom: 1.25rem;
-        /* Reduz margem inferior */
-        max-width: 100%;
-        /* Garante que ocupem a largura total */
+        /* Reduz padding do card de métrica, convertido para REM */
+    }
+    .metric-card p {
+        font-size: 1.8rem;
+        /* Ajusta a fonte dos valores */
     }
     .chart-area-main,
     .chart-card-main {
-        max-width: 100%;
-        /* Ocupa a largura total */
-        padding: 12px;
-    }
-}
-
-
-/* Telas menores que 768px (celulares grandes) */
-
-@media screen and (max-width: 768px) {
-    body {
-        /* Padding superior dinâmico, baseado na altura dos links na barra de navegação */
-        padding-top: 250px;
-        /* Ajuste se o número de links ou padding dos links mudar */
-    }
-    .container {
-        margin: 0;
-        /* Remove margem do container principal */
-        padding: 0;
-        /* Remove padding do container principal */
-    }
-    .card {
-        max-width: 98vw;
-        padding: 1.5rem;
-        margin: 1rem auto;
-        /* Centraliza cards de login/cadastro */
-    }
-    h2 {
-        font-size: 1.5rem;
-        /* Diminui o tamanho do título principal */
-        margin-bottom: 1rem;
-    }
-    button,
-    .link-button {
-        padding: 0.9rem 0;
-        font-size: 1em;
-    }
-    input {
-        padding: 0.8rem;
-        font-size: 0.95em;
-    }
-    /* Ajustes para a barra de navegação em telas menores */
-    .top-navigation-bar {
+        min-height: 120px;
+        max-height: 180px;
         height: auto;
-        /* Altura automática */
-        flex-direction: column;
-        /* Força os links a ficarem em coluna */
-        padding: 5px;
+        padding: 0 !important;
     }
-    .top-nav-link {
-        font-size: 0.9em;
-        padding: 8px 5px;
-        /* Reduz padding ainda mais */
-        margin-bottom: 5px;
+    .chart-card-main canvas {
+        min-height: 80px;
+        max-height: 120px;
     }
-    .main-content {
-        margin-top: 0;
-        /* Removido, o padding no body já compensa o header fixo */
-        padding: 1rem;
-        min-height: auto;
-    }
-    .main-content h2 {
-        font-size: 1.8rem;
-        /* Ajusta o título do dashboard */
-        margin-bottom: 1rem;
-    }
-    .metrics-grid,
-    .bottom-sections-grid,
-    .device-report-list {
+    .bottom-sections-grid {
         grid-template-columns: 1fr;
-        /* Uma coluna em telas muito pequenas */
-        gap: 0.8rem;
-    }
-    .metric-card {
-        padding: 0.8rem;
-        /* Reduz padding */
-    }
-    .metric-card p {
-        font-size: 1.6rem;
-        /* Ajusta a fonte dos valores */
+        /* Uma coluna para os cards inferiores */
     }
     .bottom-card {
-        min-height: 15rem;
-        /* Altura mínima para não ficar muito pequeno */
-        padding: 0.8rem;
+        height: auto;
+        /* Altura automática para se adaptar ao conteúdo */
+        min-height: 18.75rem;
+        /* Altura mínima para não ficar muito pequeno, convertido para REM */
+        padding: 0.9375rem;
+        /* Convertido para REM */
     }
     .consumption-by-type-card .chart-wrapper {
-        height: 14rem;
-        /* Ajusta a altura do gráfico de donut */
+        height: 15.625rem;
+        /* Ajusta a altura do gráfico de donut, convertido para REM */
     }
     .device-suggestion-list {
-        max-height: 10rem;
-        /* Reduz max-height para lista de sugestões */
+        max-height: 12.5rem;
+        /* Reduz max-height para lista de sugestões, convertido para REM */
+    }
+    .energy-control-section {
+        padding: 0.9375rem;
+        /* Convertido para REM */
+        border-radius: 0.625rem;
+        /* Diminui o border-radius, convertido para REM */
     }
     .device-feedback-message {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.85rem;
+        padding: 0.5rem 0.9375rem;
+        /* Reduz padding, convertido para REM */
+        font-size: 0.9rem;
     }
     /* Ajuste para os botões em telas menores na seção de controle de energia */
-    .device-action-buttons {
-        flex-direction: column;
-        /* Empilha os botões de ação em mobile */
-        gap: 0.625rem;
-    }
     .add-device-btn,
     .refresh-devices-btn {
         width: 100%;
         /* Ocupa a largura total */
-        margin: 0;
-        /* Remove margens para empilhamento */
+        margin-right: 0;
+        /* Remove margem direita */
+        margin-bottom: 0.625rem;
+        /* Adiciona margem inferior para espaçamento, convertido para REM */
+        display: block;
+        /* Garante que cada botão ocupe sua própria linha */
+        margin-left: 0;
+        /* Alinha à esquerda em blocos */
+    }
+    .add-device-btn:last-child,
+    .refresh-devices-btn:last-child {
+        margin-bottom: 0;
+        /* Remove margem do último botão */
+    }
+}
+
+
+/* Telas muito pequenas (celulares) */
+
+@media screen and (max-width: 480px) {
+    body {
+        font-size: 14px;
+        /* Base font-size menor para telas muito pequenas */
+    }
+    .container {
+        padding: 1.25rem;
+        /* Convertido para REM */
+        margin: 1.875rem auto;
+        /* Convertido para REM */
+    }
+    h2 {
+        font-size: 1.3rem;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+    button {
+        padding: 0.9rem;
+        font-size: 1rem;
+    }
+    .link-button {
+        padding: 0.7rem;
+        font-size: 0.9rem;
+    }
+    .main-content h2 {
+        font-size: 1.8rem;
+    }
+    .metric-card p {
+        font-size: 1.5rem;
+    }
+    .chart-area-main,
+    .chart-card-main {
+        min-height: 120px;
+        max-height: 180px;
+        height: auto;
+        padding: 0 !important;
+    }
+    .view-button,
+    .active-view-button {
+        padding: 0.5rem 0.75rem;
+        /* Convertido para REM */
+        font-size: 0.8rem;
+    }
+    .bottom-card {
+        min-height: 15.625rem;
+        /* Altura mínima para cards inferiores, convertido para REM */
+    }
+    .consumption-by-type-card .chart-wrapper {
+        height: 11.25rem;
+        /* Ajusta a altura do gráfico de donut, convertido para REM */
+    }
+    .device-suggestion-list li {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+        /* Convertido para REM */
+    }
+    .device-feedback-message {
+        font-size: 0.85rem;
     }
     .device-control-item {
         flex-direction: column;
         /* Empilha itens do controle de dispositivos */
-        align-items: stretch;
-        /* Estica para preencher a largura */
-        gap: 0.5rem;
+        align-items: flex-start;
+        gap: 0.625rem;
+        /* Convertido para REM */
     }
     .device-control-name,
     .device-status-indicator,
@@ -1465,128 +1478,664 @@ a.link-button {
         margin: 0;
     }
     .device-status-indicator {
-        margin-top: 0.3rem;
+        margin-top: 0.3125rem;
+        /* Convertido para REM */
     }
     .device-toggle-button {
-        margin-top: 0.6rem;
-    }
-    .energy-realtime-card {
-        min-height: 18rem;
-        /* Reduz altura mínima do card de tempo real */
-    }
-    .realtime-power-value {
-        font-size: 3.5rem;
-        /* Diminui fonte do valor de potência */
-    }
-    .realtime-power-label {
-        font-size: 1.2rem;
-    }
-    .realtime-secondary-data {
-        grid-template-columns: 1fr;
-        /* Uma coluna para dados secundários */
-        width: 90%;
-    }
-    .energy-realtime-table {
-        font-size: 0.9rem;
-        /* Reduz fonte da tabela */
-    }
-    .energy-realtime-table td {
-        padding: 0.4rem 0.5rem;
-        /* Reduz padding da tabela */
-    }
-    .user-settings-card,
-    .tasmota-settings-card {
-        padding: 1rem;
-        /* Reduz padding */
-        margin-bottom: 1rem;
-    }
-    .change-password-button,
-    .edit-profile-button {
-        width: 100%;
-        /* Ocupa largura total */
-        margin-right: 0;
-        margin-bottom: 0.5rem;
-        display: block;
+        margin-top: 0.625rem;
+        /* Convertido para REM */
     }
 }
 
 
-/* Telas muito pequenas (celulares menores) */
+/* --- MELHORIAS DE RESPONSIVIDADE E GRÁFICO --- */
 
-@media screen and (max-width: 480px) {
-    html {
-        font-size: 13px;
-        /* Base font-size menor ainda */
+
+/* Ajuste para telas ultrawide (acima de 1600px) */
+
+@media screen and (min-width: 1600px) {
+    .main-content,
+    .container.dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
     }
-    /* Padding superior do body se a barra de navegação ficar muito grande em altura */
-    body {
-        padding-top: 250px;
-        /* Ajuste conforme a altura da barra de navegação empilhada */
+}
+
+
+/* Ajuste para telas entre 1200px e 1600px */
+
+@media screen and (max-width: 1600px) and (min-width: 1200px) {
+    .main-content,
+    .container.dashboard-container {
+        max-width: 1100px;
+        margin: 0 auto;
     }
-    .container,
-    .add-device-page-container {
-        padding: 0.5rem;
-        margin: 0.5rem auto;
-    }
-    .card,
-    .add-device-card {
-        padding: 1rem;
-        border-radius: 8px;
-    }
-    h2 {
-        font-size: 1.2rem;
-    }
-    input,
-    button,
-    .link-button {
-        font-size: 0.9em;
-        padding: 0.7rem;
-    }
-    .main-content {
-        padding: 0.5rem;
-    }
+}
+
+
+/* Ajuste para tablets (até 1024px) */
+
+@media screen and (max-width: 1024px) {
     .metrics-grid,
     .bottom-sections-grid,
     .device-report-list {
+        grid-template-columns: 1fr 1fr !important;
+    }
+    .sidebar {
+        width: 180px;
+        font-size: 0.95rem;
+    }
+    .main-content {
+        padding: 1rem;
+    }
+}
+
+
+/* Ajuste para celulares grandes (até 768px) */
+
+@media screen and (max-width: 768px) {
+    .metrics-grid,
+    .bottom-sections-grid,
+    .device-report-list {
+        grid-template-columns: 1fr !important;
+    }
+    .main-content,
+    .container.dashboard-container {
+        padding: 0.5rem !important;
+    }
+    .sidebar {
+        width: 100vw;
+        min-width: unset;
+        max-width: unset;
+        flex-direction: row;
+        flex-wrap: wrap;
+        height: auto;
+        position: static;
+        box-shadow: none;
+        padding: 0.5rem 0;
         gap: 0.5rem;
     }
+    .sidebar .logo-icon-sidebar {
+        display: none;
+    }
+    .menu-item {
+        font-size: 0.95rem;
+        padding: 0.5rem 0.5rem;
+        text-align: center;
+    }
+    .sidebar-bottom {
+        display: none;
+    }
+    .energy-realtime-card,
+    .bottom-card,
     .metric-card {
-        padding: 0.6rem;
+        max-width: 100vw;
+        min-width: 0;
+        width: 100%;
+        padding: 0.5rem;
     }
-    .metric-card p {
-        font-size: 1.4rem;
+    .chart-area-main,
+    .chart-card-main {
+        min-height: 120px;
+        max-height: 180px;
+        height: auto;
+        padding: 0 !important;
     }
-    .bottom-card {
-        min-height: 12rem;
-        padding: 0.6rem;
-    }
-    .consumption-by-type-card .chart-wrapper {
-        height: 10rem;
-    }
-    .device-suggestion-list {
-        max-height: 10rem;
-        /* Mantém o tamanho para não ficar muito curto */
-    }
-    .device-suggestion-list li {
-        font-size: 0.8em;
-        padding: 0.4rem 0.6rem;
-    }
-    .energy-control-section,
-    .reports-section,
-    .settings-section,
-    .energy-realtime-card {
-        padding: 0.6rem;
-        margin-bottom: 0.8rem;
-    }
-    .realtime-power-value {
-        font-size: 3rem;
-    }
-    .realtime-power-label {
-        font-size: 1rem;
+    .chart-card-main canvas {
+        min-height: 80px;
+        max-height: 120px;
     }
     .realtime-secondary-data {
-        width: 95%;
-        /* Ocupa um pouco mais de largura */
+        width: 100%;
+        max-width: 100vw;
+        gap: 0.5rem;
+    }
+}
+
+
+/* Ajuste para celulares pequenos (até 480px) */
+
+@media screen and (max-width: 480px) {
+    body {
+        font-size: 13px;
+    }
+    .container,
+    .main-content,
+    .energy-realtime-card,
+    .bottom-card,
+    .metric-card {
+        padding: 0.25rem !important;
+        margin: 0.25rem 0 !important;
+        max-width: 100vw;
+    }
+    .energy-realtime-table,
+    .realtime-secondary-data {
+        font-size: 0.9em;
+        width: 100vw;
+        overflow-x: auto;
+        display: block;
+    }
+    .energy-realtime-table td,
+    .realtime-data-item {
+        padding: 0.25rem 0.5rem;
+    }
+    .device-control-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+    .device-toggle-button,
+    .device-status-indicator,
+    .device-control-name {
+        width: 100%;
+        margin: 0;
+        text-align: center;
+    }
+    .chart-area-main,
+    .chart-card-main {
+        min-height: 120px;
+        max-height: 180px;
+        height: auto;
+        padding: 0 !important;
+    }
+    .chart-card-main canvas {
+        min-height: 80px;
+        max-height: 120px;
+    }
+    .metrics-grid,
+    .bottom-sections-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+}
+
+
+/* Garantir que tabelas e grids nunca estourem a tela */
+
+.energy-realtime-table,
+.realtime-secondary-data,
+.metrics-grid,
+.bottom-sections-grid,
+.device-report-list {
+    overflow-x: auto;
+    max-width: 100vw;
+    box-sizing: border-box;
+}
+
+
+/* Ajuste para evitar quebra de layout em cards e tabelas */
+
+.metric-card,
+.bottom-card,
+.energy-realtime-card,
+.device-report-item {
+    min-width: 0;
+    word-break: break-word;
+    box-sizing: border-box;
+}
+
+
+/* Ajuste para inputs e botões em telas pequenas */
+
+input,
+button,
+select,
+textarea {
+    max-width: 100vw;
+    box-sizing: border-box;
+}
+
+
+/* Ajuste para garantir que nada vaze da tela */
+
+html,
+body,
+#root {
+    width: 100vw;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+
+/* --- RESPONSIVIDADE DASHBOARD --- */
+
+.dashboard-container {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    width: 100vw;
+    box-sizing: border-box;
+}
+
+.sidebar {
+    min-width: 220px;
+    background: #181a23;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0 0 0;
+    position: relative;
+    z-index: 2;
+}
+
+.sidebar .logo-icon-sidebar {
+    font-size: 2.2em;
+    margin-bottom: 18px;
+}
+
+.menu-item {
+    width: 90%;
+    padding: 12px 0;
+    margin: 6px 0;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    background: none;
+    color: #fff;
+    font-size: 1.1em;
+    transition: background 0.2s, color 0.2s;
+}
+
+.menu-item.active,
+.menu-item:hover {
+    background: #00bcd4;
+    color: #181a23;
+}
+
+.logout-link-sidebar {
+    background: #f44336;
+    color: #fff;
+    margin-top: 24px;
+}
+
+.sidebar-bottom {
+    margin-top: auto;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 24px;
+}
+
+.main-content {
+    flex: 1;
+    padding: 32px 32px 32px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.metrics-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.metric-card {
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    padding: 18px 24px;
+    min-width: 180px;
+    text-align: center;
+    color: #fff;
+    flex: 1 1 180px;
+    max-width: 220px;
+}
+
+.chart-area-main,
+.chart-card-main {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 24px auto;
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    padding: 18px 12px 12px 12px;
+}
+
+.view-mode-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.view-button,
+.active-view-button {
+    padding: 8px 18px;
+    border-radius: 6px;
+    border: none;
+    background: #23243a;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.active-view-button {
+    background: #00bcd4;
+    color: #181a23;
+}
+
+.bottom-sections-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: center;
+    margin-top: 18px;
+}
+
+.bottom-card {
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    padding: 18px 18px 12px 18px;
+    min-width: 220px;
+    flex: 1 1 320px;
+    max-width: 420px;
+    margin-bottom: 12px;
+}
+
+.chart-wrapper {
+    width: 100%;
+    min-height: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.device-suggestion-list {
+    padding-left: 18px;
+    font-size: 1em;
+}
+
+.energy-control-section,
+.reports-section,
+.settings-section {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    padding: 24px 18px 18px 18px;
+    margin-bottom: 24px;
+}
+
+.device-control-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.device-control-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    background: #23243a;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+}
+
+.device-control-name {
+    flex: 1 1 120px;
+    font-weight: bold;
+    color: #00bcd4;
+}
+
+
+/* Responsividade para telas menores */
+
+@media (max-width: 900px) {
+    .main-content,
+    .bottom-card,
+    .energy-realtime-card,
+    .settings-section,
+    .reports-section,
+    .energy-control-section {
+        width: 100% !important;
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+        margin: 0 auto 12px auto !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+    .chart-wrapper,
+    .chart-card-main {
+        width: 100% !important;
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content,
+    .bottom-card,
+    .energy-realtime-card,
+    .settings-section,
+    .reports-section,
+    .energy-control-section {
+        width: 100% !important;
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+        margin: 0 auto 8px auto !important;
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+    }
+    .chart-wrapper,
+    .chart-card-main {
+        width: 100% !important;
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 600px) {
+    .main-content,
+    .bottom-card,
+    .energy-realtime-card,
+    .settings-section,
+    .reports-section,
+    .energy-control-section {
+        width: 100% !important;
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+        margin: 0 auto 4px auto !important;
+        padding-left: 0.1rem !important;
+        padding-right: 0.1rem !important;
+    }
+    .chart-wrapper,
+    .chart-card-main {
+        width: 100% !important;
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+    }
+}
+
+
+/* Garantir que texto nunca seja cortado */
+
+.main-content,
+.bottom-card,
+.energy-realtime-card,
+.settings-section,
+.reports-section,
+.energy-control-section,
+.chart-wrapper,
+.chart-card-main {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+
+/* --- ESTILOS PARA AddDevicePage (UNIFICADO) --- */
+
+.add-device-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #2c2c54;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100vw;
+}
+
+.add-device-card {
+    background-color: #3e3e70;
+    padding: 32px 24px 24px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    width: 100%;
+    max-width: 420px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.add-device-card h2 {
+    text-align: center;
+    margin-bottom: 22px;
+    color: #8a2be2;
+    font-size: 1.3em;
+}
+
+.form-group {
+    width: 100%;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #5a5a8a;
+    border-radius: 5px;
+    background-color: #4a4a7e;
+    color: #fff;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.form-group input::placeholder {
+    color: #bbb;
+}
+
+.error-message {
+    color: #ff6b6b;
+    margin-bottom: 12px;
+    text-align: center;
+    font-size: 1em;
+}
+
+.button-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-right: 12px;
+    margin-top: -17px;
+}
+
+.add-device-card button {
+    width: 100%;
+    padding: 12px 0;
+    border: none;
+    border-radius: 6px;
+    background-color: #8a2be2;
+    color: #fff;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 0;
+    transition: background 0.2s;
+}
+
+.add-device-card button:hover:not(:disabled) {
+    background-color: #6a0fdc;
+}
+
+.add-device-card button:disabled {
+    background-color: #5a5a8a;
+    cursor: not-allowed;
+}
+
+.cancel-button {
+    background-color: #6c757d !important;
+    margin-top: 0 !important;
+}
+
+.cancel-button:hover:not(:disabled) {
+    background-color: #5a6268 !important;
+}
+
+
+/* Responsividade AddDevicePage */
+
+@media (max-width: 768px) {
+    .add-device-page-container {
+        padding: 8px;
+        min-height: 100vh;
+    }
+    .add-device-card {
+        max-width: 98vw;
+        padding: 16px;
+    }
+    .add-device-card h2 {
+        font-size: 1.1em;
+        margin-bottom: 14px;
+    }
+    .form-group input {
+        font-size: 0.95em;
+        padding: 8px;
+    }
+    .add-device-card button {
+        font-size: 1em;
+        padding: 10px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .add-device-card {
+        max-width: 100vw;
+        padding: 8px;
+        border-radius: 6px;
+    }
+    .add-device-card h2 {
+        font-size: 1em;
+        margin-bottom: 8px;
+    }
+    .form-group label {
+        font-size: 0.95em;
+    }
+    .form-group input {
+        font-size: 0.9em;
+        padding: 6px;
+    }
+    .add-device-card button {
+        font-size: 0.95em;
+        padding: 8px 0;
     }
 }
 
@@ -1631,8 +2180,6 @@ a.link-button {
     gap: 10px;
     margin-top: 1rem;
     justify-content: center;
-    flex-wrap: wrap;
-    /* Adicionado para responsividade */
 }
 
 .cancel-button {
@@ -1668,15 +2215,195 @@ a.link-button {
 }
 
 
-/* Ajuste para inputs e botões em telas pequenas */
+/* Menu responsivo mobile */
+
+.mobile-menu-bar {
+    width: 100vw;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background: #1a1a2e;
+    padding: 4px 8px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1100;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    height: 38px;
+}
+
+.hamburger-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 6px;
+    outline: none;
+    height: 30px;
+    width: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hamburger-icon {
+    font-size: 1.7em;
+    color: #00bcd4;
+    line-height: 1;
+}
+
+.mobile-menu-box {
+    position: fixed;
+    top: 38px;
+    left: 0;
+    width: 180px;
+    background: #23243a;
+    box-shadow: 2px 0 16px rgba(0, 0, 0, 0.25);
+    border-radius: 0 10px 10px 0;
+    z-index: 1200;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0 10px 0;
+    animation: slideInMenu 0.2s;
+}
+
+.mobile-menu-box .menu-item {
+    padding: 10px 18px;
+    font-size: 1em;
+}
+
+@media (max-width: 700px) {
+    .sidebar {
+        display: none !important;
+    }
+    .main-content {
+        margin-top: 44px !important;
+    }
+}
+
+
+/* Responsividade moderna 2025 */
+
+html {
+    font-size: clamp(14px, 1.2vw, 18px);
+}
+
+body {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.card,
+.add-device-card,
+.main-content,
+.energy-realtime-card {
+    width: 100%;
+    max-width: clamp(320px, 90vw, 1200px);
+    margin: 0 auto;
+    box-sizing: border-box;
+}
 
 input,
 button,
-select,
-textarea {
-    max-width: 100%;
-    /* Use 100% em vez de 100vw para evitar estouro com padding */
+.link-button {
+    font-size: clamp(1em, 2vw, 1.2em);
+    padding: clamp(10px, 2vw, 18px) clamp(10px, 2vw, 24px);
+    min-width: 0;
     box-sizing: border-box;
+}
+
+h2,
+h3,
+h4 {
+    font-size: clamp(1.2rem, 3vw, 2.2rem);
+}
+
+.metrics-grid,
+.bottom-sections-grid,
+.device-control-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: clamp(12px, 2vw, 32px);
+}
+
+@media (max-width: 900px) {
+    .sidebar {
+        position: fixed;
+        width: 60vw;
+        min-width: 180px;
+        max-width: 320px;
+        z-index: 1000;
+    }
+    .main-content {
+        margin-left: 0 !important;
+        width: 100vw !important;
+        padding: 2vw;
+    }
+}
+
+@media (max-width: 600px) {
+    .card,
+    .add-device-card,
+    .main-content,
+    .energy-realtime-card {
+        max-width: 99vw;
+        padding: 2vw 2vw 2vw 2vw;
+        border-radius: 10px;
+    }
+    .metrics-grid,
+    .bottom-sections-grid,
+    .device-control-list {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .sidebar {
+        width: 90vw;
+        min-width: unset;
+        max-width: unset;
+    }
+    .main-content {
+        padding: 2vw 0;
+    }
+    .logo-icon {
+        font-size: 2em;
+    }
+}
+
+@media (max-width: 400px) {
+    .card,
+    .add-device-card,
+    .main-content,
+    .energy-realtime-card {
+        padding: 1vw;
+        border-radius: 6px;
+    }
+    h2,
+    h3,
+    h4 {
+        font-size: 1.1rem;
+    }
+}
+
+
+/* Garantir que gráficos e tabelas tenham rolagem horizontal se necessário */
+
+.chart-area-main,
+.energy-realtime-table,
+.chart-card-main canvas {
+    overflow-x: auto;
+    max-width: 100vw;
+}
+
+
+/* Ajuste para evitar sobreposição de botões e inputs */
+
+.button-group,
+.form-group {
+    flex-wrap: wrap;
+    gap: 8px;
+    display: flex;
+    flex-direction: column;
 }
 
 
@@ -1684,11 +2411,6 @@ textarea {
 
 * {
     min-width: 0;
-    /* Permite que os elementos encolham para caber no espaço */
     min-height: 0;
     box-sizing: border-box;
-    word-break: break-word;
-    /* Garante que qualquer texto longo seja quebrado */
-    overflow-wrap: anywhere;
-    /* Outra propriedade para quebra de texto */
 }
