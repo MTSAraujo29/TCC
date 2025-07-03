@@ -368,13 +368,7 @@ function DashboardPage() {
                     setLastLogTime(currentTime);
                 }
 
-                // NOVO: Define se os dados são reais ou fictícios
-                setIsRealData(data.isRealData);
-                if (!data.isRealData) {
-                    setFictionalDataMessage('Os dados exibidos são fictícios. Conta não Admin!');
-                } else {
-                    setFictionalDataMessage('');
-                }
+
 
                 // ATUALIZADO: `setDevices` agora usa `data.userDevices`
                 setDevices(data.userDevices || []);
