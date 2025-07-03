@@ -99,7 +99,7 @@
     flex-direction: column;
     align-items: center;
     gap: 24px;
-    padding-bottom: 48px;
+    padding-bottom: 10px;
 }
 
 .homepage-card {
