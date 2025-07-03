@@ -1741,15 +1741,20 @@ textarea {
 }
 
 .nav-item {
-    margin: 0 12px;
-    padding: 10px 18px;
+    margin: 0 8px;
+    padding: 8px 16px;
     border-radius: 6px;
     color: #fff;
-    font-size: 1.1em;
+    font-size: 1em;
     cursor: pointer;
     background: none;
     border: none;
     transition: background 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    height: 40px;
+    min-width: 80px;
+    justify-content: center;
 }
 
 .nav-item.active,
@@ -1763,6 +1768,10 @@ textarea {
     background: #f44336;
     color: #fff;
     margin-left: auto;
+    min-width: 100px;
+    max-width: 140px;
+    font-weight: bold;
+    justify-content: center;
 }
 
 .main-content-centered {
@@ -1785,4 +1794,21 @@ textarea {
 .logout-link-sidebar,
 .logo-icon-sidebar {
     display: none !important;
+}
+
+@media (max-width: 900px) {
+    .navbar {
+        flex-wrap: wrap;
+        padding: 0 8px;
+        height: auto;
+    }
+    .nav-item {
+        min-width: 60px;
+        font-size: 0.95em;
+        padding: 8px 8px;
+    }
+    .logo-icon-navbar {
+        font-size: 1.5em;
+        margin-right: 10px;
+    }
 }

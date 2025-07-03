@@ -689,7 +689,23 @@ function DashboardPage() {
                 } > { fictionalDataMessage } <
                 /div>
             )
-        } { /* ...restante do conteúdo condicional das sessões... */ } <
+        } { /* Renderização condicional do conteúdo das sessões */ } {
+            activeSection === 'inicio' && (
+                // ...conteúdo da Home (métricas, gráficos, etc.)
+            )
+        } {
+            activeSection === 'controle' && (
+                // ...conteúdo da sessão Controle de Energia
+            )
+        } {
+            activeSection === 'relatorios' && (
+                // ...conteúdo da sessão Relatórios
+            )
+        } {
+            activeSection === 'configuracoes' && (
+                // ...conteúdo da sessão Configurações
+            )
+        } <
         /main> < /
         div >
     );
