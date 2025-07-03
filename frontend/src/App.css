@@ -375,7 +375,7 @@ a.link-button {
 
 .metric-card p {
     color: #00bcd4; /* Cor vibrante para os valores */
-    font-size: 2rem; /* Convertido para REM */
+    font-size: 1.4rem; /* Convertido para REM */
     font-weight: bold;
     margin: 0;
 }

@@ -371,7 +371,7 @@ function DashboardPage() {
                 // NOVO: Define se os dados são reais ou fictícios
                 setIsRealData(data.isRealData);
                 if (!data.isRealData) {
-                    setFictionalDataMessage('Os dados exibidos são fictícios. Entre em contato com o suporte para visualizar os dados reais.');
+                    setFictionalDataMessage('Os dados exibidos são fictícios. Conta não Admin!');
                 } else {
                     setFictionalDataMessage('');
                 }
