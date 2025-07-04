@@ -926,8 +926,7 @@ function DashboardPage() {
                 } <
                 /ul> < /
                 div > <
-                /div> < /
-                >
+                /div> < / >
             )
         }
 
@@ -1019,16 +1018,32 @@ function DashboardPage() {
                             tr >
                             <
                             td > Tensão < /td> <
-                            td > {
-                                devices[0].powerState && typeof devices[0].latestReading.voltage === 'number' ?
-                                devices[0].latestReading.voltage : 0
-                            }
-                            V < /td> < /
+                            td > { typeof devices[0].latestReading.voltage === 'number' ? devices[0].latestReading.voltage + ' V' : '0 V' } < /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Corrente < /td> <
+                            td > { typeof devices[0].latestReading.current === 'number' ? devices[0].latestReading.current + ' A' : '0 A' } < /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Potência < /td> <
+                            td > { typeof devices[0].latestReading.power === 'number' ? devices[0].latestReading.power + ' W' : '0 W' } < /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Energia Hoje < /td> <
+                            td > { typeof devices[0].latestReading.energyToday === 'number' ? devices[0].latestReading.energyToday.toFixed(2) + ' kWh' : '0.00 kWh' } < /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Energia Ontem < /td> <
+                            td > { typeof devices[0].latestReading.energyYesterday === 'number' ? devices[0].latestReading.energyYesterday.toFixed(2) + ' kWh' : '0.00 kWh' } < /td> < /
                             tr > <
                             tr >
                             <
                             td > Energia Total < /td> <
-                            td > { devices[0] && devices[0].latestReading && typeof devices[0].latestReading.totalEnergy === 'number' ? devices[0].latestReading.totalEnergy.toFixed(2) + ' kWh' : '0.00 kWh' } < /td> < /
+                            td > { typeof devices[0].latestReading.totalEnergy === 'number' ? devices[0].latestReading.totalEnergy.toFixed(2) + ' kWh' : '0.00 kWh' } < /td> < /
                             tr > <
                             /tbody> < /
                             table > <
@@ -1051,16 +1066,32 @@ function DashboardPage() {
                             tr >
                             <
                             td > Tensão < /td> <
-                            td > {
-                                devices[1].powerState && typeof devices[1].latestReading.voltage === 'number' ?
-                                devices[1].latestReading.voltage : 0
-                            }
-                            V < /td> < /
+                            td > { typeof devices[1].latestReading.voltage === 'number' ? devices[1].latestReading.voltage + ' V' : '0 V' } < /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Corrente < /td> <
+                            td > { typeof devices[1].latestReading.current === 'number' ? devices[1].latestReading.current + ' A' : '0 A' } < /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Potência < /td> <
+                            td > { typeof devices[1].latestReading.power === 'number' ? devices[1].latestReading.power + ' W' : '0 W' } < /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Energia Hoje < /td> <
+                            td > { typeof devices[1].latestReading.energyToday === 'number' ? devices[1].latestReading.energyToday.toFixed(2) + ' kWh' : '0.00 kWh' } < /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Energia Ontem < /td> <
+                            td > { typeof devices[1].latestReading.energyYesterday === 'number' ? devices[1].latestReading.energyYesterday.toFixed(2) + ' kWh' : '0.00 kWh' } < /td> < /
                             tr > <
                             tr >
                             <
                             td > Energia Total < /td> <
-                            td > { devices[1] && devices[1].latestReading && typeof devices[1].latestReading.totalEnergy === 'number' ? devices[1].latestReading.totalEnergy.toFixed(2) + ' kWh' : '0.00 kWh' } < /td> < /
+                            td > { typeof devices[1].latestReading.totalEnergy === 'number' ? devices[1].latestReading.totalEnergy.toFixed(2) + ' kWh' : '0.00 kWh' } < /td> < /
                             tr > <
                             /tbody> < /
                             table > <
@@ -1104,7 +1135,7 @@ function DashboardPage() {
                     )
                 } <
                 /div> < /
-                div >
+            div >
         )
     }
 
@@ -1261,7 +1292,7 @@ function DashboardPage() {
                 )
             } <
             /div> < /
-            div >
+        div >
     );
 }
 
