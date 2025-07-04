@@ -212,7 +212,7 @@ app.post('/api/login', authLimiter, [
         }
 
         const token = jwt.sign({ userId: user.id, email: user.email },
-            JWT_SECRET, { expiresIn: '1m' }
+            JWT_SECRET, { expiresIn: '10m' }
         );
 
         res.json({
