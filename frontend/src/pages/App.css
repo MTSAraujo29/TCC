@@ -178,3 +178,28 @@
         white-space: nowrap;
     }
 }
+
+.smart-energy-mobile-title {
+    color: #FFD600;
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    font-family: 'Arial Black', Arial, sans-serif;
+    margin-left: 18px;
+    line-height: 1;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+@media (max-width: 630px) and (min-width: 300px) {
+    .smart-energy-mobile-title {
+        font-size: 1.2rem;
+        margin-left: 10px;
+    }
+    .mobile-menu-bar {
+        justify-content: center !important;
+        text-align: center;
+        width: 100%;
+    }
+}
