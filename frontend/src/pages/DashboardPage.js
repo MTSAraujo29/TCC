@@ -139,10 +139,10 @@ function DashboardPage() {
         // Se estiver em modo real, você pode analisar os dados reais dos dispositivos para gerar sugestões.
         if (!isRealData) {
             return [{
-                    id: 1,
-                    name: 'Lâmpada do Quarto (Fictícia)',
-                    suggestion: 'Instalar temporizador para desligar automaticamente.'
-                },
+                id: 1,
+                name: 'Lâmpada do Quarto (Fictícia)',
+                suggestion: 'Instalar temporizador para desligar automaticamente.'
+            },
                 {
                     id: 2,
                     name: 'Ar Condicionado (Fictício)',
@@ -664,330 +664,293 @@ function DashboardPage() {
             0;
     }
 
-    return ( <
-        div className = "container dashboard-container" > { /* ==================== SIDEBAR ==================== */ } <
-        div className = "sidebar"
-        style = {
-            { display: window.innerWidth <= 700 ? 'none' : 'flex' }
-        } >
-        <
-        div className = "logo-icon-sidebar" > ⚡ < /div> <
-        div className = { `menu-item ${activeSection === 'inicio' ? 'active' : ''}` }
-        onClick = {
-            () => setActiveSection('inicio')
-        } > 🏠Home <
-        /div> <
-        div className = { `menu-item ${activeSection === 'controle' ? 'active' : ''}` }
-        onClick = {
-            () => setActiveSection('controle')
-        } > 🔌Controle de Energia <
-        /div> <
-        div className = { `menu-item ${activeSection === 'relatorios' ? 'active' : ''}` }
-        onClick = {
-            () => setActiveSection('relatorios')
-        } > 📊Relatórios <
-        /div> <
-        div className = { `menu-item ${activeSection === 'configuracoes' ? 'active' : ''}` }
-        onClick = {
-            () => setActiveSection('configuracoes')
-        } > ⚙️Configurações <
-        /div> <
-        div className = "sidebar-bottom" >
-        <
-        button onClick = { handleLogout }
-        className = "menu-item logout-link-sidebar" > 🔒Sair <
-        /button> < /
-        div > <
-        /div>
-
-        { /* ==================== MOBILE MENU ==================== */ } {
-            window.innerWidth <= 700 && ( <
-                div className = "mobile-menu-bar" >
-                <
-                button className = "hamburger-btn"
-                onClick = {
-                    () => setIsMobileMenuOpen(!isMobileMenuOpen)
-                } >
-                <
-                span className = "hamburger-icon" > ☰ < /span> < /
-                button > <
-                /div>
-            )
-        }
-
-        {
-            window.innerWidth <= 700 && isMobileMenuOpen && ( <
-                div className = "mobile-menu-box" >
-                <
-                div className = "menu-item"
-                onClick = {
-                    () => {
-                        setActiveSection('inicio');
-                        setIsMobileMenuOpen(false);
-                    }
-                } > 🏠Home <
-                /div> <
-                div className = "menu-item"
-                onClick = {
-                    () => {
-                        setActiveSection('controle');
-                        setIsMobileMenuOpen(false);
-                    }
-                } > 🔌Controle de Energia <
-                /div> <
-                div className = "menu-item"
-                onClick = {
-                    () => {
-                        setActiveSection('relatorios');
-                        setIsMobileMenuOpen(false);
-                    }
-                } > 📊Relatórios <
-                /div> <
-                div className = "menu-item"
-                onClick = {
-                    () => {
-                        setActiveSection('configuracoes');
-                        setIsMobileMenuOpen(false);
-                    }
-                } > ⚙️Configurações <
-                /div> <
-                div className = "menu-item logout-link-sidebar"
-                onClick = {
-                    () => {
-                        handleLogout();
-                        setIsMobileMenuOpen(false);
-                    }
-                } > 🔒Sair <
-                /div> < /
-                div >
-            )
-        }
-
-        { /* ==================== MAIN CONTENT ==================== */ } <
-        div className = "main-content" > { /* Data Mode Notification */ } {
-            fictionalDataMessage && ( <
-                div className = "data-mode-notification" > { fictionalDataMessage } <
-                /div>
-            )
-        }
-
-        { /* ========== HOME SECTION ========== */ } {
-            activeSection === 'inicio' && ( <
+    return (
+        <div className="container dashboard-container">
+            {/* ==================== SIDEBAR ==================== */}
+            <div
+                className="sidebar"
+                style={{ display: window.innerWidth <= 700 ? 'none' : 'flex' }}
+            >
+                <div className="logo-icon-sidebar">⚡</div>
+                <div
+                    className={`menu-item ${activeSection === 'inicio' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('inicio')}
                 >
-                <
-                h2 > Olá, { userName }! < /h2>
+                    🏠Home
+                </div>
+                <div
+                    className={`menu-item ${activeSection === 'controle' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('controle')}
+                >
+                    🔌Controle de Energia
+                </div>
+                <div
+                    className={`menu-item ${activeSection === 'relatorios' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('relatorios')}
+                >
+                    📊Relatórios
+                </div>
+                <div
+                    className={`menu-item ${activeSection === 'configuracoes' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('configuracoes')}
+                >
+                    ⚙️Configurações
+                </div>
+                <div className="sidebar-bottom">
+                    <button
+                        onClick={handleLogout}
+                        className="menu-item logout-link-sidebar"
+                    >
+                        🔒Sair
+                    </button>
+                </div>
+            </div>
 
-                { /* Metrics Grid */ } <
-                div className = "metrics-grid" >
-                <
-                div className = "metric-card" >
-                <
-                h3 > Consumo de Watts atual < /h3> <
-                p > {
-                    devices.length > 0 ?
-                    devices
-                    .reduce((sum, d) => sum + (d.latestReading && d.powerState && typeof d.latestReading.power === 'number' ?
-                        d.latestReading.power :
-                        0), 0)
-                    .toFixed(2) + ' W' : '0.00 W'
-                } <
-                /p> < /
-                div >
+            {/* ==================== MOBILE MENU ==================== */}
+            {window.innerWidth <= 700 && (
+                <div className="mobile-menu-bar">
+                    <button
+                        className="hamburger-btn"
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    >
+                        <span className="hamburger-icon">☰</span>
+                    </button>
+                </div>
+            )}
 
-                <
-                div className = "metric-card" >
-                <
-                h3 > Consumo de quilowatt - hora do mês atual < /h3> <
-                p > { currentMonthConsumption } < /p> < /
-                div >
+            {window.innerWidth <= 700 && isMobileMenuOpen && (
+                <div className="mobile-menu-box">
+                    <div
+                        className="menu-item"
+                        onClick={() => {
+                            setActiveSection('inicio');
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
+                        🏠Home
+                    </div>
+                    <div
+                        className="menu-item"
+                        onClick={() => {
+                            setActiveSection('controle');
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
+                        🔌Controle de Energia
+                    </div>
+                    <div
+                        className="menu-item"
+                        onClick={() => {
+                            setActiveSection('relatorios');
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
+                        📊Relatórios
+                    </div>
+                    <div
+                        className="menu-item"
+                        onClick={() => {
+                            setActiveSection('configuracoes');
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
+                        ⚙️Configurações
+                    </div>
+                    <div
+                        className="menu-item logout-link-sidebar"
+                        onClick={() => {
+                            handleLogout();
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
+                        🔒Sair
+                    </div>
+                </div>
+            )}
 
-                <
-                div className = "metric-card" >
-                <
-                h3 > Consumo quilowatt - hora total < /h3> <
-                p > {
-                    (getTotalEnergyByBroker(devices, 'broker1') +
-                        getTotalEnergyByBroker(devices, 'broker2')).toFixed(2)
-                }
-                kWh <
-                /p> < /
-                div >
+            {/* ==================== MAIN CONTENT ==================== */}
+            <div className="main-content">
+                {/* Data Mode Notification */}
+                {fictionalDataMessage && (
+                    <div className="data-mode-notification">
+                        {fictionalDataMessage}
+                    </div>
+                )}
 
-                <
-                div className = "metric-card" >
-                <
-                h3 > Fatura Estimada < /h3> <
-                p >
-                R$ { ' ' } {
-                    (devices.length > 0 ?
-                        devices.reduce((sum, d) => sum + (d.latestReading && d.powerState && typeof d.latestReading.totalEnergy === 'number' ?
-                            d.latestReading.totalEnergy :
-                            0), 0) * 0.75 :
-                        0
-                    ).toFixed(2)
-                } <
-                /p> < /
-                div >
+                {/* ========== HOME SECTION ========== */}
+                {activeSection === 'inicio' && (
+                    <>
+                        <h2>Olá, {userName}!</h2>
 
-                <
-                div className = "metric-card" >
-                <
-                h3 > Consumo de Amperes atual < /h3> <
-                p > < /p> < /
-                div >
+                        {/* Metrics Grid */}
+                        <div className="metrics-grid">
+                            <div className="metric-card">
+                                <h3>Consumo de Watts atual</h3>
+                                <p>
+                                    {devices.length > 0
+                                        ? devices
+                                        .reduce((sum, d) => sum + (d.latestReading && d.powerState && typeof d.latestReading.power === 'number'
+                                            ? d.latestReading.power
+                                            : 0), 0)
+                                        .toFixed(2) + ' W'
+                                        : '0.00 W'}
+                                </p>
+                            </div>
 
-                <
-                div className = "metric-card" >
-                <
-                h3 > Gasto reduzido < /h3> <
-                p > < /p> < /
-                div > <
-                /div>
+                            <div className="metric-card">
+                                <h3>Consumo de quilowatt-hora do mês atual</h3>
+                                <p>{currentMonthConsumption}</p>
+                            </div>
 
-                { /* Main Chart Area */ } <
-                div className = "chart-area-main" >
-                <
-                div className = "chart-card-main" >
-                <
-                div className = "view-mode-buttons" >
-                <
-                button onClick = {
-                    () => setViewMode('day')
-                }
-                className = { viewMode === 'day' ? 'active-view-button' : 'view-button' } >
-                Dia <
-                /button> <
-                button onClick = {
-                    () => setViewMode('week')
-                }
-                className = { viewMode === 'week' ? 'active-view-button' : 'view-button' } >
-                Semana <
-                /button> <
-                button onClick = {
-                    () => setViewMode('month')
-                }
-                className = { viewMode === 'month' ? 'active-view-button' : 'view-button' } >
-                Mês <
-                /button> < /
-                div >
+                            <div className="metric-card">
+                                <h3>Consumo quilowatt-hora total</h3>
+                                <p>
+                                    {(getTotalEnergyByBroker(devices, 'broker1') +
+                                        getTotalEnergyByBroker(devices, 'broker2')).toFixed(2)} kWh
+                                </p>
+                            </div>
 
-                {
-                    getChartData().labels.length > 0 ? ( <
-                        Line data = { getChartData() }
-                        options = { chartOptions }
-                        />
-                    ) : ( <
-                        p className = "chart-loading-message" > Carregando dados do gráfico... < /p>
-                    )
-                }
+                            <div className="metric-card">
+                                <h3>Fatura Estimada</h3>
+                                <p>
+                                    R$ {' '}
+                                    {(devices.length > 0
+                                            ? devices.reduce((sum, d) => sum + (d.latestReading && d.powerState && typeof d.latestReading.totalEnergy === 'number'
+                                            ? d.latestReading.totalEnergy
+                                            : 0), 0) * 0.75
+                                            : 0
+                                    ).toFixed(2)}
+                                </p>
+                            </div>
 
-                <
-                button className = "expand-chart-button"
-                onClick = {
-                    () => navigate('/grafico-cheio')
-                } >
-                Expandir Gráfico <
-                /button> < /
-                div > <
-                /div>
+                            <div className="metric-card">
+                                <h3>Consumo de Amperes atual</h3>
+                                <p></p>
+                            </div>
 
-                { /* Bottom Sections */ } <
-                div className = "bottom-sections-grid" >
-                <
-                div className = "bottom-card consumption-by-type-card" >
-                <
-                h3 > Consumo por Tipo de Dispositivo < /h3> <
-                div className = "chart-wrapper" >
-                <
-                Doughnut data = { getConsumptionByTypeData() }
-                options = { consumptionByTypeOptions }
-                /> < /
-                div > <
-                /div>
+                            <div className="metric-card">
+                                <h3>Gasto reduzido</h3>
+                                <p></p>
+                            </div>
+                        </div>
 
-                <
-                div className = "bottom-card suggested-devices-card" >
-                <
-                h3 > Dispositivos Sugeridos < /h3> <
-                p className = "suggestions-description" >
-                Sugestões para otimizar o consumo de energia em seus dispositivos. <
-                /p> <
-                ul className = "device-suggestion-list" > {
-                    getSuggestedDevicesData().length > 0 ? (
-                        getSuggestedDevicesData().map((device) => ( <
-                            li key = { device.id } >
-                            <
-                            strong > { device.name }: < /strong> {device.suggestion} < /
-                            li >
-                        ))
-                    ) : ( <
-                        p className = "no-suggestions-message" > Nenhuma sugestão no momento. < /p>
-                    )
-                } <
-                /ul> < /
-                div > <
-                /div> < / >
-            )
-        }
+                        {/* Main Chart Area */}
+                        <div className="chart-area-main">
+                            <div className="chart-card-main">
+                                <div className="view-mode-buttons">
+                                    <button
+                                        onClick={() => setViewMode('day')}
+                                        className={viewMode === 'day' ? 'active-view-button' : 'view-button'}
+                                    >
+                                        Dia
+                                    </button>
+                                    <button
+                                        onClick={() => setViewMode('week')}
+                                        className={viewMode === 'week' ? 'active-view-button' : 'view-button'}
+                                    >
+                                        Semana
+                                    </button>
+                                    <button
+                                        onClick={() => setViewMode('month')}
+                                        className={viewMode === 'month' ? 'active-view-button' : 'view-button'}
+                                    >
+                                        Mês
+                                    </button>
+                                </div>
 
-        { /* ========== ENERGY CONTROL SECTION ========== */ } {
-            activeSection === 'controle' && ( <
-                div className = "energy-control-section" >
-                <
-                h2 > Controle de Dispositivos < /h2> {
-                deviceMessage && < p className = "device-feedback-message" > { deviceMessage } < /p>}
+                                {getChartData().labels.length > 0 ? (
+                                    <Line data={getChartData()} options={chartOptions} />
+                                ) : (
+                                    <p className="chart-loading-message">Carregando dados do gráfico...</p>
+                                )}
 
-                <
-                h3 > Meus Dispositivos de Energia < /h3>
+                                <button
+                                    className="expand-chart-button"
+                                    onClick={() => navigate('/grafico-cheio')}
+                                >
+                                    Expandir Gráfico
+                                </button>
+                            </div>
+                        </div>
 
-                {
-                    devices.length > 0 ? ( <
-                        div className = "device-control-list" > {
-                            devices.map((device) => ( <
-                                div key = { device.id }
-                                className = "device-control-item" >
-                                <
-                                span className = "device-control-name" > { device.name } < /span> <
-                                button onClick = {
-                                    () => toggleDevicePower(device.id, device.powerState, device.name)
-                                }
-                                className = "device-toggle-button power-on"
-                                type = "button"
-                                disabled = { device.powerState } >
-                                Ligar <
-                                /button> <
-                                button onClick = {
-                                    () => toggleDevicePower(device.id, device.powerState, device.name)
-                                }
-                                className = "device-toggle-button power-off"
-                                type = "button"
-                                disabled = {!device.powerState } >
-                                Desligar <
-                                /button> < /
-                                div >
-                            ))
-                        } <
-                        /div>
-                    ) : ( <
-                        p className = "no-devices-message" > Nenhum dispositivo encontrado. < /p>
-                    )
-                }
+                        {/* Bottom Sections */}
+                        <div className="bottom-sections-grid">
+                            <div className="bottom-card consumption-by-type-card">
+                                <h3>Consumo por Tipo de Dispositivo</h3>
+                                <div className="chart-wrapper">
+                                    <Doughnut data={getConsumptionByTypeData()} options={consumptionByTypeOptions} />
+                                </div>
+                            </div>
 
-                {
-                    isRealData && ( <
-                        button className = "add-device-btn"
-                        onClick = {
-                            () => navigate('/add-device')
-                        } >
-                        +Adicionar Novo Dispositivo Tasmota <
-                        /button>
-                    )
-                } <
-                /div>
-            )
-        }
+                            <div className="bottom-card suggested-devices-card">
+                                <h3>Dispositivos Sugeridos</h3>
+                                <p className="suggestions-description">
+                                    Sugestões para otimizar o consumo de energia em seus dispositivos.
+                                </p>
+                                <ul className="device-suggestion-list">
+                                    {getSuggestedDevicesData().length > 0 ? (
+                                        getSuggestedDevicesData().map((device) => (
+                                            <li key={device.id}>
+                                                <strong>{device.name}:</strong> {device.suggestion}
+                                            </li>
+                                        ))
+                                    ) : (
+                                        <p className="no-suggestions-message">Nenhuma sugestão no momento.</p>
+                                    )}
+                                </ul>
+                            </div>
+                        </div>
+                    </>
+                )}
 
-        { /* ========== REPORTS SECTION ========== */ } {
+                {/* ========== ENERGY CONTROL SECTION ========== */}
+                {activeSection === 'controle' && (
+                    <div className="energy-control-section">
+                        <h2>Controle de Dispositivos</h2>
+                        {deviceMessage && <p className="device-feedback-message">{deviceMessage}</p>}
+
+                        <h3>Meus Dispositivos de Energia</h3>
+
+                        {devices.length > 0 ? (
+                            <div className="device-control-list">
+                                {devices.map((device) => (
+                                    <div key={device.id} className="device-control-item">
+                                        <span className="device-control-name">{device.name}</span>
+                                        <button
+                                            onClick={() => toggleDevicePower(device.id, device.powerState, device.name)}
+                                            className="device-toggle-button power-on"
+                                            type="button"
+                                            disabled={device.powerState}
+                                        >
+                                            Ligar
+                                        </button>
+                                        <button
+                                            onClick={() => toggleDevicePower(device.id, device.powerState, device.name)}
+                                            className="device-toggle-button power-off"
+                                            type="button"
+                                            disabled={!device.powerState}
+                                        >
+                                            Desligar
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="no-devices-message">Nenhum dispositivo encontrado.</p>
+                        )}
+
+                        {isRealData && (
+                            <button
+                                className="add-device-btn"
+                                onClick={() => navigate('/add-device')}
+                            >
+                                +Adicionar Novo Dispositivo Tasmota
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                {/* ========== REPORTS SECTION ========== */}
                 {activeSection === 'relatorios' && (
                     <div className="reports-section">
                         <h2>Relatórios de Consumo</h2>
@@ -1015,8 +978,7 @@ function DashboardPage() {
                                         <td>
                                             {devices[0].powerState && typeof devices[0].latestReading.voltage === 'number'
                                                 ? devices[0].latestReading.voltage
-                                                : 0}{' '}
-                                            V
+                                                : 0} V
                                         </td>
                                     </tr>
                                     <tr>
@@ -1024,8 +986,7 @@ function DashboardPage() {
                                         <td>
                                             {devices[0].powerState && typeof devices[0].latestReading.current === 'number'
                                                 ? devices[0].latestReading.current
-                                                : 0}{' '}
-                                            A
+                                                : 0} A
                                         </td>
                                     </tr>
                                     <tr>
@@ -1033,8 +994,7 @@ function DashboardPage() {
                                         <td>
                                             {devices[0].powerState && typeof devices[0].latestReading.power === 'number'
                                                 ? devices[0].latestReading.power
-                                                : 0}{' '}
-                                            W
+                                                : 0} W
                                         </td>
                                     </tr>
                                     <tr>
@@ -1042,8 +1002,7 @@ function DashboardPage() {
                                         <td>
                                             {devices[0].powerState && typeof devices[0].latestReading.ApparentPower === 'number'
                                                 ? devices[0].latestReading.ApparentPower
-                                                : 0}{' '}
-                                            VA
+                                                : 0} VA
                                         </td>
                                     </tr>
                                     <tr>
@@ -1051,8 +1010,7 @@ function DashboardPage() {
                                         <td>
                                             {devices[0].powerState && typeof devices[0].latestReading.ReactivePower === 'number'
                                                 ? devices[0].latestReading.ReactivePower
-                                                : 0}{' '}
-                                            var
+                                                : 0} var
                                         </td>
                                     </tr>
                                     <tr>
@@ -1068,8 +1026,7 @@ function DashboardPage() {
                                         <td>
                                             {typeof devices[0].latestReading.EnergyToday === 'number'
                                                 ? devices[0].latestReading.EnergyToday
-                                                : '--'}{' '}
-                                            kWh
+                                                : '--'} kWh
                                         </td>
                                     </tr>
                                     <tr>
@@ -1077,8 +1034,7 @@ function DashboardPage() {
                                         <td>
                                             {typeof devices[0].latestReading.EnergyYesterday === 'number'
                                                 ? devices[0].latestReading.EnergyYesterday
-                                                : '--'}{' '}
-                                            kWh
+                                                : '--'} kWh
                                         </td>
                                     </tr>
                                     <tr>
@@ -1094,248 +1050,208 @@ function DashboardPage() {
                             </div>
                         )}
 
-                    { /* Device 2 Real-time Data */ } {
-                        isRealData && devices.length > 1 && devices[1].latestReading && ( <
-                            div className = "energy-realtime-card"
-                            style = {
-                                { marginTop: '32px' }
-                            } >
-                            <
-                            h3 > Dados em Tempo Real do Dispositivo Sonoff Câmera < /h3> <
-                            table className = "energy-realtime-table" >
-                            <
-                            tbody className = "energy-realtime-tbody" >
-                            <
-                            tr >
-                            <
-                            td > Tensão < /td> <
-                            td > { typeof devices[1].latestReading.voltage === 'number' ? devices[1].latestReading.voltage + ' V' : '0 V' } < /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Corrente < /td> <
-                            td > { typeof devices[1].latestReading.current === 'number' ? devices[1].latestReading.current + ' A' : '0 A' } < /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Potência < /td> <
-                            td > { typeof devices[1].latestReading.power === 'number' ? devices[1].latestReading.power + ' W' : '0 W' } < /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Energia Hoje < /td> <
-                            td > { typeof devices[1].latestReading.energyToday === 'number' ? devices[1].latestReading.energyToday.toFixed(2) + ' kWh' : '0.00 kWh' } < /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Energia Ontem < /td> <
-                            td > { typeof devices[1].latestReading.energyYesterday === 'number' ? devices[1].latestReading.energyYesterday.toFixed(2) + ' kWh' : '0.00 kWh' } < /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Energia Total < /td> <
-                            td > { typeof devices[1].latestReading.totalEnergy === 'number' ? devices[1].latestReading.totalEnergy.toFixed(2) + ' kWh' : '0.00 kWh' } < /td> < /
-                            tr > <
-                            /tbody> < /
-                            table > <
-                            /div>
-                        )
-                    }
+                        {/* Device 2 Real-time Data */}
+                        {isRealData && devices.length > 1 && devices[1].latestReading && (
+                            <div className="energy-realtime-card" style={{ marginTop: '32px' }}>
+                                <h3>Dados em Tempo Real do Dispositivo Sonoff Câmera</h3>
+                                <table className="energy-realtime-table">
+                                    <tbody className="energy-realtime-tbody">
+                                    <tr>
+                                        <td>Tensão</td>
+                                        <td>{typeof devices[1].latestReading.voltage === 'number' ? devices[1].latestReading.voltage + ' V' : '0 V'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Corrente</td>
+                                        <td>{typeof devices[1].latestReading.current === 'number' ? devices[1].latestReading.current + ' A' : '0 A'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Potência</td>
+                                        <td>{typeof devices[1].latestReading.power === 'number' ? devices[1].latestReading.power + ' W' : '0 W'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Energia Hoje</td>
+                                        <td>{typeof devices[1].latestReading.energyToday === 'number' ? devices[1].latestReading.energyToday.toFixed(2) + ' kWh' : '0.00 kWh'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Energia Ontem</td>
+                                        <td>{typeof devices[1].latestReading.energyYesterday === 'number' ? devices[1].latestReading.energyYesterday.toFixed(2) + ' kWh' : '0.00 kWh'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Energia Total</td>
+                                        <td>{typeof devices[1].latestReading.totalEnergy === 'number' ? devices[1].latestReading.totalEnergy.toFixed(2) + ' kWh' : '0.00 kWh'}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
 
-                    <
-                    h3 > Detalhes por Dispositivo < /h3> <
-                    div className = "device-report-list" > {
-                        report.details.length > 0 ? (
-                            report.details.map((detail, index) => ( <
-                                    div key = { index }
-                                    className = "device-report-item" >
-                                    <
-                                    h4 > { detail.name } < /h4> <
-                                    p >
-                                    Status Atual: { ' ' } <
-                                    span className = {
-                                        devices[index] && devices[index].powerState ?
-                                        'status-on-text' : 'status-off-text'
-                                    } > { devices[index] && devices[index].powerState ? 'Ligado' : 'Desligado' } <
-                                    /span> < /
-                                    p > <
-                                    p > Tipo: { detail.type } < /p> <
-                                    p > Recomendação: { detail.recommendation } < /p> {
-                                    parseFloat(detail.potentialImpact) !== 0.00 && ( <
-                                        p className = {
-                                            parseFloat(detail.potentialImpact) > 0 ?
-                                            'impact-positive' : 'impact-negative'
-                                        } >
-                                        Impacto Potencial: { detail.potentialImpact }
-                                        kWh no próximo mês <
-                                        /p>
-                                    )
-                                } <
-                                /div>
-                            ))
-                    ): ( <
-                        p className = "no-reports-message" > Nenhum relatório disponível. < /p>
-                    )
-                } <
-                /div> < /
-            div >
-        )
-    }
+                        <h3>Detalhes por Dispositivo</h3>
+                        <div className="device-report-list">
+                            {report.details.length > 0 ? (
+                                report.details.map((detail, index) => (
+                                    <div key={index} className="device-report-item">
+                                        <h4>{detail.name}</h4>
+                                        <p>
+                                            Status Atual: {' '}
+                                            <span className={
+                                                devices[index] && devices[index].powerState
+                                                    ? 'status-on-text'
+                                                    : 'status-off-text'
+                                            }>
+                      {devices[index] && devices[index].powerState ? 'Ligado' : 'Desligado'}
+                    </span>
+                                        </p>
+                                        <p>Tipo: {detail.type}</p>
+                                        <p>Recomendação: {detail.recommendation}</p>
+                                        {parseFloat(detail.potentialImpact) !== 0.00 && (
+                                            <p className={
+                                                parseFloat(detail.potentialImpact) > 0
+                                                    ? 'impact-positive'
+                                                    : 'impact-negative'
+                                            }>
+                                                Impacto Potencial: {detail.potentialImpact} kWh no próximo mês
+                                            </p>
+                                        )}
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="no-reports-message">Nenhum relatório disponível.</p>
+                            )}
+                        </div>
+                    </div>
+                )}
 
-    { /* ========== SETTINGS SECTION ========== */ } {
-        activeSection === 'configuracoes' && ( <
-                div className = "settings-section" >
-                <
-                h2 > Configurações da Conta < /h2>
+                {/* ========== SETTINGS SECTION ========== */}
+                {activeSection === 'configuracoes' && (
+                    <div className="settings-section">
+                        <h2>Configurações da Conta</h2>
 
-                <
-                div className = "user-settings-card" >
-                <
-                h3 > Informações do Usuário < /h3> <
-                p > < strong > Nome de Usuário: < /strong> {userName}</p >
-                <
-                p > < strong > Email: < /strong> {userEmail}</p >
-                <
-                p >
-                <
-                button className = "edit-profile-button"
-                onClick = { openEditModal } >
-                Editar Perfil <
-                /button> < /
-                p > <
-                p className = "settings-note" >
-                *
-                Após editar ou excluir a conta, será necessário fazer login novamente. <
-                /p> < /
-                div >
+                        <div className="user-settings-card">
+                            <h3>Informações do Usuário</h3>
+                            <p><strong>Nome de Usuário:</strong> {userName}</p>
+                            <p><strong>Email:</strong> {userEmail}</p>
+                            <p>
+                                <button className="edit-profile-button" onClick={openEditModal}>
+                                    Editar Perfil
+                                </button>
+                            </p>
+                            <p className="settings-note">
+                                * Após editar ou excluir a conta, será necessário fazer login novamente.
+                            </p>
+                        </div>
 
-                { /* Edit Account Modal */ } {
-                    showEditModal && ( <
-                        div className = "modal-overlay" >
-                        <
-                        div className = "modal-card" >
-                        <
-                        h3 > Editar Conta < /h3> <
-                        form onSubmit = { handleEditAccount } >
-                        <
-                        label > Novo Nome: < /label> <
-                        input type = "text"
-                        value = { editName }
-                        onChange = {
-                            (e) => setEditName(e.target.value)
-                        }
-                        placeholder = "Novo nome" /
-                        >
+                        {/* Edit Account Modal */}
+                        {showEditModal && (
+                            <div className="modal-overlay">
+                                <div className="modal-card">
+                                    <h3>Editar Conta</h3>
+                                    <form onSubmit={handleEditAccount}>
+                                        <label>Novo Nome:</label>
+                                        <input
+                                            type="text"
+                                            value={editName}
+                                            onChange={(e) => setEditName(e.target.value)}
+                                            placeholder="Novo nome"
+                                        />
 
-                        <
-                        label > Nova Senha: < /label> <
-                        input type = "password"
-                        value = { editPassword }
-                        onChange = {
-                            (e) => setEditPassword(e.target.value)
-                        }
-                        placeholder = "Nova senha" /
-                        >
+                                        <label>Nova Senha:</label>
+                                        <input
+                                            type="password"
+                                            value={editPassword}
+                                            onChange={(e) => setEditPassword(e.target.value)}
+                                            placeholder="Nova senha"
+                                        />
 
-                        {
-                            editError && < p className = "error-message" > { editError } < /p>}
+                                        {editError && <p className="error-message">{editError}</p>}
 
-                            <
-                            div className = "button-group small-buttons" >
-                            <
-                            button
-                            type = "submit"
-                            disabled = { editLoading }
-                            className = "submit-button small-btn" > { editLoading ? 'Salvando...' : 'Salvar' } <
-                            /button> <
-                            button
-                            type = "button"
-                            onClick = {
-                                () => {
-                                    setShowEditModal(false);
-                                    openDeleteModal();
-                                }
-                            }
-                            className = "delete-account-button small-btn" >
-                            Excluir Conta <
-                            /button> <
-                            button
-                            type = "button"
-                            onClick = {
-                                () => setShowEditModal(false)
-                            }
-                            className = "cancel-button small-btn" >
-                            Cancelar <
-                            /button> < /
-                            div > <
-                            /form> < /
-                            div > <
-                            /div>
-                        )
-                    }
+                                        <div className="button-group small-buttons">
+                                            <button
+                                                type="submit"
+                                                disabled={editLoading}
+                                                className="submit-button small-btn"
+                                            >
+                                                {editLoading ? 'Salvando...' : 'Salvar'}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setShowEditModal(false);
+                                                    openDeleteModal();
+                                                }}
+                                                className="delete-account-button small-btn"
+                                            >
+                                                Excluir Conta
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowEditModal(false)}
+                                                className="cancel-button small-btn"
+                                            >
+                                                Cancelar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        )}
 
-                    { /* Delete Account Modal */ } {
-                        showDeleteModal && ( <
-                            div className = "modal-overlay" >
-                            <
-                            div className = "modal-card" >
-                            <
-                            h3 > Excluir Conta < /h3> <
-                            p > Tem certeza que deseja excluir sua conta ? Esta ação é irreversível. < /p> {
-                            deleteError && < p className = "error-message" > { deleteError } < /p>} <
-                            div className = "button-group" >
-                            <
-                            button onClick = { handleDeleteAccount }
-                            disabled = { deleteLoading }
-                            className = "delete-button" > { deleteLoading ? 'Excluindo...' : 'Excluir' } <
-                            /button> <
-                            button onClick = {
-                                () => setShowDeleteModal(false)
-                            }
-                            className = "cancel-button" >
-                            Cancelar <
-                            /button> < /
-                            div > <
-                            /div> < /
-                            div >
-                        )
-                    }
+                        {/* Delete Account Modal */}
+                        {showDeleteModal && (
+                            <div className="modal-overlay">
+                                <div className="modal-card">
+                                    <h3>Excluir Conta</h3>
+                                    <p>Tem certeza que deseja excluir sua conta? Esta ação é irreversível.</p>
+                                    {deleteError && <p className="error-message">{deleteError}</p>}
+                                    <div className="button-group">
+                                        <button
+                                            onClick={handleDeleteAccount}
+                                            disabled={deleteLoading}
+                                            className="delete-button"
+                                        >
+                                            {deleteLoading ? 'Excluindo...' : 'Excluir'}
+                                        </button>
+                                        <button
+                                            onClick={() => setShowDeleteModal(false)}
+                                            className="cancel-button"
+                                        >
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
-                    <
-                    div className = "tasmota-settings-card" >
-                        <
-                        h3 > Gerenciamento de Dispositivos < /h3> <
-                    p className = "device-management-description" >
-                        Aqui você pode gerenciar seus dispositivos Tasmota. <
-                        /p>
+                        <div className="tasmota-settings-card">
+                            <h3>Gerenciamento de Dispositivos</h3>
+                            <p className="device-management-description">
+                                Aqui você pode gerenciar seus dispositivos Tasmota.
+                            </p>
 
-                    {
-                        isRealData ? ( <
-                            p >
-                            <
-                            button className = "add-device-btn"
-                            onClick = {
-                                () => navigate('/add-device')
-                            } >
-                            Adicionar Novo Dispositivo <
-                            /button> <
-                            button className = "refresh-devices-btn"
-                            onClick = { fetchDashboardData } >
-                            Atualizar Lista de Dispositivos <
-                            /button> < /
-                            p >
-                        ) : ( <
-                            p className = "admin-only-message" >
-                            O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador. <
-                            /p>
-                        )
-                    } <
-                    /div> < /
-                    div >
-                )
-            } <
-            /div> < /
-        div >
+                            {isRealData ? (
+                                <p>
+                                    <button
+                                        className="add-device-btn"
+                                        onClick={() => navigate('/add-device')}
+                                    >
+                                        Adicionar Novo Dispositivo
+                                    </button>
+                                    <button
+                                        className="refresh-devices-btn"
+                                        onClick={fetchDashboardData}
+                                    >
+                                        Atualizar Lista de Dispositivos
+                                    </button>
+                                </p>
+                            ) : (
+                                <p className="admin-only-message">
+                                    O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador.
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
     );
 }
 
