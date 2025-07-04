@@ -343,7 +343,7 @@ function DashboardPage() {
     const fetchDashboardData = useCallback(async() => {
         const token = localStorage.getItem('token');
         if (!token) {
-            navigate('/');
+            setSessionExpired(true);
             return;
         }
 
@@ -447,7 +447,7 @@ function DashboardPage() {
         const storedUserEmail = localStorage.getItem('userEmail');
 
         if (!token) {
-            navigate('/');
+            setSessionExpired(true);
             return;
         }
 
