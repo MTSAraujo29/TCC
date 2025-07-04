@@ -12,6 +12,7 @@ function LoginPage() {
         email: '',
         password: ''
     });
+
     const [uiState, setUiState] = useState({
         error: '',
         loading: false,
@@ -19,7 +20,24 @@ function LoginPage() {
     });
 
     // Constants
-    const passwordToggleIcon = uiState.showPassword ? '🙈' : '👁️';
+    const EyeOpen = (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#888"
+             strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <ellipse cx="12" cy="12" rx="8" ry="5" />
+            <circle cx="12" cy="12" r="2.5" />
+        </svg>
+    );
+
+    const EyeClosed = (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#888"
+             strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M1 1l22 22" />
+            <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-5.05 0-9.29-3.14-10.74-7.5a10.97 10.97 0 0 1 1.66-3.13" />
+            <path d="M9.53 9.53A3.5 3.5 0 0 0 12 15.5c1.38 0 2.63-.83 3.16-2.03" />
+        </svg>
+    );
+
+    const passwordToggleIcon = uiState.showPassword ? EyeClosed : EyeOpen;
     const passwordToggleTitle = uiState.showPassword ? 'Ocultar senha' : 'Mostrar senha';
 
     // Event handlers
@@ -49,6 +67,10 @@ function LoginPage() {
         }
     };
 
+    const togglePasswordVisibility = () => {
+        setUiState(prev => ({ ...prev, showPassword: !prev.showPassword }));
+    };
+
     // Helper functions
     const handleSuccessfulLogin = (data) => {
         console.log('Login successful:', data);
@@ -68,11 +90,10 @@ function LoginPage() {
 
     const handleNetworkError = (err) => {
         console.error('Network error during login:', err);
-        setUiState(prev => ({ ...prev, error: 'Não foi possível conectar ao servidor. Verifique sua conexão ou tente mais tarde.' }));
-    };
-
-    const togglePasswordVisibility = () => {
-        setUiState(prev => ({ ...prev, showPassword: !prev.showPassword }));
+        setUiState(prev => ({
+            ...prev,
+            error: 'Não foi possível conectar ao servidor. Verifique sua conexão ou tente mais tarde.'
+        }));
     };
 
     // Render
@@ -81,15 +102,6 @@ function LoginPage() {
             <div className="card">
                 <div className="logo-icon">⚡</div>
                 <h2>Login</h2>
-
-                <button
-                    type="button"
-                    className="link-button"
-                    style={{ marginBottom: 16 }}
-                    onClick={() => navigate('/')}
-                >
-                    Voltar
-                </button>
 
                 <form onSubmit={handleSubmit}>
                     <input
@@ -143,6 +155,15 @@ function LoginPage() {
                 <Link to="/create-account" className="link-button">
                     Criar uma conta
                 </Link>
+
+                <button
+                    type="button"
+                    className="link-button"
+                    style={{ marginTop: 16 }}
+                    onClick={() => navigate('/')}
+                >
+                    Voltar
+                </button>
             </div>
         </div>
     );
