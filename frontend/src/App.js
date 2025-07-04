@@ -9,7 +9,7 @@ import FullScreenChartPage from './pages/FullScreenChartPage';
 import HomePage from './pages/HomePage';
 import './App.css'; // Estilos globais para a aplicação
 
-function App() {
+function AppRoutes() {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -35,22 +35,17 @@ function App() {
     }, [location.pathname]);
 
     return ( <
-        Router >
+        Routes >
         <
-        Routes > { /* Home route */ } <
         Route path = "/"
         element = { < HomePage / > }
-        />
-
-        { /* Authentication routes */ } <
+        /> <
         Route path = "/login"
         element = { < LoginPage / > }
         /> <
         Route path = "/create-account"
         element = { < CreateAccountPage / > }
-        />
-
-        { /* App routes */ } <
+        /> <
         Route path = "/dashboard"
         element = { < DashboardPage / > }
         /> <
@@ -60,7 +55,16 @@ function App() {
         Route path = "/grafico-cheio"
         element = { < FullScreenChartPage / > }
         /> < /
-        Routes > <
+        Routes >
+    );
+}
+
+function App() {
+    return ( <
+        Router >
+        <
+        AppRoutes / >
+        <
         /Router>
     );
 }
