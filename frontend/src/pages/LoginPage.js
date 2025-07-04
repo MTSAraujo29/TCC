@@ -8,32 +8,43 @@ function LoginPage() {
     const navigate = useNavigate();
 
     // State management
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
+    });
+    const [uiState, setUiState] = useState({
+        error: '',
+        loading: false,
+        showPassword: false
+    });
+
+    // Constants
+    const passwordToggleIcon = uiState.showPassword ? '🙈' : '👁️';
+    const passwordToggleTitle = uiState.showPassword ? 'Ocultar senha' : 'Mostrar senha';
 
     // Event handlers
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(''); // Clear previous errors
-
-        console.log('Attempting login with:', { email, password });
+        setUiState(prev => ({ ...prev, error: '', loading: true }));
 
         try {
             const response = await fetch(API_ENDPOINTS.LOGIN, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify(formData),
             });
 
             const data = await response.json();
+            setUiState(prev => ({ ...prev, loading: false }));
 
-            if (response.ok) {
-                handleSuccessfulLogin(data);
-            } else {
-                handleLoginError(data);
-            }
+            response.ok ? handleSuccessfulLogin(data) : handleLoginError(data);
         } catch (err) {
+            setUiState(prev => ({ ...prev, loading: false }));
             handleNetworkError(err);
         }
     };
@@ -52,12 +63,16 @@ function LoginPage() {
 
     const handleLoginError = (data) => {
         console.error('Login failed:', data.message || 'Unknown error');
-        setError(data.message || 'Email ou senha inválidos.');
+        setUiState(prev => ({ ...prev, error: data.message || 'Email ou senha inválidos.' }));
     };
 
     const handleNetworkError = (err) => {
         console.error('Network error during login:', err);
-        setError('Não foi possível conectar ao servidor. Verifique sua conexão ou tente mais tarde.');
+        setUiState(prev => ({ ...prev, error: 'Não foi possível conectar ao servidor. Verifique sua conexão ou tente mais tarde.' }));
+    };
+
+    const togglePasswordVisibility = () => {
+        setUiState(prev => ({ ...prev, showPassword: !prev.showPassword }));
     };
 
     // Render
@@ -67,29 +82,62 @@ function LoginPage() {
                 <div className="logo-icon">⚡</div>
                 <h2>Login</h2>
 
+                <button
+                    type="button"
+                    className="link-button"
+                    style={{ marginBottom: 16 }}
+                    onClick={() => navigate('/')}
+                >
+                    Voltar
+                </button>
+
                 <form onSubmit={handleSubmit}>
                     <input
                         type="email"
+                        name="email"
                         placeholder="Email"
                         required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <input
-                        type="password"
-                        placeholder="Senha"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        value={formData.email}
+                        onChange={handleInputChange}
                     />
 
-                    {error && (
+                    <div style={{ position: 'relative' }}>
+                        <input
+                            type={uiState.showPassword ? 'text' : 'password'}
+                            name="password"
+                            placeholder="Senha"
+                            required
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            style={{ paddingRight: 40 }}
+                        />
+                        <span
+                            onClick={togglePasswordVisibility}
+                            style={{
+                                position: 'absolute',
+                                right: 10,
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                cursor: 'pointer',
+                                color: '#888',
+                                fontSize: 18
+                            }}
+                            title={passwordToggleTitle}
+                        >
+                            {passwordToggleIcon}
+                        </span>
+                    </div>
+
+                    {uiState.error && (
                         <p style={{ color: 'red', fontSize: '0.9em' }}>
-                            {error}
+                            {uiState.error}
                         </p>
                     )}
 
-                    <button type="submit">Entrar</button>
+                    <button type="submit" disabled={uiState.loading}>
+                        {uiState.loading ? 'Entrando' : 'Entrar'}
+                        {uiState.loading && <span className="loading-dots">...</span>}
+                    </button>
                 </form>
 
                 <Link to="/create-account" className="link-button">

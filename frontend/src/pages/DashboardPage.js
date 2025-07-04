@@ -427,12 +427,10 @@ function DashboardPage() {
     useEffect(() => {
         let intervalId;
         if (devices.length > 0 && devices[0].id) {
-            // Atualiza imediatamente ao montar
             fetchLiveTotalEnergy(devices[0].id);
-            // Atualiza a cada 10 segundos (aumentado de 5 para 10)
             intervalId = setInterval(() => {
                 fetchLiveTotalEnergy(devices[0].id);
-            }, 10000);
+            }, 5 * 60 * 1000); // 5 minutos
         }
         return () => {
             if (intervalId) clearInterval(intervalId);
@@ -661,18 +659,33 @@ function DashboardPage() {
     return (
         <div className="container dashboard-container">
             {/* Sidebar de Navegação - Esconde em telas <= 700px */}
-            <div className="sidebar" style={{ display: window.innerWidth <= 700 ? 'none' : 'flex' }}>
+            <div
+                className="sidebar"
+                style={{ display: window.innerWidth <= 700 ? 'none' : 'flex' }}
+            >
                 <div className="logo-icon-sidebar">⚡</div>
-                <div className={`menu-item ${activeSection === 'inicio' ? 'active' : ''}`} onClick={() => setActiveSection('inicio')}>
+                <div
+                    className={`menu-item ${activeSection === 'inicio' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('inicio')}
+                >
                     🏠Home
                 </div>
-                <div className={`menu-item ${activeSection === 'controle' ? 'active' : ''}`} onClick={() => setActiveSection('controle')}>
+                <div
+                    className={`menu-item ${activeSection === 'controle' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('controle')}
+                >
                     🔌Controle de Energia
                 </div>
-                <div className={`menu-item ${activeSection === 'relatorios' ? 'active' : ''}`} onClick={() => setActiveSection('relatorios')}>
+                <div
+                    className={`menu-item ${activeSection === 'relatorios' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('relatorios')}
+                >
                     📊Relatórios
                 </div>
-                <div className={`menu-item ${activeSection === 'configuracoes' ? 'active' : ''}`} onClick={() => setActiveSection('configuracoes')}>
+                <div
+                    className={`menu-item ${activeSection === 'configuracoes' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('configuracoes')}
+                >
                     ⚙️Configurações
                 </div>
                 <div className="sidebar-bottom">
@@ -685,7 +698,10 @@ function DashboardPage() {
             {/* Mobile Menu */}
             {window.innerWidth <= 700 && (
                 <div className="mobile-menu-bar">
-                    <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                    <button
+                        className="hamburger-btn"
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    >
                         <span className="hamburger-icon">☰</span>
                     </button>
                 </div>
@@ -744,17 +760,15 @@ function DashboardPage() {
             {/* Conteúdo Principal do Dashboard */}
             <div className="main-content">
                 {fictionalDataMessage && (
-                    <div
-                        style={{
-                            backgroundColor: '#ffc107',
-                            color: '#333',
-                            padding: '10px 15px',
-                            borderRadius: '5px',
-                            marginBottom: '20px',
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                        }}
-                    >
+                    <div style={{
+                        backgroundColor: '#ffc107',
+                        color: '#333',
+                        padding: '10px 15px',
+                        borderRadius: '5px',
+                        marginBottom: '20px',
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                    }}>
                         {fictionalDataMessage}
                     </div>
                 )}
@@ -767,70 +781,52 @@ function DashboardPage() {
                             <div className="metric-card">
                                 <h3>Consumo de Watts atual</h3>
                                 <p>
-                                    {devices.length > 0
-                                        ? devices
-                                        .reduce(
-                                            (sum, d) =>
-                                                sum +
-                                                (d.latestReading && d.powerState && typeof d.latestReading.power === 'number'
-                                                    ? d.latestReading.power
-                                                    : 0),
-                                            0
-                                        )
-                                        .toFixed(2) + ' W'
-                                        : '0.00 W'}
+                                    {devices.length > 0 ?
+                                        devices
+                                            .reduce(
+                                                (sum, d) =>
+                                                    sum +
+                                                    (d.latestReading && d.powerState && typeof d.latestReading.power === 'number' ?
+                                                        d.latestReading.power :
+                                                        0),
+                                                0
+                                            )
+                                            .toFixed(2) + ' W' : '0.00 W'}
                                 </p>
                             </div>
                             <div className="metric-card">
-                                <h3>Consumo de quilowatt - hora do mês atual</h3>
+                                <h3>Consumo de quilowatt-hora do mês atual</h3>
                                 <p>{currentMonthConsumption}</p>
                             </div>
                             <div className="metric-card">
-                                <h3>Consumo quilowatt - hora total</h3>
-                                <p>
-                                    {devices.length > 0
-                                        ? devices
-                                        .reduce(
-                                            (sum, d) =>
-                                                sum +
-                                                (d.latestReading && d.powerState && typeof d.latestReading.totalEnergy === 'number'
-                                                    ? d.latestReading.totalEnergy
-                                                    : 0),
-                                            0
-                                        )
-                                        .toFixed(2) + ' kWh'
-                                        : '0.00 kWh'}
-                                </p>
+                                <h3>Consumo quilowatt-hora total</h3>
+                                <p>{liveTotalEnergy !== null ? `${liveTotalEnergy.toFixed(2)} kWh` : 'Carregando...'}</p>
                             </div>
                             <div className="metric-card">
                                 <h3>Fatura Estimada</h3>
                                 <p>
-                                    R${' '}
+                                    R$ {' '}
                                     {(
-                                        devices.length > 0
-                                            ? devices.reduce(
-                                            (sum, d) =>
-                                                sum +
-                                                (d.latestReading && d.powerState && typeof d.latestReading.totalEnergy === 'number'
-                                                    ? d.latestReading.totalEnergy
-                                                    : 0),
+                                        devices.length > 0 ?
+                                            devices.reduce(
+                                                (sum, d) =>
+                                                    sum +
+                                                    (d.latestReading && d.powerState && typeof d.latestReading.totalEnergy === 'number' ?
+                                                        d.latestReading.totalEnergy :
+                                                        0),
+                                                0
+                                            ) * 0.75 :
                                             0
-                                        ) * 0.75
-                                            : 0
                                     ).toFixed(2)}
                                 </p>
                             </div>
                             <div className="metric-card">
                                 <h3>Consumo de Amperes atual</h3>
-                                <p>
-
-                                </p>
+                                <p></p>
                             </div>
                             <div className="metric-card">
                                 <h3>Gasto reduzido</h3>
-                                <p>
-
-                                </p>
+                                <p></p>
                             </div>
                         </div>
 
@@ -893,13 +889,11 @@ function DashboardPage() {
 
                                 <div className="bottom-card suggested-devices-card">
                                     <h3>Dispositivos Sugeridos</h3>
-                                    <p
-                                        style={{
-                                            color: '#BBB',
-                                            fontSize: '0.9em',
-                                            marginBottom: '15px',
-                                        }}
-                                    >
+                                    <p style={{
+                                        color: '#BBB',
+                                        fontSize: '0.9em',
+                                        marginBottom: '15px',
+                                    }}>
                                         Sugestões para otimizar o consumo de energia em seus dispositivos.
                                     </p>
                                     <ul className="device-suggestion-list">
@@ -980,6 +974,12 @@ function DashboardPage() {
                     <div className="reports-section">
                         <h2>Relatórios de Consumo</h2>
                         <div className="report-summary-card">
+                            <h3>Energia Total</h3>
+                            <p style={{ fontSize: '1.5em', fontWeight: 'bold' }}>
+                                {liveTotalEnergy !== null ? `${liveTotalEnergy.toFixed(2)} kWh` : 'Carregando...'}
+                            </p>
+                        </div>
+                        <div className="report-summary-card">
                             <h3>Resumo Geral</h3>
                             <p>
                                 Total de Dispositivos: <strong>{report.summary.totalDevices}</strong>
@@ -1001,80 +1001,64 @@ function DashboardPage() {
                                     <tr>
                                         <td>Tensão</td>
                                         <td>
-                                            {devices[0].powerState && typeof devices[0].latestReading.voltage === 'number'
-                                                ? devices[0].latestReading.voltage
-                                                : 0}{' '}
-                                            V
+                                            {devices[0].powerState && typeof devices[0].latestReading.voltage === 'number' ?
+                                                devices[0].latestReading.voltage : 0} V
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Corrente</td>
                                         <td>
-                                            {devices[0].powerState && typeof devices[0].latestReading.current === 'number'
-                                                ? devices[0].latestReading.current
-                                                : 0}{' '}
-                                            A
+                                            {devices[0].powerState && typeof devices[0].latestReading.current === 'number' ?
+                                                devices[0].latestReading.current : 0} A
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Potência Ativa</td>
                                         <td>
-                                            {devices[0].powerState && typeof devices[0].latestReading.power === 'number'
-                                                ? devices[0].latestReading.power
-                                                : 0}{' '}
-                                            W
+                                            {devices[0].powerState && typeof devices[0].latestReading.power === 'number' ?
+                                                devices[0].latestReading.power : 0} W
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Potência Aparente</td>
                                         <td>
-                                            {devices[0].powerState && typeof devices[0].latestReading.ApparentPower === 'number'
-                                                ? devices[0].latestReading.ApparentPower
-                                                : 0}{' '}
-                                            VA
+                                            {devices[0].powerState && typeof devices[0].latestReading.ApparentPower === 'number' ?
+                                                devices[0].latestReading.ApparentPower : 0} VA
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Potência Reativa</td>
                                         <td>
-                                            {devices[0].powerState && typeof devices[0].latestReading.ReactivePower === 'number'
-                                                ? devices[0].latestReading.ReactivePower
-                                                : 0}{' '}
-                                            var
+                                            {devices[0].powerState && typeof devices[0].latestReading.ReactivePower === 'number' ?
+                                                devices[0].latestReading.ReactivePower : 0} var
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Fator de Potência</td>
                                         <td>
-                                            {devices[0].powerState && typeof devices[0].latestReading.PowerFactor === 'number'
-                                                ? devices[0].latestReading.PowerFactor
-                                                : 0}
+                                            {devices[0].powerState && typeof devices[0].latestReading.PowerFactor === 'number' ?
+                                                devices[0].latestReading.PowerFactor : 0}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Energia Hoje</td>
                                         <td>
-                                            {typeof devices[0].latestReading.EnergyToday === 'number'
-                                                ? devices[0].latestReading.EnergyToday
-                                                : '--'}{' '}
-                                            kWh
+                                            {typeof devices[0].latestReading.EnergyToday === 'number' ?
+                                                devices[0].latestReading.EnergyToday : '--'} kWh
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Energia Ontem</td>
                                         <td>
-                                            {typeof devices[0].latestReading.EnergyYesterday === 'number'
-                                                ? devices[0].latestReading.EnergyYesterday
-                                                : '--'}{' '}
-                                            kWh
+                                            {typeof devices[0].latestReading.EnergyYesterday === 'number' ?
+                                                devices[0].latestReading.EnergyYesterday : '--'} kWh
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Energia Total</td>
                                         <td>
-                                            {devices[0].powerState && typeof devices[0].latestReading.totalEnergy === 'number'
-                                                ? devices[0].latestReading.totalEnergy.toFixed(2) + ' kWh'
-                                                : '0.00 kWh'}
+                                            {devices[0].powerState && typeof devices[0].latestReading.totalEnergy === 'number' ?
+                                                devices[0].latestReading.totalEnergy.toFixed(2) + ' kWh' : '0.00 kWh'}
                                         </td>
                                     </tr>
                                     </tbody>
@@ -1090,80 +1074,64 @@ function DashboardPage() {
                                     <tr>
                                         <td>Tensão</td>
                                         <td>
-                                            {devices[1].powerState && typeof devices[1].latestReading.voltage === 'number'
-                                                ? devices[1].latestReading.voltage
-                                                : 0}{' '}
-                                            V
+                                            {devices[1].powerState && typeof devices[1].latestReading.voltage === 'number' ?
+                                                devices[1].latestReading.voltage : 0} V
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Corrente</td>
                                         <td>
-                                            {devices[1].powerState && typeof devices[1].latestReading.current === 'number'
-                                                ? devices[1].latestReading.current
-                                                : 0}{' '}
-                                            A
+                                            {devices[1].powerState && typeof devices[1].latestReading.current === 'number' ?
+                                                devices[1].latestReading.current : 0} A
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Potência Ativa</td>
                                         <td>
-                                            {devices[1].powerState && typeof devices[1].latestReading.power === 'number'
-                                                ? devices[1].latestReading.power
-                                                : 0}{' '}
-                                            W
+                                            {devices[1].powerState && typeof devices[1].latestReading.power === 'number' ?
+                                                devices[1].latestReading.power : 0} W
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Potência Aparente</td>
                                         <td>
-                                            {devices[1].powerState && typeof devices[1].latestReading.ApparentPower === 'number'
-                                                ? devices[1].latestReading.ApparentPower
-                                                : 0}{' '}
-                                            VA
+                                            {devices[1].powerState && typeof devices[1].latestReading.ApparentPower === 'number' ?
+                                                devices[1].latestReading.ApparentPower : 0} VA
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Potência Reativa</td>
                                         <td>
-                                            {devices[1].powerState && typeof devices[1].latestReading.ReactivePower === 'number'
-                                                ? devices[1].latestReading.ReactivePower
-                                                : 0}{' '}
-                                            var
+                                            {devices[1].powerState && typeof devices[1].latestReading.ReactivePower === 'number' ?
+                                                devices[1].latestReading.ReactivePower : 0} var
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Fator de Potência</td>
                                         <td>
-                                            {devices[1].powerState && typeof devices[1].latestReading.PowerFactor === 'number'
-                                                ? devices[1].latestReading.PowerFactor
-                                                : 0}
+                                            {devices[1].powerState && typeof devices[1].latestReading.PowerFactor === 'number' ?
+                                                devices[1].latestReading.PowerFactor : 0}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Energia Hoje</td>
                                         <td>
-                                            {typeof devices[1].latestReading.EnergyToday === 'number'
-                                                ? devices[1].latestReading.EnergyToday
-                                                : '--'}{' '}
-                                            kWh
+                                            {typeof devices[1].latestReading.EnergyToday === 'number' ?
+                                                devices[1].latestReading.EnergyToday : '--'} kWh
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Energia Ontem</td>
                                         <td>
-                                            {typeof devices[1].latestReading.EnergyYesterday === 'number'
-                                                ? devices[1].latestReading.EnergyYesterday
-                                                : '--'}{' '}
-                                            kWh
+                                            {typeof devices[1].latestReading.EnergyYesterday === 'number' ?
+                                                devices[1].latestReading.EnergyYesterday : '--'} kWh
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Energia Total</td>
                                         <td>
-                                            {devices[1].powerState && typeof devices[1].latestReading.totalEnergy === 'number'
-                                                ? devices[1].latestReading.totalEnergy.toFixed(2) + ' kWh'
-                                                : '0.00 kWh'}
+                                            {devices[1].powerState && typeof devices[1].latestReading.totalEnergy === 'number' ?
+                                                devices[1].latestReading.totalEnergy.toFixed(2) + ' kWh' : '0.00 kWh'}
                                         </td>
                                     </tr>
                                     </tbody>
@@ -1178,23 +1146,19 @@ function DashboardPage() {
                                     <div key={index} className="device-report-item">
                                         <h4>{detail.name}</h4>
                                         <p>
-                                            Status Atual:{' '}
-                                            <span
-                                                className={
-                                                    devices[index] && devices[index].powerState ? 'status-on-text' : 'status-off-text'
-                                                }
-                                            >
+                                            Status Atual: {' '}
+                                            <span className={
+                                                devices[index] && devices[index].powerState ? 'status-on-text' : 'status-off-text'
+                                            }>
                       {devices[index] && devices[index].powerState ? 'Ligado' : 'Desligado'}
                     </span>
                                         </p>
                                         <p>Tipo: {detail.type}</p>
                                         <p>Recomendação: {detail.recommendation}</p>
                                         {parseFloat(detail.potentialImpact) !== 0.00 && (
-                                            <p
-                                                className={
-                                                    parseFloat(detail.potentialImpact) > 0 ? 'impact-positive' : 'impact-negative'
-                                                }
-                                            >
+                                            <p className={
+                                                parseFloat(detail.potentialImpact) > 0 ? 'impact-positive' : 'impact-negative'
+                                            }>
                                                 Impacto Potencial: {detail.potentialImpact}
                                                 kWh no próximo mês
                                             </p>
@@ -1225,13 +1189,11 @@ function DashboardPage() {
                                     Editar Perfil
                                 </button>
                             </p>
-                            <p
-                                style={{
-                                    marginTop: '20px',
-                                    fontSize: '0.9em',
-                                    color: '#888',
-                                }}
-                            >
+                            <p style={{
+                                marginTop: '20px',
+                                fontSize: '0.9em',
+                                color: '#888',
+                            }}>
                                 * Após editar ou excluir a conta, será necessário fazer login novamente.
                             </p>
                         </div>
@@ -1304,7 +1266,10 @@ function DashboardPage() {
                                         >
                                             {deleteLoading ? 'Excluindo...' : 'Excluir'}
                                         </button>
-                                        <button onClick={() => setShowDeleteModal(false)} className="cancel-button">
+                                        <button
+                                            onClick={() => setShowDeleteModal(false)}
+                                            className="cancel-button"
+                                        >
                                             Cancelar
                                         </button>
                                     </div>

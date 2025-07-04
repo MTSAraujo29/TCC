@@ -7,7 +7,8 @@ export const API_ENDPOINTS = {
     TASMOTA: `${API_BASE_URL}/api/tasmota`,
     DASHBOARD: `${API_BASE_URL}/api/dashboard`,
     HEALTH: `${API_BASE_URL}/health`,
-    ACCOUNT: `${API_BASE_URL}/api/account`
+    ACCOUNT: `${API_BASE_URL}/api/account`,
+    TOTAL_ENERGY_LIVE: `${API_BASE_URL}/api/tasmota/devices/DEVICE_ID/total-energy-live`
 };
 
 export default API_BASE_URL;
