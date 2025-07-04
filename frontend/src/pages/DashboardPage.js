@@ -988,68 +988,111 @@ function DashboardPage() {
         }
 
         { /* ========== REPORTS SECTION ========== */ } {
-            activeSection === 'relatorios' && ( <
-                    div className = "reports-section" >
-                    <
-                    h2 > Relatórios de Consumo < /h2>
+                {activeSection === 'relatorios' && (
+                    <div className="reports-section">
+                        <h2>Relatórios de Consumo</h2>
+                        <div className="report-summary-card">
+                            <h3>Resumo Geral</h3>
+                            <p>
+                                Total de Dispositivos: <strong>{report.summary.totalDevices}</strong>
+                            </p>
+                            <p>
+                                Com uso Inteligente(estimado): <strong>{report.summary.smartUsageDevices}</strong>
+                            </p>
+                            <p>
+                                Dispositivos com Otimização Pendente(estimado): <strong>{report.summary.nonSmartUsageDevices}</strong>
+                            </p>
+                            <p className="overall-report-message">{report.summary.overallMessage}</p>
+                        </div>
 
-                    <
-                    div className = "report-summary-card" >
-                    <
-                    h3 > Resumo Geral < /h3> <
-                    p > Total de Dispositivos: < strong > { report.summary.totalDevices } < /strong></p >
-                    <
-                    p > Com uso Inteligente(estimado): < strong > { report.summary.smartUsageDevices } < /strong></p >
-                    <
-                    p > Dispositivos com Otimização Pendente(estimado): < strong > { report.summary.nonSmartUsageDevices } < /strong></p >
-                    <
-                    p className = "overall-report-message" > { report.summary.overallMessage } < /p> < /
-                    div >
-
-                    { /* Device 1 Real-time Data */ } {
-                        isRealData && devices.length > 0 && devices[0].latestReading && ( <
-                            div className = "energy-realtime-card" >
-                            <
-                            h3 > Dados em Tempo Real do Dispositivo Sonoff Sala < /h3> <
-                            table className = "energy-realtime-table" >
-                            <
-                            tbody className = "energy-realtime-tbody" >
-                            <
-                            tr >
-                            <
-                            td > Tensão < /td> <
-                            td > { typeof devices[0].latestReading.voltage === 'number' ? devices[0].latestReading.voltage + ' V' : '0 V' } < /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Corrente < /td> <
-                            td > { typeof devices[0].latestReading.current === 'number' ? devices[0].latestReading.current + ' A' : '0 A' } < /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Potência < /td> <
-                            td > { typeof devices[0].latestReading.power === 'number' ? devices[0].latestReading.power + ' W' : '0 W' } < /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Energia Hoje < /td> <
-                            td > { typeof devices[0].latestReading.energyToday === 'number' ? devices[0].latestReading.energyToday.toFixed(2) + ' kWh' : '0.00 kWh' } < /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Energia Ontem < /td> <
-                            td > { typeof devices[0].latestReading.energyYesterday === 'number' ? devices[0].latestReading.energyYesterday.toFixed(2) + ' kWh' : '0.00 kWh' } < /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Energia Total < /td> <
-                            td > { typeof devices[0].latestReading.totalEnergy === 'number' ? devices[0].latestReading.totalEnergy.toFixed(2) + ' kWh' : '0.00 kWh' } < /td> < /
-                            tr > <
-                            /tbody> < /
-                            table > <
-                            /div>
-                        )
-                    }
+                        {isRealData && devices.length > 0 && devices[0].latestReading && (
+                            <div className="energy-realtime-card">
+                                <h3>Dados em Tempo Real do Dispositivo Sonoff Sala</h3>
+                                <table className="energy-realtime-table">
+                                    <tbody className="energy-realtime-tbody">
+                                    <tr>
+                                        <td>Tensão</td>
+                                        <td>
+                                            {devices[0].powerState && typeof devices[0].latestReading.voltage === 'number'
+                                                ? devices[0].latestReading.voltage
+                                                : 0}{' '}
+                                            V
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Corrente</td>
+                                        <td>
+                                            {devices[0].powerState && typeof devices[0].latestReading.current === 'number'
+                                                ? devices[0].latestReading.current
+                                                : 0}{' '}
+                                            A
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Potência Ativa</td>
+                                        <td>
+                                            {devices[0].powerState && typeof devices[0].latestReading.power === 'number'
+                                                ? devices[0].latestReading.power
+                                                : 0}{' '}
+                                            W
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Potência Aparente</td>
+                                        <td>
+                                            {devices[0].powerState && typeof devices[0].latestReading.ApparentPower === 'number'
+                                                ? devices[0].latestReading.ApparentPower
+                                                : 0}{' '}
+                                            VA
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Potência Reativa</td>
+                                        <td>
+                                            {devices[0].powerState && typeof devices[0].latestReading.ReactivePower === 'number'
+                                                ? devices[0].latestReading.ReactivePower
+                                                : 0}{' '}
+                                            var
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Fator de Potência</td>
+                                        <td>
+                                            {devices[0].powerState && typeof devices[0].latestReading.PowerFactor === 'number'
+                                                ? devices[0].latestReading.PowerFactor
+                                                : 0}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Energia Hoje</td>
+                                        <td>
+                                            {typeof devices[0].latestReading.EnergyToday === 'number'
+                                                ? devices[0].latestReading.EnergyToday
+                                                : '--'}{' '}
+                                            kWh
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Energia Ontem</td>
+                                        <td>
+                                            {typeof devices[0].latestReading.EnergyYesterday === 'number'
+                                                ? devices[0].latestReading.EnergyYesterday
+                                                : '--'}{' '}
+                                            kWh
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Energia Total</td>
+                                        <td>
+                                            {devices[0].powerState && typeof devices[0].latestReading.totalEnergy === 'number'
+                                                ? devices[0].latestReading.totalEnergy.toFixed(2) + ' kWh'
+                                                : '0.00 kWh'}
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
 
                     { /* Device 2 Real-time Data */ } {
                         isRealData && devices.length > 1 && devices[1].latestReading && ( <
