@@ -45,15 +45,6 @@ function HomePage() {
                     </button>
                 </div>
 
-                <div className="smart-energy-animated">
-                    <img
-                        src={process.env.PUBLIC_URL + '/icon.png'}
-                        alt="Ícone Smart Energy"
-                        className="smart-energy-icon"
-                    />
-                    <span className="smart-energy-title">Smart Energy</span>
-                </div>
-
                 <div className="homepage-carousel">
                     <div className="homepage-slide">
                         {slides[currentSlide]}
@@ -73,30 +64,24 @@ function HomePage() {
                 <section className="homepage-card">
                     <h2>Olá, eu sou Matheus Araújo</h2>
                     <p className="homepage-intro">
-                        Tenho 25 anos, sou estudante de Ciências da Computação é fudando da ferramenta!!
+                        Tenho 25 anos, sou estudante de Ciências da Computação é fudando da ferramenta!!.
                     </p>
                 </section>
 
                 <section className="homepage-card">
                     <h2>Por que pensar em energia?</h2>
                     <p>
-                        A energia está presente em praticamente todas as atividades do nosso dia a dia— ao acender uma luz,
-                        assistir à televisão, usar o computador ou carregar o celular. Mesmo em tarefas simples, ela é
-                        indispensável. Mas, em meio à rotina, surge uma pergunta essencial: como podemos utilizar esse
-                        recurso de maneira mais eficiente e sustentável a longo prazo? Refletir sobre isso é o primeiro
-                        passo para um futuro com mais consciência, economia e respeito ao meio ambiente.
+                        A energia está presente em praticamente todas as atividades do nosso dia a dia — ao acender uma luz, assistir à televisão, usar o computador ou carregar o celular. Mesmo em tarefas simples, ela é indispensável.
+                        Mas, em meio à rotina, surge uma pergunta essencial: como podemos utilizar esse recurso de maneira mais eficiente e sustentável a longo prazo? Refletir sobre isso é o primeiro passo para um futuro com mais consciência, economia e respeito ao meio ambiente.
                     </p>
                 </section>
 
                 <section className="homepage-card">
                     <h2>O que este sistema faz?</h2>
                     <p>
-                        Descubra uma nova forma de cuidar do planeta e da sua casa. Este sistema online inovador,
-                        desenvolvido em formato de website, monitora o consumo de energia de dispositivos eletrônicos
-                        residenciais por meio da tecnologia IoT. Com uma estrutura baseada em segurança digital, bancos
-                        de dados inteligentes e metodologias modernas de software, ele oferece mais do que controle:
-                        promove eficiência, economia e consciência ambiental. Uma solução pensada para quem acredita
-                        que tecnologia e sustentabilidade devem caminhar juntas.
+                        Descubra uma nova forma de cuidar do planeta e da sua casa. Este sistema online inovador, desenvolvido em formato de website, monitora o consumo de energia de dispositivos eletrônicos residenciais por meio da tecnologia IoT.
+                        Com uma estrutura baseada em segurança digital, bancos de dados inteligentes e metodologias modernas de software, ele oferece mais do que controle: promove eficiência, economia e consciência ambiental.
+                        Uma solução pensada para quem acredita que tecnologia e sustentabilidade devem caminhar juntas.
                     </p>
                 </section>
             </main>

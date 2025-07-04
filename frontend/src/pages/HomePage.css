@@ -127,51 +127,6 @@
     margin-bottom: 0;
 }
 
-.smart-energy-animated {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 32px auto 0 auto;
-    animation: slideInRight 1.2s cubic-bezier(0.23, 1, 0.32, 1);
-    position: relative;
-    width: fit-content;
-}
-
-.smart-energy-title {
-    color: #FFD600;
-    font-size: 3.2rem;
-    font-weight: 900;
-    letter-spacing: 2px;
-    text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
-    margin-left: 18px;
-    font-family: 'Arial Black', Arial, sans-serif;
-    line-height: 1;
-}
-
-.smart-energy-icon {
-    width: 64px;
-    height: 64px;
-    filter: drop-shadow(2px 2px 0 #000) drop-shadow(-2px -2px 0 #000);
-}
-
-@keyframes slideInRight {
-    0% {
-        opacity: 0;
-        transform: translateX(100vw) scale(0.8);
-    }
-    60% {
-        opacity: 1;
-        transform: translateX(-20px) scale(1.05);
-    }
-    80% {
-        transform: translateX(10px) scale(0.98);
-    }
-    100% {
-        opacity: 1;
-        transform: translateX(0) scale(1);
-    }
-}
-
 @media (max-width: 700px) {
     .homepage-header,
     .homepage-main {
@@ -186,16 +141,6 @@
     .homepage-carousel {
         max-width: 98vw;
         border-radius: 10px;
-    }
-    .smart-energy-title {
-        font-size: 2.1rem;
-    }
-    .smart-energy-icon {
-        width: 44px;
-        height: 44px;
-    }
-    .smart-energy-animated {
-        margin-top: 18px;
     }
 }
 
