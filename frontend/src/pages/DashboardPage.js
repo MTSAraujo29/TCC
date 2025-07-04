@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../App.css'; // Certifique-se de que este caminho está correto
 import { API_ENDPOINTS } from '../config/api';
+import icon from '../public/icon.png'; // Importa o ícone para o modal
 
 // Importações do Chart.js
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
@@ -399,10 +400,6 @@ function DashboardPage() {
                 localStorage.removeItem('token_exp');
                 localStorage.removeItem('userName');
                 localStorage.removeItem('userEmail');
-                setTimeout(() => {
-                    setSessionExpired(false);
-                    navigate('/');
-                }, 2500);
                 return;
             } else {
                 console.error('Erro ao carregar dados do Dashboard:', response.status);
@@ -674,25 +671,39 @@ function DashboardPage() {
 
     if (sessionExpired) {
         return ( <
-            div className = "container" >
-            <
-            div className = "card"
+            div className = "modal-overlay"
             style = {
-                { textAlign: 'center', padding: 32, maxWidth: 400, margin: '80px auto' }
+                { position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }
             } >
             <
-            div className = "logo-icon"
+            div className = "modal-content"
             style = {
-                { fontSize: 48, marginBottom: 16 }
-            } > ⚡ < /div> <
+                { background: '#fff', borderRadius: 16, boxShadow: '0 4px 32px rgba(0,0,0,0.2)', padding: 32, maxWidth: 350, width: '90%', textAlign: 'center', position: 'relative' }
+            } >
+            <
+            img src = { icon }
+            alt = "Ícone"
+            style = {
+                { width: 64, height: 64, marginBottom: 16, marginTop: -48 }
+            }
+            /> <
             h2 style = {
-                { marginBottom: 16 }
-            } > Sessão expirada < /h2> <
-            p style = {
-                { color: '#e53935', fontSize: '1.1em' }
+                { marginBottom: 16, color: '#222' }
+            } > Sua sessão expirou < br / > faça login novamente!! < /h2> <
+            button style = {
+                { marginTop: 16, padding: '10px 32px', background: '#00bcd4', color: '#fff', border: 'none', borderRadius: 8, fontSize: 18, fontWeight: 'bold', cursor: 'pointer' }
+            }
+            onClick = {
+                () => {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('token_exp');
+                    localStorage.removeItem('userName');
+                    localStorage.removeItem('userEmail');
+                    setSessionExpired(false);
+                    navigate('/');
+                }
             } >
-            Sua sessão expirou por segurança. < br / > Faça login novamente para continuar. <
-            /p> < /
+            OK < /button> < /
             div > <
             /div>
         );
@@ -960,8 +971,7 @@ function DashboardPage() {
                 } <
                 /ul> < /
                 div > <
-                /div> < /
-                >
+                /div> < / >
             )
         }
 
@@ -1287,7 +1297,7 @@ function DashboardPage() {
                     )
                 } <
                 /div> < /
-                div >
+            div >
         )
     }
 
@@ -1444,7 +1454,7 @@ function DashboardPage() {
                 )
             } <
             /div> < /
-            div >
+        div >
     );
 }
 
