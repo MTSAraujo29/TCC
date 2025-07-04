@@ -754,8 +754,11 @@ function DashboardPage() {
                     } >
                     <
                     span className = "hamburger-icon" > ☰ < /span> < { / * Nome Smart Energy para mobile * / } {
-                    window.innerWidth >= 300 && window.innerWidth <= 630 && ( <
-                        span className = "smart-energy-mobile-title" > Smart Energy < /span>
+                    window.innerWidth > 300 && window.innerWidth < 630 && ( <
+                        div className = "mobile-menu-bar smart-energy-mobile-bar" >
+                        <
+                        span className = "smart-energy-mobile-title" > Smart Energy < /span> < /
+                        div >
                     )
                 } <
                 /button> < /
