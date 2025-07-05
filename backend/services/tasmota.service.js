@@ -85,6 +85,7 @@ const lastTotalEnergyCache = {};
 
 function updateTotalEnergyCache(deviceId, valor) {
     lastTotalEnergyCache[deviceId] = valor;
+    console.log('CACHE ATUALIZADO:', deviceId, lastTotalEnergyCache[deviceId]);
 }
 
 function getTotalEnergyFromCache(deviceId) {
