@@ -39,6 +39,27 @@
     transition: background 0.2s;
 }
 
+.nome {
+    position: absolute;
+    top: 20px; /* distância do topo */
+    width: 100%;
+    text-align: center;
+}
+
+.nome h1 {
+    color: yellow;
+    font-size: 4rem; /* texto grande */
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    text-shadow:
+            -1px -1px 0 black,
+            1px -1px 0 black,
+            -1px 1px 0 black,
+            1px 1px 0 black; /* contorno preto */
+}
+
+
 .homepage-btn-primary {
     background: #00bcd4;
     color: #fff;

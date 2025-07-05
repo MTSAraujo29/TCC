@@ -179,15 +179,6 @@ async function getAccumulatedTotalEnergy(deviceId) {
             where: { id: deviceId }
         });
 
-        // Primeiro tenta pegar do cache em memória (valor mais recente do Tasmota)
-        const tasmotaService = require('./tasmota.service');
-        const cachedValue = tasmotaService.getTotalEnergyFromCache(deviceId);
-
-        if (cachedValue !== null && cachedValue !== undefined) {
-            return cachedValue;
-        }
-
-        // Se não há cache, usa o valor salvo no banco
         return device && device.lastSavedTotalEnergy || null;
     } catch (error) {
         console.error('Erro ao obter energia total acumulada:', error);

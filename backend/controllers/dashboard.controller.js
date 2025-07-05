@@ -204,22 +204,18 @@ async function getDashboardData(req, res) {
                     }
                 }
 
-                const currentTotalEnergyForDisplay = tasmotaService.getTotalEnergyFromCache(device.id);
-                console.log('PEGANDO DO CACHE:', device.id, currentTotalEnergyForDisplay);
-
                 realDevicesData.push({
                     id: device.id,
                     name: device.name,
                     tasmotaTopic: device.tasmotaTopic,
                     macAddress: device.macAddress,
                     model: device.model,
-                    broker: device.broker, // ADICIONADO: Campo broker para identificação
                     powerState: device.powerState, // PowerState vem do modelo Device
                     latestReading: latestReading ? {
                         power: latestReading.power, // W
                         voltage: latestReading.voltage, // V
                         current: latestReading.current, // A
-                        totalEnergy: currentTotalEnergyForDisplay, // <-- Corrigido para usar o valor do cache
+                        totalEnergy: latestReading.totalEnergy, // kWh
                         EnergyToday: latestReading.EnergyToday,
                         EnergyYesterday: latestReading.EnergyYesterday,
                         ApparentPower: latestReading.ApparentPower,

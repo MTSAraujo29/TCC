@@ -85,7 +85,6 @@ const lastTotalEnergyCache = {};
 
 function updateTotalEnergyCache(deviceId, valor) {
     lastTotalEnergyCache[deviceId] = valor;
-    console.log('CACHE ATUALIZADO:', deviceId, lastTotalEnergyCache[deviceId]);
 }
 
 function getTotalEnergyFromCache(deviceId) {
@@ -190,7 +189,6 @@ async function initializeMqttClients() {
 // Função centralizada para processar mensagens de ambos os brokers
 async function handleMqttMessage(topic, message, broker) {
     const payload = message.toString();
-    console.log('MQTT RECEBIDO:', topic, payload);
     try {
         // STATUS10: Dados de energia
         if (topic.endsWith('STATUS10')) {

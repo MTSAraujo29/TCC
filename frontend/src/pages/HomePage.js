@@ -30,12 +30,15 @@ function HomePage() {
     return (
         <div className="homepage-container">
             <header className="homepage-header">
+                <div className="nome">
+                    <h1>Smart energy</h1>
+                </div>
                 <div className="homepage-navbar">
                     <button
                         className="homepage-btn"
                         onClick={() => navigate('/login')}
                     >
-                        Login
+                        Entrar
                     </button>
                     <button
                         className="homepage-btn homepage-btn-primary"
@@ -79,7 +82,7 @@ function HomePage() {
                 <section className="homepage-card">
                     <h2>O que este sistema faz?</h2>
                     <p>
-                        Descubra uma nova forma de cuidar do planeta e da sua casa. Este sistema online inovador, desenvolvido em formato de website, monitora o consumo de energia de dispositivos eletrônicos residenciais por meio da tecnologia IoT.
+                        Descubra uma nova forma de cuidar do planeta e da sua casa. Este sistema online, desenvolvido em formato de website, monitora o consumo de energia de dispositivos eletrônicos residenciais por meio da tecnologia IoT.
                         Com uma estrutura baseada em segurança digital, bancos de dados inteligentes e metodologias modernas de software, ele oferece mais do que controle: promove eficiência, economia e consciência ambiental.
                         Uma solução pensada para quem acredita que tecnologia e sustentabilidade devem caminhar juntas.
                     </p>
