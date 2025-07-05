@@ -1911,3 +1911,25 @@ textarea {
         min-width: 90px;
     }
 }
+
+@media screen and (min-width: 650px) and (max-width: 900px) {
+    .logout-link-sidebar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #f44336;
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 6px;
+        border: none;
+        font-size: 1em;
+        font-weight: bold;
+        cursor: pointer;
+        margin-left: 12px;
+        margin-right: 0;
+        height: auto;
+        min-width: 0;
+        width: auto;
+        box-shadow: none;
+    }
+}
