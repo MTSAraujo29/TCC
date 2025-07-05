@@ -1143,7 +1143,7 @@ function DashboardPage() {
                             <
                             td > Energia Total < /td> <
                             td > {
-                                devices[0].powerState && typeof devices[0].latestReading.totalEnergy === 'number' ?
+                                devices[0].latestReading && typeof devices[0].latestReading.totalEnergy === 'number' ?
                                 devices[0].latestReading.totalEnergy.toFixed(2) + ' kWh' : '0.00 kWh'
                             } <
                             /td> < /
@@ -1249,7 +1249,7 @@ function DashboardPage() {
                             <
                             td > Energia Total < /td> <
                             td > {
-                                devices[1].powerState && typeof devices[1].latestReading.totalEnergy === 'number' ?
+                                devices[1].latestReading && typeof devices[1].latestReading.totalEnergy === 'number' ?
                                 devices[1].latestReading.totalEnergy.toFixed(2) + ' kWh' : '0.00 kWh'
                             } <
                             /td> < /
