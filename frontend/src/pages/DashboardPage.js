@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../App.css'; // Certifique-se de que este caminho está correto
 import { API_ENDPOINTS } from '../config/api';
+import icon from '../../public/icon.png';
 
 // Importações do Chart.js
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
@@ -748,6 +749,15 @@ function DashboardPage() {
             window.innerWidth <= 700 && ( <
                 div className = "mobile-menu-bar" >
                 <
+                div className = "smart-energy-title-mobile"
+                style = {
+                    { flex: 1, justifyContent: 'center' }
+                } >
+                <
+                img src = { icon }
+                alt = "Ícone Smart Energy" / >
+                Smart Energy <
+                /div> <
                 button className = "hamburger-btn"
                 onClick = {
                     () => setIsMobileMenuOpen(!isMobileMenuOpen)
