@@ -31,6 +31,7 @@ function HomePage() {
         <div className="homepage-container">
             <header className="homepage-header">
                 <div className="nome">
+                    <img src="/icon.png" alt="Ícone" className="icone" />
                     <h1>Smart energy</h1>
                 </div>
                 <div className="homepage-navbar">

@@ -41,23 +41,31 @@
 
 .nome {
     position: absolute;
-    top: 20px; /* distância do topo */
+    top: 20px;
     width: 100%;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* espaço entre imagem e texto */
 }
 
 .nome h1 {
-    color: yellow;
-    font-size: 4rem; /* texto grande */
+    color: #00bcd4;
+    font-size: 4rem;
     font-weight: bold;
     margin: 0;
-    padding: 0;
     text-shadow:
             -1px -1px 0 black,
             1px -1px 0 black,
             -1px 1px 0 black,
-            1px 1px 0 black; /* contorno preto */
+            1px 1px 0 black;
 }
+
+.icone {
+    width: 50px;  /* tamanho da imagem */
+    height: 50px;
+}
+
 
 
 .homepage-btn-primary {

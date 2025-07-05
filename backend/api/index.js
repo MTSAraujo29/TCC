@@ -27,9 +27,6 @@ if (!JWT_SECRET) {
 
 const app = express();
 
-// Configuração para confiar no proxy do Render (necessário para express-rate-limit funcionar corretamente)
-app.set('trust proxy', 1);
-
 // Middlewares
 app.use(express.json());
 
@@ -215,7 +212,7 @@ app.post('/api/login', authLimiter, [
         }
 
         const token = jwt.sign({ userId: user.id, email: user.email },
-            JWT_SECRET, { expiresIn: '10m' }
+            JWT_SECRET, { expiresIn: '1h' }
         );
 
         res.json({
