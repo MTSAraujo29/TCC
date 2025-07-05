@@ -664,8 +664,14 @@ function DashboardPage() {
     function getTotalEnergyByBroker(devices, brokerLabel) {
         const device = devices.find(d => d.broker === brokerLabel);
         return device && device.latestReading && typeof device.latestReading.totalEnergy === 'number' ?
-            device.latestReading.totalEnergy :
-            0;
+            device.latestReading.totalEnergy : 0;
+    }
+
+    // Função para calcular o total de energia dos dois brokers
+    function getTotalEnergyFromBothBrokers(devices) {
+        const broker1Total = getTotalEnergyByBroker(devices, 'broker1');
+        const broker2Total = getTotalEnergyByBroker(devices, 'broker2');
+        return broker1Total + broker2Total;
     }
 
     if (sessionExpired) {
@@ -850,8 +856,7 @@ function DashboardPage() {
                 <
                 h3 > Consumo quilowatt - hora total < /h3> <
                 p > {
-                    (getTotalEnergyByBroker(devices, 'broker1') +
-                        getTotalEnergyByBroker(devices, 'broker2')).toFixed(2)
+                    getTotalEnergyFromBothBrokers(devices)
                 }
                 kWh <
                 /p> < /
@@ -863,12 +868,7 @@ function DashboardPage() {
                 h3 > Fatura Estimada < /h3> <
                 p >
                 R$ { ' ' } {
-                    (devices.length > 0 ?
-                        devices.reduce((sum, d) => sum + (d.latestReading && d.powerState && typeof d.latestReading.totalEnergy === 'number' ?
-                            d.latestReading.totalEnergy :
-                            0), 0) * 0.75 :
-                        0
-                    ).toFixed(2)
+                    (getTotalEnergyFromBothBrokers(devices) * 0.75).toFixed(2)
                 } <
                 /p> < /
                 div >
@@ -1055,7 +1055,7 @@ function DashboardPage() {
                         isRealData && devices.length > 0 && devices[0].latestReading && ( <
                             div className = "energy-realtime-card" >
                             <
-                            h3 > Dados em Tempo Real do Dispositivo Sonoff Sala < /h3> <
+                            h3 > Dados em Tempo Real do Dispositivo { devices[0].name }(Broker: { devices[0].broker || 'N/A' }) < /h3> <
                             table className = "energy-realtime-table" >
                             <
                             tbody className = "energy-realtime-tbody" >
@@ -1161,7 +1161,7 @@ function DashboardPage() {
                                 { marginTop: '32px' }
                             } >
                             <
-                            h3 > Dados em Tempo Real do Dispositivo Sonoff Câmera < /h3> <
+                            h3 > Dados em Tempo Real do Dispositivo { devices[1].name }(Broker: { devices[1].broker || 'N/A' }) < /h3> <
                             table className = "energy-realtime-table" >
                             <
                             tbody className = "energy-realtime-tbody" >
