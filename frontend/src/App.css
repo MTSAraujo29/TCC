@@ -1890,6 +1890,7 @@ textarea {
     .sidebar-bottom {
         display: none;
         /* Continua escondendo o container de baixo */
+        min-width: 650px
     }
     .logout-link-sidebar {
         display: flex !important;

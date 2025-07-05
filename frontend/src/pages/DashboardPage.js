@@ -736,13 +736,8 @@ function DashboardPage() {
             () => setActiveSection('configuracoes')
         } > ⚙️Configurações <
         /div> <
-        div className = "sidebar-bottom" >
-        <
         button onClick = { handleLogout }
-        className = "menu-item logout-link-sidebar" > 🔒Sair <
-        /button> < /
-        div > <
-        /div>
+        className = "menu-item logout-link-sidebar" > 🔒Sair < /button>
 
         { /* ==================== MOBILE MENU ==================== */ } {
             window.innerWidth <= 700 && ( <
