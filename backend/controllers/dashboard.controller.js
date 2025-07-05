@@ -219,7 +219,7 @@ async function getDashboardData(req, res) {
                         power: latestReading.power, // W
                         voltage: latestReading.voltage, // V
                         current: latestReading.current, // A
-                        totalEnergy: latestReading.totalEnergy, // kWh
+                        totalEnergy: currentTotalEnergyForDisplay, // <-- Corrigido para usar o valor do cache
                         EnergyToday: latestReading.EnergyToday,
                         EnergyYesterday: latestReading.EnergyYesterday,
                         ApparentPower: latestReading.ApparentPower,
