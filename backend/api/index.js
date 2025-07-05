@@ -26,6 +26,7 @@ if (!JWT_SECRET) {
 }
 
 const app = express();
+app.set('trust proxy', 1); // Necessário para identificar IP real atrás de proxy (Render)
 
 // Middlewares
 app.use(express.json());
