@@ -662,15 +662,38 @@ function DashboardPage() {
 
     // Função utilitária para pegar energia total por broker
     function getTotalEnergyByBroker(devices, brokerLabel) {
+        console.log(`=== DEBUG: Buscando dispositivo com broker "${brokerLabel}" ===`);
         const device = devices.find(d => d.broker === brokerLabel);
-        return device && device.latestReading && typeof device.latestReading.totalEnergy === 'number' ?
+        console.log('Dispositivo encontrado:', device);
+
+        const result = device && device.latestReading && typeof device.latestReading.totalEnergy === 'number' ?
             device.latestReading.totalEnergy : 0;
+
+        console.log(`Resultado para ${brokerLabel}:`, result);
+        return result;
     }
 
     // Função para calcular o total de energia dos dois brokers
     function getTotalEnergyFromBothBrokers(devices) {
+        console.log('=== DEBUG: Dispositivos recebidos ===');
+        devices.forEach((device, index) => {
+            console.log(`Dispositivo ${index + 1}:`, {
+                name: device.name,
+                broker: device.broker,
+                powerState: device.powerState,
+                latestReading: device.latestReading,
+                totalEnergy: device.latestReading ? .totalEnergy
+            });
+        });
+
         const broker1Total = getTotalEnergyByBroker(devices, 'broker1');
         const broker2Total = getTotalEnergyByBroker(devices, 'broker2');
+
+        console.log('=== DEBUG: Valores por broker ===');
+        console.log('Broker1 total:', broker1Total);
+        console.log('Broker2 total:', broker2Total);
+        console.log('Total combinado:', broker1Total + broker2Total);
+
         return broker1Total + broker2Total;
     }
 

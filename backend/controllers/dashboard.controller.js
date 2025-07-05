@@ -210,6 +210,7 @@ async function getDashboardData(req, res) {
                     tasmotaTopic: device.tasmotaTopic,
                     macAddress: device.macAddress,
                     model: device.model,
+                    broker: device.broker, // ADICIONADO: Campo broker para identificação
                     powerState: device.powerState, // PowerState vem do modelo Device
                     latestReading: latestReading ? {
                         power: latestReading.power, // W
