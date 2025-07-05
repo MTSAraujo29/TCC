@@ -204,6 +204,8 @@ async function getDashboardData(req, res) {
                     }
                 }
 
+                const currentTotalEnergyForDisplay = tasmotaService.getTotalEnergyFromCache(device.id);
+
                 realDevicesData.push({
                     id: device.id,
                     name: device.name,
