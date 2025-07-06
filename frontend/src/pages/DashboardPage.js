@@ -856,6 +856,14 @@ function DashboardPage() {
             window.innerWidth <= 700 && ( <
                 div className = "mobile-menu-bar" >
                 <
+                div className = "mobile-menu-title" >
+                <
+                img src = "/icon.png"
+                alt = "Ícone"
+                className = "mobile-menu-icon" / >
+                <
+                h6 className = "mobile-menu-h6" > Smart energy < /h6> < /
+                div > <
                 button className = "hamburger-btn"
                 onClick = {
                     () => setIsMobileMenuOpen(!isMobileMenuOpen)
