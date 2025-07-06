@@ -979,16 +979,23 @@ function DashboardPage() {
                 div className = "metric-card" >
                 <
                 h3 > Consumo de Amperes atual < /h3> <
-                p > < /p> < /
+                p > {
+                    (
+                        devices
+                        .filter(d => d.powerState && d.latestReading && typeof d.latestReading.current === 'number')
+                        .reduce((sum, d) => sum + d.latestReading.current, 0)
+                    ).toFixed(2)
+                }
+                A < /p> < /
                 div >
 
                 <
                 div className = "metric-card" >
                 <
                 h3 > Gasto reduzido < /h3> <
-                p > < /p> < /
-                div > <
-                /div>
+                p > R$ 12, 50 < /p> < /
+                div > < /
+                div >
 
                 { /* Main Chart Area */ } <
                 div className = "chart-area-main" >
