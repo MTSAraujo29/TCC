@@ -36,7 +36,7 @@ function HomePage() {
     const renderHeader = () => (
         <div className="nome">
             <img src="/icon.png" alt="Ícone" className="icone" />
-            <h1>Smart energy</h1>
+            <h1>Smart Energy</h1>
         </div>
     );
 
