@@ -1905,6 +1905,7 @@ textarea {
     font-size: 1rem;
     font-weight: bold;
     margin: 0;
-    color: #ffeb3b;
+    color: #00e6ff;
+    text-shadow: 2px 2px 8px #00000055;
     letter-spacing: 0.5px;
 }
