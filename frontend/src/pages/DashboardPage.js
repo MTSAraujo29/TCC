@@ -109,6 +109,10 @@ function DashboardPage() {
     // NOVO: Estado para armazenar o valor ao vivo de energia total dos dispositivos ligados
     const [liveTotalEnergySum, setLiveTotalEnergySum] = useState(0);
 
+    // Adicione estados para armazenar o valor ao vivo de cada dispositivo
+    const [liveTotalEnergyBroker1, setLiveTotalEnergyBroker1] = useState(0);
+    const [liveTotalEnergyBroker2, setLiveTotalEnergyBroker2] = useState(0);
+
     // Função para buscar o valor ao vivo de energia total dos dispositivos ligados
     const fetchLiveTotalEnergySum = useCallback(async() => {
         const token = localStorage.getItem('token');
@@ -133,6 +137,43 @@ function DashboardPage() {
     useEffect(() => {
         fetchLiveTotalEnergySum();
     }, [devices, fetchLiveTotalEnergySum]);
+
+    // Função para buscar o valor ao vivo de energia total de cada dispositivo individualmente
+    const fetchLiveTotalEnergyIndividual = useCallback(async() => {
+        const token = localStorage.getItem('token');
+        // Broker1 (Sonoff Sala)
+        if (devices[0] && devices[0].powerState) {
+            try {
+                const res = await fetch(API_ENDPOINTS.TASMOTA + `/devices/${devices[0].id}/total-energy-live`, {
+                    headers: { Authorization: 'Bearer ' + token }
+                });
+                const data = await res.json();
+                setLiveTotalEnergyBroker1(typeof data.totalEnergy === 'number' ? data.totalEnergy : 0);
+            } catch {
+                setLiveTotalEnergyBroker1(0);
+            }
+        } else {
+            setLiveTotalEnergyBroker1(0);
+        }
+        // Broker2 (Sonoff Câmera)
+        if (devices[1] && devices[1].powerState) {
+            try {
+                const res = await fetch(API_ENDPOINTS.TASMOTA + `/devices/${devices[1].id}/total-energy-live`, {
+                    headers: { Authorization: 'Bearer ' + token }
+                });
+                const data = await res.json();
+                setLiveTotalEnergyBroker2(typeof data.totalEnergy === 'number' ? data.totalEnergy : 0);
+            } catch {
+                setLiveTotalEnergyBroker2(0);
+            }
+        } else {
+            setLiveTotalEnergyBroker2(0);
+        }
+    }, [devices]);
+
+    useEffect(() => {
+        fetchLiveTotalEnergyIndividual();
+    }, [devices, fetchLiveTotalEnergyIndividual]);
 
     // ALTERADO: Esta função agora deve processar os `devices` (que podem ser reais do Tasmota ou os mocks)
     const getConsumptionByTypeData = () => {
@@ -1204,8 +1245,8 @@ function DashboardPage() {
                             <
                             td > Energia Total < /td> <
                             td > {
-                                devices[0].powerState && typeof devices[0].latestReading.totalEnergy === 'number' ?
-                                devices[0].latestReading.totalEnergy.toFixed(2) + ' kWh' : '0.00 kWh'
+                                devices[0].powerState ?
+                                liveTotalEnergyBroker1.toFixed(2) + ' kWh' : '0.00 kWh'
                             } <
                             /td> < /
                             tr > <
@@ -1310,8 +1351,8 @@ function DashboardPage() {
                             <
                             td > Energia Total < /td> <
                             td > {
-                                devices[1].powerState && typeof devices[1].latestReading.totalEnergy === 'number' ?
-                                devices[1].latestReading.totalEnergy.toFixed(2) + ' kWh' : '0.00 kWh'
+                                devices[1].powerState ?
+                                liveTotalEnergyBroker2.toFixed(2) + ' kWh' : '0.00 kWh'
                             } <
                             /td> < /
                             tr > <
