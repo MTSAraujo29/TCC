@@ -90,16 +90,18 @@ async function getUserDevices(req, res) {
 
         // NOVO: Processar cada dispositivo para usar a nova lógica de energia total
         const formattedDevices = await Promise.all(devices.map(async(device) => {
-            // Obter o valor atual de energia total para exibição
+            // Obter o valor atual de energia total para exibição (do banco)
             const currentTotalEnergyForDisplay = await energyTotalManager.getAccumulatedTotalEnergy(device.id);
+            // Obter o valor em tempo real do cache
+            const liveTotalEnergy = tasmotaService.getTotalEnergyFromCache(device.id);
 
             let latestReading = device.readings.length > 0 ? device.readings[0] : null;
 
-            // NOVO: Se há leitura, atualizar o totalEnergy com o valor acumulado atual
+            // Se há leitura, atualizar o totalEnergy com o valor em tempo real do cache, se existir
             if (latestReading) {
                 latestReading = {
                     ...latestReading,
-                    totalEnergy: currentTotalEnergyForDisplay // Usar o valor acumulado atual
+                    totalEnergy: typeof liveTotalEnergy === 'number' ? liveTotalEnergy : currentTotalEnergyForDisplay
                 };
             }
 
@@ -145,12 +147,13 @@ async function getDeviceDetails(req, res) {
         const currentTotalEnergyForDisplay = await energyTotalManager.getAccumulatedTotalEnergy(device.id);
 
         let latestReading = deviceWithDetails.readings.length > 0 ? deviceWithDetails.readings[0] : null;
-
-        // NOVO: Se há leitura, atualizar o totalEnergy com o valor acumulado atual
+        // Obter o valor em tempo real do cache
+        const liveTotalEnergy = tasmotaService.getTotalEnergyFromCache(device.id);
+        // Se há leitura, atualizar o totalEnergy com o valor em tempo real do cache, se existir
         if (latestReading) {
             latestReading = {
                 ...latestReading,
-                totalEnergy: currentTotalEnergyForDisplay // Usar o valor acumulado atual
+                totalEnergy: typeof liveTotalEnergy === 'number' ? liveTotalEnergy : currentTotalEnergyForDisplay
             };
         }
 
