@@ -823,7 +823,15 @@ function DashboardPage() {
             { display: window.innerWidth <= 700 ? 'none' : 'flex' }
         } >
         <
-        div className = "logo-icon-sidebar" > ⚡ < /div> <
+        div className = "logo-icon-sidebar" >
+        <
+        img src = "/icon.png"
+        alt = "Ícone"
+        style = {
+            { width: 32, height: 32, marginBottom: 4 }
+        }
+        /> < /
+        div > <
         div className = { `menu-item ${activeSection === 'inicio' ? 'active' : ''}` }
         onClick = {
             () => setActiveSection('inicio')
