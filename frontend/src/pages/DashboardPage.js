@@ -184,7 +184,7 @@ function DashboardPage() {
             const salaYesterday = sala.latestReading && typeof sala.latestReading.EnergyYesterday === 'number' ? sala.latestReading.EnergyYesterday : 0;
             const cameraYesterday = camera.latestReading && typeof camera.latestReading.EnergyYesterday === 'number' ? camera.latestReading.EnergyYesterday : 0;
             return {
-                labels: ['Sonoff Sala', 'Sonoff Câmera'],
+                labels: ['Sala', 'Câmera'],
                 datasets: [{
                     data: [salaYesterday, cameraYesterday],
                     backgroundColor: ['#00bcd4', '#ff9800'],
@@ -1243,11 +1243,45 @@ function DashboardPage() {
                 div className = "bottom-card consumption-by-type-card" >
                 <
                 h3 > Consumo por Tipo de Dispositivo < /h3> <
-                div className = "chart-wrapper" >
+                div className = "chart-wrapper"
+                style = {
+                    { display: 'flex', alignItems: 'center', gap: 24 }
+                } >
                 <
                 Doughnut data = { getConsumptionByTypeData() }
                 options = { consumptionByTypeOptions }
-                /> < /
+                /> { / * Legenda personalizada com porcentagem * / } <
+                div style = {
+                    { display: 'flex', flexDirection: 'column', gap: 8 }
+                } > {
+                    (() => {
+                        const data = getConsumptionByTypeData();
+                        const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                        return data.labels.map((label, idx) => {
+                            const value = data.datasets[0].data[idx];
+                            const percent = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+                            const color = data.datasets[0].backgroundColor[idx];
+                            return ( <
+                                div key = { label }
+                                style = {
+                                    { display: 'flex', alignItems: 'center', gap: 8 }
+                                } >
+                                <
+                                span style = {
+                                    { display: 'inline-block', width: 14, height: 14, borderRadius: 7, background: color, marginRight: 6 }
+                                } > < /span> <
+                                span style = {
+                                    { color: '#FFF', fontWeight: 500 }
+                                } > { label } < /span> <
+                                span style = {
+                                    { color: '#BBB', marginLeft: 4 }
+                                } > { percent } % < /span> < /
+                                div >
+                            );
+                        });
+                    })()
+                } <
+                /div> < /
                 div > <
                 /div>
 
