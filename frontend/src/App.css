@@ -1919,7 +1919,7 @@ textarea {
     flex-direction: column;
     min-height: 100vh;
     width: 40vw;
-    margin-top: -160px;
+    margin-top: -80px;
     margin-left: 20px;
     min-width: 0;
     overflow-y: auto;
