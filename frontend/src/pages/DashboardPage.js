@@ -1594,7 +1594,7 @@ function DashboardPage() {
             button className = "edit-profile-button"
             onClick = { openEditModal } >
             Editar Perfil <
-            /button> { / * NOVO: Se já houver número salvo, mostra mensagem e botão de desvincular * / } {
+            /button> {
             whatsappNumberSaved ? ( <
                 >
                 <
