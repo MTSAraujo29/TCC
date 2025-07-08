@@ -1504,7 +1504,7 @@ function DashboardPage() {
                 {activeSection === 'ecobot' && (
                     <div className="main-content2">
                         <h1 style={{ color: 'white', marginBottom: 8 }}>
-                            Olá {userName}, eu sou EcoBot.
+                            Olá, eu sou EcoBot.
                         </h1>
                         <h4 style={{ color: '#e0e0e0', marginBottom: 24 }}>
                             Aqui {userName}, você pode me perguntar sobre previsões de consumo
