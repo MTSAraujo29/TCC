@@ -928,13 +928,6 @@ function DashboardPage() {
                 </div>
 
                 <div
-                    className={`menu-item ${activeSection === 'configuracoes' ? 'active' : ''}`}
-                    onClick={() => setActiveSection('configuracoes')}
-                >
-                    ⚙️Configurações
-                </div>
-
-                <div
                     className={`menu-item ${activeSection === 'ecobot' ? 'active' : ''}`}
                     onClick={() => setActiveSection('ecobot')}
                 >
@@ -944,6 +937,13 @@ function DashboardPage() {
                         style={{ width: 24, height: 24, marginRight: 8, verticalAlign: 'middle' }}
                     />
                     EcoBot
+                </div>
+
+                <div
+                    className={`menu-item ${activeSection === 'configuracoes' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('configuracoes')}
+                >
+                    ⚙️Configurações
                 </div>
 
                 <div className="sidebar-bottom">
