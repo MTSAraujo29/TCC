@@ -800,6 +800,26 @@ function DashboardPage() {
         }
     };
 
+    // [NOVO] Estado para controlar a seção EcoBot
+    const [chatMessages, setChatMessages] = useState([
+        { sender: 'EcoBot', text: 'Olá! Como posso ajudar você hoje?' }
+    ]);
+    const [chatInput, setChatInput] = useState('');
+
+    // [NOVO] Função para enviar mensagem fictícia
+    const handleSendMessage = (e) => {
+        e.preventDefault();
+        if (!chatInput.trim()) return;
+        setChatMessages([...chatMessages, { sender: userName, text: chatInput }]);
+        setTimeout(() => {
+            setChatMessages((msgs) => [
+                ...msgs,
+                { sender: 'EcoBot', text: 'Sou um bot fictício! Em breve responderei suas perguntas de verdade.' }
+            ]);
+        }, 800);
+        setChatInput('');
+    };
+
     if (sessionExpired) {
         return ( <
             div className = "modal-overlay"
@@ -922,6 +942,21 @@ function DashboardPage() {
         onClick = {
             () => setActiveSection('configuracoes')
         } > ⚙️Configurações <
+        /div>
+
+        <
+        div className = { `menu-item ${activeSection === 'ecobot' ? 'active' : ''}` }
+        onClick = {
+            () => setActiveSection('ecobot')
+        } >
+        <
+        img src = { process.env.PUBLIC_URL + '/ST.png' }
+        alt = "EcoBot"
+        style = {
+            { width: 24, height: 24, marginRight: 8, verticalAlign: 'middle' }
+        }
+        />
+        EcoBot <
         /div>
 
         <
