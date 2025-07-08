@@ -1267,7 +1267,7 @@ function DashboardPage() {
                             } >
                             <
                             span style = {
-                                { display: 'inline-flex', alignItems: 'center', gap: 4 }
+                                { display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }
                             } >
                             <
                             span style = {
@@ -1281,7 +1281,7 @@ function DashboardPage() {
                             } > { percentSala } % < /span> < /
                             span > <
                             span style = {
-                                { display: 'inline-flex', alignItems: 'center', gap: 4 }
+                                { display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }
                             } >
                             <
                             span style = {
