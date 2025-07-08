@@ -1847,7 +1847,7 @@ function DashboardPage() {
         h4 style = {
             { color: '#e0e0e0', marginBottom: 24 }
         } >
-        Aqui { userName }, você poderá me perguntar previsões e um bom uso de energia.Fique à vontade. <
+        Aqui { userName }, você pode me perguntar sobre previsões de consumo futuro de energia e receber dicas para um uso mais eficiente dos seus eletrodomésticos. Fique à vontade! <
         /h4> <
         div style = {
             { background: '#23234a', borderRadius: 12, padding: 24, maxWidth: 600, width: '100%', minWidth: 320, margin: '0 auto', minHeight: 320, display: 'flex', flexDirection: 'column', gap: 12 }
