@@ -1842,7 +1842,7 @@ function DashboardPage() {
         h1 style = {
             { color: 'white', marginBottom: 8 }
         } >
-        Olá { userName }, eu sou EcoBot é um prazer conversar com você <
+        Olá { userName }, eu sou EcoBot. <
         /h1> <
         h4 style = {
             { color: '#e0e0e0', marginBottom: 24 }
