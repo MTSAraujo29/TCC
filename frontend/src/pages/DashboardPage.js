@@ -177,10 +177,27 @@ function DashboardPage() {
 
     // ALTERADO: Esta função agora deve processar os `devices` (que podem ser reais do Tasmota ou os mocks)
     const getConsumptionByTypeData = () => {
+        // Se houver dois dispositivos, Sonoff Sala e Sonoff Câmera
+        if (devices.length >= 2) {
+            const sala = devices[0];
+            const camera = devices[1];
+            const salaTotal = sala.powerState && sala.latestReading && typeof sala.latestReading.totalEnergy === 'number' ? sala.latestReading.totalEnergy : 0;
+            const cameraTotal = camera.powerState && camera.latestReading && typeof camera.latestReading.totalEnergy === 'number' ? camera.latestReading.totalEnergy : 0;
+            return {
+                labels: ['Sonoff Sala', 'Sonoff Câmera'],
+                datasets: [{
+                    data: [salaTotal, cameraTotal],
+                    backgroundColor: ['#00bcd4', '#ff9800'],
+                    borderColor: ['#00838f', '#f57c00'],
+                    borderWidth: 1,
+                }],
+            };
+        }
+        // Fallback para lógica antiga se não houver dois dispositivos
         const deviceTypeConsumption = {};
         devices.forEach(device => {
             const type = device.model || 'Dispositivo de Energia';
-            const consumption = device.latestReading ? device.latestReading.totalEnergy : (device.latestReading ? device.latestReading.power : 0);
+            const consumption = device.powerState && device.latestReading ? device.latestReading.totalEnergy : 0;
             if (deviceTypeConsumption[type]) {
                 deviceTypeConsumption[type] += consumption;
             } else {
@@ -189,7 +206,6 @@ function DashboardPage() {
         });
         const labels = Object.keys(deviceTypeConsumption);
         const data = Object.values(deviceTypeConsumption);
-        // Se só houver um dispositivo, use apenas azul
         const singleColor = ['#00bcd4'];
         const singleBorder = ['#00838f'];
         const backgroundColors = labels.length === 1 ? singleColor : ['#00bcd4', '#ff9800', '#e91e63', '#4caf50', '#9c27b0', '#f44336', '#2196f3', '#ffeb3b'];
@@ -198,8 +214,8 @@ function DashboardPage() {
             labels: labels.length > 0 ? labels : ['Nenhum dado'],
             datasets: [{
                 data: data.length > 0 ? data : [1],
-                backgroundColor: backgroundColors,
-                borderColor: borderColors,
+                backgroundColor,
+                borderColor,
                 borderWidth: 1,
             }],
         };
