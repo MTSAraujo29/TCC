@@ -737,6 +737,74 @@ function DashboardPage() {
             0;
     }
 
+    // [NOVO] Estado para modal e número do WhatsApp
+    const [showWhatsappModal, setShowWhatsappModal] = useState(false);
+    const [whatsappNumber, setWhatsappNumber] = useState('');
+    const [whatsappError, setWhatsappError] = useState('');
+    const [whatsappSuccess, setWhatsappSuccess] = useState('');
+
+    // [NOVO] Função para validar e salvar número do WhatsApp
+    const handleSaveWhatsapp = async(e) => {
+        e.preventDefault();
+        setWhatsappError('');
+        setWhatsappSuccess('');
+        // Regex: começa com 2 dígitos (país), depois 2 dígitos (DDD), depois 9 dígitos
+        const regex = /^\d{2}\d{2}9\d{8}$/;
+        if (!regex.test(whatsappNumber.replace(/\D/g, ''))) {
+            setWhatsappError('Formato inválido. Exemplo: 5562999999999');
+            return;
+        }
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(API_ENDPOINTS.DASHBOARD + '/update-whatsapp', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer ' + token,
+                },
+                body: JSON.stringify({ whatsappNumber: whatsappNumber.replace(/\D/g, '') }),
+            });
+            if (!response.ok) throw new Error('Erro ao salvar número');
+            setWhatsappSuccess('Número salvo com sucesso!');
+            setTimeout(() => setShowWhatsappModal(false), 1500);
+        } catch {
+            setWhatsappError('Erro ao salvar número. Tente novamente.');
+        }
+    };
+
+    // [NOVO] Estado para armazenar o número de WhatsApp salvo
+    const [whatsappNumberSaved, setWhatsappNumberSaved] = useState(null);
+
+    // [NOVO] Função para desvincular número do WhatsApp
+    const handleUnlinkWhatsapp = async() => {
+        setWhatsappError('');
+        setWhatsappSuccess('');
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(API_ENDPOINTS.DASHBOARD + '/update-whatsapp', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer ' + token,
+                },
+                body: JSON.stringify({ whatsappNumber: null }),
+            });
+            if (!response.ok) throw new Error('Erro ao desvincular número');
+            setWhatsappNumberSaved(null);
+            setWhatsappSuccess('Número desvinculado com sucesso!');
+        } catch {
+            setWhatsappError('Erro ao desvincular número. Tente novamente.');
+        }
+    };
+
+    // Atualizar whatsappNumberSaved ao buscar dados do dashboard
+    useEffect(() => {
+        // ...
+        // Após receber os dados do dashboard:
+        // setWhatsappNumberSaved(data.whatsappNumber || null);
+        // ...
+    }, [ /* dependências */ ]);
+
     if (sessionExpired) {
         return ( <
             div className = "modal-overlay"
@@ -1444,142 +1512,205 @@ function DashboardPage() {
                 button className = "edit-profile-button"
                 onClick = { openEditModal } >
                 Editar Perfil <
-                /button> < /
-                p > <
-                p className = "settings-note" >
-                *
-                Após editar ou excluir a conta, será necessário fazer login novamente. <
-                /p> < /
-                div >
+                <
+                /button> { / * NOVO: Se já houver número salvo, mostra mensagem e botão de desvincular * / } {
+                whatsappNumberSaved ? ( <
+                    >
+                    <
+                    span style = {
+                        { marginLeft: 8, color: 'green', fontWeight: 'bold' }
+                    } >
+                    Número vinculado: { whatsappNumberSaved } <
+                    /span> <
+                    button className = "unlink-whatsapp-btn"
+                    style = {
+                        { marginLeft: 8, background: 'red', color: 'white' }
+                    }
+                    onClick = { handleUnlinkWhatsapp } >
+                    Desvincular <
+                    /button> < / >
+                ) : ( <
+                    button className = "add-whatsapp-btn"
+                    style = {
+                        { marginLeft: 8 }
+                    }
+                    onClick = {
+                        () => setShowWhatsappModal(true)
+                    } >
+                    Adicionar Número <
+                    /button>
+                )
+            } <
+            /p> <
+        p className = "settings-note" >
+            *
+            Após editar ou excluir a conta, será necessário fazer login novamente. <
+            <
+            /p> < /
+        div >
 
-                { /* Edit Account Modal */ } {
-                    showEditModal && ( <
+            { /* Edit Account Modal */ } {
+                showEditModal && ( <
+                    div className = "modal-overlay" >
+                    <
+                    div className = "modal-card" >
+                    <
+                    h3 > Editar Conta < /h3> <
+                    form onSubmit = { handleEditAccount } >
+                    <
+                    label > Novo Nome: < /label> <
+                    input type = "text"
+                    value = { editName }
+                    onChange = {
+                        (e) => setEditName(e.target.value)
+                    }
+                    placeholder = "Novo nome" /
+                    >
+
+                    <
+                    label > Nova Senha: < /label> <
+                    input type = "password"
+                    value = { editPassword }
+                    onChange = {
+                        (e) => setEditPassword(e.target.value)
+                    }
+                    placeholder = "Nova senha" /
+                    >
+
+                    {
+                        editError && < p className = "error-message" > { editError } < /p>}
+
+                        <
+                        div className = "button-group small-buttons" >
+                        <
+                        button
+                        type = "submit"
+                        disabled = { editLoading }
+                        className = "submit-button small-btn" > { editLoading ? 'Salvando...' : 'Salvar' } <
+                        /button> <
+                        button
+                        type = "button"
+                        onClick = {
+                            () => {
+                                setShowEditModal(false);
+                                openDeleteModal();
+                            }
+                        }
+                        className = "delete-account-button small-btn" >
+                        Excluir Conta <
+                        /button> <
+                        button
+                        type = "button"
+                        onClick = {
+                            () => setShowEditModal(false)
+                        }
+                        className = "cancel-button small-btn" >
+                        Cancelar <
+                        /button> < /
+                        div > <
+                        /form> < /
+                        div > <
+                        /div>
+                    )
+                }
+
+                { /* Delete Account Modal */ } {
+                    showDeleteModal && ( <
                         div className = "modal-overlay" >
                         <
                         div className = "modal-card" >
                         <
-                        h3 > Editar Conta < /h3> <
-                        form onSubmit = { handleEditAccount } >
+                        h3 > Excluir Conta < /h3> <
+                        p > Tem certeza que deseja excluir sua conta ? Esta ação é irreversível. < /p> {
+                        deleteError && < p className = "error-message" > { deleteError } < /p>} <
+                        div className = "button-group" >
                         <
-                        label > Novo Nome: < /label> <
+                        button onClick = { handleDeleteAccount }
+                        disabled = { deleteLoading }
+                        className = "delete-button" > { deleteLoading ? 'Excluindo...' : 'Excluir' } <
+                        /button> <
+                        button onClick = {
+                            () => setShowDeleteModal(false)
+                        }
+                        className = "cancel-button" >
+                        Cancelar <
+                        /button> < /
+                        div > <
+                        /div> < /
+                        div >
+                    )
+                }
+
+                { /* NOVO: Modal para adicionar número do WhatsApp */ } {
+                    showWhatsappModal && ( <
+                        div className = "modal-overlay" >
+                        <
+                        div className = "modal-card" >
+                        <
+                        h3 > Adicione seu número de Whatsapp para receber notificação do EcoBot, bot inteligente da Smart Energy! < /h3> <
+                        form onSubmit = { handleSaveWhatsapp } >
+                        <
+                        label > Número(com código do país, DDD e número): < /label> <
                         input type = "text"
-                        value = { editName }
-                        onChange = {
-                            (e) => setEditName(e.target.value)
-                        }
-                        placeholder = "Novo nome" /
-                        >
-
+                        value = { whatsappNumber }
+                        onChange = { e => setWhatsappNumber(e.target.value) }
+                        placeholder = "Ex: 5562999999999"
+                        maxLength = { 13 }
+                        /> {
+                        whatsappError && < p className = "error-message" > { whatsappError } < /p>} {
+                        whatsappSuccess && < p className = "success-message" > { whatsappSuccess } < /p>} <
+                        div className = "button-group small-buttons" >
                         <
-                        label > Nova Senha: < /label> <
-                        input type = "password"
-                        value = { editPassword }
-                        onChange = {
-                            (e) => setEditPassword(e.target.value)
-                        }
-                        placeholder = "Nova senha" /
-                        >
+                        button type = "submit"
+                        className = "submit-button small-btn" > Salvar < /button> <
+                        button type = "button"
+                        className = "cancel-button small-btn"
+                        onClick = {
+                            () => setShowWhatsappModal(false)
+                        } > Cancelar < /button> < /
+                        div > <
+                        /form> < /
+                        div > <
+                        /div>
+                    )
+                }
 
-                        {
-                            editError && < p className = "error-message" > { editError } < /p>}
-
-                            <
-                            div className = "button-group small-buttons" >
-                            <
-                            button
-                            type = "submit"
-                            disabled = { editLoading }
-                            className = "submit-button small-btn" > { editLoading ? 'Salvando...' : 'Salvar' } <
-                            /button> <
-                            button
-                            type = "button"
-                            onClick = {
-                                () => {
-                                    setShowEditModal(false);
-                                    openDeleteModal();
-                                }
-                            }
-                            className = "delete-account-button small-btn" >
-                            Excluir Conta <
-                            /button> <
-                            button
-                            type = "button"
-                            onClick = {
-                                () => setShowEditModal(false)
-                            }
-                            className = "cancel-button small-btn" >
-                            Cancelar <
-                            /button> < /
-                            div > <
-                            /form> < /
-                            div > <
-                            /div>
-                        )
-                    }
-
-                    { /* Delete Account Modal */ } {
-                        showDeleteModal && ( <
-                            div className = "modal-overlay" >
-                            <
-                            div className = "modal-card" >
-                            <
-                            h3 > Excluir Conta < /h3> <
-                            p > Tem certeza que deseja excluir sua conta ? Esta ação é irreversível. < /p> {
-                            deleteError && < p className = "error-message" > { deleteError } < /p>} <
-                            div className = "button-group" >
-                            <
-                            button onClick = { handleDeleteAccount }
-                            disabled = { deleteLoading }
-                            className = "delete-button" > { deleteLoading ? 'Excluindo...' : 'Excluir' } <
-                            /button> <
-                            button onClick = {
-                                () => setShowDeleteModal(false)
-                            }
-                            className = "cancel-button" >
-                            Cancelar <
-                            /button> < /
-                            div > <
-                            /div> < /
-                            div >
-                        )
-                    }
-
+                <
+                div className = "tasmota-settings-card" >
                     <
-                    div className = "tasmota-settings-card" >
-                        <
-                        h3 > Gerenciamento de Dispositivos < /h3> <
-                    p className = "device-management-description" >
-                        Aqui você pode gerenciar seus dispositivos Tasmota. <
-                        /p>
+                    h3 > Gerenciamento de Dispositivos < /h3> <
+                p className = "device-management-description" >
+                    Aqui você pode gerenciar seus dispositivos Tasmota. <
+                    /p>
 
-                    {
-                        isRealData ? ( <
-                            p >
-                            <
-                            button className = "add-device-btn"
-                            onClick = {
-                                () => navigate('/add-device')
-                            } >
-                            Adicionar Novo Dispositivo <
-                            /button> <
-                            button className = "refresh-devices-btn"
-                            onClick = { fetchDashboardData } >
-                            Atualizar Lista de Dispositivos <
-                            /button> < /
-                            p >
-                        ) : ( <
-                            p className = "admin-only-message" >
-                            O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador. <
-                            /p>
-                        )
-                    } <
-                    /div> < /
-                    div >
-                )
-            } <
-            /div> < /
-        div >
-    );
+                {
+                    isRealData ? ( <
+                        p >
+                        <
+                        button className = "add-device-btn"
+                        onClick = {
+                            () => navigate('/add-device')
+                        } >
+                        Adicionar Novo Dispositivo <
+                        /button> <
+                        button className = "refresh-devices-btn"
+                        onClick = { fetchDashboardData } >
+                        Atualizar Lista de Dispositivos <
+                        /button> < /
+                        p >
+                    ) : ( <
+                        p className = "admin-only-message" >
+                        O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador. <
+                        /p>
+                    )
+                } <
+                /div> < /
+                div >
+            )
+    } <
+    /div> < /
+    div >
+);
 }
 
 export default DashboardPage;
