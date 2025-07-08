@@ -265,74 +265,16 @@ function DashboardPage() {
     // Por enquanto, `daily_consumption_kwh` é mockado no backend para ambos, então esta parte não muda muito.
     // Mas no futuro, esta função precisaria buscar dados históricos REAIS.
     const getChartData = () => {
-        if (!isRealData || !devices || !devices.length) {
-            // Se não for admin ou não houver dados reais, usa mocks
-            switch (viewMode) {
-                case 'day':
-                    return mockDailyData;
-                case 'week':
-                    return mockWeeklyData;
-                case 'month':
-                    return mockMonthlyData;
-                default:
-                    return mockDailyData;
-            }
+        switch (viewMode) {
+            case 'day':
+                return mockDailyData;
+            case 'week':
+                return mockWeeklyData;
+            case 'month':
+                return mockMonthlyData;
+            default:
+                return mockDailyData;
         }
-        // DADOS REAIS
-        // 1. Gráfico Diário (últimos 7 dias)
-        if (viewMode === 'day' && devices[0] && devices[0].mainChartData) {
-            return devices[0].mainChartData;
-        }
-        // 2. Gráfico Semanal (soma de blocos de 7 dias)
-        if (viewMode === 'week' && devices[0] && devices[0].mainChartData) {
-            const dailyData = devices[0].mainChartData.datasets[0].data;
-            const weeklyData = [0, 0, 0, 0];
-            for (let i = 0; i < dailyData.length; i++) {
-                const weekIdx = Math.floor(i / 7);
-                if (weekIdx < 4) weeklyData[weekIdx] += dailyData[i];
-            }
-            return {
-                labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
-                datasets: [{
-                    label: 'Consumo Semanal (kWh)',
-                    data: weeklyData,
-                    borderColor: '#ff9800',
-                    backgroundColor: 'rgba(255, 152, 0, 0.4)',
-                    tension: 0.4,
-                    fill: true,
-                }],
-            };
-        }
-        // 3. Gráfico Mensal (junho em diante)
-        if (viewMode === 'month') {
-            // Montar array de 12 meses, preenchendo só junho e meses seguintes
-            const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-            const monthlyData = Array(12).fill(0);
-            // Supondo que cada device tem readings mensais em device.monthlyReadings
-            devices.forEach(device => {
-                if (device.monthlyReadings) {
-                    device.monthlyReadings.forEach(reading => {
-                        const monthIdx = new Date(reading.timestamp).getMonth();
-                        if (monthIdx >= 5) { // Junho em diante
-                            monthlyData[monthIdx] = Math.max(monthlyData[monthIdx], reading.totalEnergy || 0);
-                        }
-                    });
-                }
-            });
-            return {
-                labels: months,
-                datasets: [{
-                    label: 'Consumo Mensal (kWh)',
-                    data: monthlyData,
-                    borderColor: '#e91e63',
-                    backgroundColor: 'rgba(233, 30, 99, 0.4)',
-                    tension: 0.4,
-                    fill: true,
-                }],
-            };
-        }
-        // Fallback
-        return mockDailyData;
     };
 
     const chartOptions = {
