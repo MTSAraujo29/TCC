@@ -385,25 +385,18 @@ a.link-button {
 /* Conteúdo Principal do Dashboard */
 
 .main-content {
-    flex: 1;
-    /* Ocupa o restante do espaço disponível */
-    padding: 32px;
+    align-items: center;
+    background-color: #2a2a4e;
+    box-sizing: border-box;
+    display: flex;
+    flex: 1 1;
+    flex-direction: column;
     margin-left: 480px;
     margin-top: 65px;
-    background-color: #2a2a4e;
-    /* Fundo do conteúdo principal */
     min-height: calc(100vh - 70px);
-    /* Subtrai a altura da navbar */
-    overflow-y: auto;
-    /* Permite rolagem se o conteúdo for muito longo */
-    box-sizing: border-box;
-    /* Incluir padding na largura e altura */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    /* Centraliza conteúdo horizontalmente */
     min-width: 0;
-    /* Permite que o flex item encolha */
+    overflow-y: auto;
+    padding: 32px;
 }
 
 .main-content h2 {
