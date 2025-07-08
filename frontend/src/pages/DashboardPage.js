@@ -1316,8 +1316,7 @@ function DashboardPage() {
                 <
                 h3 > Resumo Geral < /h3> <
                 p >
-                Total de Dispositivos: { ' ' } <
-                strong > { report.summary.totalDevices } < /strong> < /
+                Total de Dispositivos: < strong > { report.summary.totalDevices } < /strong> < /
                 p > <
                 p >
                 Com uso Inteligente(estimado): { ' ' } <
@@ -1332,9 +1331,7 @@ function DashboardPage() {
                 div >
 
                 {
-                    isRealData &&
-                    devices.length > 0 &&
-                    devices[0].latestReading && ( <
+                    isRealData && devices.length > 0 && devices[0].latestReading && ( <
                         div className = "energy-realtime-card" >
                         <
                         h3 > Dados em Tempo Real do Dispositivo Sonoff Sala < /h3> <
@@ -1444,118 +1441,116 @@ function DashboardPage() {
                 }
 
                 { /* Device 2 Real-time Data */ } {
-                    isRealData &&
-                        devices.length > 1 &&
-                        devices[1].latestReading && ( <
-                            div className = "energy-realtime-card"
-                            style = {
-                                { marginTop: '32px' }
-                            } >
-                            <
-                            h3 > Dados em Tempo Real do Dispositivo Sonoff Câmera < /h3> <
-                            table className = "energy-realtime-table" >
-                            <
-                            tbody className = "energy-realtime-tbody" >
-                            <
-                            tr >
-                            <
-                            td > Tensão < /td> <
-                            td > {
-                                devices[1].powerState &&
-                                typeof devices[1].latestReading.voltage === 'number' ?
-                                devices[1].latestReading.voltage : 0
-                            }
-                            V <
-                            /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Corrente < /td> <
-                            td > {
-                                devices[1].powerState &&
-                                typeof devices[1].latestReading.current === 'number' ?
-                                devices[1].latestReading.current : 0
-                            }
-                            A <
-                            /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Potência Ativa < /td> <
-                            td > {
-                                devices[1].powerState &&
-                                typeof devices[1].latestReading.power === 'number' ?
-                                devices[1].latestReading.power : 0
-                            }
-                            W <
-                            /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Potência Aparente < /td> <
-                            td > {
-                                devices[1].powerState &&
-                                typeof devices[1].latestReading.ApparentPower === 'number' ?
-                                devices[1].latestReading.ApparentPower : 0
-                            }
-                            VA <
-                            /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Potência Reativa < /td> <
-                            td > {
-                                devices[1].powerState &&
-                                typeof devices[1].latestReading.ReactivePower === 'number' ?
-                                devices[1].latestReading.ReactivePower : 0
-                            }
-                            var <
-                            /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Fator de Potência < /td> <
-                            td > {
-                                devices[1].powerState &&
-                                typeof devices[1].latestReading.PowerFactor === 'number' ?
-                                devices[1].latestReading.PowerFactor : 0
-                            } <
-                            /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Energia Hoje < /td> <
-                            td > {
-                                typeof devices[1].latestReading.EnergyToday === 'number' ?
-                                devices[1].latestReading.EnergyToday : '--'
-                            }
-                            kWh <
-                            /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Energia Ontem < /td> <
-                            td > {
-                                typeof devices[1].latestReading.EnergyYesterday ===
-                                'number' ?
-                                devices[1].latestReading.EnergyYesterday : '--'
-                            }
-                            kWh <
-                            /td> < /
-                            tr > <
-                            tr >
-                            <
-                            td > Energia Total < /td> <
-                            td > {
-                                devices[1].powerState ?
-                                liveTotalEnergyBroker2.toFixed(2) + ' kWh' : '0.00 kWh'
-                            } <
-                            /td> < /
-                            tr > <
-                            /tbody> < /
-                            table > <
-                            /div>
-                        )
+                    isRealData && devices.length > 1 && devices[1].latestReading && ( <
+                        div className = "energy-realtime-card"
+                        style = {
+                            { marginTop: '32px' }
+                        } >
+                        <
+                        h3 > Dados em Tempo Real do Dispositivo Sonoff Câmera < /h3> <
+                        table className = "energy-realtime-table" >
+                        <
+                        tbody className = "energy-realtime-tbody" >
+                        <
+                        tr >
+                        <
+                        td > Tensão < /td> <
+                        td > {
+                            devices[1].powerState &&
+                            typeof devices[1].latestReading.voltage === 'number' ?
+                            devices[1].latestReading.voltage : 0
+                        }
+                        V <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Corrente < /td> <
+                        td > {
+                            devices[1].powerState &&
+                            typeof devices[1].latestReading.current === 'number' ?
+                            devices[1].latestReading.current : 0
+                        }
+                        A <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Potência Ativa < /td> <
+                        td > {
+                            devices[1].powerState &&
+                            typeof devices[1].latestReading.power === 'number' ?
+                            devices[1].latestReading.power : 0
+                        }
+                        W <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Potência Aparente < /td> <
+                        td > {
+                            devices[1].powerState &&
+                            typeof devices[1].latestReading.ApparentPower === 'number' ?
+                            devices[1].latestReading.ApparentPower : 0
+                        }
+                        VA <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Potência Reativa < /td> <
+                        td > {
+                            devices[1].powerState &&
+                            typeof devices[1].latestReading.ReactivePower === 'number' ?
+                            devices[1].latestReading.ReactivePower : 0
+                        }
+                        var <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Fator de Potência < /td> <
+                        td > {
+                            devices[1].powerState &&
+                            typeof devices[1].latestReading.PowerFactor === 'number' ?
+                            devices[1].latestReading.PowerFactor : 0
+                        } <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Energia Hoje < /td> <
+                        td > {
+                            typeof devices[1].latestReading.EnergyToday === 'number' ?
+                            devices[1].latestReading.EnergyToday : '--'
+                        }
+                        kWh <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Energia Ontem < /td> <
+                        td > {
+                            typeof devices[1].latestReading.EnergyYesterday ===
+                            'number' ?
+                            devices[1].latestReading.EnergyYesterday : '--'
+                        }
+                        kWh <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Energia Total < /td> <
+                        td > {
+                            devices[1].powerState ?
+                            liveTotalEnergyBroker2.toFixed(2) + ' kWh' : '0.00 kWh'
+                        } <
+                        /td> < /
+                        tr > <
+                        /tbody> < /
+                        table > <
+                        /div>
+                    )
                 }
 
                 <
@@ -1688,159 +1683,213 @@ function DashboardPage() {
                 >
 
                 {
-                    editError && ( <
-                        p className = "error-message" > { editError } < /p>
-                    )
-                }
+                    editError && < p className = "error-message" > { editError } < /p>}
 
-                <
-                div className = "button-group small-buttons" >
-                <
-                button type = "submit"
-                disabled = { editLoading }
-                className = "submit-button small-btn" > { editLoading ? 'Salvando...' : 'Salvar' } <
-                /button> <
-                button type = "button"
-                onClick = {
-                    () => {
-                        setShowEditModal(false);
-                        openDeleteModal();
+                    <
+                    div className = "button-group small-buttons" >
+                    <
+                    button
+                    type = "submit"
+                    disabled = { editLoading }
+                    className = "submit-button small-btn" > { editLoading ? 'Salvando...' : 'Salvar' } <
+                    /button> <
+                    button
+                    type = "button"
+                    onClick = {
+                        () => {
+                            setShowEditModal(false);
+                            openDeleteModal();
+                        }
                     }
-                }
-                className = "delete-account-button small-btn" >
-                Excluir Conta <
-                /button> <
+                    className = "delete-account-button small-btn" >
+                    Excluir Conta <
+                    /button> <
+                    button
+                    type = "button"
+                    onClick = {
+                        () => setShowEditModal(false)
+                    }
+                    className = "cancel-button small-btn" >
+                    Cancelar <
+                    /button> < /
+                    div > <
+                    /form> < /
+                    div > <
+                    /div>
+                )
+            }
+
+            { /* Delete Account Modal */ } {
+                showDeleteModal && ( <
+                    div className = "modal-overlay" >
+                    <
+                    div className = "modal-card" >
+                    <
+                    h3 > Excluir Conta < /h3> <
+                    p >
+                    Tem certeza que deseja excluir sua conta ? Esta ação é irreversível. <
+                    /p> {
+                    deleteError && < p className = "error-message" > { deleteError } < /p>} <
+                    div className = "button-group" >
+                    <
+                    button onClick = { handleDeleteAccount }
+                    disabled = { deleteLoading }
+                    className = "delete-button" > { deleteLoading ? 'Excluindo...' : 'Excluir' } <
+                    /button> <
+                    button onClick = {
+                        () => setShowDeleteModal(false)
+                    }
+                    className = "cancel-button" >
+                    Cancelar <
+                    /button> < /
+                    div > <
+                    /div> < /
+                    div >
+                )
+            }
+
+            { /* NOVO: Modal para adicionar número do WhatsApp */ } {
+                showWhatsappModal && ( <
+                        div className = "modal-overlay" >
+                        <
+                        div className = "modal-card" >
+                        <
+                        h3 >
+                        Adicione seu número de Whatsapp para receber notificação do
+                            EcoBot, bot inteligente da Smart Energy!
+                            <
+                            /h3> <
+                        form onSubmit = { handleSaveWhatsapp } >
+                        <
+                        label >
+                        Número(com código do país, DDD e número):
+                        <
+                        /label> <
+                        input type = "text"
+                        value = { whatsappNumber }
+                        onChange = {
+                            (e) => setWhatsappNumber(e.target.value)
+                        }
+                        placeholder = "Ex: 5562999999999"
+                        maxLength = { 13 }
+                        /> {
+                        whatsappError && ( <
+                            p className = "error-message" > { whatsappError } < /p>
+                        )
+                    } {
+                        whatsappSuccess && ( <
+                            p className = "success-message" > { whatsappSuccess } < /p>
+                        )
+                    } <
+                    div className = "button-group small-buttons" >
+                    <
+                    button type = "submit"
+                className = "submit-button small-btn" >
+                    Salvar <
+                    /button> <
                 button type = "button"
+                className = "cancel-button small-btn"
                 onClick = {
-                    () => setShowEditModal(false)
-                }
-                className = "cancel-button small-btn" >
-                Cancelar <
-                /button> < /
+                        () => setShowWhatsappModal(false)
+                    } >
+                    Cancelar <
+                    /button> < /
                 div > <
-                /form> < /
+                    /form> < /
                 div > <
-                /div>
+                    /div>
             )
         }
 
-    { /* Delete Account Modal */ } {
-        showDeleteModal && ( <
-                div className = "modal-overlay" >
-                <
-                div className = "modal-card" >
-                <
-                h3 > Excluir Conta < /h3> <
-                p >
-                Tem certeza que deseja excluir sua conta ? Esta ação é irreversível. <
-                /p> {
-                deleteError && ( <
-                    p className = "error-message" > { deleteError } < /p>
-                )
-            } <
-            div className = "button-group" >
+    <
+    div className = "tasmota-settings-card" >
+        <
+        h3 > Gerenciamento de Dispositivos < /h3> <
+    p className = "device-management-description" >
+        Aqui você pode gerenciar seus dispositivos Tasmota. <
+        /p>
+
+    {
+        isRealData ? ( <
+            p >
             <
-            button onClick = { handleDeleteAccount }
-        disabled = { deleteLoading }
-        className = "delete-button" > { deleteLoading ? 'Excluindo...' : 'Excluir' } <
+            button className = "add-device-btn"
+            onClick = {
+                () => navigate('/add-device')
+            } >
+            Adicionar Novo Dispositivo <
             /button> <
-        button onClick = {
-            () => setShowDeleteModal(false)
-        }
-        className = "cancel-button" >
-            Cancelar <
+            button className = "refresh-devices-btn"
+            onClick = { fetchDashboardData } >
+            Atualizar Lista de Dispositivos <
             /button> < /
-        div > <
-            /div> < /
+            p >
+        ) : ( <
+            p className = "admin-only-message" >
+            O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador. <
+            /p>
+        )
+    } <
+    /div> < /
+    div >
+)
+}
+
+{ /* ========== ECOBOT SECTION ========== */ } {
+    activeSection === 'ecobot' && ( <
+        div className = "main-content2" >
+        <
+        h1 style = {
+            { color: 'white', marginBottom: 8 }
+        } >
+        Olá { userName }, eu sou EcoBot é um prazer conversar com você <
+        /h1> <
+        h4 style = {
+            { color: '#e0e0e0', marginBottom: 24 }
+        } >
+        Aqui { userName }, você poderá me perguntar previsões e um bom uso de energia.Fique à vontade. <
+        /h4> <
+        div style = {
+            { background: '#23234a', borderRadius: 12, padding: 24, maxWidth: 600, width: '100%', minWidth: 320, margin: '0 auto', minHeight: 320, display: 'flex', flexDirection: 'column', gap: 12 }
+        } >
+        <
+        div style = {
+            { flex: 1, overflowY: 'auto', marginBottom: 16 }
+        } > {
+            chatMessages.map((msg, idx) => ( <
+                div key = { idx }
+                style = {
+                    { color: msg.sender === 'EcoBot' ? '#00e676' : '#fff', textAlign: msg.sender === 'EcoBot' ? 'left' : 'right', margin: '8px 0' }
+                } >
+                <
+                strong > { msg.sender }: < /strong> {msg.text} < /
+                div >
+            ))
+        } <
+        /div> <
+        form onSubmit = { handleSendMessage }
+        style = {
+            { display: 'flex', gap: 8 }
+        } >
+        <
+        input type = "text"
+        value = { chatInput }
+        onChange = { e => setChatInput(e.target.value) }
+        placeholder = "Digite sua mensagem..."
+        style = {
+            { flex: 1, borderRadius: 8, border: 'none', padding: 10 }
+        }
+        /> <
+        button type = "submit"
+        style = {
+            { background: '#00e676', color: '#222', border: 'none', borderRadius: 8, padding: '0 18px', fontWeight: 'bold' }
+        } >
+        Enviar <
+        /button> < /
+        form > <
+        /div> < /
         div >
     )
-}
-
-{ /* NOVO: Modal para adicionar número do WhatsApp */ } {
-    showWhatsappModal && ( <
-            div className = "modal-overlay" >
-            <
-            div className = "modal-card" >
-            <
-            h3 >
-            Adicione seu número de Whatsapp para receber notificação do
-                EcoBot, bot inteligente da Smart Energy!
-                <
-                /h3> <
-            form onSubmit = { handleSaveWhatsapp } >
-            <
-            label >
-            Número(com código do país, DDD e número):
-            <
-            /label> <
-            input type = "text"
-            value = { whatsappNumber }
-            onChange = {
-                (e) => setWhatsappNumber(e.target.value)
-            }
-            placeholder = "Ex: 5562999999999"
-            maxLength = { 13 }
-            /> {
-            whatsappError && ( <
-                p className = "error-message" > { whatsappError } < /p>
-            )
-        } {
-            whatsappSuccess && ( <
-                p className = "success-message" > { whatsappSuccess } < /p>
-            )
-        } <
-        div className = "button-group small-buttons" >
-        <
-        button type = "submit"
-    className = "submit-button small-btn" >
-        Salvar <
-        /button> <
-    button type = "button"
-    className = "cancel-button small-btn"
-    onClick = {
-            () => setShowWhatsappModal(false)
-        } >
-        Cancelar <
-        /button> < /
-    div > <
-        /form> < /
-    div > <
-        /div>
-)
-}
-
-<
-div className = "tasmota-settings-card" >
-    <
-    h3 > Gerenciamento de Dispositivos < /h3> <
-p className = "device-management-description" >
-    Aqui você pode gerenciar seus dispositivos Tasmota. <
-    /p>
-
-{
-    isRealData ? ( <
-        p >
-        <
-        button className = "add-device-btn"
-        onClick = {
-            () => navigate('/add-device')
-        } >
-        Adicionar Novo Dispositivo <
-        /button> <
-        button className = "refresh-devices-btn"
-        onClick = { fetchDashboardData } >
-        Atualizar Lista de Dispositivos <
-        /button> < /
-        p >
-    ) : ( <
-        p className = "admin-only-message" >
-        O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador. <
-        /p>
-    )
-} <
-/div> < /
-div >
-)
 } <
 /div> < /
 div >

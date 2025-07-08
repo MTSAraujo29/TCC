@@ -1909,3 +1909,18 @@ textarea {
     text-shadow: 2px 2px 8px #00000055;
     letter-spacing: 0.5px;
 }
+
+.main-content2 {
+    align-items: center;
+    background-color: #2a2a4e;
+    box-sizing: border-box;
+    display: flex;
+    flex: 1 1;
+    flex-direction: column;
+    margin-left: 480px;
+    margin-top: 65px;
+    min-height: calc(100vh - 70px);
+    min-width: 0;
+    overflow-y: auto;
+    padding: 400px;
+}
