@@ -181,12 +181,12 @@ function DashboardPage() {
         if (devices.length >= 2) {
             const sala = devices[0];
             const camera = devices[1];
-            const salaTotal = sala.powerState && sala.latestReading && typeof sala.latestReading.totalEnergy === 'number' ? sala.latestReading.totalEnergy : 0;
-            const cameraTotal = camera.powerState && camera.latestReading && typeof camera.latestReading.totalEnergy === 'number' ? camera.latestReading.totalEnergy : 0;
+            const salaYesterday = sala.latestReading && typeof sala.latestReading.EnergyYesterday === 'number' ? sala.latestReading.EnergyYesterday : 0;
+            const cameraYesterday = camera.latestReading && typeof camera.latestReading.EnergyYesterday === 'number' ? camera.latestReading.EnergyYesterday : 0;
             return {
                 labels: ['Sonoff Sala', 'Sonoff Câmera'],
                 datasets: [{
-                    data: [salaTotal, cameraTotal],
+                    data: [salaYesterday, cameraYesterday],
                     backgroundColor: ['#00bcd4', '#ff9800'],
                     borderColor: ['#00838f', '#f57c00'],
                     borderWidth: 1,
@@ -197,7 +197,7 @@ function DashboardPage() {
         const deviceTypeConsumption = {};
         devices.forEach(device => {
             const type = device.model || 'Dispositivo de Energia';
-            const consumption = device.powerState && device.latestReading ? device.latestReading.totalEnergy : 0;
+            const consumption = device.latestReading && typeof device.latestReading.EnergyYesterday === 'number' ? device.latestReading.EnergyYesterday : 0;
             if (deviceTypeConsumption[type]) {
                 deviceTypeConsumption[type] += consumption;
             } else {
