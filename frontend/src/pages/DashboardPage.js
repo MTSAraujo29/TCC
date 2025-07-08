@@ -1089,210 +1089,221 @@ function DashboardPage() {
 
         { /* ========== HOME SECTION ========== */ } {
             activeSection === 'inicio' && ( <
-                >
-                <
-                h2 > Olá, { userName }! < /h2>
+                    >
+                    <
+                    h2 > Olá, { userName }! < /h2>
 
-                { /* Metrics Grid */ } <
-                div className = "metrics-grid" >
-                <
-                div className = "metric-card" >
-                <
-                h3 > Consumo de Watts atual < /h3> <
-                p > {
-                    devices.length > 0 ?
-                    devices
-                    .reduce(
-                        (sum, d) =>
-                        sum +
-                        (d.latestReading &&
-                            d.powerState &&
-                            typeof d.latestReading.power === 'number' ?
-                            d.latestReading.power :
-                            0),
-                        0
-                    )
-                    .toFixed(2) + ' W' : '0.00 W'
-                } <
-                /p> < /
-                div >
-
-                <
-                div className = "metric-card" >
-                <
-                h3 > Consumo de quilowatt - hora do mês atual < /h3> <
-                p > { currentMonthConsumption } < /p> < /
-                div >
-
-                <
-                div className = "metric-card" >
-                <
-                h3 > Consumo quilowatt - hora total < /h3> <
-                p > { liveTotalEnergySum.toFixed(2) }
-                kWh < /p> < /
-                div >
-
-                <
-                div className = "metric-card" >
-                <
-                h3 > Fatura Estimada < /h3> <
-                p >
-                R$ { ' ' } {
-                    (devices.length > 0 ?
-                        devices.reduce(
+                    { /* Metrics Grid */ } <
+                    div className = "metrics-grid" >
+                    <
+                    div className = "metric-card" >
+                    <
+                    h3 > Consumo de Watts atual < /h3> <
+                    p > {
+                        devices.length > 0 ?
+                        devices
+                        .reduce(
                             (sum, d) =>
                             sum +
                             (d.latestReading &&
                                 d.powerState &&
-                                typeof d.latestReading.totalEnergy === 'number' ?
-                                d.latestReading.totalEnergy :
+                                typeof d.latestReading.power === 'number' ?
+                                d.latestReading.power :
                                 0),
                             0
-                        ) * 0.75 :
-                        0
-                    ).toFixed(2)
-                } <
-                /p> < /
-                div >
+                        )
+                        .toFixed(2) + ' W' : '0.00 W'
+                    } <
+                    /p> < /
+                    div >
 
-                <
-                div className = "metric-card" >
-                <
-                h3 > Consumo de Amperes atual < /h3> <
-                p > {
-                    devices
-                    .filter(
-                        (d) =>
-                        d.powerState &&
-                        d.latestReading &&
-                        typeof d.latestReading.current === 'number'
-                    )
-                    .reduce((sum, d) => sum + d.latestReading.current, 0)
-                    .toFixed(2)
-                }
-                A <
-                /p> < /
-                div >
+                    <
+                    div className = "metric-card" >
+                    <
+                    h3 > Consumo de quilowatt - hora do mês atual < /h3> <
+                    p > { currentMonthConsumption } < /p> < /
+                    div >
 
-                <
-                div className = "metric-card" >
-                <
-                h3 > Gasto reduzido < /h3> <
-                p > R$ 12, 50 < /p> < /
-                div > <
-                /div>
+                    <
+                    div className = "metric-card" >
+                    <
+                    h3 > Consumo quilowatt - hora total < /h3> <
+                    p > { liveTotalEnergySum.toFixed(2) }
+                    kWh < /p> < /
+                    div >
 
-                { /* Main Chart Area */ } <
-                div className = "chart-area-main" >
-                <
-                div className = "chart-card-main" >
-                <
-                div className = "view-mode-buttons" >
-                <
-                button onClick = {
-                    () => setViewMode('day')
-                }
-                className = {
-                    viewMode === 'day' ? 'active-view-button' : 'view-button'
-                } >
-                Dia <
-                /button> <
-                button onClick = {
-                    () => setViewMode('week')
-                }
-                className = {
-                    viewMode === 'week' ? 'active-view-button' : 'view-button'
-                } >
-                Semana <
-                /button> <
-                button onClick = {
-                    () => setViewMode('month')
-                }
-                className = {
-                    viewMode === 'month' ? 'active-view-button' : 'view-button'
-                } >
-                Mês <
-                /button> < /
-                div >
+                    <
+                    div className = "metric-card" >
+                    <
+                    h3 > Fatura Estimada < /h3> <
+                    p >
+                    R$ { ' ' } {
+                        (devices.length > 0 ?
+                            devices.reduce(
+                                (sum, d) =>
+                                sum +
+                                (d.latestReading &&
+                                    d.powerState &&
+                                    typeof d.latestReading.totalEnergy === 'number' ?
+                                    d.latestReading.totalEnergy :
+                                    0),
+                                0
+                            ) * 0.75 :
+                            0
+                        ).toFixed(2)
+                    } <
+                    /p> < /
+                    div >
 
-                {
-                    getChartData().labels.length > 0 ? ( <
-                        Line data = { getChartData() }
-                        options = { chartOptions }
-                        />
-                    ) : ( <
-                        p className = "chart-loading-message" >
-                        Carregando dados do gráfico... <
-                            /p>
-                    )
-                }
+                    <
+                    div className = "metric-card" >
+                    <
+                    h3 > Consumo de Amperes atual < /h3> <
+                    p > {
+                        devices
+                        .filter(
+                            (d) =>
+                            d.powerState &&
+                            d.latestReading &&
+                            typeof d.latestReading.current === 'number'
+                        )
+                        .reduce((sum, d) => sum + d.latestReading.current, 0)
+                        .toFixed(2)
+                    }
+                    A <
+                    /p> < /
+                    div >
 
-                <
-                button className = "expand-chart-button"
-                onClick = {
-                    () => navigate('/grafico-cheio')
-                } >
-                Expandir Gráfico <
-                /button> < /
-                div > <
-                /div>
+                    <
+                    div className = "metric-card" >
+                    <
+                    h3 > Gasto reduzido < /h3> <
+                    p > R$ 12, 50 < /p> < /
+                    div > <
+                    /div>
 
-                { /* Bottom Sections */ } <
-                div className = "bottom-sections-grid" >
-                <
-                div className = "bottom-card consumption-by-type-card" >
-                <
-                h3 > Consumo por Tipo de Dispositivo < /h3> <
-                div className = "chart-wrapper"
-                style = {
-                    { display: 'flex', alignItems: 'center', gap: 24 }
-                } >
-                <
-                Doughnut data = { getConsumptionByTypeData() }
-                options = { consumptionByTypeOptions }
-                /> { / * Legenda personalizada com porcentagem * / } <
-                div style = {
-                    { display: 'flex', flexDirection: 'column', gap: 8 }
-                } > {
+                    { /* Main Chart Area */ } <
+                    div className = "chart-area-main" >
+                    <
+                    div className = "chart-card-main" >
+                    <
+                    div className = "view-mode-buttons" >
+                    <
+                    button onClick = {
+                        () => setViewMode('day')
+                    }
+                    className = {
+                        viewMode === 'day' ? 'active-view-button' : 'view-button'
+                    } >
+                    Dia <
+                    /button> <
+                    button onClick = {
+                        () => setViewMode('week')
+                    }
+                    className = {
+                        viewMode === 'week' ? 'active-view-button' : 'view-button'
+                    } >
+                    Semana <
+                    /button> <
+                    button onClick = {
+                        () => setViewMode('month')
+                    }
+                    className = {
+                        viewMode === 'month' ? 'active-view-button' : 'view-button'
+                    } >
+                    Mês <
+                    /button> < /
+                    div >
+
+                    {
+                        getChartData().labels.length > 0 ? ( <
+                            Line data = { getChartData() }
+                            options = { chartOptions }
+                            />
+                        ) : ( <
+                            p className = "chart-loading-message" >
+                            Carregando dados do gráfico... <
+                                /p>
+                        )
+                    }
+
+                    <
+                    button className = "expand-chart-button"
+                    onClick = {
+                        () => navigate('/grafico-cheio')
+                    } >
+                    Expandir Gráfico <
+                    /button> < /
+                    div > <
+                    /div>
+
+                    { /* Bottom Sections */ } <
+                    div className = "bottom-sections-grid" >
+                    <
+                    div className = "bottom-card consumption-by-type-card" >
+                    <
+                    h3 > Consumo por Tipo de Dispositivo < /h3> <
+                    div className = "chart-wrapper"
+                    style = {
+                        { display: 'flex', alignItems: 'center', gap: 24 }
+                    } >
+                    <
+                    Doughnut data = { getConsumptionByTypeData() }
+                    options = { consumptionByTypeOptions }
+                    /> { / * Legenda personalizada em linha única * / } {
                     (() => {
                         const data = getConsumptionByTypeData();
                         const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                        return data.labels.map((label, idx) => {
-                            const value = data.datasets[0].data[idx];
-                            const percent = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-                            const color = data.datasets[0].backgroundColor[idx];
-                            return ( <
-                                div key = { label }
-                                style = {
-                                    { display: 'flex', alignItems: 'center', gap: 8 }
-                                } >
-                                <
-                                span style = {
-                                    { display: 'inline-block', width: 14, height: 14, borderRadius: 7, background: color, marginRight: 6 }
-                                } > < /span> <
-                                span style = {
-                                    { color: '#FFF', fontWeight: 500 }
-                                } > { label } < /span> <
-                                span style = {
-                                    { color: '#BBB', marginLeft: 4 }
-                                } > { percent } % < /span> < /
-                                div >
-                            );
-                        });
+                        const percentSala = total > 0 ? ((data.datasets[0].data[0] / total) * 100).toFixed(1) : '0.0';
+                        const percentCamera = total > 0 ? ((data.datasets[0].data[1] / total) * 100).toFixed(1) : '0.0';
+                        return ( <
+                            div style = {
+                                { display: 'flex', alignItems: 'center', gap: 18 }
+                            } >
+                            <
+                            span style = {
+                                { display: 'inline-flex', alignItems: 'center', gap: 4 }
+                            } >
+                            <
+                            span style = {
+                                { display: 'inline-block', width: 14, height: 14, borderRadius: 7, background: data.datasets[0].backgroundColor[0], marginRight: 4 }
+                            } > < /span> <
+                            span style = {
+                                { color: '#FFF', fontWeight: 500 }
+                            } > Sala: < /span> <
+                            span style = {
+                                { color: '#FFF', fontWeight: 700 }
+                            } > { percentSala } % < /span> < /
+                            span > <
+                            span style = {
+                                { display: 'inline-flex', alignItems: 'center', gap: 4 }
+                            } >
+                            <
+                            span style = {
+                                { display: 'inline-block', width: 14, height: 14, borderRadius: 7, background: data.datasets[0].backgroundColor[1], marginRight: 4 }
+                            } > < /span> <
+                            span style = {
+                                { color: '#FFF', fontWeight: 500 }
+                            } > Câmera: < /span> <
+                            span style = {
+                                { color: '#FFF', fontWeight: 700 }
+                            } > { percentCamera } % < /span> < /
+                            span > <
+                            /div>
+                        );
                     })()
                 } <
-                /div> < /
-                div > <
-                /div>
+                /div> /
+            div >
 
                 <
                 div className = "bottom-card suggested-devices-card" >
                 <
                 h3 > Dispositivos Sugeridos < /h3> <
-                p className = "suggestions-description" >
+            p className = "suggestions-description" >
                 Sugestões para otimizar o consumo de energia em seus dispositivos. <
                 /p> <
-                ul className = "device-suggestion-list" > {
+            ul className = "device-suggestion-list" > {
                     getSuggestedDevicesData().length > 0 ? (
                         getSuggestedDevicesData().map((device) => ( <
                             li key = { device.id } >
@@ -1307,357 +1318,357 @@ function DashboardPage() {
                     )
                 } <
                 /ul> < /
-                div > <
+            div > <
                 /div> < / >
+        )
+    }
+
+    { /* ========== ENERGY CONTROL SECTION ========== */ } {
+        activeSection === 'controle' && ( <
+            div className = "energy-control-section" >
+            <
+            h2 > Controle de Dispositivos < /h2> {
+            deviceMessage && ( <
+                p className = "device-feedback-message" > { deviceMessage } < /p>
             )
         }
 
-        { /* ========== ENERGY CONTROL SECTION ========== */ } {
-            activeSection === 'controle' && ( <
-                div className = "energy-control-section" >
-                <
-                h2 > Controle de Dispositivos < /h2> {
-                deviceMessage && ( <
-                    p className = "device-feedback-message" > { deviceMessage } < /p>
+        <
+        h3 > Meus Dispositivos de Energia < /h3>
+
+        {
+            devices.length > 0 ? ( <
+                div className = "device-control-list" > {
+                    devices.map((device) => ( <
+                        div key = { device.id }
+                        className = "device-control-item" >
+                        <
+                        span className = "device-control-name" > { device.name } < /span> <
+                        button onClick = {
+                            () =>
+                            toggleDevicePower(device.id, device.powerState, device.name)
+                        }
+                        className = "device-toggle-button power-on"
+                        type = "button"
+                        disabled = { device.powerState } >
+                        Ligar <
+                        /button> <
+                        button onClick = {
+                            () =>
+                            toggleDevicePower(device.id, device.powerState, device.name)
+                        }
+                        className = "device-toggle-button power-off"
+                        type = "button"
+                        disabled = {!device.powerState } >
+                        Desligar <
+                        /button> < /
+                        div >
+                    ))
+                } <
+                /div>
+            ) : ( <
+                p className = "no-devices-message" > Nenhum dispositivo encontrado. < /p>
+            )
+        }
+
+        {
+            isRealData && ( <
+                button className = "add-device-btn"
+                onClick = {
+                    () => navigate('/add-device')
+                } >
+                +Adicionar Novo Dispositivo Tasmota <
+                /button>
+            )
+        } <
+        /div>
+    )
+}
+
+{ /* ========== REPORTS SECTION ========== */ } {
+    activeSection === 'relatorios' && ( <
+            div className = "reports-section" >
+            <
+            h2 > Relatórios de Consumo < /h2> <
+            div className = "report-summary-card" >
+            <
+            h3 > Resumo Geral < /h3> <
+            p >
+            Total de Dispositivos: < strong > { report.summary.totalDevices } < /strong> < /
+            p > <
+            p >
+            Com uso Inteligente(estimado): { ' ' } <
+            strong > { report.summary.smartUsageDevices } < /strong> < /
+            p > <
+            p >
+            Dispositivos com Otimização Pendente(estimado): { ' ' } <
+            strong > { report.summary.nonSmartUsageDevices } < /strong> < /
+            p > <
+            p className = "overall-report-message" > { report.summary.overallMessage } < /p> < /
+            div >
+
+            {
+                isRealData && devices.length > 0 && devices[0].latestReading && ( <
+                    div className = "energy-realtime-card" >
+                    <
+                    h3 > Dados em Tempo Real do Dispositivo Sonoff Sala < /h3> <
+                    table className = "energy-realtime-table" >
+                    <
+                    tbody className = "energy-realtime-tbody" >
+                    <
+                    tr >
+                    <
+                    td > Tensão < /td> <
+                    td > {
+                        devices[0].powerState &&
+                        typeof devices[0].latestReading.voltage === 'number' ?
+                        devices[0].latestReading.voltage : 0
+                    }
+                    V <
+                    /td> < /
+                    tr > <
+                    tr >
+                    <
+                    td > Corrente < /td> <
+                    td > {
+                        devices[0].powerState &&
+                        typeof devices[0].latestReading.current === 'number' ?
+                        devices[0].latestReading.current : 0
+                    }
+                    A <
+                    /td> < /
+                    tr > <
+                    tr >
+                    <
+                    td > Potência Ativa < /td> <
+                    td > {
+                        devices[0].powerState &&
+                        typeof devices[0].latestReading.power === 'number' ?
+                        devices[0].latestReading.power : 0
+                    }
+                    W <
+                    /td> < /
+                    tr > <
+                    tr >
+                    <
+                    td > Potência Aparente < /td> <
+                    td > {
+                        devices[0].powerState &&
+                        typeof devices[0].latestReading.ApparentPower === 'number' ?
+                        devices[0].latestReading.ApparentPower : 0
+                    }
+                    VA <
+                    /td> < /
+                    tr > <
+                    tr >
+                    <
+                    td > Potência Reativa < /td> <
+                    td > {
+                        devices[0].powerState &&
+                        typeof devices[0].latestReading.ReactivePower === 'number' ?
+                        devices[0].latestReading.ReactivePower : 0
+                    }
+                    var <
+                    /td> < /
+                    tr > <
+                    tr >
+                    <
+                    td > Fator de Potência < /td> <
+                    td > {
+                        devices[0].powerState &&
+                        typeof devices[0].latestReading.PowerFactor === 'number' ?
+                        devices[0].latestReading.PowerFactor : 0
+                    } <
+                    /td> < /
+                    tr > <
+                    tr >
+                    <
+                    td > Energia Hoje < /td> <
+                    td > {
+                        typeof devices[0].latestReading.EnergyToday === 'number' ?
+                        devices[0].latestReading.EnergyToday : '--'
+                    }
+                    kWh <
+                    /td> < /
+                    tr > <
+                    tr >
+                    <
+                    td > Energia Ontem < /td> <
+                    td > {
+                        typeof devices[0].latestReading.EnergyYesterday === 'number' ?
+                        devices[0].latestReading.EnergyYesterday : '--'
+                    }
+                    kWh <
+                    /td> < /
+                    tr > <
+                    tr >
+                    <
+                    td > Energia Total < /td> <
+                    td > {
+                        devices[0].powerState ?
+                        liveTotalEnergyBroker1.toFixed(2) + ' kWh' : '0.00 kWh'
+                    } <
+                    /td> < /
+                    tr > <
+                    /tbody> < /
+                    table > <
+                    /div>
+                )
+            }
+
+            { /* Device 2 Real-time Data */ } {
+                isRealData && devices.length > 1 && devices[1].latestReading && ( <
+                    div className = "energy-realtime-card"
+                    style = {
+                        { marginTop: '32px' }
+                    } >
+                    <
+                    h3 > Dados em Tempo Real do Dispositivo Sonoff Câmera < /h3> <
+                    table className = "energy-realtime-table" >
+                    <
+                    tbody className = "energy-realtime-tbody" >
+                    <
+                    tr >
+                    <
+                    td > Tensão < /td> <
+                    td > {
+                        devices[1].powerState &&
+                        typeof devices[1].latestReading.voltage === 'number' ?
+                        devices[1].latestReading.voltage : 0
+                    }
+                    V <
+                    /td> < /
+                    tr > <
+                    tr >
+                    <
+                    td > Corrente < /td> <
+                    td > {
+                        devices[1].powerState &&
+                        typeof devices[1].latestReading.current === 'number' ?
+                        devices[1].latestReading.current : 0
+                    }
+                    A <
+                    /td> < /
+                    tr > <
+                    tr >
+                    <
+                    td > Potência Ativa < /td> <
+                    td > {
+                        devices[1].powerState &&
+                        typeof devices[1].latestReading.power === 'number' ?
+                        devices[1].latestReading.power : 0
+                    }
+                    W <
+                    /td> < /
+                    tr > <
+                    tr >
+                    <
+                    td > Potência Aparente < /td> <
+                    td > {
+                        devices[1].powerState &&
+                        typeof devices[1].latestReading.ApparentPower === 'number' ?
+                        devices[1].latestReading.ApparentPower : 0
+                    }
+                    VA <
+                    /td> < /
+                    tr > <
+                    tr >
+                    <
+                    td > Potência Reativa < /td> <
+                    td > {
+                        devices[1].powerState &&
+                        typeof devices[1].latestReading.ReactivePower === 'number' ?
+                        devices[1].latestReading.ReactivePower : 0
+                    }
+                    var <
+                    /td> < /
+                    tr > <
+                    tr >
+                    <
+                    td > Fator de Potência < /td> <
+                    td > {
+                        devices[1].powerState &&
+                        typeof devices[1].latestReading.PowerFactor === 'number' ?
+                        devices[1].latestReading.PowerFactor : 0
+                    } <
+                    /td> < /
+                    tr > <
+                    tr >
+                    <
+                    td > Energia Hoje < /td> <
+                    td > {
+                        typeof devices[1].latestReading.EnergyToday === 'number' ?
+                        devices[1].latestReading.EnergyToday : '--'
+                    }
+                    kWh <
+                    /td> < /
+                    tr > <
+                    tr >
+                    <
+                    td > Energia Ontem < /td> <
+                    td > {
+                        typeof devices[1].latestReading.EnergyYesterday === 'number' ?
+                        devices[1].latestReading.EnergyYesterday : '--'
+                    }
+                    kWh <
+                    /td> < /
+                    tr > <
+                    tr >
+                    <
+                    td > Energia Total < /td> <
+                    td > {
+                        devices[1].powerState ?
+                        liveTotalEnergyBroker2.toFixed(2) + ' kWh' : '0.00 kWh'
+                    } <
+                    /td> < /
+                    tr > <
+                    /tbody> < /
+                    table > <
+                    /div>
                 )
             }
 
             <
-            h3 > Meus Dispositivos de Energia < /h3>
-
-            {
-                devices.length > 0 ? ( <
-                    div className = "device-control-list" > {
-                        devices.map((device) => ( <
-                            div key = { device.id }
-                            className = "device-control-item" >
+            h3 > Detalhes por Dispositivo < /h3> <
+            div className = "device-report-list" > {
+                report.details.length > 0 ? (
+                    report.details.map((detail, index) => ( <
+                            div key = { index }
+                            className = "device-report-item" >
                             <
-                            span className = "device-control-name" > { device.name } < /span> <
-                            button onClick = {
-                                () =>
-                                toggleDevicePower(device.id, device.powerState, device.name)
-                            }
-                            className = "device-toggle-button power-on"
-                            type = "button"
-                            disabled = { device.powerState } >
-                            Ligar <
-                            /button> <
-                            button onClick = {
-                                () =>
-                                toggleDevicePower(device.id, device.powerState, device.name)
-                            }
-                            className = "device-toggle-button power-off"
-                            type = "button"
-                            disabled = {!device.powerState } >
-                            Desligar <
-                            /button> < /
-                            div >
-                        ))
-                    } <
-                    /div>
-                ) : ( <
-                    p className = "no-devices-message" > Nenhum dispositivo encontrado. < /p>
-                )
-            }
-
-            {
-                isRealData && ( <
-                    button className = "add-device-btn"
-                    onClick = {
-                        () => navigate('/add-device')
-                    } >
-                    +Adicionar Novo Dispositivo Tasmota <
-                    /button>
-                )
-            } <
-            /div>
-        )
-    }
-
-    { /* ========== REPORTS SECTION ========== */ } {
-        activeSection === 'relatorios' && ( <
-                div className = "reports-section" >
-                <
-                h2 > Relatórios de Consumo < /h2> <
-                div className = "report-summary-card" >
-                <
-                h3 > Resumo Geral < /h3> <
-                p >
-                Total de Dispositivos: < strong > { report.summary.totalDevices } < /strong> < /
-                p > <
-                p >
-                Com uso Inteligente(estimado): { ' ' } <
-                strong > { report.summary.smartUsageDevices } < /strong> < /
-                p > <
-                p >
-                Dispositivos com Otimização Pendente(estimado): { ' ' } <
-                strong > { report.summary.nonSmartUsageDevices } < /strong> < /
-                p > <
-                p className = "overall-report-message" > { report.summary.overallMessage } < /p> < /
-                div >
-
-                {
-                    isRealData && devices.length > 0 && devices[0].latestReading && ( <
-                        div className = "energy-realtime-card" >
-                        <
-                        h3 > Dados em Tempo Real do Dispositivo Sonoff Sala < /h3> <
-                        table className = "energy-realtime-table" >
-                        <
-                        tbody className = "energy-realtime-tbody" >
-                        <
-                        tr >
-                        <
-                        td > Tensão < /td> <
-                        td > {
-                            devices[0].powerState &&
-                            typeof devices[0].latestReading.voltage === 'number' ?
-                            devices[0].latestReading.voltage : 0
-                        }
-                        V <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Corrente < /td> <
-                        td > {
-                            devices[0].powerState &&
-                            typeof devices[0].latestReading.current === 'number' ?
-                            devices[0].latestReading.current : 0
-                        }
-                        A <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Potência Ativa < /td> <
-                        td > {
-                            devices[0].powerState &&
-                            typeof devices[0].latestReading.power === 'number' ?
-                            devices[0].latestReading.power : 0
-                        }
-                        W <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Potência Aparente < /td> <
-                        td > {
-                            devices[0].powerState &&
-                            typeof devices[0].latestReading.ApparentPower === 'number' ?
-                            devices[0].latestReading.ApparentPower : 0
-                        }
-                        VA <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Potência Reativa < /td> <
-                        td > {
-                            devices[0].powerState &&
-                            typeof devices[0].latestReading.ReactivePower === 'number' ?
-                            devices[0].latestReading.ReactivePower : 0
-                        }
-                        var <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Fator de Potência < /td> <
-                        td > {
-                            devices[0].powerState &&
-                            typeof devices[0].latestReading.PowerFactor === 'number' ?
-                            devices[0].latestReading.PowerFactor : 0
-                        } <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Energia Hoje < /td> <
-                        td > {
-                            typeof devices[0].latestReading.EnergyToday === 'number' ?
-                            devices[0].latestReading.EnergyToday : '--'
-                        }
-                        kWh <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Energia Ontem < /td> <
-                        td > {
-                            typeof devices[0].latestReading.EnergyYesterday === 'number' ?
-                            devices[0].latestReading.EnergyYesterday : '--'
-                        }
-                        kWh <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Energia Total < /td> <
-                        td > {
-                            devices[0].powerState ?
-                            liveTotalEnergyBroker1.toFixed(2) + ' kWh' : '0.00 kWh'
-                        } <
-                        /td> < /
-                        tr > <
-                        /tbody> < /
-                        table > <
-                        /div>
-                    )
-                }
-
-                { /* Device 2 Real-time Data */ } {
-                    isRealData && devices.length > 1 && devices[1].latestReading && ( <
-                        div className = "energy-realtime-card"
-                        style = {
-                            { marginTop: '32px' }
-                        } >
-                        <
-                        h3 > Dados em Tempo Real do Dispositivo Sonoff Câmera < /h3> <
-                        table className = "energy-realtime-table" >
-                        <
-                        tbody className = "energy-realtime-tbody" >
-                        <
-                        tr >
-                        <
-                        td > Tensão < /td> <
-                        td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.voltage === 'number' ?
-                            devices[1].latestReading.voltage : 0
-                        }
-                        V <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Corrente < /td> <
-                        td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.current === 'number' ?
-                            devices[1].latestReading.current : 0
-                        }
-                        A <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Potência Ativa < /td> <
-                        td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.power === 'number' ?
-                            devices[1].latestReading.power : 0
-                        }
-                        W <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Potência Aparente < /td> <
-                        td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.ApparentPower === 'number' ?
-                            devices[1].latestReading.ApparentPower : 0
-                        }
-                        VA <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Potência Reativa < /td> <
-                        td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.ReactivePower === 'number' ?
-                            devices[1].latestReading.ReactivePower : 0
-                        }
-                        var <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Fator de Potência < /td> <
-                        td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.PowerFactor === 'number' ?
-                            devices[1].latestReading.PowerFactor : 0
-                        } <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Energia Hoje < /td> <
-                        td > {
-                            typeof devices[1].latestReading.EnergyToday === 'number' ?
-                            devices[1].latestReading.EnergyToday : '--'
-                        }
-                        kWh <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Energia Ontem < /td> <
-                        td > {
-                            typeof devices[1].latestReading.EnergyYesterday === 'number' ?
-                            devices[1].latestReading.EnergyYesterday : '--'
-                        }
-                        kWh <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Energia Total < /td> <
-                        td > {
-                            devices[1].powerState ?
-                            liveTotalEnergyBroker2.toFixed(2) + ' kWh' : '0.00 kWh'
-                        } <
-                        /td> < /
-                        tr > <
-                        /tbody> < /
-                        table > <
-                        /div>
-                    )
-                }
-
-                <
-                h3 > Detalhes por Dispositivo < /h3> <
-                div className = "device-report-list" > {
-                    report.details.length > 0 ? (
-                        report.details.map((detail, index) => ( <
-                                div key = { index }
-                                className = "device-report-item" >
-                                <
-                                h4 > { detail.name } < /h4> <
-                                p >
-                                Status Atual: { ' ' } <
-                                span className = {
-                                    devices[index] && devices[index].powerState ?
-                                    'status-on-text' : 'status-off-text'
-                                } > {
-                                    devices[index] && devices[index].powerState ?
-                                    'Ligado' : 'Desligado'
-                                } <
-                                /span> < /
-                                p > <
-                                p > Tipo: { detail.type } < /p> <
-                                p > Recomendação: { detail.recommendation } < /p> {
-                                parseFloat(detail.potentialImpact) !== 0.00 && ( <
-                                    p className = {
-                                        parseFloat(detail.potentialImpact) > 0 ?
-                                        'impact-positive' : 'impact-negative'
-                                    } >
-                                    Impacto Potencial: { detail.potentialImpact }
-                                    kWh no próximo mês <
-                                    /p>
-                                )
+                            h4 > { detail.name } < /h4> <
+                            p >
+                            Status Atual: { ' ' } <
+                            span className = {
+                                devices[index] && devices[index].powerState ?
+                                'status-on-text' : 'status-off-text'
+                            } > {
+                                devices[index] && devices[index].powerState ?
+                                'Ligado' : 'Desligado'
                             } <
-                            /div>
-                        ))
-                ): ( <
-                    p className = "no-reports-message" > Nenhum relatório disponível. < /p>
-                )
-            } <
-            /div> < /
-        div >
-    )
+                            /span> < /
+                            p > <
+                            p > Tipo: { detail.type } < /p> <
+                            p > Recomendação: { detail.recommendation } < /p> {
+                            parseFloat(detail.potentialImpact) !== 0.00 && ( <
+                                p className = {
+                                    parseFloat(detail.potentialImpact) > 0 ?
+                                    'impact-positive' : 'impact-negative'
+                                } >
+                                Impacto Potencial: { detail.potentialImpact }
+                                kWh no próximo mês <
+                                /p>
+                            )
+                        } <
+                        /div>
+                    ))
+            ): ( <
+                p className = "no-reports-message" > Nenhum relatório disponível. < /p>
+            )
+        } <
+        /div> < /
+    div >
+)
 }
 
 { /* ========== ECOBOT SECTION ========== */ } {
