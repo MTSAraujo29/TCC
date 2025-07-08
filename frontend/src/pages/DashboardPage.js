@@ -1250,7 +1250,7 @@ function DashboardPage() {
                     <
                     Doughnut data = { getConsumptionByTypeData() }
                     options = { consumptionByTypeOptions }
-                    /> { / * Legenda personalizada em linha única * / } {
+                    /> { / * Legenda personalizada em duas linhas * / } {
                     (() => {
                         const data = getConsumptionByTypeData();
                         const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
@@ -1258,7 +1258,7 @@ function DashboardPage() {
                         const percentCamera = total > 0 ? ((data.datasets[0].data[1] / total) * 100).toFixed(1) : '0.0';
                         return ( <
                             div style = {
-                                { display: 'flex', alignItems: 'center', gap: 18 }
+                                { display: 'flex', flexDirection: 'column', gap: 8 }
                             } >
                             <
                             span style = {
@@ -1293,11 +1293,10 @@ function DashboardPage() {
                         );
                     })()
                 } <
-                /div> /
-            div >
+                /div>
 
-                <
-                div className = "bottom-card suggested-devices-card" >
+            <
+            div className = "bottom-card suggested-devices-card" >
                 <
                 h3 > Dispositivos Sugeridos < /h3> <
             p className = "suggestions-description" >
