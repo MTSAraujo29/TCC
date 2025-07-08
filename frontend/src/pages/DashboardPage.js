@@ -1663,17 +1663,45 @@ function DashboardPage() {
 
 { /* ========== ECOBOT SECTION ========== */ } {
     activeSection === 'ecobot' && ( <
-        div className = "main-content2" >
+        div className = "main-content2"
+        style = {
+            { display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', minHeight: '80vh' }
+        } > { /* Imagem EcoBotSF fixa à esquerda */ } <
+        div style = {
+            { flex: '0 0 280px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', height: '100%', minHeight: 400 }
+        } >
+        <
+        img src = { process.env.PUBLIC_URL + '/EcoBotSF.png' }
+        alt = "EcoBot"
+        style = {
+            {
+                width: 'auto',
+                height: '45vh',
+                maxHeight: 420,
+                minHeight: 220,
+                objectFit: 'contain',
+                position: 'sticky',
+                top: 100,
+                zIndex: 1,
+                filter: 'drop-shadow(0 0 16px #23234a88)'
+            }
+        }
+        /> < /
+        div > { /* Conteúdo do EcoBot (chat) */ } <
+        div style = {
+            { flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }
+        } >
         <
         div style = {
             {
                 width: '100%',
                 maxWidth: 600,
-                minWidth: 340,
-                position: 'sticky',
-                top: 0,
+                margin: '0 auto',
+                marginBottom: 24,
+                marginTop: 0,
+                textAlign: 'center',
                 background: 'transparent',
-                zIndex: 2,
+                zIndex: 2
             }
         } >
         <
@@ -1693,11 +1721,10 @@ function DashboardPage() {
             {
                 background: '#23234a',
                 borderRadius: 12,
+                boxShadow: '0 2px 16px #0002',
                 padding: 24,
-                maxWidth: 600,
                 width: '100%',
-                minWidth: 320,
-                margin: '0 auto',
+                maxWidth: 600,
                 minHeight: 320,
                 display: 'flex',
                 flexDirection: 'column',
@@ -1755,7 +1782,8 @@ function DashboardPage() {
         /button> < /
         form > <
         /div> < /
-        div >
+        div > <
+        /div>
     )
 }
 
