@@ -462,6 +462,8 @@ function DashboardPage() {
                     setDailyConsumption('0.00 kWh');
                 }
 
+                setWhatsappNumberSaved(data.whatsappNumber || null);
+
             } else if (response.status === 401 || response.status === 403) {
                 setSessionExpired(true);
                 localStorage.removeItem('token');
@@ -766,6 +768,7 @@ function DashboardPage() {
             });
             if (!response.ok) throw new Error('Erro ao salvar número');
             setWhatsappSuccess('Número salvo com sucesso!');
+            setWhatsappNumberSaved(whatsappNumber.replace(/\D/g, ''));
             setTimeout(() => setShowWhatsappModal(false), 1500);
         } catch {
             setWhatsappError('Erro ao salvar número. Tente novamente.');
@@ -796,14 +799,6 @@ function DashboardPage() {
             setWhatsappError('Erro ao desvincular número. Tente novamente.');
         }
     };
-
-    // Atualizar whatsappNumberSaved ao buscar dados do dashboard
-    useEffect(() => {
-        // ...
-        // Após receber os dados do dashboard:
-        // setWhatsappNumberSaved(data.whatsappNumber || null);
-        // ...
-    }, [ /* dependências */ ]);
 
     if (sessionExpired) {
         return ( <
