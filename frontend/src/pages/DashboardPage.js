@@ -1033,7 +1033,7 @@ function DashboardPage() {
                     }
                 }
                 style = {
-                    { display: 'flex', alignItems: 'center' }
+                    { alignItems: 'center' }
                 } >
                 <
                 img src = { process.env.PUBLIC_URL + '/ST.png' }
