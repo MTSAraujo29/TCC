@@ -4,79 +4,74 @@ import '../App.css';
 import { API_ENDPOINTS } from '../config/api';
 
 // SVG Components
-const EyeOpen = () => ( <
-    svg width = "22"
-    height = "22"
-    viewBox = "0 0 24 24"
-    fill = "none"
-    stroke = "#888"
-    strokeWidth = "2"
-    strokeLinecap = "round"
-    strokeLinejoin = "round" >
-    <
-    ellipse cx = "12"
-    cy = "12"
-    rx = "8"
-    ry = "5" / >
-    <
-    circle cx = "12"
-    cy = "12"
-    r = "2.5" / >
-    <
-    /svg>
+const EyeOpen = () => (
+    <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#888"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <ellipse cx="12" cy="12" rx="8" ry="5" />
+        <circle cx="12" cy="12" r="2.5" />
+    </svg>
 );
 
-const EyeClosed = () => ( <
-    svg width = "22"
-    height = "22"
-    viewBox = "0 0 24 24"
-    fill = "none"
-    stroke = "#888"
-    strokeWidth = "2"
-    strokeLinecap = "round"
-    strokeLinejoin = "round" >
-    <
-    path d = "M1 1l22 22" / >
-    <
-    path d = "M17.94 17.94A10.94 10.94 0 0 1 12 19c-5.05 0-9.29-3.14-10.74-7.5a10.97 10.97 0 0 1 1.66-3.13" / >
-    <
-    path d = "M9.53 9.53A3.5 3.5 0 0 0 12 15.5c1.38 0 2.63-.83 3.16-2.03" / >
-    <
-    /svg>
+const EyeClosed = () => (
+    <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#888"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <path d="M1 1l22 22" />
+        <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-5.05 0-9.29-3.14-10.74-7.5a10.97 10.97 0 0 1 1.66-3.13" />
+        <path d="M9.53 9.53A3.5 3.5 0 0 0 12 15.5c1.38 0 2.63-.83 3.16-2.03" />
+    </svg>
 );
 
 // Reusable Password Input Component
-const PasswordInput = ({ name, placeholder, value, show, setShow, onChange }) => ( <
-    div style = {
-        { position: 'relative' }
-    } >
-    <
-    input type = { show ? 'text' : 'password' }
-    name = { name }
-    placeholder = { placeholder }
-    required value = { value }
-    onChange = { onChange }
-    style = {
-        { paddingRight: 40 }
-    }
-    /> <
-    span onClick = {
-        () => setShow(v => !v)
-    }
-    style = {
-        {
-            position: 'absolute',
-            right: 10,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            cursor: 'pointer',
-            color: '#888',
-            fontSize: 18
-        }
-    }
-    title = { show ? 'Ocultar senha' : 'Mostrar senha' } > { show ? < EyeClosed / > : < EyeOpen / > } <
-    /span> < /
-    div >
+const PasswordInput = ({
+                           name,
+                           placeholder,
+                           value,
+                           show,
+                           setShow,
+                           onChange
+                       }) => (
+    <div style={{ position: 'relative' }}>
+        <input
+            type={show ? 'text' : 'password'}
+            name={name}
+            placeholder={placeholder}
+            required
+            value={value}
+            onChange={onChange}
+            style={{ paddingRight: 40 }}
+        />
+        <span
+            onClick={() => setShow(v => !v)}
+            style={{
+                position: 'absolute',
+                right: 10,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                cursor: 'pointer',
+                color: '#888',
+                fontSize: 18
+            }}
+            title={show ? 'Ocultar senha' : 'Mostrar senha'}
+        >
+      {show ? <EyeClosed /> : <EyeOpen />}
+    </span>
+    </div>
 );
 
 function CreateAccountPage() {
@@ -97,10 +92,10 @@ function CreateAccountPage() {
     // Event handlers
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({...prev, [name]: value }));
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = async(e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
@@ -130,7 +125,7 @@ function CreateAccountPage() {
     };
 
     // API functions
-    const registerUser = async() => {
+    const registerUser = async () => {
         return await fetch(API_ENDPOINTS.REGISTER, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -159,78 +154,70 @@ function CreateAccountPage() {
         setError('Não foi possível conectar ao servidor. Verifique sua conexão ou tente mais tarde.');
     };
 
-    return ( <
-        div className = "container" >
-        <
-        div className = "card" >
-        <
-        div className = "logo-icon" >
-        <
-        img src = "/icon.png"
-        alt = "Ícone"
-        style = {
-            { width: 40, height: 40, marginBottom: 8 }
-        }
-        /> < /
-        div > <
-        h2 > Criar Conta < /h2>
+    return (
+        <div className="container">
+            <div className="card">
+                <div className="logo-icon">
+                    <img
+                        src="/icon.png"
+                        alt="Ícone"
+                        style={{ width: 40, height: 40, marginBottom: 8 }}
+                    />
+                </div>
 
-        <
-        form onSubmit = { handleSubmit } >
-        <
-        input type = "text"
-        name = "name"
-        placeholder = "Nome"
-        required value = { formData.name }
-        onChange = { handleInputChange }
-        />
+                <h2>Criar Conta</h2>
 
-        <
-        input type = "email"
-        name = "email"
-        placeholder = "Email"
-        required value = { formData.email }
-        onChange = { handleInputChange }
-        />
+                <form onSubmit={handleSubmit}>
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Nome"
+                        required
+                        value={formData.name}
+                        onChange={handleInputChange}
+                    />
 
-        <
-        PasswordInput name = "password"
-        placeholder = "Senha"
-        value = { formData.password }
-        show = { showPassword }
-        setShow = { setShowPassword }
-        onChange = { handleInputChange }
-        />
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        required
+                        value={formData.email}
+                        onChange={handleInputChange}
+                    />
 
-        <
-        PasswordInput name = "confirmPassword"
-        placeholder = "Confirmar Senha"
-        value = { formData.confirmPassword }
-        show = { showConfirmPassword }
-        setShow = { setShowConfirmPassword }
-        onChange = { handleInputChange }
-        />
+                    <PasswordInput
+                        name="password"
+                        placeholder="Senha"
+                        value={formData.password}
+                        show={showPassword}
+                        setShow={setShowPassword}
+                        onChange={handleInputChange}
+                    />
 
-        {
-            error && ( <
-                p style = {
-                    { color: 'red', fontSize: '0.9em' }
-                } > { error } <
-                /p>
-            )
-        }
+                    <PasswordInput
+                        name="confirmPassword"
+                        placeholder="Confirmar Senha"
+                        value={formData.confirmPassword}
+                        show={showConfirmPassword}
+                        setShow={setShowConfirmPassword}
+                        onChange={handleInputChange}
+                    />
 
-        <
-        button type = "submit" > Criar < /button> < /
-        form >
+                    {error && (
+                        <p style={{ color: 'red', fontSize: '0.9em' }}>
+                            {error}
+                        </p>
+                    )}
 
-        <
-        Link to = "/login"
-        className = "link-button" >
-        Volta para Login <
-        /Link> < /
-        div > <
-        /div>
+                    <button type="submit">Criar</button>
+                </form>
+
+                <Link to="/login" className="link-button">
+                    Volta para Login
+                </Link>
+            </div>
+        </div>
     );
 }
 
