@@ -1025,6 +1025,27 @@ function DashboardPage() {
                 /div>
 
                 <
+                div className = { `menu-item ${activeSection === 'ecobot' ? 'active' : ''}` }
+                onClick = {
+                    () => {
+                        setActiveSection('ecobot');
+                        setIsMobileMenuOpen(false);
+                    }
+                }
+                style = {
+                    { display: 'flex', alignItems: 'center' }
+                } >
+                <
+                img src = { process.env.PUBLIC_URL + '/ST.png' }
+                alt = "EcoBot"
+                style = {
+                    { width: 20, height: 20, marginRight: 8, verticalAlign: 'middle' }
+                }
+                />
+                EcoBot <
+                /div>
+
+                <
                 div className = "menu-item"
                 onClick = {
                     () => {
@@ -1605,7 +1626,7 @@ function DashboardPage() {
         h1 style = {
             { color: 'white', marginBottom: 8 }
         } >
-        Olá, eu sou EcoBot👋. <
+        Olá, eu sou EcoBot👋 <
         /h1> <
         h4 style = {
             { color: '#e0e0e0', marginBottom: 24 }
