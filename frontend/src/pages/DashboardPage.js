@@ -1671,7 +1671,7 @@ function DashboardPage() {
             { flex: '0 0 280px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', height: '100%', minHeight: 400 }
         } >
         <
-        img src = { process.env.PUBLIC_URL + '/EcoBotSF.png' }
+        img src = { 'EcoBotSF.png' }
         alt = "EcoBot"
         style = {
             {
@@ -2025,6 +2025,9 @@ function DashboardPage() {
 /div> < /
 div >
 );
+}
+
+export default DashboardPage;
 }
 
 export default DashboardPage;
