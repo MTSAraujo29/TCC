@@ -175,51 +175,51 @@ function DashboardPage() {
         fetchLiveTotalEnergyIndividual();
     }, [devices, fetchLiveTotalEnergyIndividual]);
 
-    // ALTERADO: Esta função agora deve processar os `devices` (que podem ser reais do Tasmota ou os mocks)
-    const getConsumptionByTypeData = () => {
-        // Se houver dois dispositivos, Sonoff Sala e Sonoff Câmera
-        if (devices.length >= 2) {
-            const sala = devices[0];
-            const camera = devices[1];
-            const salaYesterday = sala.latestReading && typeof sala.latestReading.EnergyYesterday === 'number' ? sala.latestReading.EnergyYesterday : 0;
-            const cameraYesterday = camera.latestReading && typeof camera.latestReading.EnergyYesterday === 'number' ? camera.latestReading.EnergyYesterday : 0;
+    // Função para dados do gráfico de pizza
+    function getConsumptionByTypeData() {
+        if (!isRealData) {
             return {
-                labels: ['Sala', 'Câmera'],
+                labels: ['Iluminação', 'Refrigeração', 'Aquecimento', 'Entretenimento', 'Outros'],
                 datasets: [{
-                    data: [salaYesterday, cameraYesterday],
-                    backgroundColor: ['#00bcd4', '#ff9800'],
-                    borderColor: ['#00838f', '#f57c00'],
+                    data: [25, 30, 15, 20, 10],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                    ],
+                    borderWidth: 1,
+                }],
+            };
+        } else {
+            // Admin: dados reais do banco
+            const labels = devices.map(d => d.name);
+            const data = devices.map(d => typeof d.latestReading ? .EnergyYesterday === 'number' ? d.latestReading.EnergyYesterday : 0);
+            return {
+                labels,
+                datasets: [{
+                    data,
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 159, 64, 1)',
+                    ],
                     borderWidth: 1,
                 }],
             };
         }
-        // Fallback para lógica antiga se não houver dois dispositivos
-        const deviceTypeConsumption = {};
-        devices.forEach(device => {
-            const type = device.model || 'Dispositivo de Energia';
-            const consumption = device.latestReading && typeof device.latestReading.EnergyYesterday === 'number' ? device.latestReading.EnergyYesterday : 0;
-            if (deviceTypeConsumption[type]) {
-                deviceTypeConsumption[type] += consumption;
-            } else {
-                deviceTypeConsumption[type] = consumption;
-            }
-        });
-        const labels = Object.keys(deviceTypeConsumption);
-        const data = Object.values(deviceTypeConsumption);
-        const singleColor = ['#00bcd4'];
-        const singleBorder = ['#00838f'];
-        const backgroundColors = labels.length === 1 ? singleColor : ['#00bcd4', '#ff9800', '#e91e63', '#4caf50', '#9c27b0', '#f44336', '#2196f3', '#ffeb3b'];
-        const borderColors = labels.length === 1 ? singleBorder : ['#00838f', '#f57c00', '#c2185b', '#388e3c', '#7b1fa2', '#d32f2f', '#1976d2', '#fbc02d'];
-        return {
-            labels: labels.length > 0 ? labels : ['Nenhum dado'],
-            datasets: [{
-                data: data.length > 0 ? data : [1],
-                backgroundColor: backgroundColors,
-                borderColor: borderColors,
-                borderWidth: 1,
-            }],
-        };
-    };
+    }
 
     // ALTERADO: Adapte esta função para basear as sugestões nos dispositivos reais/fictícios.
     const getSuggestedDevicesData = () => {
@@ -830,6 +830,47 @@ function DashboardPage() {
             ]);
         }, 800);
         setChatInput('');
+    };
+
+    // NOVO: Estado para agendar desligamento
+    const [scheduleDevice, setScheduleDevice] = useState('');
+    const [scheduleDay, setScheduleDay] = useState('');
+    const [scheduleTime, setScheduleTime] = useState('');
+    const [scheduleRepeat, setScheduleRepeat] = useState(false);
+    const [scheduleMessage, setScheduleMessage] = useState('');
+    const [scheduleMessageColor, setScheduleMessageColor] = useState('green'); // Default to green
+
+    const handleScheduleShutdown = async(e) => {
+        e.preventDefault();
+        setScheduleMessage("");
+        setScheduleMessageColor("#1976d2");
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(API_ENDPOINTS.TASMOTA + '/schedule', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({
+                    device: scheduleDevice,
+                    day: scheduleDay,
+                    time: scheduleTime,
+                    repeat: scheduleRepeat
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setScheduleMessage(data.message || 'Agendamento realizado com sucesso!');
+                setScheduleMessageColor('green');
+            } else {
+                setScheduleMessage(data.message || 'Erro ao agendar desligamento.');
+                setScheduleMessageColor('red');
+            }
+        } catch (error) {
+            setScheduleMessage('Erro de rede ao tentar agendar desligamento.');
+            setScheduleMessageColor('red');
+        }
     };
 
     if (sessionExpired) {

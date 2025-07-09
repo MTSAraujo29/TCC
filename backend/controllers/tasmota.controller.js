@@ -289,6 +289,57 @@ async function getLiveTotalEnergyFromTasmota(req, res) {
     }
 }
 
+// Agendar desligamento de dispositivo(s) Tasmota
+async function scheduleShutdown(req, res) {
+    const { device, day, time, repeat } = req.body;
+    // device: 'sala', 'camera' ou 'ambos'
+    // day: 'todos', 'domingo', ...
+    // time: 'HH:MM'
+    // repeat: true/false
+    try {
+        // Buscar dispositivos conforme seleção
+        let devicesToSchedule = [];
+        if (device === 'sala' || device === 'ambos') {
+            const sala = await prisma.device.findFirst({ where: { name: { contains: 'Sala' } } });
+            if (sala) devicesToSchedule.push(sala);
+        }
+        if (device === 'camera' || device === 'ambos') {
+            const camera = await prisma.device.findFirst({ where: { name: { contains: 'Câmera' } } });
+            if (camera) devicesToSchedule.push(camera);
+        }
+        if (devicesToSchedule.length === 0) {
+            return res.status(404).json({ message: 'Dispositivo não encontrado.' });
+        }
+
+        // Montar comando de timer do Tasmota
+        // Exemplo: Timer1 {"Enable":1,"Time":"12:30","Days":"1111111","Repeat":1,"Action":0}
+        // Action: 0 = desligar, 1 = ligar
+        // Days: 1111111 = todos os dias, 1000000 = só domingo, etc.
+        function getDaysMask(day) {
+            const days = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
+            if (day === 'todos') return '1111111';
+            return days.map(d => (d === day ? '1' : '0')).join('');
+        }
+        const timerPayload = (day) => ({
+            Enable: 1,
+            Time: time,
+            Days: getDaysMask(day),
+            Repeat: repeat ? 1 : 0,
+            Action: 0 // 0 = desligar
+        });
+
+        // Enviar comando MQTT para cada dispositivo
+        for (const dev of devicesToSchedule) {
+            const topic = `cmnd/${dev.tasmotaTopic}/Timer1`;
+            await require('../services/tasmota.service').publishMqttCommand(topic, JSON.stringify(timerPayload(day)), dev.broker || 'broker1');
+        }
+        res.json({ message: 'Agendamento enviado para o dispositivo!' });
+    } catch (error) {
+        console.error('Erro ao agendar desligamento:', error);
+        res.status(500).json({ message: 'Erro ao agendar desligamento.' });
+    }
+}
+
 // Exportar funções
 module.exports = {
     getDevice, // Middleware para verificar posse do dispositivo (usado nas rotas)
@@ -299,4 +350,5 @@ module.exports = {
     getHistoricalEnergyReadings,
     toggleDevicePower,
     getLiveTotalEnergyFromTasmota,
+    scheduleShutdown, // Adicionar a nova função ao módulo de exportação
 };
