@@ -950,6 +950,23 @@ function DashboardPage() {
             alert('Erro de conexão ao cancelar agendamento.');
         }
     }
+
+    // Estados para controle dos dispositivos
+    const [salaLigada, setSalaLigada] = useState(false);
+    const [cameraLigada, setCameraLigada] = useState(false);
+
+    // Função para alternar o estado do Sonoff Sala
+    async function handleToggleSala() {
+        // Aqui pode ser feita uma chamada à API para ligar/desligar de verdade
+        setSalaLigada(ligado => !ligado);
+    }
+
+    // Função para alternar o estado do Sonoff Câmera
+    async function handleToggleCamera() {
+        // Aqui pode ser feita uma chamada à API para ligar/desligar de verdade
+        setCameraLigada(ligado => !ligado);
+    }
+
     if (sessionExpired) {
         return ( <
             div className = "modal-overlay"
@@ -1592,7 +1609,7 @@ function DashboardPage() {
                     div className = "energy-control-section"
                     style = {
                         { display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }
-                    } > { /* Card de Controle dos Dispositivos */ } <
+                    } > { /* Card de Controle dos Dispositivos (original) */ } <
                     div className = "device-control-card"
                     style = {
                         {
@@ -1619,11 +1636,11 @@ function DashboardPage() {
                     <
                     h3 style = {
                         { marginBottom: 8 }
-                    } > Sonoff Sala < /h3> <
+                    } > { devices[0] ? .name || 'Sonoff Sala' } < /h3> <
                     button onClick = { handleToggleSala }
                     style = {
                         {
-                            background: salaLigada ? '#ff5252' : '#00e676',
+                            background: devices[0] ? .powerState ? '#ff5252' : '#00e676',
                             color: '#fff',
                             border: 'none',
                             borderRadius: 8,
@@ -1633,10 +1650,10 @@ function DashboardPage() {
                             cursor: 'pointer',
                             marginBottom: 8
                         }
-                    } > { salaLigada ? 'Desligar' : 'Ligar' } < /button> <
+                    } > { devices[0] ? .powerState ? 'Desligar' : 'Ligar' } < /button> <
                     span style = {
-                        { color: salaLigada ? '#00e676' : '#ff5252', fontWeight: 500 }
-                    } > { salaLigada ? 'Ligado' : 'Desligado' } <
+                        { color: devices[0] ? .powerState ? '#00e676' : '#ff5252', fontWeight: 500 }
+                    } > { devices[0] ? .powerState ? 'Ligado' : 'Desligado' } <
                     /span> < /
                     div > { /* Controle Câmera */ } <
                     div style = {
@@ -1645,11 +1662,11 @@ function DashboardPage() {
                     <
                     h3 style = {
                         { marginBottom: 8 }
-                    } > Sonoff Câmera < /h3> <
+                    } > { devices[1] ? .name || 'Sonoff Câmera' } < /h3> <
                     button onClick = { handleToggleCamera }
                     style = {
                         {
-                            background: cameraLigada ? '#ff5252' : '#00e676',
+                            background: devices[1] ? .powerState ? '#ff5252' : '#00e676',
                             color: '#fff',
                             border: 'none',
                             borderRadius: 8,
@@ -1659,10 +1676,10 @@ function DashboardPage() {
                             cursor: 'pointer',
                             marginBottom: 8
                         }
-                    } > { cameraLigada ? 'Desligar' : 'Ligar' } < /button> <
+                    } > { devices[1] ? .powerState ? 'Desligar' : 'Ligar' } < /button> <
                     span style = {
-                        { color: cameraLigada ? '#00e676' : '#ff5252', fontWeight: 500 }
-                    } > { cameraLigada ? 'Ligado' : 'Desligado' } <
+                        { color: devices[1] ? .powerState ? '#00e676' : '#ff5252', fontWeight: 500 }
+                    } > { devices[1] ? .powerState ? 'Ligado' : 'Desligado' } <
                     /span> < /
                     div > <
                     /div> { / * Cards de Agendamento * / } <
