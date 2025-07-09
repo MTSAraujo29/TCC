@@ -571,7 +571,7 @@ a.link-button {
 }
 
 .bottom-card {
-    background-color: #23272f;
+    background-color: #4a4a7e;
     /* Fundo dos cards inferiores */
     border-radius: 8px;
     padding: 1.25rem;
@@ -681,6 +681,16 @@ a.link-button {
     text-align: center;
     color: #FFF;
     margin-bottom: 1.5625rem;
+    /* Convertido para REM */
+}
+
+
+/* Centralizar o H3 "Meus Dispositivos de Energia" */
+
+.energy-control-section h3 {
+    text-align: center;
+    color: #FFF;
+    margin-bottom: 1.25rem;
     /* Convertido para REM */
 }
 
