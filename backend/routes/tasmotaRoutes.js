@@ -32,13 +32,4 @@ router.get('/devices/:deviceId/total-energy-live', authenticateToken, (req, res)
 const { getLiveTotalEnergyFromTasmota } = require('../controllers/tasmota.controller');
 router.get('/devices/:deviceId/total-energy-live', authenticateToken, getLiveTotalEnergyFromTasmota);
 
-// Nova rota para agendar desligamento de dispositivo(s)
-router.post('/schedule', authenticateToken, tasmotaController.scheduleShutdown);
-
-// Nova rota para listar agendamentos do usuário
-router.get('/schedules', authenticateToken, tasmotaController.listUserSchedules);
-
-// Nova rota para cancelar agendamento
-router.delete('/schedules/:id', authenticateToken, tasmotaController.cancelSchedule);
-
 module.exports = router;
