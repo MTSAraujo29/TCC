@@ -177,7 +177,31 @@ function DashboardPage() {
 
     // ALTERADO: Esta função agora deve processar os `devices` (que podem ser reais do Tasmota ou os mocks)
     const getConsumptionByTypeData = () => {
-        // Se houver dois dispositivos, Sonoff Sala e Sonoff Câmera
+        // Se NÃO for admin (dados fictícios), retorna mock fixo
+        if (!isRealData) {
+            return {
+                labels: ['Iluminação', 'Refrigeração', 'Aquecimento', 'Entretenimento', 'Outros'],
+                datasets: [{
+                    data: [25, 30, 15, 20, 10], // Percentuais fictícios
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                    ],
+                    borderWidth: 1,
+                }],
+            };
+        }
+        // Se for admin (dados reais), mantém a lógica atual
         if (devices.length >= 2) {
             const sala = devices[0];
             const camera = devices[1];
