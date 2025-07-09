@@ -1374,16 +1374,7 @@ function DashboardPage() {
                 )
             }
 
-            {
-                isRealData && ( <
-                    button className = "add-device-btn"
-                    onClick = {
-                        () => navigate('/add-device')
-                    } >
-                    +Adicionar Novo Dispositivo Tasmota <
-                    /button>
-                )
-            } <
+            <
             /div>
         )
     }
