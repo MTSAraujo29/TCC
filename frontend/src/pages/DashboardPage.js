@@ -1283,43 +1283,76 @@ function DashboardPage() {
                     (() => {
                         const data = getConsumptionByTypeData();
                         const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                        const percentSala = total > 0 ? ((data.datasets[0].data[0] / total) * 100).toFixed(1) : '0.0';
-                        const percentCamera = total > 0 ? ((data.datasets[0].data[1] / total) * 100).toFixed(1) : '0.0';
-                        return ( <
-                            span style = {
-                                { display: 'inline-flex', alignItems: 'center', gap: 4, flexDirection: 'column', fontSize: 13 }
-                            } >
-                            <
-                            span style = {
-                                { display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }
-                            } >
-                            <
-                            span style = {
-                                { display: 'inline-block', width: 12, height: 12, borderRadius: 6, background: data.datasets[0].backgroundColor[0], marginRight: 4 }
-                            } > < /span> <
-                            span style = {
-                                { color: '#FFF', fontWeight: 500 }
-                            } > Sala: < /span> <
-                            span style = {
-                                { color: '#FFF', fontWeight: 700 }
-                            } > { percentSala } % < /span> < /
-                            span > <
-                            span style = {
-                                { display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }
-                            } >
-                            <
-                            span style = {
-                                { display: 'inline-block', width: 12, height: 12, borderRadius: 6, background: data.datasets[0].backgroundColor[1], marginRight: 4 }
-                            } > < /span> <
-                            span style = {
-                                { color: '#FFF', fontWeight: 500 }
-                            } > Câmera: < /span> <
-                            span style = {
-                                { color: '#FFF', fontWeight: 700 }
-                            } > { percentCamera } % < /span> < /
-                            span > <
-                            /span>
-                        );
+                        // NOVO: Legenda dinâmica conforme tipo de dado
+                        if (!isRealData) {
+                            // Legenda fictícia
+                            return ( <
+                                span style = {
+                                    { display: 'inline-flex', alignItems: 'flex-start', gap: 4, flexDirection: 'column', fontSize: 13 }
+                                } > {
+                                    data.labels.map((label, idx) => {
+                                        const percent = total > 0 ? ((data.datasets[0].data[idx] / total) * 100).toFixed(1) : '0.0';
+                                        return ( <
+                                            span key = { label }
+                                            style = {
+                                                { display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }
+                                            } >
+                                            <
+                                            span style = {
+                                                { display: 'inline-block', width: 12, height: 12, borderRadius: 6, background: data.datasets[0].backgroundColor[idx], marginRight: 4 }
+                                            } > < /span> <
+                                            span style = {
+                                                { color: '#FFF', fontWeight: 500 }
+                                            } > { label }: < /span> <
+                                            span style = {
+                                                { color: '#FFF', fontWeight: 700 }
+                                            } > { percent } % < /span> < /
+                                            span >
+                                        );
+                                    })
+                                } <
+                                /span>
+                            );
+                        } else {
+                            // Legenda real (Sala/Câmera)
+                            const percentSala = total > 0 ? ((data.datasets[0].data[0] / total) * 100).toFixed(1) : '0.0';
+                            const percentCamera = total > 0 ? ((data.datasets[0].data[1] / total) * 100).toFixed(1) : '0.0';
+                            return ( <
+                                span style = {
+                                    { display: 'inline-flex', alignItems: 'center', gap: 4, flexDirection: 'column', fontSize: 13 }
+                                } >
+                                <
+                                span style = {
+                                    { display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }
+                                } >
+                                <
+                                span style = {
+                                    { display: 'inline-block', width: 12, height: 12, borderRadius: 6, background: data.datasets[0].backgroundColor[0], marginRight: 4 }
+                                } > < /span> <
+                                span style = {
+                                    { color: '#FFF', fontWeight: 500 }
+                                } > Sala: < /span> <
+                                span style = {
+                                    { color: '#FFF', fontWeight: 700 }
+                                } > { percentSala } % < /span> < /
+                                span > <
+                                span style = {
+                                    { display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }
+                                } >
+                                <
+                                span style = {
+                                    { display: 'inline-block', width: 12, height: 12, borderRadius: 6, background: data.datasets[0].backgroundColor[1], marginRight: 4 }
+                                } > < /span> <
+                                span style = {
+                                    { color: '#FFF', fontWeight: 500 }
+                                } > Câmera: < /span> <
+                                span style = {
+                                    { color: '#FFF', fontWeight: 700 }
+                                } > { percentCamera } % < /span> < /
+                                span > <
+                                /span>
+                            );
+                        }
                     })()
                 } <
                 /div> < /
