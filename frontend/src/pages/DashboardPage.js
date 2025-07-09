@@ -1541,17 +1541,6 @@ function DashboardPage() {
                 )
             }
 
-            {
-                isRealData && ( <
-                    button className = "add-device-btn"
-                    onClick = {
-                        () => navigate('/add-device')
-                    } >
-                    +Adicionar Novo Dispositivo Tasmota <
-                    /button>
-                )
-            }
-
             { /* Schedule Shutdown Card */ } <
             div className = "schedule-shutdown-card"
             style = {
