@@ -177,31 +177,7 @@ function DashboardPage() {
 
     // ALTERADO: Esta função agora deve processar os `devices` (que podem ser reais do Tasmota ou os mocks)
     const getConsumptionByTypeData = () => {
-        // Se NÃO for admin (dados fictícios), retorna mock fixo
-        if (!isRealData) {
-            return {
-                labels: ['Iluminação', 'Refrigeração', 'Aquecimento', 'Entretenimento', 'Outros'],
-                datasets: [{
-                    data: [25, 30, 15, 20, 10], // Percentuais fictícios
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.7)',
-                        'rgba(54, 162, 235, 0.7)',
-                        'rgba(255, 206, 86, 0.7)',
-                        'rgba(75, 192, 192, 0.7)',
-                        'rgba(153, 102, 255, 0.7)',
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                    ],
-                    borderWidth: 1,
-                }],
-            };
-        }
-        // Se for admin (dados reais), mantém a lógica atual
+        // Se houver dois dispositivos, Sonoff Sala e Sonoff Câmera
         if (devices.length >= 2) {
             const sala = devices[0];
             const camera = devices[1];
@@ -856,117 +832,6 @@ function DashboardPage() {
         setChatInput('');
     };
 
-    // ========== ESTADOS PARA AGENDAMENTO DE DESLIGAMENTO ==========
-    const [scheduleDevice, setScheduleDevice] = useState("");
-    const [scheduleDay, setScheduleDay] = useState("");
-    const [scheduleTime, setScheduleTime] = useState("");
-    const [scheduleRepeat, setScheduleRepeat] = useState(false);
-    const [scheduleMessage, setScheduleMessage] = useState("");
-    const [scheduleMessageColor, setScheduleMessageColor] = useState("#1976d2");
-    // Estado para lista de agendamentos do usuário
-    const [userSchedules, setUserSchedules] = useState([]);
-    const [loadingSchedules, setLoadingSchedules] = useState(false);
-
-    // Função para buscar agendamentos do usuário
-    async function fetchUserSchedules() {
-        setLoadingSchedules(true);
-        const token = localStorage.getItem('token');
-        try {
-            const res = await fetch(API_ENDPOINTS.TASMOTA + '/schedules', {
-                headers: { 'Authorization': 'Bearer ' + token }
-            });
-            const data = await res.json();
-            if (res.ok) {
-                setUserSchedules(data);
-            } else {
-                setUserSchedules([]);
-            }
-        } catch {
-            setUserSchedules([]);
-        }
-        setLoadingSchedules(false);
-    }
-
-    // Buscar agendamentos sempre que abrir a energy-control-section
-    useEffect(() => {
-        if (activeSection === 'controle') {
-            fetchUserSchedules();
-        }
-    }, [activeSection]);
-
-    // Função para enviar agendamento para o backend
-    async function handleScheduleShutdown(e) {
-        e.preventDefault();
-        setScheduleMessage("");
-        setScheduleMessageColor("#1976d2");
-        const token = localStorage.getItem('token');
-        try {
-            const res = await fetch(API_ENDPOINTS.TASMOTA + "/schedule", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                },
-                body: JSON.stringify({
-                    device: scheduleDevice,
-                    day: scheduleDay,
-                    time: scheduleTime,
-                    repeat: scheduleRepeat
-                })
-            });
-            const data = await res.json();
-            if (res.ok) {
-                setScheduleMessage("Agendamento realizado com sucesso!");
-                setScheduleMessageColor("green");
-                setScheduleDevice("");
-                setScheduleDay("");
-                setScheduleTime("");
-                setScheduleRepeat(false);
-            } else {
-                setScheduleMessage(data.message || "Erro ao agendar desligamento.");
-                setScheduleMessageColor("red");
-            }
-        } catch (err) {
-            setScheduleMessage("Erro de conexão com o servidor.");
-            setScheduleMessageColor("red");
-        }
-    }
-
-    // Função para cancelar agendamento
-    async function handleCancelSchedule(id) {
-        if (!window.confirm('Tem certeza que deseja cancelar este agendamento?')) return;
-        const token = localStorage.getItem('token');
-        try {
-            const res = await fetch(API_ENDPOINTS.TASMOTA + `/schedules/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': 'Bearer ' + token }
-            });
-            if (res.ok) {
-                setUserSchedules(schedules => schedules.filter(sch => sch.id !== id));
-            } else {
-                alert('Erro ao cancelar agendamento.');
-            }
-        } catch {
-            alert('Erro de conexão ao cancelar agendamento.');
-        }
-    }
-
-    // Estados para controle dos dispositivos
-    const [salaLigada, setSalaLigada] = useState(false);
-    const [cameraLigada, setCameraLigada] = useState(false);
-
-    // Função para alternar o estado do Sonoff Sala
-    async function handleToggleSala() {
-        // Aqui pode ser feita uma chamada à API para ligar/desligar de verdade
-        setSalaLigada(ligado => !ligado);
-    }
-
-    // Função para alternar o estado do Sonoff Câmera
-    async function handleToggleCamera() {
-        // Aqui pode ser feita uma chamada à API para ligar/desligar de verdade
-        setCameraLigada(ligado => !ligado);
-    }
-
     if (sessionExpired) {
         return ( <
             div className = "modal-overlay"
@@ -1128,7 +993,8 @@ function DashboardPage() {
                 <
                 img src = "/icon.png"
                 alt = "Ícone"
-                className = "mobile-menu-icon" / >
+                className = "mobile-menu-icon" /
+                >
                 <
                 h6 className = "mobile-menu-h6" > Smart energy < /h6> < /
                 div > <
@@ -1228,7 +1094,8 @@ function DashboardPage() {
         { /* ==================== MAIN CONTENT ==================== */ } <
         div className = "main-content" > { /* Data Mode Notification */ } {
             fictionalDataMessage && ( <
-                div className = "data-mode-notification" > { fictionalDataMessage } < /div>
+                div className = "data-mode-notification" > { fictionalDataMessage } <
+                /div>
             )
         }
 
@@ -1248,13 +1115,8 @@ function DashboardPage() {
                     devices.length > 0 ?
                     devices
                     .reduce(
-                        (sum, d) =>
-                        sum +
-                        (d.latestReading &&
-                            d.powerState &&
-                            typeof d.latestReading.power === 'number' ?
-                            d.latestReading.power :
-                            0),
+                        (sum, d) => sum + (d.latestReading && d.powerState && typeof d.latestReading.power === 'number' ?
+                            d.latestReading.power : 0),
                         0
                     )
                     .toFixed(2) + ' W' : '0.00 W'
@@ -1285,16 +1147,11 @@ function DashboardPage() {
                 R$ { ' ' } {
                     (devices.length > 0 ?
                         devices.reduce(
-                            (sum, d) =>
-                            sum +
-                            (d.latestReading &&
-                                d.powerState &&
+                            (sum, d) => sum + (d.latestReading && d.powerState &&
                                 typeof d.latestReading.totalEnergy === 'number' ?
-                                d.latestReading.totalEnergy :
-                                0),
+                                d.latestReading.totalEnergy : 0),
                             0
-                        ) * 0.75 :
-                        0
+                        ) * 0.75 : 0
                     ).toFixed(2)
                 } <
                 /p> < /
@@ -1306,12 +1163,7 @@ function DashboardPage() {
                 h3 > Consumo de Amperes atual < /h3> <
                 p > {
                     devices
-                    .filter(
-                        d =>
-                        d.powerState &&
-                        d.latestReading &&
-                        typeof d.latestReading.current === 'number'
-                    )
+                    .filter(d => d.powerState && d.latestReading && typeof d.latestReading.current === 'number')
                     .reduce((sum, d) => sum + d.latestReading.current, 0)
                     .toFixed(2)
                 }
@@ -1337,25 +1189,19 @@ function DashboardPage() {
                 button onClick = {
                     () => setViewMode('day')
                 }
-                className = {
-                    viewMode === 'day' ? 'active-view-button' : 'view-button'
-                } >
+                className = { viewMode === 'day' ? 'active-view-button' : 'view-button' } >
                 Dia <
                 /button> <
                 button onClick = {
                     () => setViewMode('week')
                 }
-                className = {
-                    viewMode === 'week' ? 'active-view-button' : 'view-button'
-                } >
+                className = { viewMode === 'week' ? 'active-view-button' : 'view-button' } >
                 Semana <
                 /button> <
                 button onClick = {
                     () => setViewMode('month')
                 }
-                className = {
-                    viewMode === 'month' ? 'active-view-button' : 'view-button'
-                } >
+                className = { viewMode === 'month' ? 'active-view-button' : 'view-button' } >
                 Mês <
                 /button> < /
                 div >
@@ -1394,13 +1240,7 @@ function DashboardPage() {
                 } >
                 <
                 div style = {
-                    {
-                        width: 200,
-                        height: 200,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                    }
+                    { width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }
                 } >
                 <
                 Doughnut data = { getConsumptionByTypeData() }
@@ -1410,8 +1250,8 @@ function DashboardPage() {
                         plugins: {
                             ...consumptionByTypeOptions.plugins,
                             legend: { display: false },
-                            datalabels: { display: false }
-                        }
+                            datalabels: { display: false },
+                        },
                     }
                 }
                 /> < /
@@ -1419,159 +1259,43 @@ function DashboardPage() {
                     (() => {
                         const data = getConsumptionByTypeData();
                         const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                        if (!isRealData) {
-                            return ( <
-                                div style = {
-                                    {
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'flex-start',
-                                        gap: 8,
-                                        width: 150,
-                                        fontSize: 13
-                                    }
-                                } > {
-                                    data.labels.map((label, idx) => {
-                                        const percent =
-                                            total > 0 ?
-                                            ((data.datasets[0].data[idx] / total) * 100).toFixed(1) :
-                                            '0.0';
-                                        return ( <
-                                            div key = { label }
-                                            style = {
-                                                {
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: 8,
-                                                    width: '100%'
-                                                }
-                                            } >
-                                            <
-                                            span style = {
-                                                {
-                                                    display: 'inline-block',
-                                                    width: 12,
-                                                    height: 12,
-                                                    borderRadius: 6,
-                                                    background: data.datasets[0].backgroundColor[idx],
-                                                    marginRight: 6
-                                                }
-                                            } >
-                                            <
-                                            /span> <
-                                            span style = {
-                                                {
-                                                    color: '#FFF',
-                                                    fontWeight: 500,
-                                                    flex: 1
-                                                }
-                                            } > { label } <
-                                            /span> <
-                                            span style = {
-                                                {
-                                                    color: '#FFF',
-                                                    fontWeight: 700,
-                                                    minWidth: 38,
-                                                    textAlign: 'right'
-                                                }
-                                            } > { percent } %
-                                            <
-                                            /span> < /
-                                            div >
-                                        );
-                                    })
-                                } <
-                                /div>
-                            );
-                        } else {
-                            const percentSala =
-                                total > 0 ?
-                                ((data.datasets[0].data[0] / total) * 100).toFixed(1) :
-                                '0.0';
-                            const percentCamera =
-                                total > 0 ?
-                                ((data.datasets[0].data[1] / total) * 100).toFixed(1) :
-                                '0.0';
-                            return ( <
-                                span style = {
-                                    {
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: 4,
-                                        flexDirection: 'column',
-                                        fontSize: 13
-                                    }
-                                } >
-                                <
-                                span style = {
-                                    {
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: 4,
-                                        whiteSpace: 'nowrap'
-                                    }
-                                } >
-                                <
-                                span style = {
-                                    {
-                                        display: 'inline-block',
-                                        width: 12,
-                                        height: 12,
-                                        borderRadius: 6,
-                                        background: data.datasets[0].backgroundColor[0],
-                                        marginRight: 4
-                                    }
-                                } >
-                                <
-                                /span> <
-                                span style = {
-                                    { color: '#FFF', fontWeight: 500 }
-                                } >
-                                Sala:
-                                <
-                                /span> <
-                                span style = {
-                                    { color: '#FFF', fontWeight: 700 }
-                                } > { percentSala } %
-                                <
-                                /span> < /
-                                span > <
-                                span style = {
-                                    {
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: 4,
-                                        whiteSpace: 'nowrap'
-                                    }
-                                } >
-                                <
-                                span style = {
-                                    {
-                                        display: 'inline-block',
-                                        width: 12,
-                                        height: 12,
-                                        borderRadius: 6,
-                                        background: data.datasets[0].backgroundColor[1],
-                                        marginRight: 4
-                                    }
-                                } >
-                                <
-                                /span> <
-                                span style = {
-                                    { color: '#FFF', fontWeight: 500 }
-                                } >
-                                Câmera:
-                                <
-                                /span> <
-                                span style = {
-                                    { color: '#FFF', fontWeight: 700 }
-                                } > { percentCamera } %
-                                <
-                                /span> < /
-                                span > <
-                                /span>
-                            );
-                        }
+                        const percentSala = total > 0 ? ((data.datasets[0].data[0] / total) * 100).toFixed(1) : '0.0';
+                        const percentCamera = total > 0 ? ((data.datasets[0].data[1] / total) * 100).toFixed(1) : '0.0';
+                        return ( <
+                            span style = {
+                                { display: 'inline-flex', alignItems: 'center', gap: 4, flexDirection: 'column', fontSize: 13 }
+                            } >
+                            <
+                            span style = {
+                                { display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }
+                            } >
+                            <
+                            span style = {
+                                { display: 'inline-block', width: 12, height: 12, borderRadius: 6, background: data.datasets[0].backgroundColor[0], marginRight: 4 }
+                            } > < /span> <
+                            span style = {
+                                { color: '#FFF', fontWeight: 500 }
+                            } > Sala: < /span> <
+                            span style = {
+                                { color: '#FFF', fontWeight: 700 }
+                            } > { percentSala } % < /span> < /
+                            span > <
+                            span style = {
+                                { display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }
+                            } >
+                            <
+                            span style = {
+                                { display: 'inline-block', width: 12, height: 12, borderRadius: 6, background: data.datasets[0].backgroundColor[1], marginRight: 4 }
+                            } > < /span> <
+                            span style = {
+                                { color: '#FFF', fontWeight: 500 }
+                            } > Câmera: < /span> <
+                            span style = {
+                                { color: '#FFF', fontWeight: 700 }
+                            } > { percentCamera } % < /span> < /
+                            span > <
+                            /span>
+                        );
                     })()
                 } <
                 /div> < /
@@ -1606,518 +1330,193 @@ function DashboardPage() {
 
         { /* ========== ENERGY CONTROL SECTION ========== */ } {
             activeSection === 'controle' && ( <
-                    div className = "energy-control-section"
-                    style = {
-                        { display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }
-                    } > { /* Card de Controle dos Dispositivos (original) */ } <
-                    div className = "device-control-card"
-                    style = {
-                        {
-                            width: '100%',
-                            maxWidth: 850,
-                            marginBottom: 32,
-                            padding: 24,
-                            background: 'rgba(59, 57, 99, 0.95)',
-                            borderRadius: 16,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                            color: '#fff',
-                            fontFamily: 'inherit',
-                            fontSize: 16,
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            gap: 32
-                        }
-                    } > { /* Controle Sala */ } <
-                    div style = {
-                        { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }
-                    } >
-                    <
-                    h3 style = {
-                        { marginBottom: 8 }
-                    } > { devices[0] ? .name || 'Sonoff Sala' } < /h3> <
-                    button onClick = { handleToggleSala }
-                    style = {
-                        {
-                            background: devices[0] ? .powerState ? '#ff5252' : '#00e676',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: 8,
-                            padding: '10px 24px',
-                            fontWeight: 600,
-                            fontSize: 16,
-                            cursor: 'pointer',
-                            marginBottom: 8
-                        }
-                    } > { devices[0] ? .powerState ? 'Desligar' : 'Ligar' } < /button> <
-                    span style = {
-                        { color: devices[0] ? .powerState ? '#00e676' : '#ff5252', fontWeight: 500 }
-                    } > { devices[0] ? .powerState ? 'Ligado' : 'Desligado' } <
-                    /span> < /
-                    div > { /* Controle Câmera */ } <
-                    div style = {
-                        { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }
-                    } >
-                    <
-                    h3 style = {
-                        { marginBottom: 8 }
-                    } > { devices[1] ? .name || 'Sonoff Câmera' } < /h3> <
-                    button onClick = { handleToggleCamera }
-                    style = {
-                        {
-                            background: devices[1] ? .powerState ? '#ff5252' : '#00e676',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: 8,
-                            padding: '10px 24px',
-                            fontWeight: 600,
-                            fontSize: 16,
-                            cursor: 'pointer',
-                            marginBottom: 8
-                        }
-                    } > { devices[1] ? .powerState ? 'Desligar' : 'Ligar' } < /button> <
-                    span style = {
-                        { color: devices[1] ? .powerState ? '#00e676' : '#ff5252', fontWeight: 500 }
-                    } > { devices[1] ? .powerState ? 'Ligado' : 'Desligado' } <
-                    /span> < /
-                    div > <
-                    /div> { / * Cards de Agendamento * / } <
-                    div style = {
-                        { display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start', gap: 32, width: '100%', maxWidth: 850 }
-                    } > { /* Card Agendar Desligamento */ } <
-                    div className = "schedule-shutdown-card"
-                    style = {
-                        {
-                            flex: 1,
-                            minWidth: 320,
-                            maxWidth: 400,
-                            padding: 24,
-                            background: 'rgba(59, 57, 99, 0.95)',
-                            borderRadius: 16,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                            color: '#fff',
-                            fontFamily: 'inherit',
-                            fontSize: 16,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: 16
-                        }
-                    } >
-                    <
-                    h1 style = {
-                        { fontSize: 22, marginBottom: 16 }
-                    } > Agendar Desligamento < /h1> <
-                    form onSubmit = { handleScheduleShutdown }
-                    style = {
-                        { display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }
-                    } >
-                    <
-                    label style = {
-                        { color: '#fff', fontWeight: 500, marginBottom: 2 }
-                    } >
-                    Dispositivo:
-                    <
-                    select value = { scheduleDevice }
-                    onChange = { e => setScheduleDevice(e.target.value) }
-                    required style = {
-                        {
-                            marginLeft: 8,
-                            background: '#23234a',
-                            color: '#fff',
-                            border: '1px solid #444',
-                            borderRadius: 8,
-                            padding: '6px 10px',
-                            fontSize: 15,
-                            marginTop: 4
-                        }
-                    } >
-                    <
-                    option value = "" > Selecione < /option> <
-                    option value = "sala" > Sonoff Sala < /option> <
-                    option value = "camera" > Sonoff Câmera < /option> <
-                    option value = "ambos" > Ambos < /option> < /
-                    select > <
-                    /label> <
-                    label style = {
-                        { color: '#fff', fontWeight: 500, marginBottom: 2 }
-                    } >
-                    Dia da semana:
-                    <
-                    select value = { scheduleDay }
-                    onChange = { e => setScheduleDay(e.target.value) }
-                    required style = {
-                        {
-                            marginLeft: 8,
-                            background: '#23234a',
-                            color: '#fff',
-                            border: '1px solid #444',
-                            borderRadius: 8,
-                            padding: '6px 10px',
-                            fontSize: 15,
-                            marginTop: 4
-                        }
-                    } >
-                    <
-                    option value = "" > Selecione < /option> <
-                    option value = "todos" > Todos os dias < /option> <
-                    option value = "domingo" > Domingo < /option> <
-                    option value = "segunda" > Segunda - feira < /option> <
-                    option value = "terca" > Terça - feira < /option> <
-                    option value = "quarta" > Quarta - feira < /option> <
-                    option value = "quinta" > Quinta - feira < /option> <
-                    option value = "sexta" > Sexta - feira < /option> <
-                    option value = "sabado" > Sábado < /option> < /
-                    select > <
-                    /label> <
-                    label style = {
-                        { color: '#fff', fontWeight: 500, marginBottom: 2 }
-                    } >
-                    Horário:
-                    <
-                    input type = "time"
-                    value = { scheduleTime }
-                    onChange = { e => setScheduleTime(e.target.value) }
-                    required style = {
-                        {
-                            marginLeft: 8,
-                            background: '#23234a',
-                            color: '#fff',
-                            border: '1px solid #444',
-                            borderRadius: 8,
-                            padding: '6px 10px',
-                            fontSize: 15,
-                            marginTop: 4
-                        }
-                    }
-                    /> < /
-                    label > <
-                    label style = {
-                        {
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 8,
-                            color: '#fff',
-                            fontWeight: 500
-                        }
-                    } >
-                    <
-                    input type = "checkbox"
-                    checked = { scheduleRepeat }
-                    onChange = { e => setScheduleRepeat(e.target.checked) }
-                    />
-                    Repetir agendamento <
-                    /label> <
-                    button type = "submit"
-                    style = {
-                        {
-                            marginTop: 8,
-                            background: '#00e6fb',
-                            color: '#23234a',
-                            border: 'none',
-                            borderRadius: 8,
-                            padding: '10px 0',
-                            fontWeight: 700,
-                            fontSize: 16,
-                            cursor: 'pointer',
-                            boxShadow: '0 1px 4px rgba(0,0,0,0.10)'
-                        }
-                    } >
-                    Agendar <
-                    /button> {
-                    scheduleMessage && ( <
-                        span style = {
-                            { color: scheduleMessageColor, fontSize: 14, marginTop: 4 }
-                        } > { scheduleMessage } <
-                        /span>
-                    )
-                } <
-                /form> < /
-            div > { /* Card Seus Agendamentos */ } <
-                div className = "user-schedules-card"
-            style = {
-                    {
-                        flex: 1,
-                        minWidth: 320,
-                        maxWidth: 400,
-                        padding: 24,
-                        background: 'rgba(59, 57, 99, 0.95)',
-                        borderRadius: 16,
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                        color: '#fff',
-                        fontFamily: 'inherit',
-                        fontSize: 16,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
-                        gap: 12
-                    }
-                } >
+                div className = "energy-control-section" >
                 <
-                h1 style = {
-                    { fontSize: 20, marginBottom: 16 }
-                } > Seus Agendamentos < /h1> { / * Aqui será exibida a lista de agendamentos do usuário * / } <
-            div style = {
-                { width: '100%' }
-            } > {
-                loadingSchedules ? ( <
-                    span style = {
-                        { color: '#aaa', fontSize: 15 }
-                    } >
-                    Carregando agendamentos... <
-                    /span>
-                ) : userSchedules.length === 0 ? ( <
-                    span style = {
-                        { color: '#aaa', fontSize: 15 }
-                    } >
-                    Nenhum agendamento encontrado. <
-                    /span>
-                ) : ( <
-                    ul style = {
-                        { listStyle: 'none', padding: 0, margin: 0, width: '100%' }
-                    } > {
-                        userSchedules.map(sch => {
-                                // Calcular tempo restante para execução (para não repetitivos)
-                                let tempoRestante = '';
-                                if (!sch.repeat && sch.nextExecution) {
-                                    const diff = new Date(sch.nextExecution) - new Date();
-                                    if (diff > 0) {
-                                        const horas = Math.floor(diff / 3600000);
-                                        const minutos = Math.floor((diff % 3600000) / 60000);
-                                        tempoRestante = `${horas > 0 ? horas + 'h ' : ''}${minutos}min`;
-                                    } else {
-                                        tempoRestante = 'Executando em instantes';
-                                    }
-                                }
-                                return ( <
-                                        li key = { sch.id }
-                                        style = {
-                                            {
-                                                background: 'rgba(255,255,255,0.06)',
-                                                borderRadius: 10,
-                                                marginBottom: 12,
-                                                padding: '12px 16px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'space-between',
-                                                fontSize: 15
-                                            }
-                                        } >
-                                        <
-                                        div >
-                                        <
-                                        span style = {
-                                            { fontWeight: 600 }
-                                        } > { sch.deviceName } < /span>{' '} <
-                                        span style = {
-                                            { color: '#00e6fb', fontWeight: 500 }
-                                        } > { sch.time } <
-                                        /span>{' '} <
-                                        span style = {
-                                            { color: '#aaa' }
-                                        } > {
-                                            sch.day === 'todos' ?
-                                            'Todos os dias' : sch.day.charAt(0).toUpperCase() + sch.day.slice(1)
-                                        } <
-                                        /span> {
-                                        sch.repeat && ( <
-                                            span style = {
-                                                {
-                                                    background: '#00e6fb',
-                                                    color: '#23234a',
-                                                    borderRadius: 6,
-                                                    fontSize: 12,
-                                                    fontWeight: 700,
-                                                    padding: '2px 8px',
-                                                    marginLeft: 8
-                                                }
-                                            } >
-                                            rep <
-                                            /span>
-                                        )
-                                    } <
-                                    /div> {!sch.repeat && tempoRestante && ( <
-                                span style = {
-                                        { color: '#fff', fontSize: 13, fontWeight: 500 }
-                                    } > { tempoRestante } <
-                                    /span>
-                            )
-                        } <
-                        div style = {
-                            { display: 'flex', alignItems: 'center', gap: 8 }
-                        } >
-                        <
-                        button onClick = {
-                            () => handleCancelSchedule(sch.id)
-                        }
-                        style = {
-                            {
-                                background: '#ff5252',
-                                color: '#fff',
-                                border: 'none',
-                                borderRadius: 6,
-                                padding: '4px 12px',
-                                fontWeight: 600,
-                                cursor: 'pointer',
-                                fontSize: 13
-                            }
-                        } >
-                        Cancelar <
-                        /button> < /
-                        div > <
-                        /li>
-                    );
-                })
-        } <
-        /ul>
-    )
-} <
-/div> < /
-div > <
-    /div> < /
-div >
-)
-}
+                h2 > Controle de Dispositivos < /h2> {
+                deviceMessage && ( <
+                    p className = "device-feedback-message" > { deviceMessage } < /p>
+                )
+            }
 
-{ /* ========== REPORTS SECTION ========== */ } {
-    activeSection === 'relatorios' && ( <
-            div className = "reports-section" >
             <
-            h2 > Relatórios de Consumo < /h2> <
-            div className = "report-summary-card" >
-            <
-            h3 > Resumo Geral < /h3> <
-            p >
-            Total de Dispositivos: < strong > { report.summary.totalDevices } < /strong> < /
-            p > <
-            p >
-            Com uso Inteligente(estimado): { ' ' } <
-            strong > { report.summary.smartUsageDevices } < /strong> < /
-            p > <
-            p >
-            Dispositivos com Otimização Pendente(estimado): { ' ' } <
-            strong > { report.summary.nonSmartUsageDevices } < /strong> < /
-            p > <
-            p className = "overall-report-message" > { report.summary.overallMessage } <
-            /p> < /
-            div >
+            h3 > Meus Dispositivos de Energia < /h3>
 
             {
-                isRealData &&
-                devices.length > 0 &&
-                devices[0].latestReading && ( <
-                    div className = "energy-realtime-card" >
-                    <
-                    h3 > Dados em Tempo Real do Dispositivo Sonoff Sala < /h3> <
-                    table className = "energy-realtime-table" >
-                    <
-                    tbody className = "energy-realtime-tbody" >
-                    <
-                    tr >
-                    <
-                    td > Tensão < /td> <
-                    td > {
-                        devices[0].powerState &&
-                        typeof devices[0].latestReading.voltage === 'number' ?
-                        devices[0].latestReading.voltage : 0
-                    }
-                    V <
-                    /td> < /
-                    tr > <
-                    tr >
-                    <
-                    td > Corrente < /td> <
-                    td > {
-                        devices[0].powerState &&
-                        typeof devices[0].latestReading.current === 'number' ?
-                        devices[0].latestReading.current : 0
-                    }
-                    A <
-                    /td> < /
-                    tr > <
-                    tr >
-                    <
-                    td > Potência Ativa < /td> <
-                    td > {
-                        devices[0].powerState &&
-                        typeof devices[0].latestReading.power === 'number' ?
-                        devices[0].latestReading.power : 0
-                    }
-                    W <
-                    /td> < /
-                    tr > <
-                    tr >
-                    <
-                    td > Potência Aparente < /td> <
-                    td > {
-                        devices[0].powerState &&
-                        typeof devices[0].latestReading.ApparentPower === 'number' ?
-                        devices[0].latestReading.ApparentPower : 0
-                    }
-                    VA <
-                    /td> < /
-                    tr > <
-                    tr >
-                    <
-                    td > Potência Reativa < /td> <
-                    td > {
-                        devices[0].powerState &&
-                        typeof devices[0].latestReading.ReactivePower === 'number' ?
-                        devices[0].latestReading.ReactivePower : 0
-                    }
-                    var <
-                    /td> < /
-                    tr > <
-                    tr >
-                    <
-                    td > Fator de Potência < /td> <
-                    td > {
-                        devices[0].powerState &&
-                        typeof devices[0].latestReading.PowerFactor === 'number' ?
-                        devices[0].latestReading.PowerFactor : 0
+                devices.length > 0 ? ( <
+                    div className = "device-control-list" > {
+                        devices.map(device => ( <
+                            div key = { device.id }
+                            className = "device-control-item" >
+                            <
+                            span className = "device-control-name" > { device.name } < /span> <
+                            button onClick = {
+                                () => toggleDevicePower(device.id, device.powerState, device.name)
+                            }
+                            className = "device-toggle-button power-on"
+                            type = "button"
+                            disabled = { device.powerState } >
+                            Ligar <
+                            /button> <
+                            button onClick = {
+                                () => toggleDevicePower(device.id, device.powerState, device.name)
+                            }
+                            className = "device-toggle-button power-off"
+                            type = "button"
+                            disabled = {!device.powerState } >
+                            Desligar <
+                            /button> < /
+                            div >
+                        ))
                     } <
-                    /td> < /
-                    tr > <
-                    tr >
-                    <
-                    td > Energia Hoje < /td> <
-                    td > {
-                        typeof devices[0].latestReading.EnergyToday === 'number' ?
-                        devices[0].latestReading.EnergyToday : '--'
-                    }
-                    kWh <
-                    /td> < /
-                    tr > <
-                    tr >
-                    <
-                    td > Energia Ontem < /td> <
-                    td > {
-                        typeof devices[0].latestReading.EnergyYesterday === 'number' ?
-                        devices[0].latestReading.EnergyYesterday : '--'
-                    }
-                    kWh <
-                    /td> < /
-                    tr > <
-                    tr >
-                    <
-                    td > Energia Total < /td> <
-                    td > {
-                        devices[0].powerState ?
-                        liveTotalEnergyBroker1.toFixed(2) + ' kWh' : '0.00 kWh'
-                    } <
-                    /td> < /
-                    tr > <
-                    /tbody> < /
-                    table > <
                     /div>
+                ) : ( <
+                    p className = "no-devices-message" > Nenhum dispositivo encontrado. < /p>
                 )
             }
 
             {
-                isRealData &&
-                    devices.length > 1 &&
-                    devices[1].latestReading && ( <
+                isRealData && ( <
+                    button className = "add-device-btn"
+                    onClick = {
+                        () => navigate('/add-device')
+                    } >
+                    +Adicionar Novo Dispositivo Tasmota <
+                    /button>
+                )
+            } <
+            /div>
+        )
+    }
+
+    { /* ========== REPORTS SECTION ========== */ } {
+        activeSection === 'relatorios' && ( <
+                div className = "reports-section" >
+                <
+                h2 > Relatórios de Consumo < /h2> <
+                div className = "report-summary-card" >
+                <
+                h3 > Resumo Geral < /h3> <
+                p >
+                Total de Dispositivos: { ' ' } <
+                strong > { report.summary.totalDevices } < /strong> < /
+                p > <
+                p >
+                Com uso Inteligente(estimado): { ' ' } <
+                strong > { report.summary.smartUsageDevices } < /strong> < /
+                p > <
+                p >
+                Dispositivos com Otimização Pendente(estimado): { ' ' } <
+                strong > { report.summary.nonSmartUsageDevices } < /strong> < /
+                p > <
+                p className = "overall-report-message" > { report.summary.overallMessage } <
+                /p> < /
+                div >
+
+                {
+                    isRealData && devices.length > 0 && devices[0].latestReading && ( <
+                        div className = "energy-realtime-card" >
+                        <
+                        h3 > Dados em Tempo Real do Dispositivo Sonoff Sala < /h3> <
+                        table className = "energy-realtime-table" >
+                        <
+                        tbody className = "energy-realtime-tbody" >
+                        <
+                        tr >
+                        <
+                        td > Tensão < /td> <
+                        td > {
+                            devices[0].powerState && typeof devices[0].latestReading.voltage === 'number' ?
+                            devices[0].latestReading.voltage : 0
+                        }
+                        V <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Corrente < /td> <
+                        td > {
+                            devices[0].powerState && typeof devices[0].latestReading.current === 'number' ?
+                            devices[0].latestReading.current : 0
+                        }
+                        A <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Potência Ativa < /td> <
+                        td > {
+                            devices[0].powerState && typeof devices[0].latestReading.power === 'number' ?
+                            devices[0].latestReading.power : 0
+                        }
+                        W <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Potência Aparente < /td> <
+                        td > {
+                            devices[0].powerState && typeof devices[0].latestReading.ApparentPower === 'number' ?
+                            devices[0].latestReading.ApparentPower : 0
+                        }
+                        VA <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Potência Reativa < /td> <
+                        td > {
+                            devices[0].powerState && typeof devices[0].latestReading.ReactivePower === 'number' ?
+                            devices[0].latestReading.ReactivePower : 0
+                        }
+                        var <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Fator de Potência < /td> <
+                        td > {
+                            devices[0].powerState && typeof devices[0].latestReading.PowerFactor === 'number' ?
+                            devices[0].latestReading.PowerFactor : 0
+                        } <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Energia Hoje < /td> <
+                        td > {
+                            typeof devices[0].latestReading.EnergyToday === 'number' ?
+                            devices[0].latestReading.EnergyToday : '--'
+                        }
+                        kWh <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Energia Ontem < /td> <
+                        td > {
+                            typeof devices[0].latestReading.EnergyYesterday === 'number' ?
+                            devices[0].latestReading.EnergyYesterday : '--'
+                        }
+                        kWh <
+                        /td> < /
+                        tr > <
+                        tr >
+                        <
+                        td > Energia Total < /td> <
+                        td > {
+                            devices[0].powerState ?
+                            liveTotalEnergyBroker1.toFixed(2) + ' kWh' : '0.00 kWh'
+                        } <
+                        /td> < /
+                        tr > <
+                        /tbody> < /
+                        table > <
+                        /div>
+                    )
+                }
+
+                {
+                    isRealData && devices.length > 1 && devices[1].latestReading && ( <
                         div className = "energy-realtime-card"
                         style = {
                             { marginTop: '32px' }
@@ -2132,8 +1531,7 @@ div >
                         <
                         td > Tensão < /td> <
                         td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.voltage === 'number' ?
+                            devices[1].powerState && typeof devices[1].latestReading.voltage === 'number' ?
                             devices[1].latestReading.voltage : 0
                         }
                         V <
@@ -2143,8 +1541,7 @@ div >
                         <
                         td > Corrente < /td> <
                         td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.current === 'number' ?
+                            devices[1].powerState && typeof devices[1].latestReading.current === 'number' ?
                             devices[1].latestReading.current : 0
                         }
                         A <
@@ -2154,8 +1551,7 @@ div >
                         <
                         td > Potência Ativa < /td> <
                         td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.power === 'number' ?
+                            devices[1].powerState && typeof devices[1].latestReading.power === 'number' ?
                             devices[1].latestReading.power : 0
                         }
                         W <
@@ -2165,8 +1561,7 @@ div >
                         <
                         td > Potência Aparente < /td> <
                         td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.ApparentPower === 'number' ?
+                            devices[1].powerState && typeof devices[1].latestReading.ApparentPower === 'number' ?
                             devices[1].latestReading.ApparentPower : 0
                         }
                         VA <
@@ -2176,8 +1571,7 @@ div >
                         <
                         td > Potência Reativa < /td> <
                         td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.ReactivePower === 'number' ?
+                            devices[1].powerState && typeof devices[1].latestReading.ReactivePower === 'number' ?
                             devices[1].latestReading.ReactivePower : 0
                         }
                         var <
@@ -2187,8 +1581,7 @@ div >
                         <
                         td > Fator de Potência < /td> <
                         td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.PowerFactor === 'number' ?
+                            devices[1].powerState && typeof devices[1].latestReading.PowerFactor === 'number' ?
                             devices[1].latestReading.PowerFactor : 0
                         } <
                         /td> < /
@@ -2226,49 +1619,46 @@ div >
                         table > <
                         /div>
                     )
-            }
+                }
 
-            <
-            h3 > Detalhes por Dispositivo < /h3> <
-            div className = "device-report-list" > {
-                report.details.length > 0 ? (
-                    report.details.map((detail, index) => ( <
-                            div key = { index }
-                            className = "device-report-item" >
-                            <
-                            h4 > { detail.name } < /h4> <
-                            p >
-                            Status Atual: { ' ' } <
-                            span className = {
-                                devices[index] && devices[index].powerState ?
-                                'status-on-text' : 'status-off-text'
-                            } > {
-                                devices[index] && devices[index].powerState ?
-                                'Ligado' : 'Desligado'
+                <
+                h3 > Detalhes por Dispositivo < /h3> <
+                div className = "device-report-list" > {
+                    report.details.length > 0 ? (
+                        report.details.map((detail, index) => ( <
+                                div key = { index }
+                                className = "device-report-item" >
+                                <
+                                h4 > { detail.name } < /h4> <
+                                p >
+                                Status Atual: { ' ' } <
+                                span className = {
+                                    devices[index] && devices[index].powerState ?
+                                    'status-on-text' : 'status-off-text'
+                                } > { devices[index] && devices[index].powerState ? 'Ligado' : 'Desligado' } <
+                                /span> < /
+                                p > <
+                                p > Tipo: { detail.type } < /p> <
+                                p > Recomendação: { detail.recommendation } < /p> {
+                                parseFloat(detail.potentialImpact) !== 0.00 && ( <
+                                    p className = {
+                                        parseFloat(detail.potentialImpact) > 0 ?
+                                        'impact-positive' : 'impact-negative'
+                                    } >
+                                    Impacto Potencial: { detail.potentialImpact }
+                                    kWh no próximo mês <
+                                    /p>
+                                )
                             } <
-                            /span> < /
-                            p > <
-                            p > Tipo: { detail.type } < /p> <
-                            p > Recomendação: { detail.recommendation } < /p> {
-                            parseFloat(detail.potentialImpact) !== 0.00 && ( <
-                                p className = {
-                                    parseFloat(detail.potentialImpact) > 0 ?
-                                    'impact-positive' : 'impact-negative'
-                                } >
-                                Impacto Potencial: { detail.potentialImpact }
-                                kWh no próximo mês <
-                                /p>
-                            )
-                        } <
-                        /div>
-                    ))
-            ): ( <
-                p className = "no-reports-message" > Nenhum relatório disponível. < /p>
-            )
-        } <
-        /div> < /
-    div >
-)
+                            /div>
+                        ))
+                ): ( <
+                    p className = "no-reports-message" > Nenhum relatório disponível. < /p>
+                )
+            } <
+            /div> < /
+        div >
+    )
 }
 
 { /* ========== ECOBOT SECTION ========== */ } {
@@ -2283,7 +1673,7 @@ div >
                 position: 'sticky',
                 top: 0,
                 background: 'transparent',
-                zIndex: 2
+                zIndex: 2,
             }
         } >
         <
@@ -2313,7 +1703,7 @@ div >
                 flexDirection: 'column',
                 gap: 12,
                 flex: 1,
-                overflow: 'auto'
+                overflow: 'auto',
             }
         } >
         <
@@ -2326,7 +1716,7 @@ div >
                     {
                         color: msg.sender === 'EcoBot' ? '#00e676' : '#fff',
                         textAlign: msg.sender === 'EcoBot' ? 'left' : 'right',
-                        margin: '8px 0'
+                        margin: '8px 0',
                     }
                 } >
                 <
@@ -2342,7 +1732,9 @@ div >
         <
         input type = "text"
         value = { chatInput }
-        onChange = { e => setChatInput(e.target.value) }
+        onChange = {
+            (e) => setChatInput(e.target.value)
+        }
         placeholder = "Digite sua mensagem..."
         style = {
             { flex: 1, borderRadius: 8, border: 'none', padding: 10 }
@@ -2356,7 +1748,7 @@ div >
                 border: 'none',
                 borderRadius: 8,
                 padding: '0 18px',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
             }
         } >
         Enviar <
@@ -2437,7 +1829,9 @@ div >
                 label > Novo Nome: < /label> <
                 input type = "text"
                 value = { editName }
-                onChange = { e => setEditName(e.target.value) }
+                onChange = {
+                    (e) => setEditName(e.target.value)
+                }
                 placeholder = "Novo nome" /
                 >
 
@@ -2445,7 +1839,9 @@ div >
                 label > Nova Senha: < /label> <
                 input type = "password"
                 value = { editPassword }
-                onChange = { e => setEditPassword(e.target.value) }
+                onChange = {
+                    (e) => setEditPassword(e.target.value)
+                }
                 placeholder = "Nova senha" /
                 >
 
@@ -2531,7 +1927,9 @@ div >
                         label > Número(com código do país, DDD e número): < /label> <
                         input type = "text"
                         value = { whatsappNumber }
-                        onChange = { e => setWhatsappNumber(e.target.value) }
+                        onChange = {
+                            (e) => setWhatsappNumber(e.target.value)
+                        }
                         placeholder = "Ex: 5562999999999"
                         maxLength = { 13 }
                         /> {
@@ -2599,7 +1997,6 @@ div >
 /div> < /
 div >
 );
-
 }
 
 export default DashboardPage;

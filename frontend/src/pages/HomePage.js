@@ -2,27 +2,26 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HomePage.css';
 
-// Constants
-const CAROUSEL_INTERVAL = 3500;
-const SLIDES = [
-    'Bem-vindo ao Smart Energy!',
-    'Reduza o desperdício e otimize sua energia doméstica com IoT.',
-    'O futuro sustentável começa com a tecnologia ao seu alcance.',
-    'Sustentabilidade inteligente na palma da sua mão.',
-];
-
 function HomePage() {
-    // Hooks
     const navigate = useNavigate();
     const [currentSlide, setCurrentSlide] = React.useState(0);
+
+    // Constants
+    const CAROUSEL_INTERVAL = 3500;
+    const slides = [
+        'Bem-vindo ao Smart Energy!',
+        'Reduza o desperdício e otimize sua energia doméstica com IoT.',
+        'O futuro sustentável começa com a tecnologia ao seu alcance.',
+        'Sustentabilidade inteligente na palma da sua mão.',
+    ];
 
     // Effects
     React.useEffect(() => {
         const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % SLIDES.length);
+            setCurrentSlide((prev) => (prev + 1) % slides.length);
         }, CAROUSEL_INTERVAL);
         return () => clearInterval(interval);
-    }, []);
+    }, [slides.length]);
 
     // Handlers
     const handleCreateAccount = () => {
@@ -58,10 +57,10 @@ function HomePage() {
     const renderCarousel = () => (
         <div className="homepage-carousel">
             <div className="homepage-slide">
-                {SLIDES[currentSlide]}
+                {slides[currentSlide]}
             </div>
             <div className="homepage-carousel-dots">
-                {SLIDES.map((_, idx) => (
+                {slides.map((_, idx) => (
                     <span
                         key={idx}
                         className={idx === currentSlide ? 'dot active' : 'dot'}
