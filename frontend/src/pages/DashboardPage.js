@@ -863,6 +863,36 @@ function DashboardPage() {
     const [scheduleRepeat, setScheduleRepeat] = useState(false);
     const [scheduleMessage, setScheduleMessage] = useState("");
     const [scheduleMessageColor, setScheduleMessageColor] = useState("#1976d2");
+    // Estado para lista de agendamentos do usuário
+    const [userSchedules, setUserSchedules] = useState([]);
+    const [loadingSchedules, setLoadingSchedules] = useState(false);
+
+    // Função para buscar agendamentos do usuário
+    async function fetchUserSchedules() {
+        setLoadingSchedules(true);
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(API_ENDPOINTS.TASMOTA + '/schedules', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setUserSchedules(data);
+            } else {
+                setUserSchedules([]);
+            }
+        } catch {
+            setUserSchedules([]);
+        }
+        setLoadingSchedules(false);
+    }
+
+    // Buscar agendamentos sempre que abrir a energy-control-section
+    useEffect(() => {
+        if (activeSection === 'controle') {
+            fetchUserSchedules();
+        }
+    }, [activeSection]);
 
     // Função para enviar agendamento para o backend
     async function handleScheduleShutdown(e) {
@@ -899,6 +929,25 @@ function DashboardPage() {
         } catch (err) {
             setScheduleMessage("Erro de conexão com o servidor.");
             setScheduleMessageColor("red");
+        }
+    }
+
+    // Função para cancelar agendamento
+    async function handleCancelSchedule(id) {
+        if (!window.confirm('Tem certeza que deseja cancelar este agendamento?')) return;
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(API_ENDPOINTS.TASMOTA + `/schedules/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.ok) {
+                setUserSchedules(schedules => schedules.filter(sch => sch.id !== id));
+            } else {
+                alert('Erro ao cancelar agendamento.');
+            }
+        } catch {
+            alert('Erro de conexão ao cancelar agendamento.');
         }
     }
 
@@ -1496,61 +1545,18 @@ function DashboardPage() {
             activeSection === 'controle' && ( <
                 div className = "energy-control-section"
                 style = {
-                    { display: 'flex', flexDirection: 'column', alignItems: 'center' }
-                } >
-                <
-                h2 > Controle de Dispositivos < /h2> {
-                deviceMessage && ( <
-                    p className = "device-feedback-message" > { deviceMessage } < /p>
-                )
-            }
-
-            <
-            h3 > Meus Dispositivos de Energia < /h3>
-
-            {
-                devices.length > 0 ? ( <
-                    div className = "device-control-list" > {
-                        devices.map(device => ( <
-                            div key = { device.id }
-                            className = "device-control-item" >
-                            <
-                            span className = "device-control-name" > { device.name } < /span> <
-                            button onClick = {
-                                () => toggleDevicePower(device.id, device.powerState, device.name)
-                            }
-                            className = "device-toggle-button power-on"
-                            type = "button"
-                            disabled = { device.powerState } >
-                            Ligar <
-                            /button> <
-                            button onClick = {
-                                () => toggleDevicePower(device.id, device.powerState, device.name)
-                            }
-                            className = "device-toggle-button power-off"
-                            type = "button"
-                            disabled = {!device.powerState } >
-                            Desligar <
-                            /button> < /
-                            div >
-                        ))
-                    } <
-                    /div>
-                ) : ( <
-                    p className = "no-devices-message" > Nenhum dispositivo encontrado. < /p>
-                )
-            }
-
-            { /* Schedule Shutdown Card */ } <
-            div className = "schedule-shutdown-card"
-            style = {
+                    { display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', gap: 32 }
+                } > { /* Card de Agendamento à esquerda */ } <
+                div className = "schedule-shutdown-card"
+                style = {
                     {
-                        marginTop: 32,
+                        flex: 1,
+                        minWidth: 320,
+                        maxWidth: 400,
                         padding: 24,
-                        background: 'rgba(59, 57, 99, 0.95)', // mesmo fundo dos outros cards
+                        background: 'rgba(59, 57, 99, 0.95)',
                         borderRadius: 16,
                         boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                        maxWidth: 400,
                         color: '#fff',
                         fontFamily: 'inherit',
                         fontSize: 16,
@@ -1563,8 +1569,8 @@ function DashboardPage() {
                 h1 style = {
                     { fontSize: 20, marginBottom: 16, color: '#fff', fontWeight: 700, letterSpacing: 0.5 }
                 } > Agendar Desligamento < /h1> <
-            form onSubmit = { handleScheduleShutdown }
-            style = {
+                form onSubmit = { handleScheduleShutdown }
+                style = {
                     { display: 'flex', flexDirection: 'column', gap: 16, width: '100%' }
                 } >
                 <
@@ -1574,8 +1580,8 @@ function DashboardPage() {
                 Dispositivo:
                 <
                 select value = { scheduleDevice }
-            onChange = { e => setScheduleDevice(e.target.value) }
-            required style = {
+                onChange = { e => setScheduleDevice(e.target.value) }
+                required style = {
                     {
                         marginLeft: 8,
                         background: '#23234a',
@@ -1589,19 +1595,19 @@ function DashboardPage() {
                 } >
                 <
                 option value = "" > Selecione < /option> <
-            option value = "sala" > Sonoff Sala < /option> <
-            option value = "camera" > Sonoff Câmera < /option> <
-            option value = "ambos" > Ambos < /option> < /
-            select > <
+                option value = "sala" > Sonoff Sala < /option> <
+                option value = "camera" > Sonoff Câmera < /option> <
+                option value = "ambos" > Ambos < /option> < /
+                select > <
                 /label> <
-            label style = {
+                label style = {
                     { color: '#fff', fontWeight: 500, marginBottom: 2 }
                 } >
                 Dia da semana:
                 <
                 select value = { scheduleDay }
-            onChange = { e => setScheduleDay(e.target.value) }
-            required style = {
+                onChange = { e => setScheduleDay(e.target.value) }
+                required style = {
                     {
                         marginLeft: 8,
                         background: '#23234a',
@@ -1615,50 +1621,50 @@ function DashboardPage() {
                 } >
                 <
                 option value = "" > Selecione < /option> <
-            option value = "todos" > Todos os dias < /option> <
-            option value = "domingo" > Domingo < /option> <
-            option value = "segunda" > Segunda - feira < /option> <
-            option value = "terca" > Terça - feira < /option> <
-            option value = "quarta" > Quarta - feira < /option> <
-            option value = "quinta" > Quinta - feira < /option> <
-            option value = "sexta" > Sexta - feira < /option> <
-            option value = "sabado" > Sábado < /option> < /
-            select > <
+                option value = "todos" > Todos os dias < /option> <
+                option value = "domingo" > Domingo < /option> <
+                option value = "segunda" > Segunda - feira < /option> <
+                option value = "terca" > Terça - feira < /option> <
+                option value = "quarta" > Quarta - feira < /option> <
+                option value = "quinta" > Quinta - feira < /option> <
+                option value = "sexta" > Sexta - feira < /option> <
+                option value = "sabado" > Sábado < /option> < /
+                select > <
                 /label> <
-            label style = {
+                label style = {
                     { color: '#fff', fontWeight: 500, marginBottom: 2 }
                 } >
                 Horário:
                 <
                 input type = "time"
-            value = { scheduleTime }
-            onChange = { e => setScheduleTime(e.target.value) }
-            required style = {
-                {
-                    marginLeft: 8,
-                    background: '#23234a',
-                    color: '#fff',
-                    border: '1px solid #444',
-                    borderRadius: 8,
-                    padding: '6px 10px',
-                    fontSize: 15,
-                    marginTop: 4
+                value = { scheduleTime }
+                onChange = { e => setScheduleTime(e.target.value) }
+                required style = {
+                    {
+                        marginLeft: 8,
+                        background: '#23234a',
+                        color: '#fff',
+                        border: '1px solid #444',
+                        borderRadius: 8,
+                        padding: '6px 10px',
+                        fontSize: 15,
+                        marginTop: 4
+                    }
                 }
-            }
-            /> < /
-            label > <
+                /> < /
+                label > <
                 label style = {
                     { display: 'flex', alignItems: 'center', gap: 8, color: '#fff', fontWeight: 500 }
                 } >
                 <
                 input type = "checkbox"
-            checked = { scheduleRepeat }
-            onChange = { e => setScheduleRepeat(e.target.checked) }
-            />
-            Repetir agendamento <
+                checked = { scheduleRepeat }
+                onChange = { e => setScheduleRepeat(e.target.checked) }
+                />
+                Repetir agendamento <
                 /label> <
-            button type = "submit"
-            style = {
+                button type = "submit"
+                style = {
                     {
                         marginTop: 8,
                         background: '#00e6fb',
@@ -1674,621 +1680,735 @@ function DashboardPage() {
                 } >
                 Agendar <
                 /button> {
-            scheduleMessage && < span style = {
-                { color: scheduleMessageColor, fontSize: 14, marginTop: 4 }
-            } > { scheduleMessage } < /span>} < /
-            form > <
+                scheduleMessage && < span style = {
+                    { color: scheduleMessageColor, fontSize: 14, marginTop: 4 }
+                } > { scheduleMessage } < /span>} < /
+                form > <
+                /div> { / * Novo Card de Agendamentos à direita * / } <
+                div className = "user-schedules-card"
+                style = {
+                    {
+                        flex: 1,
+                        minWidth: 320,
+                        maxWidth: 400,
+                        padding: 24,
+                        background: 'rgba(59, 57, 99, 0.95)',
+                        borderRadius: 16,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                        color: '#fff',
+                        fontFamily: 'inherit',
+                        fontSize: 16,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                    }
+                } >
+                <
+                h1 style = {
+                    { fontSize: 20, marginBottom: 16, color: '#fff', fontWeight: 700, letterSpacing: 0.5 }
+                } > Seus Agendamentos < /h1> { / * Aqui será exibida a lista de agendamentos do usuário * / } <
+                div style = {
+                    { width: '100%' }
+                } > {
+                    loadingSchedules ? ( <
+                        span style = {
+                            { color: '#aaa', fontSize: 15 }
+                        } > Carregando agendamentos... < /span>
+                    ) : userSchedules.length === 0 ? ( <
+                        span style = {
+                            { color: '#aaa', fontSize: 15 }
+                        } > Nenhum agendamento encontrado. < /span>
+                    ) : ( <
+                        ul style = {
+                            { listStyle: 'none', padding: 0, margin: 0, width: '100%' }
+                        } > {
+                            userSchedules.map(sch => {
+                                // Calcular tempo restante para execução (para não repetitivos)
+                                let tempoRestante = '';
+                                if (!sch.repeat && sch.nextExecution) {
+                                    const diff = new Date(sch.nextExecution) - new Date();
+                                    if (diff > 0) {
+                                        const horas = Math.floor(diff / 3600000);
+                                        const minutos = Math.floor((diff % 3600000) / 60000);
+                                        tempoRestante = `${horas > 0 ? horas + 'h ' : ''}${minutos}min`;
+                                    } else {
+                                        tempoRestante = 'Executando em instantes';
+                                    }
+                                }
+                                return ( <
+                                    li key = { sch.id }
+                                    style = {
+                                        {
+                                            background: 'rgba(255,255,255,0.06)',
+                                            borderRadius: 10,
+                                            marginBottom: 12,
+                                            padding: '12px 16px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            fontSize: 15
+                                        }
+                                    } >
+                                    <
+                                    div >
+                                    <
+                                    span style = {
+                                        { fontWeight: 600 }
+                                    } > { sch.deviceName } < /span> <span style={{ color: '#00e6fb', fontWeight: 500 }}>{sch.time}</span > < span style = {
+                                        { color: '#aaa' }
+                                    } > { sch.day === 'todos' ? 'Todos os dias' : sch.day.charAt(0).toUpperCase() + sch.day.slice(1) } < /span> {
+                                    sch.repeat && < span style = {
+                                        { background: '#00e6fb', color: '#23234a', borderRadius: 6, fontSize: 12, fontWeight: 700, padding: '2px 8px', marginLeft: 8 }
+                                    } > rep < /span>} < /
+                                    div > {!sch.repeat && tempoRestante && ( <
+                                            span style = {
+                                                { color: '#fff', fontSize: 13, fontWeight: 500 }
+                                            } > { tempoRestante } < /span>
+                                        )
+                                    } <
+                                    <
+                                    div style = {
+                                        { display: 'flex', alignItems: 'center', gap: 8 }
+                                    } >
+                                    <
+                                    button onClick = {
+                                        () => handleCancelSchedule(sch.id)
+                                    }
+                                    style = {
+                                        { background: '#ff5252', color: '#fff', border: 'none', borderRadius: 6, padding: '4px 12px', fontWeight: 600, cursor: 'pointer', fontSize: 13 }
+                                    } > Cancelar < /button> < /
+                                    div > /
+                                    li >
+                                );
+                            })
+                        } <
+                        /ul>
+                    )
+                } <
+                /div> < /
+                div > <
+                /div>
+            )
+        }
+
+        { /* ========== REPORTS SECTION ========== */ } {
+            activeSection === 'relatorios' && ( <
+                    div className = "reports-section" >
+                    <
+                    h2 > Relatórios de Consumo < /h2> <
+                    div className = "report-summary-card" >
+                    <
+                    h3 > Resumo Geral < /h3> <
+                    p >
+                    Total de Dispositivos: { ' ' } <
+                    strong > { report.summary.totalDevices } < /strong> < /
+                    p > <
+                    p >
+                    Com uso Inteligente(estimado): { ' ' } <
+                    strong > { report.summary.smartUsageDevices } < /strong> < /
+                    p > <
+                    p >
+                    Dispositivos com Otimização Pendente(estimado): { ' ' } <
+                    strong > { report.summary.nonSmartUsageDevices } < /strong> < /
+                    p > <
+                    p className = "overall-report-message" > { report.summary.overallMessage } <
+                    /p> < /
+                    div >
+
+                    {
+                        isRealData && devices.length > 0 && devices[0].latestReading && ( <
+                            div className = "energy-realtime-card" >
+                            <
+                            h3 > Dados em Tempo Real do Dispositivo Sonoff Sala < /h3> <
+                            table className = "energy-realtime-table" >
+                            <
+                            tbody className = "energy-realtime-tbody" >
+                            <
+                            tr >
+                            <
+                            td > Tensão < /td> <
+                            td > {
+                                devices[0].powerState && typeof devices[0].latestReading.voltage === 'number' ?
+                                devices[0].latestReading.voltage : 0
+                            }
+                            V <
+                            /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Corrente < /td> <
+                            td > {
+                                devices[0].powerState && typeof devices[0].latestReading.current === 'number' ?
+                                devices[0].latestReading.current : 0
+                            }
+                            A <
+                            /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Potência Ativa < /td> <
+                            td > {
+                                devices[0].powerState && typeof devices[0].latestReading.power === 'number' ?
+                                devices[0].latestReading.power : 0
+                            }
+                            W <
+                            /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Potência Aparente < /td> <
+                            td > {
+                                devices[0].powerState && typeof devices[0].latestReading.ApparentPower === 'number' ?
+                                devices[0].latestReading.ApparentPower : 0
+                            }
+                            VA <
+                            /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Potência Reativa < /td> <
+                            td > {
+                                devices[0].powerState && typeof devices[0].latestReading.ReactivePower === 'number' ?
+                                devices[0].latestReading.ReactivePower : 0
+                            }
+                            var <
+                            /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Fator de Potência < /td> <
+                            td > {
+                                devices[0].powerState && typeof devices[0].latestReading.PowerFactor === 'number' ?
+                                devices[0].latestReading.PowerFactor : 0
+                            } <
+                            /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Energia Hoje < /td> <
+                            td > {
+                                typeof devices[0].latestReading.EnergyToday === 'number' ?
+                                devices[0].latestReading.EnergyToday : '--'
+                            }
+                            kWh <
+                            /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Energia Ontem < /td> <
+                            td > {
+                                typeof devices[0].latestReading.EnergyYesterday === 'number' ?
+                                devices[0].latestReading.EnergyYesterday : '--'
+                            }
+                            kWh <
+                            /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Energia Total < /td> <
+                            td > {
+                                devices[0].powerState ?
+                                liveTotalEnergyBroker1.toFixed(2) + ' kWh' : '0.00 kWh'
+                            } <
+                            /td> < /
+                            tr > <
+                            /tbody> < /
+                            table > <
+                            /div>
+                        )
+                    }
+
+                    {
+                        isRealData && devices.length > 1 && devices[1].latestReading && ( <
+                            div className = "energy-realtime-card"
+                            style = {
+                                { marginTop: '32px' }
+                            } >
+                            <
+                            h3 > Dados em Tempo Real do Dispositivo Sonoff Câmera < /h3> <
+                            table className = "energy-realtime-table" >
+                            <
+                            tbody className = "energy-realtime-tbody" >
+                            <
+                            tr >
+                            <
+                            td > Tensão < /td> <
+                            td > {
+                                devices[1].powerState && typeof devices[1].latestReading.voltage === 'number' ?
+                                devices[1].latestReading.voltage : 0
+                            }
+                            V <
+                            /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Corrente < /td> <
+                            td > {
+                                devices[1].powerState && typeof devices[1].latestReading.current === 'number' ?
+                                devices[1].latestReading.current : 0
+                            }
+                            A <
+                            /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Potência Ativa < /td> <
+                            td > {
+                                devices[1].powerState && typeof devices[1].latestReading.power === 'number' ?
+                                devices[1].latestReading.power : 0
+                            }
+                            W <
+                            /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Potência Aparente < /td> <
+                            td > {
+                                devices[1].powerState && typeof devices[1].latestReading.ApparentPower === 'number' ?
+                                devices[1].latestReading.ApparentPower : 0
+                            }
+                            VA <
+                            /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Potência Reativa < /td> <
+                            td > {
+                                devices[1].powerState && typeof devices[1].latestReading.ReactivePower === 'number' ?
+                                devices[1].latestReading.ReactivePower : 0
+                            }
+                            var <
+                            /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Fator de Potência < /td> <
+                            td > {
+                                devices[1].powerState && typeof devices[1].latestReading.PowerFactor === 'number' ?
+                                devices[1].latestReading.PowerFactor : 0
+                            } <
+                            /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Energia Hoje < /td> <
+                            td > {
+                                typeof devices[1].latestReading.EnergyToday === 'number' ?
+                                devices[1].latestReading.EnergyToday : '--'
+                            }
+                            kWh <
+                            /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Energia Ontem < /td> <
+                            td > {
+                                typeof devices[1].latestReading.EnergyYesterday === 'number' ?
+                                devices[1].latestReading.EnergyYesterday : '--'
+                            }
+                            kWh <
+                            /td> < /
+                            tr > <
+                            tr >
+                            <
+                            td > Energia Total < /td> <
+                            td > {
+                                devices[1].powerState ?
+                                liveTotalEnergyBroker2.toFixed(2) + ' kWh' : '0.00 kWh'
+                            } <
+                            /td> < /
+                            tr > <
+                            /tbody> < /
+                            table > <
+                            /div>
+                        )
+                    }
+
+                    <
+                    h3 > Detalhes por Dispositivo < /h3> <
+                    div className = "device-report-list" > {
+                        report.details.length > 0 ? (
+                            report.details.map((detail, index) => ( <
+                                    div key = { index }
+                                    className = "device-report-item" >
+                                    <
+                                    h4 > { detail.name } < /h4> <
+                                    p >
+                                    Status Atual: { ' ' } <
+                                    span className = {
+                                        devices[index] && devices[index].powerState ?
+                                        'status-on-text' : 'status-off-text'
+                                    } > { devices[index] && devices[index].powerState ? 'Ligado' : 'Desligado' } <
+                                    /span> < /
+                                    p > <
+                                    p > Tipo: { detail.type } < /p> <
+                                    p > Recomendação: { detail.recommendation } < /p> {
+                                    parseFloat(detail.potentialImpact) !== 0.00 && ( <
+                                        p className = {
+                                            parseFloat(detail.potentialImpact) > 0 ?
+                                            'impact-positive' : 'impact-negative'
+                                        } >
+                                        Impacto Potencial: { detail.potentialImpact }
+                                        kWh no próximo mês <
+                                        /p>
+                                    )
+                                } <
+                                /div>
+                            ))
+                    ): ( <
+                        p className = "no-reports-message" > Nenhum relatório disponível. < /p>
+                    )
+                } <
                 /div> < /
             div >
         )
     }
 
-    { /* ========== REPORTS SECTION ========== */ } {
-        activeSection === 'relatorios' && ( <
-                div className = "reports-section" >
-                <
-                h2 > Relatórios de Consumo < /h2> <
-                div className = "report-summary-card" >
-                <
-                h3 > Resumo Geral < /h3> <
-                p >
-                Total de Dispositivos: { ' ' } <
-                strong > { report.summary.totalDevices } < /strong> < /
-                p > <
-                p >
-                Com uso Inteligente(estimado): { ' ' } <
-                strong > { report.summary.smartUsageDevices } < /strong> < /
-                p > <
-                p >
-                Dispositivos com Otimização Pendente(estimado): { ' ' } <
-                strong > { report.summary.nonSmartUsageDevices } < /strong> < /
-                p > <
-                p className = "overall-report-message" > { report.summary.overallMessage } <
-                /p> < /
-                div >
-
+    { /* ========== ECOBOT SECTION ========== */ } {
+        activeSection === 'ecobot' && ( <
+            div className = "main-content2" >
+            <
+            div style = {
                 {
-                    isRealData && devices.length > 0 && devices[0].latestReading && ( <
-                        div className = "energy-realtime-card" >
-                        <
-                        h3 > Dados em Tempo Real do Dispositivo Sonoff Sala < /h3> <
-                        table className = "energy-realtime-table" >
-                        <
-                        tbody className = "energy-realtime-tbody" >
-                        <
-                        tr >
-                        <
-                        td > Tensão < /td> <
-                        td > {
-                            devices[0].powerState && typeof devices[0].latestReading.voltage === 'number' ?
-                            devices[0].latestReading.voltage : 0
-                        }
-                        V <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Corrente < /td> <
-                        td > {
-                            devices[0].powerState && typeof devices[0].latestReading.current === 'number' ?
-                            devices[0].latestReading.current : 0
-                        }
-                        A <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Potência Ativa < /td> <
-                        td > {
-                            devices[0].powerState && typeof devices[0].latestReading.power === 'number' ?
-                            devices[0].latestReading.power : 0
-                        }
-                        W <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Potência Aparente < /td> <
-                        td > {
-                            devices[0].powerState && typeof devices[0].latestReading.ApparentPower === 'number' ?
-                            devices[0].latestReading.ApparentPower : 0
-                        }
-                        VA <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Potência Reativa < /td> <
-                        td > {
-                            devices[0].powerState && typeof devices[0].latestReading.ReactivePower === 'number' ?
-                            devices[0].latestReading.ReactivePower : 0
-                        }
-                        var <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Fator de Potência < /td> <
-                        td > {
-                            devices[0].powerState && typeof devices[0].latestReading.PowerFactor === 'number' ?
-                            devices[0].latestReading.PowerFactor : 0
-                        } <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Energia Hoje < /td> <
-                        td > {
-                            typeof devices[0].latestReading.EnergyToday === 'number' ?
-                            devices[0].latestReading.EnergyToday : '--'
-                        }
-                        kWh <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Energia Ontem < /td> <
-                        td > {
-                            typeof devices[0].latestReading.EnergyYesterday === 'number' ?
-                            devices[0].latestReading.EnergyYesterday : '--'
-                        }
-                        kWh <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Energia Total < /td> <
-                        td > {
-                            devices[0].powerState ?
-                            liveTotalEnergyBroker1.toFixed(2) + ' kWh' : '0.00 kWh'
-                        } <
-                        /td> < /
-                        tr > <
-                        /tbody> < /
-                        table > <
-                        /div>
-                    )
+                    width: '100%',
+                    maxWidth: 600,
+                    minWidth: 340,
+                    position: 'sticky',
+                    top: 0,
+                    background: 'transparent',
+                    zIndex: 2,
                 }
-
+            } >
+            <
+            h1 style = {
+                { color: 'white', marginBottom: 8 }
+            } >
+            Olá, eu sou EcoBot👋 <
+            /h1> <
+            h4 style = {
+                { color: '#e0e0e0', marginBottom: 24 }
+            } >
+            Aqui { userName }, você pode me perguntar sobre previsões de consumo futuro de energia e receber dicas para um uso mais eficiente dos seus eletrodomésticos.Fique à vontade!
+            <
+            /h4> < /
+            div > <
+            div style = {
                 {
-                    isRealData && devices.length > 1 && devices[1].latestReading && ( <
-                        div className = "energy-realtime-card"
-                        style = {
-                            { marginTop: '32px' }
-                        } >
-                        <
-                        h3 > Dados em Tempo Real do Dispositivo Sonoff Câmera < /h3> <
-                        table className = "energy-realtime-table" >
-                        <
-                        tbody className = "energy-realtime-tbody" >
-                        <
-                        tr >
-                        <
-                        td > Tensão < /td> <
-                        td > {
-                            devices[1].powerState && typeof devices[1].latestReading.voltage === 'number' ?
-                            devices[1].latestReading.voltage : 0
-                        }
-                        V <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Corrente < /td> <
-                        td > {
-                            devices[1].powerState && typeof devices[1].latestReading.current === 'number' ?
-                            devices[1].latestReading.current : 0
-                        }
-                        A <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Potência Ativa < /td> <
-                        td > {
-                            devices[1].powerState && typeof devices[1].latestReading.power === 'number' ?
-                            devices[1].latestReading.power : 0
-                        }
-                        W <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Potência Aparente < /td> <
-                        td > {
-                            devices[1].powerState && typeof devices[1].latestReading.ApparentPower === 'number' ?
-                            devices[1].latestReading.ApparentPower : 0
-                        }
-                        VA <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Potência Reativa < /td> <
-                        td > {
-                            devices[1].powerState && typeof devices[1].latestReading.ReactivePower === 'number' ?
-                            devices[1].latestReading.ReactivePower : 0
-                        }
-                        var <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Fator de Potência < /td> <
-                        td > {
-                            devices[1].powerState && typeof devices[1].latestReading.PowerFactor === 'number' ?
-                            devices[1].latestReading.PowerFactor : 0
-                        } <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Energia Hoje < /td> <
-                        td > {
-                            typeof devices[1].latestReading.EnergyToday === 'number' ?
-                            devices[1].latestReading.EnergyToday : '--'
-                        }
-                        kWh <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Energia Ontem < /td> <
-                        td > {
-                            typeof devices[1].latestReading.EnergyYesterday === 'number' ?
-                            devices[1].latestReading.EnergyYesterday : '--'
-                        }
-                        kWh <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Energia Total < /td> <
-                        td > {
-                            devices[1].powerState ?
-                            liveTotalEnergyBroker2.toFixed(2) + ' kWh' : '0.00 kWh'
-                        } <
-                        /td> < /
-                        tr > <
-                        /tbody> < /
-                        table > <
-                        /div>
-                    )
+                    background: '#23234a',
+                    borderRadius: 12,
+                    padding: 24,
+                    maxWidth: 600,
+                    width: '100%',
+                    minWidth: 320,
+                    margin: '0 auto',
+                    minHeight: 320,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 12,
+                    flex: 1,
+                    overflow: 'auto',
                 }
+            } >
+            <
+            div style = {
+                { flex: 1, overflowY: 'auto', marginBottom: 16 }
+            } > {
+                chatMessages.map((msg, idx) => ( <
+                    div key = { idx }
+                    style = {
+                        {
+                            color: msg.sender === 'EcoBot' ? '#00e676' : '#fff',
+                            textAlign: msg.sender === 'EcoBot' ? 'left' : 'right',
+                            margin: '8px 0',
+                        }
+                    } >
+                    <
+                    strong > { msg.sender }: < /strong> {msg.text} < /
+                    div >
+                ))
+            } <
+            /div> <
+            form onSubmit = { handleSendMessage }
+            style = {
+                { display: 'flex', gap: 8 }
+            } >
+            <
+            input type = "text"
+            value = { chatInput }
+            onChange = {
+                (e) => setChatInput(e.target.value)
+            }
+            placeholder = "Digite sua mensagem..."
+            style = {
+                { flex: 1, borderRadius: 8, border: 'none', padding: 10 }
+            }
+            /> <
+            button type = "submit"
+            style = {
+                {
+                    background: '#00e676',
+                    color: '#222',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '0 18px',
+                    fontWeight: 'bold',
+                }
+            } >
+            Enviar <
+            /button> < /
+            form > <
+            /div> < /
+            div >
+        )
+    }
+
+    { /* ========== SETTINGS SECTION ========== */ } {
+        activeSection === 'configuracoes' && ( <
+                div className = "settings-section" >
+                <
+                h2 > Configurações da Conta < /h2>
 
                 <
-                h3 > Detalhes por Dispositivo < /h3> <
-                div className = "device-report-list" > {
-                    report.details.length > 0 ? (
-                        report.details.map((detail, index) => ( <
-                                div key = { index }
-                                className = "device-report-item" >
-                                <
-                                h4 > { detail.name } < /h4> <
-                                p >
-                                Status Atual: { ' ' } <
-                                span className = {
-                                    devices[index] && devices[index].powerState ?
-                                    'status-on-text' : 'status-off-text'
-                                } > { devices[index] && devices[index].powerState ? 'Ligado' : 'Desligado' } <
-                                /span> < /
-                                p > <
-                                p > Tipo: { detail.type } < /p> <
-                                p > Recomendação: { detail.recommendation } < /p> {
-                                parseFloat(detail.potentialImpact) !== 0.00 && ( <
-                                    p className = {
-                                        parseFloat(detail.potentialImpact) > 0 ?
-                                        'impact-positive' : 'impact-negative'
-                                    } >
-                                    Impacto Potencial: { detail.potentialImpact }
-                                    kWh no próximo mês <
-                                    /p>
-                                )
-                            } <
-                            /div>
-                        ))
-                ): ( <
-                    p className = "no-reports-message" > Nenhum relatório disponível. < /p>
+                div className = "user-settings-card" >
+                <
+                h3 > Informações do Usuário < /h3> <
+                p >
+                <
+                strong > Nome de Usuário: < /strong> {userName} < /
+                p > <
+                p >
+                <
+                strong > Email: < /strong> {userEmail} < /
+                p > <
+                p >
+                <
+                button className = "edit-profile-button"
+                onClick = { openEditModal } >
+                Editar Perfil <
+                /button> {
+                whatsappNumberSaved ? ( <
+                    >
+                    <
+                    span style = {
+                        { marginLeft: 8, color: 'green', fontWeight: 'bold' }
+                    } >
+                    Número vinculado: { whatsappNumberSaved } <
+                    /span> <
+                    button className = "edit-profile-button unlink-whatsapp-btn"
+                    style = {
+                        { marginLeft: 8, background: 'red', color: 'white' }
+                    }
+                    onClick = { handleUnlinkWhatsapp } >
+                    Desvincular <
+                    /button> < / >
+                ) : ( <
+                    button className = "edit-profile-button add-whatsapp-btn"
+                    style = {
+                        { marginLeft: 8 }
+                    }
+                    onClick = {
+                        () => setShowWhatsappModal(true)
+                    } >
+                    Adicionar Número <
+                    /button>
                 )
             } <
-            /div> < /
+            /p> <
+        p className = "settings-note" >
+            *
+            Após editar ou excluir a conta, será necessário fazer login novamente. <
+            /p> < /
         div >
-    )
-}
 
-{ /* ========== ECOBOT SECTION ========== */ } {
-    activeSection === 'ecobot' && ( <
-        div className = "main-content2" >
-        <
-        div style = {
-            {
-                width: '100%',
-                maxWidth: 600,
-                minWidth: 340,
-                position: 'sticky',
-                top: 0,
-                background: 'transparent',
-                zIndex: 2,
-            }
-        } >
-        <
-        h1 style = {
-            { color: 'white', marginBottom: 8 }
-        } >
-        Olá, eu sou EcoBot👋 <
-        /h1> <
-        h4 style = {
-            { color: '#e0e0e0', marginBottom: 24 }
-        } >
-        Aqui { userName }, você pode me perguntar sobre previsões de consumo futuro de energia e receber dicas para um uso mais eficiente dos seus eletrodomésticos.Fique à vontade!
-        <
-        /h4> < /
-        div > <
-        div style = {
-            {
-                background: '#23234a',
-                borderRadius: 12,
-                padding: 24,
-                maxWidth: 600,
-                width: '100%',
-                minWidth: 320,
-                margin: '0 auto',
-                minHeight: 320,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 12,
-                flex: 1,
-                overflow: 'auto',
-            }
-        } >
-        <
-        div style = {
-            { flex: 1, overflowY: 'auto', marginBottom: 16 }
-        } > {
-            chatMessages.map((msg, idx) => ( <
-                div key = { idx }
-                style = {
-                    {
-                        color: msg.sender === 'EcoBot' ? '#00e676' : '#fff',
-                        textAlign: msg.sender === 'EcoBot' ? 'left' : 'right',
-                        margin: '8px 0',
-                    }
-                } >
-                <
-                strong > { msg.sender }: < /strong> {msg.text} < /
-                div >
-            ))
-        } <
-        /div> <
-        form onSubmit = { handleSendMessage }
-        style = {
-            { display: 'flex', gap: 8 }
-        } >
-        <
-        input type = "text"
-        value = { chatInput }
-        onChange = {
-            (e) => setChatInput(e.target.value)
-        }
-        placeholder = "Digite sua mensagem..."
-        style = {
-            { flex: 1, borderRadius: 8, border: 'none', padding: 10 }
-        }
-        /> <
-        button type = "submit"
-        style = {
-            {
-                background: '#00e676',
-                color: '#222',
-                border: 'none',
-                borderRadius: 8,
-                padding: '0 18px',
-                fontWeight: 'bold',
-            }
-        } >
-        Enviar <
-        /button> < /
-        form > <
-        /div> < /
-        div >
-    )
-}
-
-{ /* ========== SETTINGS SECTION ========== */ } {
-    activeSection === 'configuracoes' && ( <
-            div className = "settings-section" >
-            <
-            h2 > Configurações da Conta < /h2>
-
-            <
-            div className = "user-settings-card" >
-            <
-            h3 > Informações do Usuário < /h3> <
-            p >
-            <
-            strong > Nome de Usuário: < /strong> {userName} < /
-            p > <
-            p >
-            <
-            strong > Email: < /strong> {userEmail} < /
-            p > <
-            p >
-            <
-            button className = "edit-profile-button"
-            onClick = { openEditModal } >
-            Editar Perfil <
-            /button> {
-            whatsappNumberSaved ? ( <
-                >
-                <
-                span style = {
-                    { marginLeft: 8, color: 'green', fontWeight: 'bold' }
-                } >
-                Número vinculado: { whatsappNumberSaved } <
-                /span> <
-                button className = "edit-profile-button unlink-whatsapp-btn"
-                style = {
-                    { marginLeft: 8, background: 'red', color: 'white' }
-                }
-                onClick = { handleUnlinkWhatsapp } >
-                Desvincular <
-                /button> < / >
-            ) : ( <
-                button className = "edit-profile-button add-whatsapp-btn"
-                style = {
-                    { marginLeft: 8 }
-                }
-                onClick = {
-                    () => setShowWhatsappModal(true)
-                } >
-                Adicionar Número <
-                /button>
-            )
-        } <
-        /p> <
-    p className = "settings-note" >
-        *
-        Após editar ou excluir a conta, será necessário fazer login novamente. <
-        /p> < /
-    div >
-
-        { /* Edit Account Modal */ } {
-            showEditModal && ( <
-                div className = "modal-overlay" >
-                <
-                div className = "modal-card" >
-                <
-                h3 > Editar Conta < /h3> <
-                form onSubmit = { handleEditAccount } >
-                <
-                label > Novo Nome: < /label> <
-                input type = "text"
-                value = { editName }
-                onChange = {
-                    (e) => setEditName(e.target.value)
-                }
-                placeholder = "Novo nome" /
-                >
-
-                <
-                label > Nova Senha: < /label> <
-                input type = "password"
-                value = { editPassword }
-                onChange = {
-                    (e) => setEditPassword(e.target.value)
-                }
-                placeholder = "Nova senha" /
-                >
-
-                {
-                    editError && < p className = "error-message" > { editError } < /p>}
-
-                    <
-                    div className = "button-group small-buttons" >
-                    <
-                    button
-                    type = "submit"
-                    disabled = { editLoading }
-                    className = "submit-button small-btn" > { editLoading ? 'Salvando...' : 'Salvar' } <
-                    /button> <
-                    button
-                    type = "button"
-                    onClick = {
-                        () => {
-                            setShowEditModal(false);
-                            openDeleteModal();
-                        }
-                    }
-                    className = "delete-account-button small-btn" >
-                    Excluir Conta <
-                    /button> <
-                    button
-                    type = "button"
-                    onClick = {
-                        () => setShowEditModal(false)
-                    }
-                    className = "cancel-button small-btn" >
-                    Cancelar <
-                    /button> < /
-                    div > <
-                    /form> < /
-                    div > <
-                    /div>
-                )
-            }
-
-            { /* Delete Account Modal */ } {
-                showDeleteModal && ( <
+            { /* Edit Account Modal */ } {
+                showEditModal && ( <
                     div className = "modal-overlay" >
                     <
                     div className = "modal-card" >
                     <
-                    h3 > Excluir Conta < /h3> <
-                    p >
-                    Tem certeza que deseja excluir sua conta ? Esta ação é irreversível. <
-                    /p> {
-                    deleteError && < p className = "error-message" > { deleteError } < /p>} <
-                    div className = "button-group" >
+                    h3 > Editar Conta < /h3> <
+                    form onSubmit = { handleEditAccount } >
                     <
-                    button onClick = { handleDeleteAccount }
-                    disabled = { deleteLoading }
-                    className = "delete-button" > { deleteLoading ? 'Excluindo...' : 'Excluir' } <
-                    /button> <
-                    button onClick = {
-                        () => setShowDeleteModal(false)
+                    label > Novo Nome: < /label> <
+                    input type = "text"
+                    value = { editName }
+                    onChange = {
+                        (e) => setEditName(e.target.value)
                     }
-                    className = "cancel-button" >
-                    Cancelar <
-                    /button> < /
-                    div > <
-                    /div> < /
-                    div >
-                )
-            }
+                    placeholder = "Novo nome" /
+                    >
 
-            { /* WhatsApp Modal */ } {
-                showWhatsappModal && ( <
+                    <
+                    label > Nova Senha: < /label> <
+                    input type = "password"
+                    value = { editPassword }
+                    onChange = {
+                        (e) => setEditPassword(e.target.value)
+                    }
+                    placeholder = "Nova senha" /
+                    >
+
+                    {
+                        editError && < p className = "error-message" > { editError } < /p>}
+
+                        <
+                        div className = "button-group small-buttons" >
+                        <
+                        button
+                        type = "submit"
+                        disabled = { editLoading }
+                        className = "submit-button small-btn" > { editLoading ? 'Salvando...' : 'Salvar' } <
+                        /button> <
+                        button
+                        type = "button"
+                        onClick = {
+                            () => {
+                                setShowEditModal(false);
+                                openDeleteModal();
+                            }
+                        }
+                        className = "delete-account-button small-btn" >
+                        Excluir Conta <
+                        /button> <
+                        button
+                        type = "button"
+                        onClick = {
+                            () => setShowEditModal(false)
+                        }
+                        className = "cancel-button small-btn" >
+                        Cancelar <
+                        /button> < /
+                        div > <
+                        /form> < /
+                        div > <
+                        /div>
+                    )
+                }
+
+                { /* Delete Account Modal */ } {
+                    showDeleteModal && ( <
                         div className = "modal-overlay" >
                         <
                         div className = "modal-card" >
                         <
-                        h3 >
-                        Adicione seu número de Whatsapp para receber notificação do
-                            EcoBot, bot inteligente da Smart Energy!
-                            <
-                            /h3> <
-                        form onSubmit = { handleSaveWhatsapp } >
+                        h3 > Excluir Conta < /h3> <
+                        p >
+                        Tem certeza que deseja excluir sua conta ? Esta ação é irreversível. <
+                        /p> {
+                        deleteError && < p className = "error-message" > { deleteError } < /p>} <
+                        div className = "button-group" >
                         <
-                        label > Número(com código do país, DDD e número): < /label> <
-                        input type = "text"
-                        value = { whatsappNumber }
-                        onChange = {
-                            (e) => setWhatsappNumber(e.target.value)
+                        button onClick = { handleDeleteAccount }
+                        disabled = { deleteLoading }
+                        className = "delete-button" > { deleteLoading ? 'Excluindo...' : 'Excluir' } <
+                        /button> <
+                        button onClick = {
+                            () => setShowDeleteModal(false)
                         }
-                        placeholder = "Ex: 5562999999999"
-                        maxLength = { 13 }
-                        /> {
-                        whatsappError && ( <
-                            p className = "error-message" > { whatsappError } < /p>
-                        )
-                    } {
-                        whatsappSuccess && ( <
-                            p className = "success-message" > { whatsappSuccess } < /p>
-                        )
-                    } <
-                    div className = "button-group small-buttons" >
-                    <
-                    button type = "submit"
-                className = "submit-button small-btn" >
-                    Salvar <
-                    /button> <
-                button type = "button"
-                className = "cancel-button small-btn"
-                onClick = {
-                        () => setShowWhatsappModal(false)
-                    } >
-                    Cancelar <
-                    /button> < /
-                div > <
-                    /form> < /
-                div > <
-                    /div>
-            )
-        }
+                        className = "cancel-button" >
+                        Cancelar <
+                        /button> < /
+                        div > <
+                        /div> < /
+                        div >
+                    )
+                }
 
-    <
-    div className = "tasmota-settings-card" >
+                { /* WhatsApp Modal */ } {
+                    showWhatsappModal && ( <
+                            div className = "modal-overlay" >
+                            <
+                            div className = "modal-card" >
+                            <
+                            h3 >
+                            Adicione seu número de Whatsapp para receber notificação do
+                                EcoBot, bot inteligente da Smart Energy!
+                                <
+                                /h3> <
+                            form onSubmit = { handleSaveWhatsapp } >
+                            <
+                            label > Número(com código do país, DDD e número): < /label> <
+                            input type = "text"
+                            value = { whatsappNumber }
+                            onChange = {
+                                (e) => setWhatsappNumber(e.target.value)
+                            }
+                            placeholder = "Ex: 5562999999999"
+                            maxLength = { 13 }
+                            /> {
+                            whatsappError && ( <
+                                p className = "error-message" > { whatsappError } < /p>
+                            )
+                        } {
+                            whatsappSuccess && ( <
+                                p className = "success-message" > { whatsappSuccess } < /p>
+                            )
+                        } <
+                        div className = "button-group small-buttons" >
+                        <
+                        button type = "submit"
+                    className = "submit-button small-btn" >
+                        Salvar <
+                        /button> <
+                    button type = "button"
+                    className = "cancel-button small-btn"
+                    onClick = {
+                            () => setShowWhatsappModal(false)
+                        } >
+                        Cancelar <
+                        /button> < /
+                    div > <
+                        /form> < /
+                    div > <
+                        /div>
+                )
+            }
+
         <
-        h3 > Gerenciamento de Dispositivos < /h3> <
-    p className = "device-management-description" >
-        Aqui você pode gerenciar seus dispositivos Tasmota. <
-        /p>
-
-    {
-        isRealData ? ( <
-            p >
+        div className = "tasmota-settings-card" >
             <
-            button className = "add-device-btn"
-            onClick = {
-                () => navigate('/add-device')
-            } >
-            Adicionar Novo Dispositivo <
-            /button> <
-            button className = "refresh-devices-btn"
-            onClick = { fetchDashboardData } >
-            Atualizar Lista de Dispositivos <
-            /button> < /
-            p >
-        ) : ( <
-            p className = "admin-only-message" >
-            O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador. <
+            h3 > Gerenciamento de Dispositivos < /h3> <
+        p className = "device-management-description" >
+            Aqui você pode gerenciar seus dispositivos Tasmota. <
             /p>
-        )
-    } <
-    /div> < /
-    div >
-)
+
+        {
+            isRealData ? ( <
+                p >
+                <
+                button className = "add-device-btn"
+                onClick = {
+                    () => navigate('/add-device')
+                } >
+                Adicionar Novo Dispositivo <
+                /button> <
+                button className = "refresh-devices-btn"
+                onClick = { fetchDashboardData } >
+                Atualizar Lista de Dispositivos <
+                /button> < /
+                p >
+            ) : ( <
+                p className = "admin-only-message" >
+                O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador. <
+                /p>
+            )
+        } <
+        /div> < /
+        div >
+    )
 } <
+/div> < /
+div >
+);
+}
+
+export default DashboardPage;
+/div> < /
+div >
+);
+}
+
+export default DashboardPage;
 /div> < /
 div >
 );

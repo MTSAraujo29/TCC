@@ -35,4 +35,10 @@ router.get('/devices/:deviceId/total-energy-live', authenticateToken, getLiveTot
 // Nova rota para agendar desligamento de dispositivo(s)
 router.post('/schedule', authenticateToken, tasmotaController.scheduleShutdown);
 
+// Nova rota para listar agendamentos do usuário
+router.get('/schedules', authenticateToken, tasmotaController.listUserSchedules);
+
+// Nova rota para cancelar agendamento
+router.delete('/schedules/:id', authenticateToken, tasmotaController.cancelSchedule);
+
 module.exports = router;

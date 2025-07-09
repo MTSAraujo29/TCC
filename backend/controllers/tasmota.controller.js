@@ -289,13 +289,10 @@ async function getLiveTotalEnergyFromTasmota(req, res) {
     }
 }
 
-// Agendar desligamento de dispositivo(s) Tasmota
+// Criar agendamento ao agendar desligamento
 async function scheduleShutdown(req, res) {
     const { device, day, time, repeat } = req.body;
-    // device: 'sala', 'camera' ou 'ambos'
-    // day: 'todos', 'domingo', ...
-    // time: 'HH:MM'
-    // repeat: true/false
+    const userId = req.user.userId;
     try {
         // Buscar dispositivos conforme seleção
         let devicesToSchedule = [];
@@ -311,8 +308,6 @@ async function scheduleShutdown(req, res) {
             return res.status(404).json({ message: 'Dispositivo não encontrado.' });
         }
         // Montar comando de timer para Tasmota
-        // Tasmota aceita comando: cmnd/<TOPICO>/Timer<n> {"Enable":1,"Time":"HH:MM","Days":"1111111","Repeat":1,"Mode":0,"Action":0}
-        // Days: 7 dígitos (Domingo a Sábado), 1=ativo, 0=inativo
         const daysMap = {
             'domingo': '1000000',
             'segunda': '0100000',
@@ -332,15 +327,100 @@ async function scheduleShutdown(req, res) {
             Mode: 0, // Timer absoluto
             Action: 0 // 0 = desligar
         };
-        // Enviar comando para cada dispositivo
+        // Enviar comando para cada dispositivo e salvar agendamento
         for (const dev of devicesToSchedule) {
             const topic = `cmnd/${dev.tasmotaTopic}/Timer1`;
             await tasmotaService.publishMqttCommand(topic, JSON.stringify(timerPayload), dev.broker || 'broker1');
+            // Salvar agendamento no banco
+            await prisma.schedule.create({
+                data: {
+                    userId,
+                    deviceId: dev.id,
+                    day,
+                    time,
+                    repeat,
+                    status: 'ativo',
+                }
+            });
         }
-        res.json({ message: 'Agendamento enviado para o(s) dispositivo(s).' });
+        // Se for "ambos", deviceId pode ser null para indicar ambos (opcional)
+        res.json({ message: 'Agendamento enviado e salvo.' });
     } catch (error) {
         console.error('Erro ao agendar desligamento:', error);
         res.status(500).json({ message: 'Erro ao agendar desligamento.' });
+    }
+}
+
+// Listar agendamentos do usuário
+async function listUserSchedules(req, res) {
+    const userId = req.user.userId;
+    try {
+        const now = new Date();
+        // Buscar agendamentos ativos do usuário
+        const schedules = await prisma.schedule.findMany({
+            where: {
+                userId,
+                status: 'ativo',
+            },
+            include: { device: true },
+            orderBy: { createdAt: 'desc' }
+        });
+        // Calcular tempo restante para execução (para não recorrentes)
+        const result = schedules.map(sch => {
+            let nextExecution = null;
+            if (!sch.repeat) {
+                // Calcular próxima execução baseada no dia e hora
+                const [hh, mm] = sch.time.split(':').map(Number);
+                let target = new Date(now);
+                // Se for para hoje ou para o próximo dia da semana
+                if (sch.day === 'todos') {
+                    target.setHours(hh, mm, 0, 0);
+                    if (target < now) target.setDate(target.getDate() + 1);
+                } else {
+                    // Encontrar o próximo dia da semana
+                    const dias = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
+                    const targetDay = dias.indexOf(sch.day);
+                    let daysToAdd = (targetDay - now.getDay() + 7) % 7;
+                    if (daysToAdd === 0 && (hh < now.getHours() || (hh === now.getHours() && mm <= now.getMinutes()))) {
+                        daysToAdd = 7;
+                    }
+                    target.setDate(target.getDate() + daysToAdd);
+                    target.setHours(hh, mm, 0, 0);
+                }
+                nextExecution = target;
+            }
+            return {
+                id: sch.id,
+                deviceName: sch.device ? sch.device.name : 'Ambos',
+                day: sch.day,
+                time: sch.time,
+                repeat: sch.repeat,
+                createdAt: sch.createdAt,
+                nextExecution,
+                status: sch.status
+            };
+        });
+        res.json(result);
+    } catch (error) {
+        console.error('Erro ao listar agendamentos:', error);
+        res.status(500).json({ message: 'Erro ao listar agendamentos.' });
+    }
+}
+
+// Cancelar agendamento pelo id
+async function cancelSchedule(req, res) {
+    const userId = req.user.userId;
+    const { id } = req.params;
+    try {
+        const schedule = await prisma.schedule.findUnique({ where: { id } });
+        if (!schedule || schedule.userId !== userId) {
+            return res.status(404).json({ message: 'Agendamento não encontrado.' });
+        }
+        await prisma.schedule.update({ where: { id }, data: { status: 'cancelado' } });
+        res.json({ message: 'Agendamento cancelado com sucesso.' });
+    } catch (error) {
+        console.error('Erro ao cancelar agendamento:', error);
+        res.status(500).json({ message: 'Erro ao cancelar agendamento.' });
     }
 }
 
@@ -355,4 +435,6 @@ module.exports = {
     toggleDevicePower,
     getLiveTotalEnergyFromTasmota,
     scheduleShutdown,
+    listUserSchedules,
+    cancelSchedule,
 };
