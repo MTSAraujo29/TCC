@@ -1494,7 +1494,10 @@ function DashboardPage() {
 
         { /* ========== ENERGY CONTROL SECTION ========== */ } {
             activeSection === 'controle' && ( <
-                div className = "energy-control-section" >
+                div className = "energy-control-section"
+                style = {
+                    { display: 'flex', flexDirection: 'column', alignItems: 'center' }
+                } >
                 <
                 h2 > Controle de Dispositivos < /h2> {
                 deviceMessage && ( <
