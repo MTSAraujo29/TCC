@@ -1285,33 +1285,33 @@ function DashboardPage() {
                         const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
                         // NOVO: Legenda dinâmica conforme tipo de dado
                         if (!isRealData) {
-                            // Legenda fictícia
+                            // Legenda fictícia melhorada
                             return ( <
-                                span style = {
-                                    { display: 'flex', alignItems: 'flex-start', flexDirection: 'column', fontSize: 12, gap: 2, width: 140 }
+                                div style = {
+                                    { display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8, width: 150, fontSize: 13 }
                                 } > {
                                     data.labels.map((label, idx) => {
                                         const percent = total > 0 ? ((data.datasets[0].data[idx] / total) * 100).toFixed(1) : '0.0';
                                         return ( <
-                                            span key = { label }
+                                            div key = { label }
                                             style = {
-                                                { display: 'flex', alignItems: 'center', gap: 4, wordBreak: 'break-word' }
+                                                { display: 'flex', alignItems: 'center', gap: 8, width: '100%' }
                                             } >
                                             <
                                             span style = {
-                                                { display: 'inline-block', width: 12, height: 12, borderRadius: 6, background: data.datasets[0].backgroundColor[idx], marginRight: 4 }
+                                                { display: 'inline-block', width: 12, height: 12, borderRadius: 6, background: data.datasets[0].backgroundColor[idx], marginRight: 6 }
                                             } > < /span> <
                                             span style = {
-                                                { color: '#FFF', fontWeight: 500 }
-                                            } > { label }: < /span> <
+                                                { color: '#FFF', fontWeight: 500, flex: 1 }
+                                            } > { label } < /span> <
                                             span style = {
-                                                { color: '#FFF', fontWeight: 700 }
+                                                { color: '#FFF', fontWeight: 700, minWidth: 38, textAlign: 'right' }
                                             } > { percent } % < /span> < /
-                                            span >
+                                            div >
                                         );
                                     })
                                 } <
-                                /span>
+                                /div>
                             );
                         } else {
                             // Legenda real (Sala/Câmera)
