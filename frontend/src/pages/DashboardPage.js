@@ -1288,14 +1288,14 @@ function DashboardPage() {
                             // Legenda fictícia
                             return ( <
                                 span style = {
-                                    { display: 'inline-flex', alignItems: 'flex-start', gap: 4, flexDirection: 'column', fontSize: 13 }
+                                    { display: 'flex', alignItems: 'flex-start', flexDirection: 'column', fontSize: 12, gap: 2, width: 140 }
                                 } > {
                                     data.labels.map((label, idx) => {
                                         const percent = total > 0 ? ((data.datasets[0].data[idx] / total) * 100).toFixed(1) : '0.0';
                                         return ( <
                                             span key = { label }
                                             style = {
-                                                { display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }
+                                                { display: 'flex', alignItems: 'center', gap: 4, wordBreak: 'break-word' }
                                             } >
                                             <
                                             span style = {
