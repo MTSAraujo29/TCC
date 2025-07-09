@@ -856,6 +856,52 @@ function DashboardPage() {
         setChatInput('');
     };
 
+    // ========== ESTADOS PARA AGENDAMENTO DE DESLIGAMENTO ==========
+    const [scheduleDevice, setScheduleDevice] = useState("");
+    const [scheduleDay, setScheduleDay] = useState("");
+    const [scheduleTime, setScheduleTime] = useState("");
+    const [scheduleRepeat, setScheduleRepeat] = useState(false);
+    const [scheduleMessage, setScheduleMessage] = useState("");
+    const [scheduleMessageColor, setScheduleMessageColor] = useState("#1976d2");
+
+    // Função para enviar agendamento para o backend
+    async function handleScheduleShutdown(e) {
+        e.preventDefault();
+        setScheduleMessage("");
+        setScheduleMessageColor("#1976d2");
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(API_ENDPOINTS.TASMOTA + "/schedule", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    device: scheduleDevice,
+                    day: scheduleDay,
+                    time: scheduleTime,
+                    repeat: scheduleRepeat
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setScheduleMessage("Agendamento realizado com sucesso!");
+                setScheduleMessageColor("green");
+                setScheduleDevice("");
+                setScheduleDay("");
+                setScheduleTime("");
+                setScheduleRepeat(false);
+            } else {
+                setScheduleMessage(data.message || "Erro ao agendar desligamento.");
+                setScheduleMessageColor("red");
+            }
+        } catch (err) {
+            setScheduleMessage("Erro de conexão com o servidor.");
+            setScheduleMessageColor("red");
+        }
+    }
+
     if (sessionExpired) {
         return ( <
             div className = "modal-overlay"

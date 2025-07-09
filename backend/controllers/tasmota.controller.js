@@ -289,6 +289,61 @@ async function getLiveTotalEnergyFromTasmota(req, res) {
     }
 }
 
+// Agendar desligamento de dispositivo(s) Tasmota
+async function scheduleShutdown(req, res) {
+    const { device, day, time, repeat } = req.body;
+    // device: 'sala', 'camera' ou 'ambos'
+    // day: 'todos', 'domingo', ...
+    // time: 'HH:MM'
+    // repeat: true/false
+    try {
+        // Buscar dispositivos conforme seleção
+        let devicesToSchedule = [];
+        if (device === 'sala' || device === 'ambos') {
+            const sala = await prisma.device.findFirst({ where: { name: { contains: 'Sala' } } });
+            if (sala) devicesToSchedule.push(sala);
+        }
+        if (device === 'camera' || device === 'ambos') {
+            const camera = await prisma.device.findFirst({ where: { name: { contains: 'Câmera' } } });
+            if (camera) devicesToSchedule.push(camera);
+        }
+        if (devicesToSchedule.length === 0) {
+            return res.status(404).json({ message: 'Dispositivo não encontrado.' });
+        }
+        // Montar comando de timer para Tasmota
+        // Tasmota aceita comando: cmnd/<TOPICO>/Timer<n> {"Enable":1,"Time":"HH:MM","Days":"1111111","Repeat":1,"Mode":0,"Action":0}
+        // Days: 7 dígitos (Domingo a Sábado), 1=ativo, 0=inativo
+        const daysMap = {
+            'domingo': '1000000',
+            'segunda': '0100000',
+            'terca': '0010000',
+            'quarta': '0001000',
+            'quinta': '0000100',
+            'sexta': '0000010',
+            'sabado': '0000001',
+            'todos': '1111111'
+        };
+        const daysStr = daysMap[day] || '1111111';
+        const timerPayload = {
+            Enable: 1,
+            Time: time,
+            Days: daysStr,
+            Repeat: repeat ? 1 : 0,
+            Mode: 0, // Timer absoluto
+            Action: 0 // 0 = desligar
+        };
+        // Enviar comando para cada dispositivo
+        for (const dev of devicesToSchedule) {
+            const topic = `cmnd/${dev.tasmotaTopic}/Timer1`;
+            await tasmotaService.publishMqttCommand(topic, JSON.stringify(timerPayload), dev.broker || 'broker1');
+        }
+        res.json({ message: 'Agendamento enviado para o(s) dispositivo(s).' });
+    } catch (error) {
+        console.error('Erro ao agendar desligamento:', error);
+        res.status(500).json({ message: 'Erro ao agendar desligamento.' });
+    }
+}
+
 // Exportar funções
 module.exports = {
     getDevice, // Middleware para verificar posse do dispositivo (usado nas rotas)
@@ -299,4 +354,5 @@ module.exports = {
     getHistoricalEnergyReadings,
     toggleDevicePower,
     getLiveTotalEnergyFromTasmota,
+    scheduleShutdown,
 };
