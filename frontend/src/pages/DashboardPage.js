@@ -1376,6 +1376,29 @@ function DashboardPage() {
 
             <
             /div>
+
+            { /* ========== NOVOS CARDS DE AGENDAMENTO ========== */ } <
+            div className = "bottom-sections-grid" >
+                <
+                div className = "bottom-card" >
+                <
+                h1 style = {
+                    { textAlign: 'center', color: '#FFF', marginBottom: '1.5rem', fontSize: '1.5rem' }
+                } >
+                Agendar Desligamento <
+                /h1> { / * Conteúdo vazio por enquanto * / } < /
+            div >
+
+                <
+                div className = "bottom-card" >
+                <
+                h1 style = {
+                    { textAlign: 'center', color: '#FFF', marginBottom: '1.5rem', fontSize: '1.5rem' }
+                } >
+                Seus Agendamentos <
+                /h1> { / * Conteúdo vazio por enquanto * / } < /
+            div > < /
+            div >
         )
     }
 
