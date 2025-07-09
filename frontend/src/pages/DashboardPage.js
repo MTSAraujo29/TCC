@@ -1486,8 +1486,89 @@ function DashboardPage() {
                     +Adicionar Novo Dispositivo Tasmota <
                     /button>
                 )
-            } <
-            /div>
+            }
+
+            { /* ========== NOVO CARD: AGENDAR DESLIGAMENTO ========== */ } <
+            div className = "schedule-shutdown-card"
+            style = {
+                    { marginTop: 32, padding: 24, background: '#fff', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.07)', maxWidth: 400 }
+                } >
+                <
+                h1 style = {
+                    { fontSize: 22, marginBottom: 16 }
+                } > Agendar Desligamento < /h1> <
+            form onSubmit = { handleScheduleShutdown }
+            style = {
+                    { display: 'flex', flexDirection: 'column', gap: 12 }
+                } >
+                <
+                label >
+                Dispositivo:
+                <
+                select value = { scheduleDevice }
+            onChange = { e => setScheduleDevice(e.target.value) }
+            required style = {
+                    { marginLeft: 8 }
+                } >
+                <
+                option value = "" > Selecione < /option> <
+            option value = "sala" > Sonoff Sala < /option> <
+            option value = "camera" > Sonoff Câmera < /option> <
+            option value = "ambos" > Ambos < /option> < /
+            select > <
+                /label> <
+            label >
+                Dia da semana:
+                <
+                select value = { scheduleDay }
+            onChange = { e => setScheduleDay(e.target.value) }
+            required style = {
+                    { marginLeft: 8 }
+                } >
+                <
+                option value = "" > Selecione < /option> <
+            option value = "todos" > Todos os dias < /option> <
+            option value = "domingo" > Domingo < /option> <
+            option value = "segunda" > Segunda - feira < /option> <
+            option value = "terca" > Terça - feira < /option> <
+            option value = "quarta" > Quarta - feira < /option> <
+            option value = "quinta" > Quinta - feira < /option> <
+            option value = "sexta" > Sexta - feira < /option> <
+            option value = "sabado" > Sábado < /option> < /
+            select > <
+                /label> <
+            label >
+                Horário:
+                <
+                input type = "time"
+            value = { scheduleTime }
+            onChange = { e => setScheduleTime(e.target.value) }
+            required style = {
+                { marginLeft: 8 }
+            }
+            /> < /
+            label > <
+                label style = {
+                    { display: 'flex', alignItems: 'center', gap: 8 }
+                } >
+                <
+                input type = "checkbox"
+            checked = { scheduleRepeat }
+            onChange = { e => setScheduleRepeat(e.target.checked) }
+            />
+            Repetir agendamento
+                <
+                /label> <
+            button type = "submit"
+            style = {
+                { marginTop: 8, background: '#1976d2', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 0', fontWeight: 600, cursor: 'pointer' }
+            } > Agendar < /button> {
+            scheduleMessage && < span style = {
+                { color: scheduleMessageColor, fontSize: 14 }
+            } > { scheduleMessage } < /span>} < /
+            form > <
+                /div> /
+            div >
         )
     }
 
