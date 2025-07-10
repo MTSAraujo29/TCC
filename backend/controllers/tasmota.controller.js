@@ -294,6 +294,8 @@ async function schedulePowerOff(req, res) {
     const { devices, days, repeat, time } = req.body;
     const userId = req.user.userId;
 
+    console.log('[schedulePowerOff] Payload recebido:', { devices, days, repeat, time });
+
     // Validação dos dados recebidos
     if (!devices || devices.length === 0) {
         return res.status(400).json({ message: 'Pelo menos um dispositivo deve ser selecionado.' });
@@ -321,6 +323,8 @@ async function schedulePowerOff(req, res) {
                 }
             }
         });
+
+        console.log('[schedulePowerOff] Dispositivos encontrados:', userDevices.map(d => ({ name: d.name, tasmotaTopic: d.tasmotaTopic })));
 
         if (userDevices.length === 0) {
             return res.status(404).json({ message: 'Nenhum dispositivo encontrado para os tópicos selecionados.' });
