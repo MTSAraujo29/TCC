@@ -1,6 +1,6 @@
 // backend/services/energyTotalManager.js
 
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 // ==============================================
@@ -12,9 +12,9 @@ const prisma = new PrismaClient();
  * @returns {boolean}
  */
 function isLastDayOfMonth() {
-    const today = new Date();
-    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    return today.getDate() === lastDay.getDate();
+  const today = new Date();
+  const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  return today.getDate() === lastDay.getDate();
 }
 
 /**
@@ -22,9 +22,9 @@ function isLastDayOfMonth() {
  * @returns {boolean}
  */
 function isPenultimateDayOfMonth() {
-    const today = new Date();
-    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    return today.getDate() === (lastDay.getDate() - 1);
+  const today = new Date();
+  const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  return today.getDate() === lastDay.getDate() - 1;
 }
 
 /**
@@ -32,13 +32,13 @@ function isPenultimateDayOfMonth() {
  * @returns {boolean}
  */
 function isLastMinuteOfMonth() {
-    const now = new Date();
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    return (
-        now.getDate() === lastDay.getDate() &&
-        now.getHours() === 23 &&
-        now.getMinutes() === 59
-    );
+  const now = new Date();
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  return (
+    now.getDate() === lastDay.getDate() &&
+    now.getHours() === 23 &&
+    now.getMinutes() === 59
+  );
 }
 
 /**
@@ -48,18 +48,20 @@ function isLastMinuteOfMonth() {
  * @returns {number} Consumo mensal calculado
  */
 function calculateMonthlyConsumption(currentTotalEnergy, lastSavedTotalEnergy) {
-    if (!lastSavedTotalEnergy || lastSavedTotalEnergy === 0) {
-        return currentTotalEnergy;
-    }
+  if (!lastSavedTotalEnergy || lastSavedTotalEnergy === 0) {
+    return currentTotalEnergy;
+  }
 
-    const monthlyConsumption = currentTotalEnergy - lastSavedTotalEnergy;
+  const monthlyConsumption = currentTotalEnergy - lastSavedTotalEnergy;
 
-    if (monthlyConsumption < 0) {
-        console.log(`Valor negativo detectado: ${monthlyConsumption}. Possível reset do Tasmota. Retornando valor atual: ${currentTotalEnergy}`);
-        return currentTotalEnergy;
-    }
+  if (monthlyConsumption < 0) {
+    console.log(
+      `Valor negativo detectado: ${monthlyConsumption}. Possível reset do Tasmota. Retornando valor atual: ${currentTotalEnergy}`
+    );
+    return currentTotalEnergy;
+  }
 
-    return monthlyConsumption;
+  return monthlyConsumption;
 }
 
 // ==============================================
@@ -74,25 +76,34 @@ function calculateMonthlyConsumption(currentTotalEnergy, lastSavedTotalEnergy) {
  * @returns {Object} Dados processados para salvar no banco
  */
 async function processEnergyData(energyData, deviceId, tasmotaTopic) {
-    const device = await getDevice(deviceId);
-    const dataToSave = prepareBaseData(energyData, deviceId, energyData.timestamp);
+  const device = await getDevice(deviceId);
+  const dataToSave = prepareBaseData(
+    energyData,
+    deviceId,
+    energyData.timestamp
+  );
 
-    // Só salva totalEnergy no último minuto do último dia do mês
-    if (isLastMinuteOfMonth()) {
-        const lastMonthTotal = device.lastSavedTotalEnergy || 0;
-        const monthlyConsumption = calculateMonthlyConsumption(energyData.totalEnergy, lastMonthTotal);
-        dataToSave.totalEnergy = monthlyConsumption;
-        await prisma.device.update({
-            where: { id: deviceId },
-            data: { lastSavedTotalEnergy: energyData.totalEnergy }
-        });
-        console.log(`[${tasmotaTopic}] Último minuto do mês - Consumo mensal calculado: ${monthlyConsumption} kWh (Total acumulado: ${energyData.totalEnergy} kWh)`);
-    } else {
-        dataToSave.totalEnergy = null;
-    }
+  // Só salva totalEnergy no último minuto do último dia do mês
+  if (isLastMinuteOfMonth()) {
+    const lastMonthTotal = device.lastSavedTotalEnergy || 0;
+    const monthlyConsumption = calculateMonthlyConsumption(
+      energyData.totalEnergy,
+      lastMonthTotal
+    );
+    dataToSave.totalEnergy = monthlyConsumption;
+    await prisma.device.update({
+      where: { id: deviceId },
+      data: { lastSavedTotalEnergy: energyData.totalEnergy },
+    });
+    console.log(
+      `[${tasmotaTopic}] Último minuto do mês - Consumo mensal calculado: ${monthlyConsumption} kWh (Total acumulado: ${energyData.totalEnergy} kWh)`
+    );
+  } else {
+    dataToSave.totalEnergy = null;
+  }
 
-    // Sempre retorna o objeto completo para ser salvo no banco
-    return dataToSave;
+  // Sempre retorna o objeto completo para ser salvo no banco
+  return dataToSave;
 }
 
 // ==============================================
@@ -100,38 +111,44 @@ async function processEnergyData(energyData, deviceId, tasmotaTopic) {
 // ==============================================
 
 async function getDevice(deviceId) {
-    const device = await prisma.device.findUnique({
-        where: { id: deviceId }
-    });
+  const device = await prisma.device.findUnique({
+    where: { id: deviceId },
+  });
 
-    if (!device) {
-        throw new Error(`Dispositivo não encontrado: ${deviceId}`);
-    }
-    return device;
+  if (!device) {
+    throw new Error(`Dispositivo não encontrado: ${deviceId}`);
+  }
+  return device;
 }
 
 function prepareBaseData(energyData, deviceId, timestamp) {
-    // Converte o timestamp para o horário de Brasília (America/Sao_Paulo)
-    let dateBrasilia;
-    if (timestamp) {
-        // Se já veio um timestamp, converte para string local e cria novo Date
-        dateBrasilia = new Date(new Date(timestamp).toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
-    } else {
-        // Se não veio, pega o momento atual em Brasília
-        dateBrasilia = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
-    }
-    return {
-        deviceId,
-        timestamp: dateBrasilia,
-        power: energyData.power,
-        voltage: energyData.voltage,
-        current: energyData.current,
-        EnergyToday: energyData.EnergyToday,
-        EnergyYesterday: energyData.EnergyYesterday,
-        ApparentPower: energyData.ApparentPower,
-        ReactivePower: energyData.ReactivePower,
-        PowerFactor: energyData.PowerFactor,
-    };
+  // Converte o timestamp para o horário de Brasília (America/Sao_Paulo)
+  let dateBrasilia;
+  if (timestamp) {
+    // Se já veio um timestamp, converte para string local e cria novo Date
+    dateBrasilia = new Date(
+      new Date(timestamp).toLocaleString("en-US", {
+        timeZone: "America/Sao_Paulo",
+      })
+    );
+  } else {
+    // Se não veio, pega o momento atual em Brasília
+    dateBrasilia = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
+    );
+  }
+  return {
+    deviceId,
+    timestamp: dateBrasilia,
+    power: energyData.power,
+    voltage: energyData.voltage,
+    current: energyData.current,
+    EnergyToday: energyData.EnergyToday,
+    EnergyYesterday: energyData.EnergyYesterday,
+    ApparentPower: energyData.ApparentPower,
+    ReactivePower: energyData.ReactivePower,
+    PowerFactor: energyData.PowerFactor,
+  };
 }
 
 // ==============================================
@@ -144,28 +161,28 @@ function prepareBaseData(energyData, deviceId, timestamp) {
  * @returns {Promise<number|null>} Valor atual de energia total ou null se não disponível
  */
 async function getCurrentTotalEnergyForDisplay(deviceId) {
-    try {
-        const lastReadingWithTotal = await prisma.energyReading.findFirst({
-            where: {
-                deviceId,
-                totalEnergy: { not: null }
-            },
-            orderBy: { timestamp: 'desc' }
-        });
+  try {
+    const lastReadingWithTotal = await prisma.energyReading.findFirst({
+      where: {
+        deviceId,
+        totalEnergy: { not: null },
+      },
+      orderBy: { timestamp: "desc" },
+    });
 
-        if (lastReadingWithTotal) {
-            return lastReadingWithTotal.totalEnergy;
-        }
-
-        const device = await prisma.device.findUnique({
-            where: { id: deviceId }
-        });
-
-        return device && device.lastSavedTotalEnergy || null;
-    } catch (error) {
-        console.error('Erro ao obter energia total para exibição:', error);
-        return null;
+    if (lastReadingWithTotal) {
+      return lastReadingWithTotal.totalEnergy;
     }
+
+    const device = await prisma.device.findUnique({
+      where: { id: deviceId },
+    });
+
+    return (device && device.lastSavedTotalEnergy) || null;
+  } catch (error) {
+    console.error("Erro ao obter energia total para exibição:", error);
+    return null;
+  }
 }
 
 /**
@@ -174,16 +191,16 @@ async function getCurrentTotalEnergyForDisplay(deviceId) {
  * @returns {Promise<number|null>} Valor acumulado atual do Tasmota
  */
 async function getAccumulatedTotalEnergy(deviceId) {
-    try {
-        const device = await prisma.device.findUnique({
-            where: { id: deviceId }
-        });
+  try {
+    const device = await prisma.device.findUnique({
+      where: { id: deviceId },
+    });
 
-        return device && device.lastSavedTotalEnergy || null;
-    } catch (error) {
-        console.error('Erro ao obter energia total acumulada:', error);
-        return null;
-    }
+    return (device && device.lastSavedTotalEnergy) || null;
+  } catch (error) {
+    console.error("Erro ao obter energia total acumulada:", error);
+    return null;
+  }
 }
 
 // ==============================================
@@ -191,11 +208,11 @@ async function getAccumulatedTotalEnergy(deviceId) {
 // ==============================================
 
 module.exports = {
-    isLastDayOfMonth,
-    isPenultimateDayOfMonth,
-    isLastMinuteOfMonth,
-    calculateMonthlyConsumption,
-    processEnergyData,
-    getCurrentTotalEnergyForDisplay,
-    getAccumulatedTotalEnergy
+  isLastDayOfMonth,
+  isPenultimateDayOfMonth,
+  isLastMinuteOfMonth,
+  calculateMonthlyConsumption,
+  processEnergyData,
+  getCurrentTotalEnergyForDisplay,
+  getAccumulatedTotalEnergy,
 };
