@@ -326,22 +326,39 @@ async function schedulePowerOff(req, res) {
             return res.status(404).json({ message: 'Nenhum dispositivo encontrado para os tópicos selecionados.' });
         }
 
-        // Converter dias da semana para formato do Tasmota (0=Domingo, 1=Segunda, etc.)
-        const weekDays = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-        const tasmotaDays = days.map(dayIndex => weekDays[dayIndex]);
+        // Converter dias da semana para formato do Tasmota
+        // Tasmota usa: 0=Domingo, 1=Segunda, 2=Terça, 3=Quarta, 4=Quinta, 5=Sexta, 6=Sábado
+        // Frontend envia: 0=Domingo, 1=Segunda, 2=Terça, 3=Quarta, 4=Quinta, 5=Sexta, 6=Sábado
+        // A ordem é a mesma, mas vamos garantir que a conversão esteja correta
+
+        let tasmotaDaysMask = 0;
+        if (repeat) {
+            tasmotaDaysMask = 127; // Todos os dias (1111111 em binário)
+            console.log('[schedulePowerOff] Repetir todos os dias - Máscara:', tasmotaDaysMask);
+        } else {
+            // Converter cada dia selecionado para a máscara do Tasmota
+            console.log('[schedulePowerOff] Dias selecionados:', days);
+            days.forEach(dayIndex => {
+                // dayIndex já está na ordem correta (0=Domingo, 4=Quinta, etc.)
+                const bitMask = (1 << dayIndex);
+                tasmotaDaysMask |= bitMask;
+                console.log(`[schedulePowerOff] Dia ${dayIndex} -> bit ${bitMask} -> máscara atual: ${tasmotaDaysMask}`);
+            });
+        }
+
+        console.log('[schedulePowerOff] Máscara final dos dias:', tasmotaDaysMask, '(', tasmotaDaysMask.toString(2), 'em binário)');
 
         // Para cada dispositivo, enviar comando de agendamento
         const results = [];
         for (const device of userDevices) {
             try {
                 // Construir comando Timer do Tasmota
-                // Formato: {"Enable":1,"Mode":0,"Time":"23:59","Window":0,"Days":127,"Repeat":1,"Output":1,"Action":0}
                 const timerCommand = {
                     Enable: 1,
                     Mode: 0, // Timer
                     Time: time,
                     Window: 0,
-                    Days: repeat ? 127 : days.reduce((acc, day) => acc | (1 << day), 0), // 127 = todos os dias, ou máscara específica
+                    Days: tasmotaDaysMask, // Usar a máscara calculada corretamente
                     Repeat: repeat ? 1 : 0,
                     Output: 1,
                     Action: 0 // 0 = OFF, 1 = ON
