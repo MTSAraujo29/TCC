@@ -7,7 +7,7 @@ const axios = require("axios");
 
 async function enviarAlertaWhatsapp(numero, dispositivo, status) {
   try {
-    await axios.post("https://mts29.app.n8n.cloud/webhook-test/sonoff-alerta", {
+    await axios.post("https://mts29.app.n8n.cloud/webhook/sonoff-alerta", {
       number: numero,
       device: dispositivo,
       status: status,
@@ -33,12 +33,10 @@ async function getDevice(req, res, next) {
     });
 
     if (!device) {
-      return res
-        .status(404)
-        .json({
-          message:
-            "Dispositivo não encontrado ou você não tem permissão para acessá-lo.",
-        });
+      return res.status(404).json({
+        message:
+          "Dispositivo não encontrado ou você não tem permissão para acessá-lo.",
+      });
     }
     req.device = device; // Adiciona o dispositivo ao objeto de requisição para uso posterior
     next();
@@ -70,18 +68,14 @@ async function addDevice(req, res) {
 
     if (existingDeviceByTopic) {
       if (existingDeviceByTopic.userId === userId) {
-        return res
-          .status(409)
-          .json({
-            message: "Este tópico Tasmota já está registrado para você.",
-          });
+        return res.status(409).json({
+          message: "Este tópico Tasmota já está registrado para você.",
+        });
       } else {
-        return res
-          .status(409)
-          .json({
-            message:
-              "Este tópico Tasmota já está em uso por outro usuário. Verifique o tópico do seu dispositivo.",
-          });
+        return res.status(409).json({
+          message:
+            "Este tópico Tasmota já está em uso por outro usuário. Verifique o tópico do seu dispositivo.",
+        });
       }
     }
 
@@ -98,12 +92,10 @@ async function addDevice(req, res) {
         broker, // Salva o broker
       },
     });
-    res
-      .status(201)
-      .json({
-        message: "Dispositivo adicionado com sucesso!",
-        device: newDevice,
-      });
+    res.status(201).json({
+      message: "Dispositivo adicionado com sucesso!",
+      device: newDevice,
+    });
   } catch (error) {
     console.error("Erro ao adicionar dispositivo:", error);
     res
@@ -232,11 +224,9 @@ async function getDeviceDetails(req, res) {
     );
   } catch (error) {
     console.error("Erro ao obter detalhes do dispositivo:", error);
-    res
-      .status(500)
-      .json({
-        message: "Erro interno do servidor ao obter detalhes do dispositivo.",
-      });
+    res.status(500).json({
+      message: "Erro interno do servidor ao obter detalhes do dispositivo.",
+    });
   }
 }
 
@@ -254,12 +244,9 @@ async function getLatestEnergyReading(req, res) {
     });
 
     if (!reading) {
-      return res
-        .status(404)
-        .json({
-          message:
-            "Nenhuma leitura de energia encontrada para este dispositivo.",
-        });
+      return res.status(404).json({
+        message: "Nenhuma leitura de energia encontrada para este dispositivo.",
+      });
     }
 
     // NOVO: Obter o valor atual de energia total para exibição
@@ -278,12 +265,9 @@ async function getLatestEnergyReading(req, res) {
     );
   } catch (error) {
     console.error("Erro ao obter última leitura de energia:", error);
-    res
-      .status(500)
-      .json({
-        message:
-          "Erro interno do servidor ao obter a última leitura de energia.",
-      });
+    res.status(500).json({
+      message: "Erro interno do servidor ao obter a última leitura de energia.",
+    });
   }
 }
 
@@ -312,11 +296,9 @@ async function getHistoricalEnergyReadings(req, res) {
     res.json(readings);
   } catch (error) {
     console.error("Erro ao obter leituras históricas de energia:", error);
-    res
-      .status(500)
-      .json({
-        message: "Erro interno do servidor ao obter leituras históricas.",
-      });
+    res.status(500).json({
+      message: "Erro interno do servidor ao obter leituras históricas.",
+    });
   }
 }
 
@@ -370,12 +352,10 @@ async function toggleDevicePower(req, res) {
       "[toggleDevicePower] Erro ao alternar energia do dispositivo:",
       error
     );
-    res
-      .status(500)
-      .json({
-        message: "Erro interno do servidor ao alternar energia do dispositivo.",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Erro interno do servidor ao alternar energia do dispositivo.",
+      error: error.message,
+    });
   }
 }
 
@@ -451,12 +431,9 @@ async function schedulePowerOff(req, res) {
     });
 
     if (userDevices.length === 0) {
-      return res
-        .status(404)
-        .json({
-          message:
-            "Nenhum dispositivo encontrado para os tópicos selecionados.",
-        });
+      return res.status(404).json({
+        message: "Nenhum dispositivo encontrado para os tópicos selecionados.",
+      });
     }
 
     // Converter dias da semana para formato do Tasmota
@@ -507,26 +484,20 @@ async function schedulePowerOff(req, res) {
     }
     const successfulResults = results.filter((r) => r.status === "success");
     if (successfulResults.length === 0) {
-      return res
-        .status(500)
-        .json({
-          message: "Erro ao configurar agendamentos.",
-          details: results,
-        });
-    }
-    res
-      .status(200)
-      .json({
-        message: "Agendamento configurado com sucesso!",
+      return res.status(500).json({
+        message: "Erro ao configurar agendamentos.",
         details: results,
       });
+    }
+    res.status(200).json({
+      message: "Agendamento configurado com sucesso!",
+      details: results,
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "Erro interno do servidor ao configurar agendamento.",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Erro interno do servidor ao configurar agendamento.",
+      error: error.message,
+    });
   }
 }
 
