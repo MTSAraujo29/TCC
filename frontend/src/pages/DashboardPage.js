@@ -2147,6 +2147,11 @@ function DashboardPage() {
               <p>
                 <strong> Email: </strong> {userEmail}{" "}
               </p>{" "}
+              <p>
+                <button className="edit-profile-button" onClick={openEditModal}>
+                  Editar Perfil
+                </button>
+              </p>
               <p className="settings-note">
                 * Após editar ou excluir a conta, será necessário fazer login
                 novamente.{" "}
@@ -2264,11 +2269,6 @@ function DashboardPage() {
                 </p>
               )}{" "}
             </div>{" "}
-            <p>
-              <button className="edit-profile-button" onClick={openEditModal}>
-                Editar Perfil
-              </button>
-            </p>
           </div>
         )}{" "}
       </div>{" "}
