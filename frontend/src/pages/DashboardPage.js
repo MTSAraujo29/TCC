@@ -607,7 +607,6 @@ function DashboardPage() {
         } else {
           setDailyConsumption("0.00 kWh");
         }
-
       } else if (response.status === 401 || response.status === 403) {
         setSessionExpired(true);
         localStorage.removeItem("token");
@@ -904,8 +903,6 @@ function DashboardPage() {
       ? device.latestReading.totalEnergy
       : 0;
   }
-
-
 
   // [NOVO] Estado para controlar a seção EcoBot
   const [chatMessages, setChatMessages] = useState([
@@ -2267,6 +2264,11 @@ function DashboardPage() {
                 </p>
               )}{" "}
             </div>{" "}
+            <p>
+              <button className="edit-profile-button" onClick={openEditModal}>
+                Editar Perfil
+              </button>
+            </p>
           </div>
         )}{" "}
       </div>{" "}
