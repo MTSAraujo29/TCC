@@ -1161,8 +1161,6 @@ function DashboardPage() {
   }, [fetchSchedules]);
 
   // Adicione estados para múltiplos agendamentos (um para cada timer)
-  const initialTimers = [1, 2, 3, 4];
-  const [selectedTimer, setSelectedTimer] = useState(1);
   const initialTimerForms = [1, 2, 3, 4].map(() => ({
     selectedDevices: [],
     selectedDays: [],
@@ -1176,6 +1174,18 @@ function DashboardPage() {
     loading: false,
   }));
   const [timerForms, setTimerForms] = useState(initialTimerForms);
+  const [selectedTimer, setSelectedTimer] = useState(1);
+
+  // Garante que selectedTimer esteja sempre entre 1 e 4
+  const safeSelectedTimer = Math.max(1, Math.min(4, selectedTimer));
+
+  // Garante que devices e weekDays sempre sejam arrays válidos
+  const safeDevices = Array.isArray(devices) ? devices : [];
+  const safeWeekDays =
+    Array.isArray(weekDays) && weekDays.length === 7
+      ? weekDays
+      : ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+
   const updateTimerForm = (idx, changes) => {
     setTimerForms((prev) =>
       prev.map((form, i) => (i === idx ? { ...form, ...changes } : form))
@@ -1848,7 +1858,7 @@ function DashboardPage() {
                       style={{ width: "100%" }}
                     >
                       {" "}
-                      {`Timer ${selectedTimer}`}{" "}
+                      {`Timer ${safeSelectedTimer}`}{" "}
                       <span style={{ marginLeft: 8, fontSize: 13 }}> ▼ </span>{" "}
                     </button>{" "}
                     <div
@@ -1865,7 +1875,7 @@ function DashboardPage() {
                           key={timer}
                           type="button"
                           className={`menu-box-option${
-                            selectedTimer === timer ? " selected" : ""
+                            safeSelectedTimer === timer ? " selected" : ""
                           }`}
                           onClick={() => setSelectedTimer(timer)}
                         >
@@ -1885,7 +1895,7 @@ function DashboardPage() {
                     gap: 14,
                     width: "100%",
                   }}
-                  onSubmit={handleTimerSubmit(selectedTimer - 1)}
+                  onSubmit={handleTimerSubmit(safeSelectedTimer - 1)}
                 >
                   {" "}
                   {/* Dropdown de dispositivos */}{" "}
@@ -1904,7 +1914,7 @@ function DashboardPage() {
                     </label>{" "}
                     <div
                       className={`menu-box-dropdown${
-                        timerForms[selectedTimer - 1].deviceDropdownOpen
+                        timerForms[safeSelectedTimer - 1].deviceDropdownOpen
                           ? " open"
                           : ""
                       }`}
@@ -1913,26 +1923,27 @@ function DashboardPage() {
                       <button
                         type="button"
                         className={`menu-box-dropdown-btn${
-                          timerForms[selectedTimer - 1].selectedDevices.length >
-                          0
+                          timerForms[safeSelectedTimer - 1].selectedDevices
+                            .length > 0
                             ? " selected"
                             : ""
                         }`}
                         onClick={() =>
-                          updateTimerForm(selectedTimer - 1, {
+                          updateTimerForm(safeSelectedTimer - 1, {
                             deviceDropdownOpen:
-                              !timerForms[selectedTimer - 1].deviceDropdownOpen,
+                              !timerForms[safeSelectedTimer - 1]
+                                .deviceDropdownOpen,
                           })
                         }
                       >
                         {" "}
-                        {timerForms[selectedTimer - 1].selectedDevices
+                        {timerForms[safeSelectedTimer - 1].selectedDevices
                           .length === 0
                           ? "Selecionar dispositivo(s)"
-                          : timerForms[selectedTimer - 1].selectedDevices
-                              .length === devices.length
+                          : timerForms[safeSelectedTimer - 1].selectedDevices
+                              .length === safeDevices.length
                           ? "Todos"
-                          : timerForms[selectedTimer - 1].selectedDevices
+                          : timerForms[safeSelectedTimer - 1].selectedDevices
                               .map(
                                 (dev) =>
                                   dev.charAt(0).toUpperCase() + dev.slice(1)
@@ -1944,39 +1955,39 @@ function DashboardPage() {
                         <button
                           type="button"
                           className={`menu-box-option${
-                            timerForms[selectedTimer - 1].selectedDevices
-                              .length === devices.length
+                            timerForms[safeSelectedTimer - 1].selectedDevices
+                              .length === safeDevices.length
                               ? " selected"
                               : ""
                           }`}
                           onClick={() => {
                             if (
-                              timerForms[selectedTimer - 1].selectedDevices
-                                .length === devices.length
+                              timerForms[safeSelectedTimer - 1].selectedDevices
+                                .length === safeDevices.length
                             )
-                              updateTimerForm(selectedTimer - 1, {
+                              updateTimerForm(safeSelectedTimer - 1, {
                                 selectedDevices: [],
                               });
                             else
-                              updateTimerForm(selectedTimer - 1, {
-                                selectedDevices: devices.map((d) =>
+                              updateTimerForm(safeSelectedTimer - 1, {
+                                selectedDevices: safeDevices.map((d) =>
                                   d.name.toLowerCase()
                                 ),
                               });
-                            updateTimerForm(selectedTimer - 1, {
+                            updateTimerForm(safeSelectedTimer - 1, {
                               deviceDropdownOpen: true,
                             });
                           }}
                         >
                           Todos{" "}
                         </button>{" "}
-                        {devices.map((device) => (
+                        {safeDevices.map((device) => (
                           <button
                             key={device.name}
                             type="button"
                             className={`menu-box-option${
                               timerForms[
-                                selectedTimer - 1
+                                safeSelectedTimer - 1
                               ].selectedDevices.includes(
                                 device.name.toLowerCase()
                               )
@@ -1985,24 +1996,24 @@ function DashboardPage() {
                             }`}
                             onClick={() => {
                               const already = timerForms[
-                                selectedTimer - 1
+                                safeSelectedTimer - 1
                               ].selectedDevices.includes(
                                 device.name.toLowerCase()
                               );
-                              updateTimerForm(selectedTimer - 1, {
+                              updateTimerForm(safeSelectedTimer - 1, {
                                 selectedDevices: already
                                   ? timerForms[
-                                      selectedTimer - 1
+                                      safeSelectedTimer - 1
                                     ].selectedDevices.filter(
                                       (d) => d !== device.name.toLowerCase()
                                     )
                                   : [
-                                      ...timerForms[selectedTimer - 1]
+                                      ...timerForms[safeSelectedTimer - 1]
                                         .selectedDevices,
                                       device.name.toLowerCase(),
                                     ],
                               });
-                              updateTimerForm(selectedTimer - 1, {
+                              updateTimerForm(safeSelectedTimer - 1, {
                                 deviceDropdownOpen: true,
                               });
                             }}
@@ -2030,7 +2041,7 @@ function DashboardPage() {
                     </label>{" "}
                     <div
                       className={`menu-box-dropdown${
-                        timerForms[selectedTimer - 1].dropdownOpen
+                        timerForms[safeSelectedTimer - 1].dropdownOpen
                           ? " open"
                           : ""
                       }`}
@@ -2039,25 +2050,27 @@ function DashboardPage() {
                       <button
                         type="button"
                         className={`menu-box-dropdown-btn${
-                          timerForms[selectedTimer - 1].selectedDays.length > 0
+                          timerForms[safeSelectedTimer - 1].selectedDays
+                            .length > 0
                             ? " selected"
                             : ""
                         }`}
                         onClick={() =>
-                          updateTimerForm(selectedTimer - 1, {
+                          updateTimerForm(safeSelectedTimer - 1, {
                             dropdownOpen:
-                              !timerForms[selectedTimer - 1].dropdownOpen,
+                              !timerForms[safeSelectedTimer - 1].dropdownOpen,
                           })
                         }
                       >
                         {" "}
-                        {timerForms[selectedTimer - 1].selectedDays.length === 0
+                        {timerForms[safeSelectedTimer - 1].selectedDays
+                          .length === 0
                           ? "Selecionar dias"
-                          : timerForms[selectedTimer - 1].selectedDays
+                          : timerForms[safeSelectedTimer - 1].selectedDays
                               .length === 7
                           ? "Todos os dias"
-                          : timerForms[selectedTimer - 1].selectedDays
-                              .map((i) => weekDays[i])
+                          : timerForms[safeSelectedTimer - 1].selectedDays
+                              .map((i) => safeWeekDays[i])
                               .join(", ")}{" "}
                         <span style={{ marginLeft: 8, fontSize: 13 }}> ▼ </span>{" "}
                       </button>{" "}
@@ -2065,40 +2078,40 @@ function DashboardPage() {
                         <button
                           type="button"
                           className={`menu-box-option${
-                            timerForms[selectedTimer - 1].selectedDays
+                            timerForms[safeSelectedTimer - 1].selectedDays
                               .length === 7
                               ? " selected"
                               : ""
                           }`}
                           onClick={() => {
                             if (
-                              timerForms[selectedTimer - 1].selectedDays
+                              timerForms[safeSelectedTimer - 1].selectedDays
                                 .length === 7
                             ) {
-                              updateTimerForm(selectedTimer - 1, {
+                              updateTimerForm(safeSelectedTimer - 1, {
                                 selectedDays: [],
                                 allDaysSelected: false,
                               });
                             } else {
-                              updateTimerForm(selectedTimer - 1, {
+                              updateTimerForm(safeSelectedTimer - 1, {
                                 selectedDays: [0, 1, 2, 3, 4, 5, 6],
                                 allDaysSelected: true,
                               });
                             }
-                            updateTimerForm(selectedTimer - 1, {
+                            updateTimerForm(safeSelectedTimer - 1, {
                               dropdownOpen: true,
                             });
                           }}
                         >
                           Todos os dias{" "}
                         </button>{" "}
-                        {weekDays.map((day, i) => (
+                        {safeWeekDays.map((day, i) => (
                           <button
                             key={day}
                             type="button"
                             className={`menu-box-option${
                               timerForms[
-                                selectedTimer - 1
+                                safeSelectedTimer - 1
                               ].selectedDays.includes(i)
                                 ? " selected"
                                 : ""
@@ -2106,21 +2119,21 @@ function DashboardPage() {
                             onClick={() => {
                               const already =
                                 timerForms[
-                                  selectedTimer - 1
+                                  safeSelectedTimer - 1
                                 ].selectedDays.includes(i);
-                              updateTimerForm(selectedTimer - 1, {
+                              updateTimerForm(safeSelectedTimer - 1, {
                                 selectedDays: already
                                   ? timerForms[
-                                      selectedTimer - 1
+                                      safeSelectedTimer - 1
                                     ].selectedDays.filter((d) => d !== i)
                                   : [
-                                      ...timerForms[selectedTimer - 1]
+                                      ...timerForms[safeSelectedTimer - 1]
                                         .selectedDays,
                                       i,
                                     ],
                                 allDaysSelected: false,
                               });
-                              updateTimerForm(selectedTimer - 1, {
+                              updateTimerForm(safeSelectedTimer - 1, {
                                 dropdownOpen: true,
                               });
                             }}
@@ -2143,11 +2156,13 @@ function DashboardPage() {
                     <button
                       type="button"
                       className={`menu-box-option${
-                        timerForms[selectedTimer - 1].repeat ? " selected" : ""
+                        timerForms[safeSelectedTimer - 1].repeat
+                          ? " selected"
+                          : ""
                       }`}
                       onClick={() =>
-                        updateTimerForm(selectedTimer - 1, {
-                          repeat: !timerForms[selectedTimer - 1].repeat,
+                        updateTimerForm(safeSelectedTimer - 1, {
+                          repeat: !timerForms[safeSelectedTimer - 1].repeat,
                         })
                       }
                       style={{
@@ -2180,9 +2195,9 @@ function DashboardPage() {
                     </label>{" "}
                     <input
                       type="time"
-                      value={timerForms[selectedTimer - 1].time}
+                      value={timerForms[safeSelectedTimer - 1].time}
                       onChange={(e) =>
-                        updateTimerForm(selectedTimer - 1, {
+                        updateTimerForm(safeSelectedTimer - 1, {
                           time: e.target.value,
                         })
                       }
@@ -2203,24 +2218,25 @@ function DashboardPage() {
                       padding: "10px 0",
                       width: "70%",
                     }}
-                    disabled={timerForms[selectedTimer - 1].loading}
+                    disabled={timerForms[safeSelectedTimer - 1].loading}
                   >
                     {" "}
-                    {timerForms[selectedTimer - 1].loading
+                    {timerForms[safeSelectedTimer - 1].loading
                       ? "Agendando..."
                       : "Agendar"}{" "}
                   </button>{" "}
-                  {timerForms[selectedTimer - 1].scheduleMessage && (
+                  {timerForms[safeSelectedTimer - 1].scheduleMessage && (
                     <p
                       style={{
                         color:
-                          timerForms[selectedTimer - 1].scheduleMessageColor,
+                          timerForms[safeSelectedTimer - 1]
+                            .scheduleMessageColor,
                         marginTop: 8,
                         textAlign: "center",
                       }}
                     >
                       {" "}
-                      {timerForms[selectedTimer - 1].scheduleMessage}{" "}
+                      {timerForms[safeSelectedTimer - 1].scheduleMessage}{" "}
                     </p>
                   )}{" "}
                 </form>{" "}
@@ -2273,7 +2289,9 @@ function DashboardPage() {
                         <strong> Dias: </strong>{" "}
                         {sch.days.length === 7
                           ? "Todos"
-                          : sch.days.map((i) => weekDays[i]).join(", ")}{" "}
+                          : sch.days
+                              .map((i) => safeWeekDays[i])
+                              .join(", ")}{" "}
                         <br />
                         <strong> Repetir: </strong> {sch.repeat ? "Sim" : "Não"}{" "}
                         <br />
@@ -2309,223 +2327,233 @@ function DashboardPage() {
                 {report.summary.overallMessage}{" "}
               </p>{" "}
             </div>
-            {isRealData && devices.length > 0 && devices[0].latestReading && (
-              <div className="energy-realtime-card">
-                <h3> Dados em Tempo Real do Dispositivo Sonoff Sala </h3>{" "}
-                <table className="energy-realtime-table">
-                  <tbody className="energy-realtime-tbody">
-                    <tr>
-                      <td> Tensão </td>{" "}
-                      <td>
-                        {" "}
-                        {devices[0].powerState &&
-                        typeof devices[0].latestReading.voltage === "number"
-                          ? devices[0].latestReading.voltage
-                          : 0}
-                        V{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                    <tr>
-                      <td> Corrente </td>{" "}
-                      <td>
-                        {" "}
-                        {devices[0].powerState &&
-                        typeof devices[0].latestReading.current === "number"
-                          ? devices[0].latestReading.current
-                          : 0}
-                        A{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                    <tr>
-                      <td> Potência Ativa </td>{" "}
-                      <td>
-                        {" "}
-                        {devices[0].powerState &&
-                        typeof devices[0].latestReading.power === "number"
-                          ? devices[0].latestReading.power
-                          : 0}
-                        W{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                    <tr>
-                      <td> Potência Aparente </td>{" "}
-                      <td>
-                        {" "}
-                        {devices[0].powerState &&
-                        typeof devices[0].latestReading.ApparentPower ===
+            {isRealData &&
+              safeDevices.length > 0 &&
+              safeDevices[0].latestReading && (
+                <div className="energy-realtime-card">
+                  <h3> Dados em Tempo Real do Dispositivo Sonoff Sala </h3>{" "}
+                  <table className="energy-realtime-table">
+                    <tbody className="energy-realtime-tbody">
+                      <tr>
+                        <td> Tensão </td>{" "}
+                        <td>
+                          {" "}
+                          {safeDevices[0].powerState &&
+                          typeof safeDevices[0].latestReading.voltage ===
+                            "number"
+                            ? safeDevices[0].latestReading.voltage
+                            : 0}
+                          V{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                      <tr>
+                        <td> Corrente </td>{" "}
+                        <td>
+                          {" "}
+                          {safeDevices[0].powerState &&
+                          typeof safeDevices[0].latestReading.current ===
+                            "number"
+                            ? safeDevices[0].latestReading.current
+                            : 0}
+                          A{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                      <tr>
+                        <td> Potência Ativa </td>{" "}
+                        <td>
+                          {" "}
+                          {safeDevices[0].powerState &&
+                          typeof safeDevices[0].latestReading.power === "number"
+                            ? safeDevices[0].latestReading.power
+                            : 0}
+                          W{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                      <tr>
+                        <td> Potência Aparente </td>{" "}
+                        <td>
+                          {" "}
+                          {safeDevices[0].powerState &&
+                          typeof safeDevices[0].latestReading.ApparentPower ===
+                            "number"
+                            ? safeDevices[0].latestReading.ApparentPower
+                            : 0}
+                          VA{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                      <tr>
+                        <td> Potência Reativa </td>{" "}
+                        <td>
+                          {" "}
+                          {safeDevices[0].powerState &&
+                          typeof safeDevices[0].latestReading.ReactivePower ===
+                            "number"
+                            ? safeDevices[0].latestReading.ReactivePower
+                            : 0}
+                          var{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                      <tr>
+                        <td> Fator de Potência </td>{" "}
+                        <td>
+                          {" "}
+                          {safeDevices[0].powerState &&
+                          typeof safeDevices[0].latestReading.PowerFactor ===
+                            "number"
+                            ? safeDevices[0].latestReading.PowerFactor
+                            : 0}{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                      <tr>
+                        <td> Energia Hoje </td>{" "}
+                        <td>
+                          {" "}
+                          {typeof safeDevices[0].latestReading.EnergyToday ===
                           "number"
-                          ? devices[0].latestReading.ApparentPower
-                          : 0}
-                        VA{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                    <tr>
-                      <td> Potência Reativa </td>{" "}
-                      <td>
-                        {" "}
-                        {devices[0].powerState &&
-                        typeof devices[0].latestReading.ReactivePower ===
+                            ? safeDevices[0].latestReading.EnergyToday
+                            : "--"}
+                          kWh{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                      <tr>
+                        <td> Energia Ontem </td>{" "}
+                        <td>
+                          {" "}
+                          {typeof safeDevices[0].latestReading
+                            .EnergyYesterday === "number"
+                            ? safeDevices[0].latestReading.EnergyYesterday
+                            : "--"}
+                          kWh{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                      <tr>
+                        <td> Energia Total </td>{" "}
+                        <td>
+                          {" "}
+                          {safeDevices[0].powerState
+                            ? liveTotalEnergyBroker1.toFixed(2) + " kWh"
+                            : "0.00 kWh"}{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                    </tbody>{" "}
+                  </table>{" "}
+                </div>
+              )}
+            {isRealData &&
+              safeDevices.length > 1 &&
+              safeDevices[1].latestReading && (
+                <div
+                  className="energy-realtime-card"
+                  style={{ marginTop: "32px" }}
+                >
+                  <h3> Dados em Tempo Real do Dispositivo Sonoff Câmera </h3>{" "}
+                  <table className="energy-realtime-table">
+                    <tbody className="energy-realtime-tbody">
+                      <tr>
+                        <td> Tensão </td>{" "}
+                        <td>
+                          {" "}
+                          {safeDevices[1].powerState &&
+                          typeof safeDevices[1].latestReading.voltage ===
+                            "number"
+                            ? safeDevices[1].latestReading.voltage
+                            : 0}
+                          V{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                      <tr>
+                        <td> Corrente </td>{" "}
+                        <td>
+                          {" "}
+                          {safeDevices[1].powerState &&
+                          typeof safeDevices[1].latestReading.current ===
+                            "number"
+                            ? safeDevices[1].latestReading.current
+                            : 0}
+                          A{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                      <tr>
+                        <td> Potência Ativa </td>{" "}
+                        <td>
+                          {" "}
+                          {safeDevices[1].powerState &&
+                          typeof safeDevices[1].latestReading.power === "number"
+                            ? safeDevices[1].latestReading.power
+                            : 0}
+                          W{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                      <tr>
+                        <td> Potência Aparente </td>{" "}
+                        <td>
+                          {" "}
+                          {safeDevices[1].powerState &&
+                          typeof safeDevices[1].latestReading.ApparentPower ===
+                            "number"
+                            ? safeDevices[1].latestReading.ApparentPower
+                            : 0}
+                          VA{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                      <tr>
+                        <td> Potência Reativa </td>{" "}
+                        <td>
+                          {" "}
+                          {safeDevices[1].powerState &&
+                          typeof safeDevices[1].latestReading.ReactivePower ===
+                            "number"
+                            ? safeDevices[1].latestReading.ReactivePower
+                            : 0}
+                          var{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                      <tr>
+                        <td> Fator de Potência </td>{" "}
+                        <td>
+                          {" "}
+                          {safeDevices[1].powerState &&
+                          typeof safeDevices[1].latestReading.PowerFactor ===
+                            "number"
+                            ? safeDevices[1].latestReading.PowerFactor
+                            : 0}{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                      <tr>
+                        <td> Energia Hoje </td>{" "}
+                        <td>
+                          {" "}
+                          {typeof safeDevices[1].latestReading.EnergyToday ===
                           "number"
-                          ? devices[0].latestReading.ReactivePower
-                          : 0}
-                        var{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                    <tr>
-                      <td> Fator de Potência </td>{" "}
-                      <td>
-                        {" "}
-                        {devices[0].powerState &&
-                        typeof devices[0].latestReading.PowerFactor === "number"
-                          ? devices[0].latestReading.PowerFactor
-                          : 0}{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                    <tr>
-                      <td> Energia Hoje </td>{" "}
-                      <td>
-                        {" "}
-                        {typeof devices[0].latestReading.EnergyToday ===
-                        "number"
-                          ? devices[0].latestReading.EnergyToday
-                          : "--"}
-                        kWh{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                    <tr>
-                      <td> Energia Ontem </td>{" "}
-                      <td>
-                        {" "}
-                        {typeof devices[0].latestReading.EnergyYesterday ===
-                        "number"
-                          ? devices[0].latestReading.EnergyYesterday
-                          : "--"}
-                        kWh{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                    <tr>
-                      <td> Energia Total </td>{" "}
-                      <td>
-                        {" "}
-                        {devices[0].powerState
-                          ? liveTotalEnergyBroker1.toFixed(2) + " kWh"
-                          : "0.00 kWh"}{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                  </tbody>{" "}
-                </table>{" "}
-              </div>
-            )}
-            {isRealData && devices.length > 1 && devices[1].latestReading && (
-              <div
-                className="energy-realtime-card"
-                style={{ marginTop: "32px" }}
-              >
-                <h3> Dados em Tempo Real do Dispositivo Sonoff Câmera </h3>{" "}
-                <table className="energy-realtime-table">
-                  <tbody className="energy-realtime-tbody">
-                    <tr>
-                      <td> Tensão </td>{" "}
-                      <td>
-                        {" "}
-                        {devices[1].powerState &&
-                        typeof devices[1].latestReading.voltage === "number"
-                          ? devices[1].latestReading.voltage
-                          : 0}
-                        V{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                    <tr>
-                      <td> Corrente </td>{" "}
-                      <td>
-                        {" "}
-                        {devices[1].powerState &&
-                        typeof devices[1].latestReading.current === "number"
-                          ? devices[1].latestReading.current
-                          : 0}
-                        A{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                    <tr>
-                      <td> Potência Ativa </td>{" "}
-                      <td>
-                        {" "}
-                        {devices[1].powerState &&
-                        typeof devices[1].latestReading.power === "number"
-                          ? devices[1].latestReading.power
-                          : 0}
-                        W{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                    <tr>
-                      <td> Potência Aparente </td>{" "}
-                      <td>
-                        {" "}
-                        {devices[1].powerState &&
-                        typeof devices[1].latestReading.ApparentPower ===
-                          "number"
-                          ? devices[1].latestReading.ApparentPower
-                          : 0}
-                        VA{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                    <tr>
-                      <td> Potência Reativa </td>{" "}
-                      <td>
-                        {" "}
-                        {devices[1].powerState &&
-                        typeof devices[1].latestReading.ReactivePower ===
-                          "number"
-                          ? devices[1].latestReading.ReactivePower
-                          : 0}
-                        var{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                    <tr>
-                      <td> Fator de Potência </td>{" "}
-                      <td>
-                        {" "}
-                        {devices[1].powerState &&
-                        typeof devices[1].latestReading.PowerFactor === "number"
-                          ? devices[1].latestReading.PowerFactor
-                          : 0}{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                    <tr>
-                      <td> Energia Hoje </td>{" "}
-                      <td>
-                        {" "}
-                        {typeof devices[1].latestReading.EnergyToday ===
-                        "number"
-                          ? devices[1].latestReading.EnergyToday
-                          : "--"}
-                        kWh{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                    <tr>
-                      <td> Energia Ontem </td>{" "}
-                      <td>
-                        {" "}
-                        {typeof devices[1].latestReading.EnergyYesterday ===
-                        "number"
-                          ? devices[1].latestReading.EnergyYesterday
-                          : "--"}
-                        kWh{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                    <tr>
-                      <td> Energia Total </td>{" "}
-                      <td>
-                        {" "}
-                        {devices[1].powerState
-                          ? liveTotalEnergyBroker2.toFixed(2) + " kWh"
-                          : "0.00 kWh"}{" "}
-                      </td>{" "}
-                    </tr>{" "}
-                  </tbody>{" "}
-                </table>{" "}
-              </div>
-            )}
+                            ? safeDevices[1].latestReading.EnergyToday
+                            : "--"}
+                          kWh{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                      <tr>
+                        <td> Energia Ontem </td>{" "}
+                        <td>
+                          {" "}
+                          {typeof safeDevices[1].latestReading
+                            .EnergyYesterday === "number"
+                            ? safeDevices[1].latestReading.EnergyYesterday
+                            : "--"}
+                          kWh{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                      <tr>
+                        <td> Energia Total </td>{" "}
+                        <td>
+                          {" "}
+                          {safeDevices[1].powerState
+                            ? liveTotalEnergyBroker2.toFixed(2) + " kWh"
+                            : "0.00 kWh"}{" "}
+                        </td>{" "}
+                      </tr>{" "}
+                    </tbody>{" "}
+                  </table>{" "}
+                </div>
+              )}
             <h3> Detalhes por Dispositivo </h3>{" "}
             <div className="device-report-list">
               {" "}
@@ -2537,13 +2565,13 @@ function DashboardPage() {
                       Status Atual:{" "}
                       <span
                         className={
-                          devices[index] && devices[index].powerState
+                          safeDevices[index] && safeDevices[index].powerState
                             ? "status-on-text"
                             : "status-off-text"
                         }
                       >
                         {" "}
-                        {devices[index] && devices[index].powerState
+                        {safeDevices[index] && safeDevices[index].powerState
                           ? "Ligado"
                           : "Desligado"}{" "}
                       </span>{" "}
