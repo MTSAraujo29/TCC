@@ -922,58 +922,73 @@ function DashboardPage() {
         }
     };
 
+    // Adicionar no início do componente:
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+
     if (sessionExpired) {
         return (
-            <div className="modal-overlay" style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100vw',
-                height: '100vh',
-                background: 'rgba(0,0,0,0.5)',
-                zIndex: 9999,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-            }}>
-                <div className="modal-content" style={{
-                    background: '#fff',
-                    borderRadius: 16,
-                    boxShadow: '0 4px 32px rgba(0,0,0,0.2)',
-                    padding: 32,
-                    maxWidth: 350,
-                    width: '90%',
-                    textAlign: 'center',
-                    position: 'relative'
-                }}>
-                    <img src="/icon.png" alt="Ícone" style={{
-                        width: 64,
-                        height: 64,
-                        marginBottom: 16,
-                        marginTop: -48
-                    }} />
+            <div
+                className="modal-overlay"
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    background: 'rgba(0,0,0,0.5)',
+                    zIndex: 9999,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}
+            >
+                <div
+                    className="modal-content"
+                    style={{
+                        background: '#fff',
+                        borderRadius: 16,
+                        boxShadow: '0 4px 32px rgba(0,0,0,0.2)',
+                        padding: 32,
+                        maxWidth: 350,
+                        width: '90%',
+                        textAlign: 'center',
+                        position: 'relative'
+                    }}
+                >
+                    <img
+                        src="/icon.png"
+                        alt="Ícone"
+                        style={{
+                            width: 64,
+                            height: 64,
+                            marginBottom: 16,
+                            marginTop: -48
+                        }}
+                    />
                     <h2 style={{ marginBottom: 16, color: '#222' }}>
                         Sua sessão expirou <br /> faça login novamente!!
                     </h2>
-                    <button style={{
-                        marginTop: 16,
-                        padding: '10px 32px',
-                        background: '#00bcd4',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: 8,
-                        fontSize: 18,
-                        fontWeight: 'bold',
-                        cursor: 'pointer'
-                    }}
-                            onClick={() => {
-                                localStorage.removeItem('token');
-                                localStorage.removeItem('token_exp');
-                                localStorage.removeItem('userName');
-                                localStorage.removeItem('userEmail');
-                                setSessionExpired(false);
-                                navigate('/');
-                            }}>
+                    <button
+                        style={{
+                            marginTop: 16,
+                            padding: '10px 32px',
+                            background: '#00bcd4',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: 8,
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            cursor: 'pointer'
+                        }}
+                        onClick={() => {
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('token_exp');
+                            localStorage.removeItem('userName');
+                            localStorage.removeItem('userEmail');
+                            setSessionExpired(false);
+                            navigate('/');
+                        }}
+                    >
                         OK
                     </button>
                 </div>
@@ -984,34 +999,60 @@ function DashboardPage() {
     return (
         <div className="container dashboard-container">
             {/* ==================== SIDEBAR ==================== */}
-            <div className="sidebar" style={{ display: window.innerWidth <= 700 ? 'none' : 'flex' }}>
+            <div
+                className="sidebar"
+                style={{ display: window.innerWidth <= 700 ? 'none' : 'flex' }}
+            >
                 <div className="logo-icon-sidebar">
-                    <img src="/icon.png" alt="Ícone" style={{ width: 32, height: 32, marginBottom: 4 }} />
+                    <img
+                        src="/icon.png"
+                        alt="Ícone"
+                        style={{ width: 32, height: 32, marginBottom: 4 }}
+                    />
                 </div>
 
-                <div className={`menu-item ${activeSection === 'inicio' ? 'active' : ''}`} onClick={() => setActiveSection('inicio')}>
+                <div
+                    className={`menu-item ${activeSection === 'inicio' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('inicio')}
+                >
                     🏠Home
                 </div>
 
-                <div className={`menu-item ${activeSection === 'controle' ? 'active' : ''}`} onClick={() => setActiveSection('controle')}>
+                <div
+                    className={`menu-item ${activeSection === 'controle' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('controle')}
+                >
                     🔌Controle de Energia
                 </div>
 
-                <div className={`menu-item ${activeSection === 'relatorios' ? 'active' : ''}`} onClick={() => setActiveSection('relatorios')}>
+                <div
+                    className={`menu-item ${activeSection === 'relatorios' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('relatorios')}
+                >
                     📊Relatórios
                 </div>
 
-                <div className={`menu-item ${activeSection === 'ecobot' ? 'active' : ''}`} onClick={() => setActiveSection('ecobot')}>
-                    <img src={process.env.PUBLIC_URL + '/ST.png'} alt="EcoBot" style={{
-                        width: 24,
-                        height: 24,
-                        marginRight: 8,
-                        verticalAlign: 'middle'
-                    }} />
+                <div
+                    className={`menu-item ${activeSection === 'ecobot' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('ecobot')}
+                >
+                    <img
+                        src={process.env.PUBLIC_URL + '/ST.png'}
+                        alt="EcoBot"
+                        style={{
+                            width: 24,
+                            height: 24,
+                            marginRight: 8,
+                            verticalAlign: 'middle'
+                        }}
+                    />
                     EcoBot
                 </div>
 
-                <div className={`menu-item ${activeSection === 'configuracoes' ? 'active' : ''}`} onClick={() => setActiveSection('configuracoes')}>
+                <div
+                    className={`menu-item ${activeSection === 'configuracoes' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('configuracoes')}
+                >
                     ⚙️Configurações
                 </div>
 
@@ -1029,7 +1070,10 @@ function DashboardPage() {
                         <img src="/icon.png" alt="Ícone" className="mobile-menu-icon" />
                         <h6 className="mobile-menu-h6">Smart energy</h6>
                     </div>
-                    <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                    <button
+                        className="hamburger-btn"
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    >
                         <span className="hamburger-icon">☰</span>
                     </button>
                 </div>
@@ -1037,51 +1081,74 @@ function DashboardPage() {
 
             {window.innerWidth <= 700 && isMobileMenuOpen && (
                 <div className="mobile-menu-box">
-                    <div className="menu-item" onClick={() => {
-                        setActiveSection('inicio');
-                        setIsMobileMenuOpen(false);
-                    }}>
+                    <div
+                        className="menu-item"
+                        onClick={() => {
+                            setActiveSection('inicio');
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
                         🏠Home
                     </div>
 
-                    <div className="menu-item" onClick={() => {
-                        setActiveSection('controle');
-                        setIsMobileMenuOpen(false);
-                    }}>
+                    <div
+                        className="menu-item"
+                        onClick={() => {
+                            setActiveSection('controle');
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
                         🔌Controle de Energia
                     </div>
 
-                    <div className="menu-item" onClick={() => {
-                        setActiveSection('relatorios');
-                        setIsMobileMenuOpen(false);
-                    }}>
+                    <div
+                        className="menu-item"
+                        onClick={() => {
+                            setActiveSection('relatorios');
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
                         📊Relatórios
                     </div>
 
-                    <div className={`menu-item ${activeSection === 'ecobot' ? 'active' : ''}`} onClick={() => {
-                        setActiveSection('ecobot');
-                        setIsMobileMenuOpen(false);
-                    }} style={{ alignItems: 'center' }}>
-                        <img src={process.env.PUBLIC_URL + '/ST.png'} alt="EcoBot" style={{
-                            width: 20,
-                            height: 20,
-                            marginRight: 8,
-                            verticalAlign: 'middle'
-                        }} />
+                    <div
+                        className={`menu-item ${activeSection === 'ecobot' ? 'active' : ''}`}
+                        onClick={() => {
+                            setActiveSection('ecobot');
+                            setIsMobileMenuOpen(false);
+                        }}
+                        style={{ alignItems: 'center' }}
+                    >
+                        <img
+                            src={process.env.PUBLIC_URL + '/ST.png'}
+                            alt="EcoBot"
+                            style={{
+                                width: 20,
+                                height: 20,
+                                marginRight: 8,
+                                verticalAlign: 'middle'
+                            }}
+                        />
                         EcoBot
                     </div>
 
-                    <div className="menu-item" onClick={() => {
-                        setActiveSection('configuracoes');
-                        setIsMobileMenuOpen(false);
-                    }}>
+                    <div
+                        className="menu-item"
+                        onClick={() => {
+                            setActiveSection('configuracoes');
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
                         ⚙️Configurações
                     </div>
 
-                    <div className="menu-item logout-link-sidebar" onClick={() => {
-                        handleLogout();
-                        setIsMobileMenuOpen(false);
-                    }}>
+                    <div
+                        className="menu-item logout-link-sidebar"
+                        onClick={() => {
+                            handleLogout();
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
                         🔒Sair
                     </div>
                 </div>
@@ -1104,19 +1171,20 @@ function DashboardPage() {
                             <div className="metric-card">
                                 <h3>Consumo de Watts atual</h3>
                                 <p>
-                                    {devices.length > 0 ?
-                                        devices
-                                            .reduce(
-                                                (sum, d) =>
-                                                    sum +
-                                                    (d.latestReading &&
-                                                    d.powerState &&
-                                                    typeof d.latestReading.power === 'number' ?
-                                                        d.latestReading.power :
-                                                        0),
-                                                0
-                                            )
-                                            .toFixed(2) + ' W' : '0.00 W'}
+                                    {devices.length > 0
+                                        ? devices
+                                        .reduce(
+                                            (sum, d) =>
+                                                sum +
+                                                (d.latestReading &&
+                                                d.powerState &&
+                                                typeof d.latestReading.power === 'number'
+                                                    ? d.latestReading.power
+                                                    : 0),
+                                            0
+                                        )
+                                        .toFixed(2) + ' W'
+                                        : '0.00 W'}
                                 </p>
                             </div>
 
@@ -1133,19 +1201,19 @@ function DashboardPage() {
                             <div className="metric-card">
                                 <h3>Fatura Estimada</h3>
                                 <p>
-                                    R$ {' '}
-                                    {(devices.length > 0 ?
-                                            devices.reduce(
-                                                (sum, d) =>
-                                                    sum +
-                                                    (d.latestReading &&
-                                                    d.powerState &&
-                                                    typeof d.latestReading.totalEnergy === 'number' ?
-                                                        d.latestReading.totalEnergy :
-                                                        0),
-                                                0
-                                            ) * 0.75 :
+                                    R${' '}
+                                    {(devices.length > 0
+                                            ? devices.reduce(
+                                            (sum, d) =>
+                                                sum +
+                                                (d.latestReading &&
+                                                d.powerState &&
+                                                typeof d.latestReading.totalEnergy === 'number'
+                                                    ? d.latestReading.totalEnergy
+                                                    : 0),
                                             0
+                                        ) * 0.75
+                                            : 0
                                     ).toFixed(2)}
                                 </p>
                             </div>
@@ -1176,13 +1244,22 @@ function DashboardPage() {
                         <div className="chart-area-main">
                             <div className="chart-card-main">
                                 <div className="view-mode-buttons">
-                                    <button onClick={() => setViewMode('day')} className={viewMode === 'day' ? 'active-view-button' : 'view-button'}>
+                                    <button
+                                        onClick={() => setViewMode('day')}
+                                        className={viewMode === 'day' ? 'active-view-button' : 'view-button'}
+                                    >
                                         Dia
                                     </button>
-                                    <button onClick={() => setViewMode('week')} className={viewMode === 'week' ? 'active-view-button' : 'view-button'}>
+                                    <button
+                                        onClick={() => setViewMode('week')}
+                                        className={viewMode === 'week' ? 'active-view-button' : 'view-button'}
+                                    >
                                         Semana
                                     </button>
-                                    <button onClick={() => setViewMode('month')} className={viewMode === 'month' ? 'active-view-button' : 'view-button'}>
+                                    <button
+                                        onClick={() => setViewMode('month')}
+                                        className={viewMode === 'month' ? 'active-view-button' : 'view-button'}
+                                    >
                                         Mês
                                     </button>
                                 </div>
@@ -1195,7 +1272,10 @@ function DashboardPage() {
                                     </p>
                                 )}
 
-                                <button className="expand-chart-button" onClick={() => navigate('/grafico-cheio')}>
+                                <button
+                                    className="expand-chart-button"
+                                    onClick={() => navigate('/grafico-cheio')}
+                                >
                                     Expandir Gráfico
                                 </button>
                             </div>
@@ -1205,79 +1285,101 @@ function DashboardPage() {
                         <div className="bottom-sections-grid">
                             <div className="bottom-card consumption-by-type-card">
                                 <h3>Consumo por Tipo de Dispositivo</h3>
-                                <div className="chart-wrapper" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-                                    <div style={{
-                                        width: 200,
-                                        height: 200,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}>
-                                        <Doughnut data={getConsumptionByTypeData()} options={{
-                                            ...consumptionByTypeOptions,
-                                            plugins: {
-                                                ...consumptionByTypeOptions.plugins,
-                                                legend: { display: false },
-                                                datalabels: { display: false }
-                                            }
-                                        }} />
+                                <div
+                                    className="chart-wrapper"
+                                    style={{ display: 'flex', alignItems: 'center', gap: 24 }}
+                                >
+                                    <div
+                                        style={{
+                                            width: 200,
+                                            height: 200,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}
+                                    >
+                                        <Doughnut
+                                            data={getConsumptionByTypeData()}
+                                            options={{
+                                                ...consumptionByTypeOptions,
+                                                plugins: {
+                                                    ...consumptionByTypeOptions.plugins,
+                                                    legend: { display: false },
+                                                    datalabels: { display: false }
+                                                }
+                                            }}
+                                        />
                                     </div>
                                     {(() => {
                                         const data = getConsumptionByTypeData();
                                         const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
                                         const percentSala =
-                                            total > 0 ?
-                                                ((data.datasets[0].data[0] / total) * 100).toFixed(1) :
-                                                '0.0';
+                                            total > 0
+                                                ? ((data.datasets[0].data[0] / total) * 100).toFixed(1)
+                                                : '0.0';
                                         const percentCamera =
-                                            total > 0 ?
-                                                ((data.datasets[0].data[1] / total) * 100).toFixed(1) :
-                                                '0.0';
+                                            total > 0
+                                                ? ((data.datasets[0].data[1] / total) * 100).toFixed(1)
+                                                : '0.0';
                                         return (
-                                            <span style={{
-                                                display: 'inline-flex',
-                                                alignItems: 'center',
-                                                gap: 4,
-                                                flexDirection: 'column',
-                                                fontSize: 13
-                                            }}>
-                      <span style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 4,
-                          whiteSpace: 'nowrap'
-                      }}>
-                        <span style={{
-                            display: 'inline-block',
-                            width: 12,
-                            height: 12,
-                            borderRadius: 6,
-                            background: data.datasets[0].backgroundColor[0],
-                            marginRight: 4
-                        }} />
+                                            <span
+                                                style={{
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: 4,
+                                                    flexDirection: 'column',
+                                                    fontSize: 13
+                                                }}
+                                            >
+                      <span
+                          style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              whiteSpace: 'nowrap'
+                          }}
+                      >
+                        <span
+                            style={{
+                                display: 'inline-block',
+                                width: 12,
+                                height: 12,
+                                borderRadius: 6,
+                                background: data.datasets[0].backgroundColor[0],
+                                marginRight: 4
+                            }}
+                        />
                         <span style={{ color: '#FFF', fontWeight: 500 }}>
                           Sala:
                         </span>
-                        <span style={{ color: '#FFF', fontWeight: 700 }}>{percentSala}%</span>
+                        <span style={{ color: '#FFF', fontWeight: 700 }}>
+                          {percentSala}%
+                        </span>
                       </span>
-                      <span style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 4,
-                          whiteSpace: 'nowrap'
-                      }}>
-                        <span style={{
-                            display: 'inline-block',
-                            width: 12,
-                            height: 12,
-                            borderRadius: 6,
-                            background: data.datasets[0].backgroundColor[1],
-                            marginRight: 4
-                        }} />
+                      <span
+                          style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              whiteSpace: 'nowrap'
+                          }}
+                      >
+                        <span
+                            style={{
+                                display: 'inline-block',
+                                width: 12,
+                                height: 12,
+                                borderRadius: 6,
+                                background: data.datasets[0].backgroundColor[1],
+                                marginRight: 4
+                            }}
+                        />
                         <span style={{ color: '#FFF', fontWeight: 500 }}>
                           Câmera:
                         </span>
-                        <span style={{ color: '#FFF', fontWeight: 700 }}>{percentCamera}%</span>
+                        <span style={{ color: '#FFF', fontWeight: 700 }}>
+                          {percentCamera}%
+                        </span>
                       </span>
                     </span>
                                         );
@@ -1323,16 +1425,24 @@ function DashboardPage() {
                                 {devices.map((device) => (
                                     <div key={device.id} className="device-control-item">
                                         <span className="device-control-name">{device.name}</span>
-                                        <button onClick={() => toggleDevicePower(device.id, device.powerState, device.name)}
-                                                className="device-toggle-button power-on"
-                                                type="button"
-                                                disabled={device.powerState}>
+                                        <button
+                                            onClick={() =>
+                                                toggleDevicePower(device.id, device.powerState, device.name)
+                                            }
+                                            className="device-toggle-button power-on"
+                                            type="button"
+                                            disabled={device.powerState}
+                                        >
                                             Ligar
                                         </button>
-                                        <button onClick={() => toggleDevicePower(device.id, device.powerState, device.name)}
-                                                className="device-toggle-button power-off"
-                                                type="button"
-                                                disabled={!device.powerState}>
+                                        <button
+                                            onClick={() =>
+                                                toggleDevicePower(device.id, device.powerState, device.name)
+                                            }
+                                            className="device-toggle-button power-off"
+                                            type="button"
+                                            disabled={!device.powerState}
+                                        >
                                             Desligar
                                         </button>
                                     </div>
@@ -1345,108 +1455,220 @@ function DashboardPage() {
                         {/* ========== SCHEDULING CARDS ========== */}
                         <div className="bottom-sections-grid">
                             <div className="bottom-card">
-                                <h1 style={{
-                                    textAlign: 'center',
-                                    color: '#FFF',
-                                    marginBottom: '1.5rem',
-                                    fontSize: '1.5rem'
-                                }}>
+                                <h1
+                                    style={{
+                                        textAlign: 'center',
+                                        color: '#FFF',
+                                        marginBottom: '1.2rem',
+                                        fontSize: '1.3rem'
+                                    }}
+                                >
                                     Agendar Desligamento
                                 </h1>
-                                <form style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    gap: 20,
-                                    width: '100%'
-                                }} onSubmit={handleScheduleSubmit}>
+                                <form
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        gap: 14,
+                                        width: '100%'
+                                    }}
+                                    onSubmit={handleScheduleSubmit}
+                                >
                                     {/* Seleção de Dispositivo */}
                                     <div style={{ width: '100%' }}>
-                                        <label style={{
-                                            color: '#FFF',
-                                            fontWeight: 500,
-                                            marginBottom: 8,
-                                            display: 'block',
-                                            textAlign: 'center',
-                                            fontSize: 16
-                                        }}>Dispositivo:</label>
-                                        <div className="menu-box-group">
-                                            <button type="button" className={`menu-box-option${selectedDevices.includes('sala') ? ' selected' : ''}`} onClick={() => handleDeviceSelect('sala')}>
-                                                Sonoff Sala
+                                        <label
+                                            style={{
+                                                color: '#FFF',
+                                                fontWeight: 500,
+                                                marginBottom: 6,
+                                                display: 'block',
+                                                textAlign: 'center',
+                                                fontSize: 15
+                                            }}
+                                        >
+                                            Dispositivo:
+                                        </label>
+                                        <div className="menu-box-group device-group">
+                                            <button
+                                                type="button"
+                                                className={`menu-box-option device-btn${
+                                                    selectedDevices.includes('sala') ? ' selected' : ''
+                                                }`}
+                                                onClick={() => handleDeviceSelect('sala')}
+                                            >
+                                                Sala
                                             </button>
-                                            <button type="button" className={`menu-box-option${selectedDevices.includes('camera') ? ' selected' : ''}`} onClick={() => handleDeviceSelect('camera')}>
-                                                Sonoff Câmera
+                                            <button
+                                                type="button"
+                                                className={`menu-box-option device-btn${
+                                                    selectedDevices.includes('camera') ? ' selected' : ''
+                                                }`}
+                                                onClick={() => handleDeviceSelect('camera')}
+                                            >
+                                                Câmera
                                             </button>
-                                            <button type="button" className={`menu-box-option${selectedDevices.length === 2 ? ' selected' : ''}`} onClick={() => {
-                                                if (selectedDevices.length === 2) setSelectedDevices([]);
-                                                else setSelectedDevices(['sala', 'camera']);
-                                            }}>
+                                            <button
+                                                type="button"
+                                                className={`menu-box-option device-btn${
+                                                    selectedDevices.length === 2 ? ' selected' : ''
+                                                }`}
+                                                onClick={() => {
+                                                    if (selectedDevices.length === 2) setSelectedDevices([]);
+                                                    else setSelectedDevices(['sala', 'camera']);
+                                                }}
+                                            >
                                                 Ambos
                                             </button>
                                         </div>
                                     </div>
 
-                                    {/* Seleção de Dias */}
+                                    {/* Seleção de Dias - Dropdown */}
                                     <div style={{ width: '100%' }}>
-                                        <label style={{
-                                            color: '#FFF',
-                                            fontWeight: 500,
-                                            marginBottom: 8,
-                                            display: 'block',
-                                            textAlign: 'center',
-                                            fontSize: 16
-                                        }}>Dias da Semana:</label>
-                                        <div className="menu-box-group">
-                                            <button type="button" className={`menu-box-option${allDaysSelected ? ' selected' : ''}`} onClick={handleAllDaysSelect}>
-                                                Todos os dias
+                                        <label
+                                            style={{
+                                                color: '#FFF',
+                                                fontWeight: 500,
+                                                marginBottom: 6,
+                                                display: 'block',
+                                                textAlign: 'center',
+                                                fontSize: 15
+                                            }}
+                                        >
+                                            Dias da Semana:
+                                        </label>
+                                        <div
+                                            className={`menu-box-dropdown${dropdownOpen ? ' open' : ''}`}
+                                            tabIndex={0}
+                                            onBlur={() => setDropdownOpen(false)}
+                                        >
+                                            <button
+                                                type="button"
+                                                className={`menu-box-dropdown-btn${
+                                                    selectedDays.length > 0 ? ' selected' : ''
+                                                }`}
+                                                onClick={() => setDropdownOpen(!dropdownOpen)}
+                                            >
+                                                {selectedDays.length === 0
+                                                    ? 'Selecionar dias'
+                                                    : selectedDays.length === 7
+                                                        ? 'Todos os dias'
+                                                        : selectedDays.map((idx) => weekDays[idx]).join(', ')}
+                                                <span style={{ marginLeft: 8, fontSize: 13 }}>▼</span>
                                             </button>
-                                            {weekDays.map((day, idx) => (
-                                                <button key={day} type="button" className={`menu-box-option${selectedDays.includes(idx) ? ' selected' : ''}`} onClick={() => handleDaySelect(idx)}>
-                                                    {day}
+                                            <div className="menu-box-dropdown-list">
+                                                <button
+                                                    type="button"
+                                                    className={`menu-box-option${allDaysSelected ? ' selected' : ''}`}
+                                                    onClick={() => {
+                                                        handleAllDaysSelect();
+                                                        setDropdownOpen(true);
+                                                    }}
+                                                >
+                                                    Todos os dias
                                                 </button>
-                                            ))}
+                                                {weekDays.map((day, idx) => (
+                                                    <button
+                                                        key={day}
+                                                        type="button"
+                                                        className={`menu-box-option${
+                                                            selectedDays.includes(idx) ? ' selected' : ''
+                                                        }`}
+                                                        onClick={() => {
+                                                            handleDaySelect(idx);
+                                                            setDropdownOpen(true);
+                                                        }}
+                                                    >
+                                                        {day}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
 
                                     {/* Repetição */}
-                                    <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                                        <button type="button" className={`menu-box-option${repeat ? ' selected' : ''}`} onClick={() => setRepeat(!repeat)} style={{ minWidth: 180 }}>
+                                    <div
+                                        style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+                                    >
+                                        <button
+                                            type="button"
+                                            className={`menu-box-option${repeat ? ' selected' : ''}`}
+                                            onClick={() => setRepeat(!repeat)}
+                                            style={{ minWidth: 160, fontSize: 0.95 + 'rem', padding: '7px 10px' }}
+                                        >
                                             Repetir nos dias selecionados
                                         </button>
                                     </div>
 
                                     {/* Horário */}
-                                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                        <label style={{ color: '#FFF', fontWeight: 500, marginBottom: 4, fontSize: 16 }}>Horário:</label>
-                                        <input type="time" value={time} onChange={e => setTime(e.target.value)} className="schedule-time-input" required />
+                                    <div
+                                        style={{
+                                            width: '100%',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center'
+                                        }}
+                                    >
+                                        <label
+                                            style={{
+                                                color: '#FFF',
+                                                fontWeight: 500,
+                                                marginBottom: 4,
+                                                fontSize: 15
+                                            }}
+                                        >
+                                            Horário:
+                                        </label>
+                                        <input
+                                            type="time"
+                                            value={time}
+                                            onChange={(e) => setTime(e.target.value)}
+                                            className="schedule-time-input"
+                                            required
+                                        />
                                     </div>
 
                                     {/* Botão */}
-                                    <button type="submit" style={{
-                                        marginTop: 8,
-                                        background: 'linear-gradient(90deg, #00bcd4 60%, #4a4a7e 100%)',
-                                        color: '#FFF',
-                                        border: 'none',
-                                        borderRadius: 8,
-                                        padding: '12px 0',
-                                        fontWeight: 'bold',
-                                        fontSize: 18,
-                                        cursor: 'pointer',
-                                        width: '70%'
-                                    }}>
+                                    <button
+                                        type="submit"
+                                        style={{
+                                            marginTop: 6,
+                                            background: 'linear-gradient(90deg, #00bcd4 60%, #4a4a7e 100%)',
+                                            color: '#FFF',
+                                            border: 'none',
+                                            borderRadius: 8,
+                                            padding: '10px 0',
+                                            fontWeight: 'bold',
+                                            fontSize: 17,
+                                            cursor: 'pointer',
+                                            width: '70%'
+                                        }}
+                                    >
                                         Agendar
                                     </button>
-                                    {scheduleMessage && <p style={{ color: scheduleMessageColor, marginTop: 8, textAlign: 'center' }}>{scheduleMessage}</p>}
+                                    {scheduleMessage && (
+                                        <p
+                                            style={{
+                                                color: scheduleMessageColor,
+                                                marginTop: 8,
+                                                textAlign: 'center'
+                                            }}
+                                        >
+                                            {scheduleMessage}
+                                        </p>
+                                    )}
                                 </form>
                             </div>
 
                             <div className="bottom-card">
-                                <h1 style={{
-                                    textAlign: 'center',
-                                    color: '#FFF',
-                                    marginBottom: '1.5rem',
-                                    fontSize: '1.5rem'
-                                }}>
+                                <h1
+                                    style={{
+                                        textAlign: 'center',
+                                        color: '#FFF',
+                                        marginBottom: '1.5rem',
+                                        fontSize: '1.5rem'
+                                    }}
+                                >
                                     Seus Agendamentos
                                 </h1>
                                 {/* Empty content for now */}
@@ -1472,180 +1694,204 @@ function DashboardPage() {
                                 Dispositivos com Otimização Pendente(estimado):{' '}
                                 <strong>{report.summary.nonSmartUsageDevices}</strong>
                             </p>
-                            <p className="overall-report-message">{report.summary.overallMessage}</p>
+                            <p className="overall-report-message">
+                                {report.summary.overallMessage}
+                            </p>
                         </div>
 
-                        {isRealData && devices.length > 0 && devices[0].latestReading && (
-                            <div className="energy-realtime-card">
-                                <h3>Dados em Tempo Real do Dispositivo Sonoff Sala</h3>
-                                <table className="energy-realtime-table">
-                                    <tbody className="energy-realtime-tbody">
-                                    <tr>
-                                        <td>Tensão</td>
-                                        <td>
-                                            {devices[0].powerState &&
-                                            typeof devices[0].latestReading.voltage === 'number' ?
-                                                devices[0].latestReading.voltage : 0}
-                                            V
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Corrente</td>
-                                        <td>
-                                            {devices[0].powerState &&
-                                            typeof devices[0].latestReading.current === 'number' ?
-                                                devices[0].latestReading.current : 0}
-                                            A
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Potência Ativa</td>
-                                        <td>
-                                            {devices[0].powerState &&
-                                            typeof devices[0].latestReading.power === 'number' ?
-                                                devices[0].latestReading.power : 0}
-                                            W
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Potência Aparente</td>
-                                        <td>
-                                            {devices[0].powerState &&
-                                            typeof devices[0].latestReading.ApparentPower === 'number' ?
-                                                devices[0].latestReading.ApparentPower : 0}
-                                            VA
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Potência Reativa</td>
-                                        <td>
-                                            {devices[0].powerState &&
-                                            typeof devices[0].latestReading.ReactivePower === 'number' ?
-                                                devices[0].latestReading.ReactivePower : 0}
-                                            var
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Fator de Potência</td>
-                                        <td>
-                                            {devices[0].powerState &&
-                                            typeof devices[0].latestReading.PowerFactor === 'number' ?
-                                                devices[0].latestReading.PowerFactor : 0}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Energia Hoje</td>
-                                        <td>
-                                            {typeof devices[0].latestReading.EnergyToday === 'number' ?
-                                                devices[0].latestReading.EnergyToday : '--'}
-                                            kWh
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Energia Ontem</td>
-                                        <td>
-                                            {typeof devices[0].latestReading.EnergyYesterday === 'number' ?
-                                                devices[0].latestReading.EnergyYesterday : '--'}
-                                            kWh
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Energia Total</td>
-                                        <td>
-                                            {devices[0].powerState ?
-                                                liveTotalEnergyBroker1.toFixed(2) + ' kWh' : '0.00 kWh'}
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
+                        {isRealData &&
+                            devices.length > 0 &&
+                            devices[0].latestReading && (
+                                <div className="energy-realtime-card">
+                                    <h3>Dados em Tempo Real do Dispositivo Sonoff Sala</h3>
+                                    <table className="energy-realtime-table">
+                                        <tbody className="energy-realtime-tbody">
+                                        <tr>
+                                            <td>Tensão</td>
+                                            <td>
+                                                {devices[0].powerState &&
+                                                typeof devices[0].latestReading.voltage === 'number'
+                                                    ? devices[0].latestReading.voltage
+                                                    : 0}
+                                                V
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Corrente</td>
+                                            <td>
+                                                {devices[0].powerState &&
+                                                typeof devices[0].latestReading.current === 'number'
+                                                    ? devices[0].latestReading.current
+                                                    : 0}
+                                                A
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Potência Ativa</td>
+                                            <td>
+                                                {devices[0].powerState &&
+                                                typeof devices[0].latestReading.power === 'number'
+                                                    ? devices[0].latestReading.power
+                                                    : 0}
+                                                W
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Potência Aparente</td>
+                                            <td>
+                                                {devices[0].powerState &&
+                                                typeof devices[0].latestReading.ApparentPower === 'number'
+                                                    ? devices[0].latestReading.ApparentPower
+                                                    : 0}
+                                                VA
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Potência Reativa</td>
+                                            <td>
+                                                {devices[0].powerState &&
+                                                typeof devices[0].latestReading.ReactivePower === 'number'
+                                                    ? devices[0].latestReading.ReactivePower
+                                                    : 0}
+                                                var
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Fator de Potência</td>
+                                            <td>
+                                                {devices[0].powerState &&
+                                                typeof devices[0].latestReading.PowerFactor === 'number'
+                                                    ? devices[0].latestReading.PowerFactor
+                                                    : 0}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Energia Hoje</td>
+                                            <td>
+                                                {typeof devices[0].latestReading.EnergyToday === 'number'
+                                                    ? devices[0].latestReading.EnergyToday
+                                                    : '--'}
+                                                kWh
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Energia Ontem</td>
+                                            <td>
+                                                {typeof devices[0].latestReading.EnergyYesterday === 'number'
+                                                    ? devices[0].latestReading.EnergyYesterday
+                                                    : '--'}
+                                                kWh
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Energia Total</td>
+                                            <td>
+                                                {devices[0].powerState
+                                                    ? liveTotalEnergyBroker1.toFixed(2) + ' kWh'
+                                                    : '0.00 kWh'}
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
 
-                        {isRealData && devices.length > 1 && devices[1].latestReading && (
-                            <div className="energy-realtime-card" style={{ marginTop: '32px' }}>
-                                <h3>Dados em Tempo Real do Dispositivo Sonoff Câmera</h3>
-                                <table className="energy-realtime-table">
-                                    <tbody className="energy-realtime-tbody">
-                                    <tr>
-                                        <td>Tensão</td>
-                                        <td>
-                                            {devices[1].powerState &&
-                                            typeof devices[1].latestReading.voltage === 'number' ?
-                                                devices[1].latestReading.voltage : 0}
-                                            V
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Corrente</td>
-                                        <td>
-                                            {devices[1].powerState &&
-                                            typeof devices[1].latestReading.current === 'number' ?
-                                                devices[1].latestReading.current : 0}
-                                            A
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Potência Ativa</td>
-                                        <td>
-                                            {devices[1].powerState &&
-                                            typeof devices[1].latestReading.power === 'number' ?
-                                                devices[1].latestReading.power : 0}
-                                            W
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Potência Aparente</td>
-                                        <td>
-                                            {devices[1].powerState &&
-                                            typeof devices[1].latestReading.ApparentPower === 'number' ?
-                                                devices[1].latestReading.ApparentPower : 0}
-                                            VA
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Potência Reativa</td>
-                                        <td>
-                                            {devices[1].powerState &&
-                                            typeof devices[1].latestReading.ReactivePower === 'number' ?
-                                                devices[1].latestReading.ReactivePower : 0}
-                                            var
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Fator de Potência</td>
-                                        <td>
-                                            {devices[1].powerState &&
-                                            typeof devices[1].latestReading.PowerFactor === 'number' ?
-                                                devices[1].latestReading.PowerFactor : 0}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Energia Hoje</td>
-                                        <td>
-                                            {typeof devices[1].latestReading.EnergyToday === 'number' ?
-                                                devices[1].latestReading.EnergyToday : '--'}
-                                            kWh
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Energia Ontem</td>
-                                        <td>
-                                            {typeof devices[1].latestReading.EnergyYesterday === 'number' ?
-                                                devices[1].latestReading.EnergyYesterday : '--'}
-                                            kWh
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Energia Total</td>
-                                        <td>
-                                            {devices[1].powerState ?
-                                                liveTotalEnergyBroker2.toFixed(2) + ' kWh' : '0.00 kWh'}
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
+                        {isRealData &&
+                            devices.length > 1 &&
+                            devices[1].latestReading && (
+                                <div className="energy-realtime-card" style={{ marginTop: '32px' }}>
+                                    <h3>Dados em Tempo Real do Dispositivo Sonoff Câmera</h3>
+                                    <table className="energy-realtime-table">
+                                        <tbody className="energy-realtime-tbody">
+                                        <tr>
+                                            <td>Tensão</td>
+                                            <td>
+                                                {devices[1].powerState &&
+                                                typeof devices[1].latestReading.voltage === 'number'
+                                                    ? devices[1].latestReading.voltage
+                                                    : 0}
+                                                V
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Corrente</td>
+                                            <td>
+                                                {devices[1].powerState &&
+                                                typeof devices[1].latestReading.current === 'number'
+                                                    ? devices[1].latestReading.current
+                                                    : 0}
+                                                A
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Potência Ativa</td>
+                                            <td>
+                                                {devices[1].powerState &&
+                                                typeof devices[1].latestReading.power === 'number'
+                                                    ? devices[1].latestReading.power
+                                                    : 0}
+                                                W
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Potência Aparente</td>
+                                            <td>
+                                                {devices[1].powerState &&
+                                                typeof devices[1].latestReading.ApparentPower === 'number'
+                                                    ? devices[1].latestReading.ApparentPower
+                                                    : 0}
+                                                VA
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Potência Reativa</td>
+                                            <td>
+                                                {devices[1].powerState &&
+                                                typeof devices[1].latestReading.ReactivePower === 'number'
+                                                    ? devices[1].latestReading.ReactivePower
+                                                    : 0}
+                                                var
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Fator de Potência</td>
+                                            <td>
+                                                {devices[1].powerState &&
+                                                typeof devices[1].latestReading.PowerFactor === 'number'
+                                                    ? devices[1].latestReading.PowerFactor
+                                                    : 0}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Energia Hoje</td>
+                                            <td>
+                                                {typeof devices[1].latestReading.EnergyToday === 'number'
+                                                    ? devices[1].latestReading.EnergyToday
+                                                    : '--'}
+                                                kWh
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Energia Ontem</td>
+                                            <td>
+                                                {typeof devices[1].latestReading.EnergyYesterday === 'number'
+                                                    ? devices[1].latestReading.EnergyYesterday
+                                                    : '--'}
+                                                kWh
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Energia Total</td>
+                                            <td>
+                                                {devices[1].powerState
+                                                    ? liveTotalEnergyBroker2.toFixed(2) + ' kWh'
+                                                    : '0.00 kWh'}
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
 
                         <h3>Detalhes por Dispositivo</h3>
                         <div className="device-report-list">
@@ -1655,21 +1901,28 @@ function DashboardPage() {
                                         <h4>{detail.name}</h4>
                                         <p>
                                             Status Atual:{' '}
-                                            <span className={
-                                                devices[index] && devices[index].powerState ?
-                                                    'status-on-text' : 'status-off-text'
-                                            }>
-                      {devices[index] && devices[index].powerState ?
-                          'Ligado' : 'Desligado'}
+                                            <span
+                                                className={
+                                                    devices[index] && devices[index].powerState
+                                                        ? 'status-on-text'
+                                                        : 'status-off-text'
+                                                }
+                                            >
+                      {devices[index] && devices[index].powerState
+                          ? 'Ligado'
+                          : 'Desligado'}
                     </span>
                                         </p>
                                         <p>Tipo: {detail.type}</p>
                                         <p>Recomendação: {detail.recommendation}</p>
-                                        {parseFloat(detail.potentialImpact) !== 0.00 && (
-                                            <p className={
-                                                parseFloat(detail.potentialImpact) > 0 ?
-                                                    'impact-positive' : 'impact-negative'
-                                            }>
+                                        {parseFloat(detail.potentialImpact) !== 0.0 && (
+                                            <p
+                                                className={
+                                                    parseFloat(detail.potentialImpact) > 0
+                                                        ? 'impact-positive'
+                                                        : 'impact-negative'
+                                                }
+                                            >
                                                 Impacto Potencial: {detail.potentialImpact}
                                                 kWh no próximo mês
                                             </p>
@@ -1686,61 +1939,76 @@ function DashboardPage() {
                 {/* ========== ECOBOT SECTION ========== */}
                 {activeSection === 'ecobot' && (
                     <div className="main-content2">
-                        <div style={{
-                            width: '100%',
-                            maxWidth: 600,
-                            minWidth: 340,
-                            position: 'sticky',
-                            top: 0,
-                            background: 'transparent',
-                            zIndex: 2
-                        }}>
+                        <div
+                            style={{
+                                width: '100%',
+                                maxWidth: 600,
+                                minWidth: 340,
+                                position: 'sticky',
+                                top: 0,
+                                background: 'transparent',
+                                zIndex: 2
+                            }}
+                        >
                             <h1 style={{ color: 'white', marginBottom: 8 }}>
                                 Olá, eu sou EcoBot👋
                             </h1>
                             <h4 style={{ color: '#e0e0e0', marginBottom: 24 }}>
-                                Aqui {userName}, você pode me perguntar sobre previsões de consumo futuro de energia e receber dicas para um uso mais eficiente dos seus eletrodomésticos. Fique à vontade!
+                                Aqui {userName}, você pode me perguntar sobre previsões de consumo
+                                futuro de energia e receber dicas para um uso mais eficiente dos seus
+                                eletrodomésticos. Fique à vontade!
                             </h4>
                         </div>
-                        <div style={{
-                            background: '#23234a',
-                            borderRadius: 12,
-                            padding: 24,
-                            maxWidth: 600,
-                            width: '100%',
-                            minWidth: 320,
-                            margin: '0 auto',
-                            minHeight: 320,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: 12,
-                            flex: 1,
-                            overflow: 'auto'
-                        }}>
+                        <div
+                            style={{
+                                background: '#23234a',
+                                borderRadius: 12,
+                                padding: 24,
+                                maxWidth: 600,
+                                width: '100%',
+                                minWidth: 320,
+                                margin: '0 auto',
+                                minHeight: 320,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 12,
+                                flex: 1,
+                                overflow: 'auto'
+                            }}
+                        >
                             <div style={{ flex: 1, overflowY: 'auto', marginBottom: 16 }}>
                                 {chatMessages.map((msg, idx) => (
-                                    <div key={idx} style={{
-                                        color: msg.sender === 'EcoBot' ? '#00e676' : '#fff',
-                                        textAlign: msg.sender === 'EcoBot' ? 'left' : 'right',
-                                        margin: '8px 0'
-                                    }}>
+                                    <div
+                                        key={idx}
+                                        style={{
+                                            color: msg.sender === 'EcoBot' ? '#00e676' : '#fff',
+                                            textAlign: msg.sender === 'EcoBot' ? 'left' : 'right',
+                                            margin: '8px 0'
+                                        }}
+                                    >
                                         <strong>{msg.sender}:</strong> {msg.text}
                                     </div>
                                 ))}
                             </div>
                             <form onSubmit={handleSendMessage} style={{ display: 'flex', gap: 8 }}>
-                                <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)}
-                                       placeholder="Digite sua mensagem..."
-                                       style={{ flex: 1, borderRadius: 8, border: 'none', padding: 10 }}
+                                <input
+                                    type="text"
+                                    value={chatInput}
+                                    onChange={(e) => setChatInput(e.target.value)}
+                                    placeholder="Digite sua mensagem..."
+                                    style={{ flex: 1, borderRadius: 8, border: 'none', padding: 10 }}
                                 />
-                                <button type="submit" style={{
-                                    background: '#00e676',
-                                    color: '#222',
-                                    border: 'none',
-                                    borderRadius: 8,
-                                    padding: '0 18px',
-                                    fontWeight: 'bold'
-                                }}>
+                                <button
+                                    type="submit"
+                                    style={{
+                                        background: '#00e676',
+                                        color: '#222',
+                                        border: 'none',
+                                        borderRadius: 8,
+                                        padding: '0 18px',
+                                        fontWeight: 'bold'
+                                    }}
+                                >
                                     Enviar
                                 </button>
                             </form>
@@ -1770,12 +2038,20 @@ function DashboardPage() {
                   <span style={{ marginLeft: 8, color: 'green', fontWeight: 'bold' }}>
                     Número vinculado: {whatsappNumberSaved}
                   </span>
-                                        <button className="edit-profile-button unlink-whatsapp-btn" style={{ marginLeft: 8, background: 'red', color: 'white' }} onClick={handleUnlinkWhatsapp}>
+                                        <button
+                                            className="edit-profile-button unlink-whatsapp-btn"
+                                            style={{ marginLeft: 8, background: 'red', color: 'white' }}
+                                            onClick={handleUnlinkWhatsapp}
+                                        >
                                             Desvincular
                                         </button>
                                     </>
                                 ) : (
-                                    <button className="edit-profile-button add-whatsapp-btn" style={{ marginLeft: 8 }} onClick={() => setShowWhatsappModal(true)}>
+                                    <button
+                                        className="edit-profile-button add-whatsapp-btn"
+                                        style={{ marginLeft: 8 }}
+                                        onClick={() => setShowWhatsappModal(true)}
+                                    >
                                         Adicionar Número
                                     </button>
                                 )}
@@ -1792,24 +2068,46 @@ function DashboardPage() {
                                     <h3>Editar Conta</h3>
                                     <form onSubmit={handleEditAccount}>
                                         <label>Novo Nome:</label>
-                                        <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Novo nome" />
+                                        <input
+                                            type="text"
+                                            value={editName}
+                                            onChange={(e) => setEditName(e.target.value)}
+                                            placeholder="Novo nome"
+                                        />
 
                                         <label>Nova Senha:</label>
-                                        <input type="password" value={editPassword} onChange={(e) => setEditPassword(e.target.value)} placeholder="Nova senha" />
+                                        <input
+                                            type="password"
+                                            value={editPassword}
+                                            onChange={(e) => setEditPassword(e.target.value)}
+                                            placeholder="Nova senha"
+                                        />
 
                                         {editError && <p className="error-message">{editError}</p>}
 
                                         <div className="button-group small-buttons">
-                                            <button type="submit" disabled={editLoading} className="submit-button small-btn">
+                                            <button
+                                                type="submit"
+                                                disabled={editLoading}
+                                                className="submit-button small-btn"
+                                            >
                                                 {editLoading ? 'Salvando...' : 'Salvar'}
                                             </button>
-                                            <button type="button" onClick={() => {
-                                                setShowEditModal(false);
-                                                openDeleteModal();
-                                            }} className="delete-account-button small-btn">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setShowEditModal(false);
+                                                    openDeleteModal();
+                                                }}
+                                                className="delete-account-button small-btn"
+                                            >
                                                 Excluir Conta
                                             </button>
-                                            <button type="button" onClick={() => setShowEditModal(false)} className="cancel-button small-btn">
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowEditModal(false)}
+                                                className="cancel-button small-btn"
+                                            >
                                                 Cancelar
                                             </button>
                                         </div>
@@ -1824,14 +2122,22 @@ function DashboardPage() {
                                 <div className="modal-card">
                                     <h3>Excluir Conta</h3>
                                     <p>
-                                        Tem certeza que deseja excluir sua conta? Esta ação é irreversível.
+                                        Tem certeza que deseja excluir sua conta? Esta ação é
+                                        irreversível.
                                     </p>
                                     {deleteError && <p className="error-message">{deleteError}</p>}
                                     <div className="button-group">
-                                        <button onClick={handleDeleteAccount} disabled={deleteLoading} className="delete-button">
+                                        <button
+                                            onClick={handleDeleteAccount}
+                                            disabled={deleteLoading}
+                                            className="delete-button"
+                                        >
                                             {deleteLoading ? 'Excluindo...' : 'Excluir'}
                                         </button>
-                                        <button onClick={() => setShowDeleteModal(false)} className="cancel-button">
+                                        <button
+                                            onClick={() => setShowDeleteModal(false)}
+                                            className="cancel-button"
+                                        >
                                             Cancelar
                                         </button>
                                     </div>
@@ -1844,12 +2150,17 @@ function DashboardPage() {
                             <div className="modal-overlay">
                                 <div className="modal-card">
                                     <h3>
-                                        Adicione seu número de Whatsapp para receber notificação do EcoBot, bot inteligente da Smart Energy!
+                                        Adicione seu número de Whatsapp para receber notificação do
+                                        EcoBot, bot inteligente da Smart Energy!
                                     </h3>
                                     <form onSubmit={handleSaveWhatsapp}>
                                         <label>Número(com código do país, DDD e número):</label>
-                                        <input type="text" value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)}
-                                               placeholder="Ex: 5562999999999" maxLength={13}
+                                        <input
+                                            type="text"
+                                            value={whatsappNumber}
+                                            onChange={(e) => setWhatsappNumber(e.target.value)}
+                                            placeholder="Ex: 5562999999999"
+                                            maxLength={13}
                                         />
                                         {whatsappError && (
                                             <p className="error-message">{whatsappError}</p>
@@ -1861,7 +2172,11 @@ function DashboardPage() {
                                             <button type="submit" className="submit-button small-btn">
                                                 Salvar
                                             </button>
-                                            <button type="button" className="cancel-button small-btn" onClick={() => setShowWhatsappModal(false)}>
+                                            <button
+                                                type="button"
+                                                className="cancel-button small-btn"
+                                                onClick={() => setShowWhatsappModal(false)}
+                                            >
                                                 Cancelar
                                             </button>
                                         </div>
@@ -1878,16 +2193,23 @@ function DashboardPage() {
 
                             {isRealData ? (
                                 <p>
-                                    <button className="add-device-btn" onClick={() => navigate('/add-device')}>
+                                    <button
+                                        className="add-device-btn"
+                                        onClick={() => navigate('/add-device')}
+                                    >
                                         Adicionar Novo Dispositivo
                                     </button>
-                                    <button className="refresh-devices-btn" onClick={fetchDashboardData}>
+                                    <button
+                                        className="refresh-devices-btn"
+                                        onClick={fetchDashboardData}
+                                    >
                                         Atualizar Lista de Dispositivos
                                     </button>
                                 </p>
                             ) : (
                                 <p className="admin-only-message">
-                                    O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador.
+                                    O gerenciamento completo de dispositivos está disponível apenas
+                                    para a conta de administrador.
                                 </p>
                             )}
                         </div>

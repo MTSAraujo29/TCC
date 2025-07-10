@@ -1999,3 +1999,88 @@ textarea {
     margin-top: 4px;
     margin-bottom: 10px;
 }
+
+
+/* Botões menores para seleção de dispositivo */
+
+.menu-box-group.device-group {
+    gap: 8px;
+}
+
+.menu-box-option.device-btn {
+    min-width: 60px;
+    padding: 6px 10px;
+    font-size: 0.95rem;
+    border-radius: 7px;
+}
+
+
+/* Dropdown compacto para dias da semana */
+
+.menu-box-dropdown {
+    position: relative;
+    display: inline-block;
+    width: 140px;
+    margin: 0 auto 10px auto;
+}
+
+.menu-box-dropdown-btn {
+    width: 100%;
+    background: #23243a;
+    color: #fff;
+    border: 2px solid #4a4a7e;
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 0.98rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: border 0.2s;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.menu-box-dropdown-btn.selected {
+    border-color: #00bcd4;
+}
+
+.menu-box-dropdown-list {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 110%;
+    background: #23243a;
+    border: 2px solid #4a4a7e;
+    border-radius: 8px;
+    min-width: 140px;
+    z-index: 10;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    padding: 6px 0;
+}
+
+.menu-box-dropdown.open .menu-box-dropdown-list {
+    display: block;
+}
+
+.menu-box-dropdown-list .menu-box-option {
+    width: 100%;
+    border: none;
+    border-radius: 0;
+    background: none;
+    text-align: left;
+    padding: 7px 14px;
+    font-size: 0.97rem;
+    color: #fff;
+    transition: background 0.2s;
+}
+
+.menu-box-dropdown-list .menu-box-option.selected {
+    background: linear-gradient(90deg, #00bcd4 60%, #4a4a7e 100%);
+    color: #fff;
+}
+
+.menu-box-dropdown-list .menu-box-option:hover {
+    background: #35356a;
+}
