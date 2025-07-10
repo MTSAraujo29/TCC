@@ -289,6 +289,111 @@ async function getLiveTotalEnergyFromTasmota(req, res) {
     }
 }
 
+// Função para agendar desligamento de dispositivos
+async function schedulePowerOff(req, res) {
+    const { devices, days, repeat, time } = req.body;
+    const userId = req.user.userId;
+
+    // Validação dos dados recebidos
+    if (!devices || devices.length === 0) {
+        return res.status(400).json({ message: 'Pelo menos um dispositivo deve ser selecionado.' });
+    }
+
+    if (!days || days.length === 0) {
+        return res.status(400).json({ message: 'Pelo menos um dia deve ser selecionado.' });
+    }
+
+    if (!time) {
+        return res.status(400).json({ message: 'Horário é obrigatório.' });
+    }
+
+    try {
+        // Buscar os dispositivos do usuário
+        const userDevices = await prisma.device.findMany({
+            where: {
+                userId: userId,
+                tasmotaTopic: { in: devices.map(device => {
+                        // Mapear 'sala' para o tópico do Sonoff Sala e 'camera' para o tópico do Sonoff Câmera
+                        if (device === 'sala') return 'sonoff_sala';
+                        if (device === 'camera') return 'sonoff_camera';
+                        return device;
+                    })
+                }
+            }
+        });
+
+        if (userDevices.length === 0) {
+            return res.status(404).json({ message: 'Nenhum dispositivo encontrado para os tópicos selecionados.' });
+        }
+
+        // Converter dias da semana para formato do Tasmota (0=Domingo, 1=Segunda, etc.)
+        const weekDays = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+        const tasmotaDays = days.map(dayIndex => weekDays[dayIndex]);
+
+        // Para cada dispositivo, enviar comando de agendamento
+        const results = [];
+        for (const device of userDevices) {
+            try {
+                // Construir comando Timer do Tasmota
+                // Formato: {"Enable":1,"Mode":0,"Time":"23:59","Window":0,"Days":127,"Repeat":1,"Output":1,"Action":0}
+                const timerCommand = {
+                    Enable: 1,
+                    Mode: 0, // Timer
+                    Time: time,
+                    Window: 0,
+                    Days: repeat ? 127 : days.reduce((acc, day) => acc | (1 << day), 0), // 127 = todos os dias, ou máscara específica
+                    Repeat: repeat ? 1 : 0,
+                    Output: 1,
+                    Action: 0 // 0 = OFF, 1 = ON
+                };
+
+                const topic = `cmnd/${device.tasmotaTopic}/Timer1`;
+                const broker = device.broker || 'broker1';
+
+                console.log(`[schedulePowerOff] Enviando comando Timer para ${device.name}:`, timerCommand);
+
+                // Enviar comando via MQTT
+                await tasmotaService.publishMqttCommand(topic, JSON.stringify(timerCommand), broker);
+
+                results.push({
+                    device: device.name,
+                    status: 'success',
+                    message: `Agendamento configurado para ${device.name} às ${time}`
+                });
+
+            } catch (error) {
+                console.error(`[schedulePowerOff] Erro ao agendar ${device.name}:`, error);
+                results.push({
+                    device: device.name,
+                    status: 'error',
+                    message: `Erro ao agendar ${device.name}: ${error.message}`
+                });
+            }
+        }
+
+        // Verificar se pelo menos um agendamento foi bem-sucedido
+        const successfulResults = results.filter(r => r.status === 'success');
+        if (successfulResults.length === 0) {
+            return res.status(500).json({
+                message: 'Erro ao configurar agendamentos.',
+                details: results
+            });
+        }
+
+        res.status(200).json({
+            message: 'Agendamento configurado com sucesso!',
+            details: results
+        });
+
+    } catch (error) {
+        console.error('[schedulePowerOff] Erro geral:', error);
+        res.status(500).json({
+            message: 'Erro interno do servidor ao configurar agendamento.',
+            error: error.message
+        });
+    }
+}
+
 // Exportar funções
 module.exports = {
     getDevice, // Middleware para verificar posse do dispositivo (usado nas rotas)
@@ -299,4 +404,5 @@ module.exports = {
     getHistoricalEnergyReadings,
     toggleDevicePower,
     getLiveTotalEnergyFromTasmota,
+    schedulePowerOff, // Nova função exportada
 };
