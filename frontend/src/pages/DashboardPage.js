@@ -608,7 +608,6 @@ function DashboardPage() {
           setDailyConsumption("0.00 kWh");
         }
 
-        setWhatsappNumberSaved(data.whatsappNumber || null);
       } else if (response.status === 401 || response.status === 403) {
         setSessionExpired(true);
         localStorage.removeItem("token");
