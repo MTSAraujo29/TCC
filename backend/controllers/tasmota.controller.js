@@ -291,22 +291,23 @@ async function getLiveTotalEnergyFromTasmota(req, res) {
 
 // Função para agendar desligamento de dispositivos
 async function schedulePowerOff(req, res) {
-    const { devices, days, repeat, time } = req.body;
+    const { devices, days, repeat, time, timerNumber } = req.body;
     const userId = req.user.userId;
 
-    console.log('[schedulePowerOff] Payload recebido:', { devices, days, repeat, time });
+    console.log('[schedulePowerOff] Payload recebido:', { devices, days, repeat, time, timerNumber });
 
     // Validação dos dados recebidos
     if (!devices || devices.length === 0) {
         return res.status(400).json({ message: 'Pelo menos um dispositivo deve ser selecionado.' });
     }
-
     if (!days || days.length === 0) {
         return res.status(400).json({ message: 'Pelo menos um dia deve ser selecionado.' });
     }
-
     if (!time) {
         return res.status(400).json({ message: 'Horário é obrigatório.' });
+    }
+    if (!timerNumber || timerNumber < 1 || timerNumber > 4) {
+        return res.status(400).json({ message: 'Timer inválido. Escolha de 1 a 4.' });
     }
 
     try {
@@ -315,7 +316,6 @@ async function schedulePowerOff(req, res) {
             where: {
                 userId: userId,
                 tasmotaTopic: { in: devices.map(device => {
-                        // Mapear 'sala' para o tópico do Sonoff Sala e 'camera' para o tópico do Sonoff Câmera
                         if (device === 'sala') return 'sonoff_sala';
                         if (device === 'camera') return 'sonoff_camera';
                         return device;
@@ -324,66 +324,45 @@ async function schedulePowerOff(req, res) {
             }
         });
 
-        console.log('[schedulePowerOff] Dispositivos encontrados:', userDevices.map(d => ({ name: d.name, tasmotaTopic: d.tasmotaTopic })));
-
         if (userDevices.length === 0) {
             return res.status(404).json({ message: 'Nenhum dispositivo encontrado para os tópicos selecionados.' });
         }
 
         // Converter dias da semana para formato do Tasmota
-        // Tasmota usa: 0=Domingo, 1=Segunda, 2=Terça, 3=Quarta, 4=Quinta, 5=Sexta, 6=Sábado
-        // Frontend envia: 0=Domingo, 1=Segunda, 2=Terça, 3=Quarta, 4=Quinta, 5=Sexta, 6=Sábado
-        // A ordem é a mesma, mas vamos garantir que a conversão esteja correta
-
         let tasmotaDaysMask = 0;
         if (repeat) {
             tasmotaDaysMask = 127; // Todos os dias (1111111 em binário)
-            console.log('[schedulePowerOff] Repetir todos os dias - Máscara:', tasmotaDaysMask);
         } else {
-            // Converter cada dia selecionado para a máscara do Tasmota
-            console.log('[schedulePowerOff] Dias selecionados:', days);
             days.forEach(dayIndex => {
-                // dayIndex já está na ordem correta (0=Domingo, 4=Quinta, etc.)
                 const bitMask = (1 << dayIndex);
                 tasmotaDaysMask |= bitMask;
-                console.log(`[schedulePowerOff] Dia ${dayIndex} -> bit ${bitMask} -> máscara atual: ${tasmotaDaysMask}`);
             });
         }
 
-        console.log('[schedulePowerOff] Máscara final dos dias:', tasmotaDaysMask, '(', tasmotaDaysMask.toString(2), 'em binário)');
-
-        // Para cada dispositivo, enviar comando de agendamento
+        // Para cada dispositivo, enviar comando de agendamento para o timer correto
         const results = [];
         for (const device of userDevices) {
             try {
-                // Construir comando Timer do Tasmota
                 const timerCommand = {
                     Enable: 1,
                     Mode: 0, // Timer
                     Time: time,
                     Window: 0,
-                    Days: tasmotaDaysMask, // Usar a máscara calculada corretamente
+                    Days: tasmotaDaysMask,
                     Repeat: repeat ? 1 : 0,
                     Output: 1,
                     Action: 0 // 0 = OFF, 1 = ON
                 };
-
-                const topic = `cmnd/${device.tasmotaTopic}/Timer1`;
+                // O slot do timer é Timer1, Timer2, Timer3, Timer4
+                const topic = `cmnd/${device.tasmotaTopic}/Timer${timerNumber}`;
                 const broker = device.broker || 'broker1';
-
-                console.log(`[schedulePowerOff] Enviando comando Timer para ${device.name}:`, timerCommand);
-
-                // Enviar comando via MQTT
                 await tasmotaService.publishMqttCommand(topic, JSON.stringify(timerCommand), broker);
-
                 results.push({
                     device: device.name,
                     status: 'success',
-                    message: `Agendamento configurado para ${device.name} às ${time}`
+                    message: `Agendamento configurado para ${device.name} no Timer ${timerNumber} às ${time}`
                 });
-
             } catch (error) {
-                console.error(`[schedulePowerOff] Erro ao agendar ${device.name}:`, error);
                 results.push({
                     device: device.name,
                     status: 'error',
@@ -391,27 +370,64 @@ async function schedulePowerOff(req, res) {
                 });
             }
         }
-
-        // Verificar se pelo menos um agendamento foi bem-sucedido
         const successfulResults = results.filter(r => r.status === 'success');
         if (successfulResults.length === 0) {
-            return res.status(500).json({
-                message: 'Erro ao configurar agendamentos.',
-                details: results
-            });
+            return res.status(500).json({ message: 'Erro ao configurar agendamentos.', details: results });
         }
-
-        res.status(200).json({
-            message: 'Agendamento configurado com sucesso!',
-            details: results
-        });
-
+        res.status(200).json({ message: 'Agendamento configurado com sucesso!', details: results });
     } catch (error) {
-        console.error('[schedulePowerOff] Erro geral:', error);
-        res.status(500).json({
-            message: 'Erro interno do servidor ao configurar agendamento.',
-            error: error.message
+        res.status(500).json({ message: 'Erro interno do servidor ao configurar agendamento.', error: error.message });
+    }
+}
+
+// Listar agendamentos do usuário autenticado
+async function listSchedules(req, res) {
+    try {
+        const userId = req.user.userId;
+        const schedules = await prisma.schedule.findMany({
+            where: { userId },
+            orderBy: [{ timerNumber: 'asc' }, { createdAt: 'desc' }],
         });
+        res.json(schedules);
+    } catch (error) {
+        console.error('[listSchedules] Erro ao buscar agendamentos:', error);
+        res.status(500).json({ message: 'Erro ao buscar agendamentos.' });
+    }
+}
+
+// Criar agendamento (além de enviar para o Tasmota, salva no banco)
+async function createSchedule(req, res) {
+    const { devices, days, repeat, time, timerNumber } = req.body;
+    const userId = req.user.userId;
+    if (!devices || devices.length === 0) {
+        return res.status(400).json({ message: 'Pelo menos um dispositivo deve ser selecionado.' });
+    }
+    if (!days || days.length === 0) {
+        return res.status(400).json({ message: 'Pelo menos um dia deve ser selecionado.' });
+    }
+    if (!time) {
+        return res.status(400).json({ message: 'Horário é obrigatório.' });
+    }
+    if (!timerNumber || timerNumber < 1 || timerNumber > 4) {
+        return res.status(400).json({ message: 'Timer inválido. Escolha de 1 a 4.' });
+    }
+    try {
+        // Salvar no banco
+        const schedule = await prisma.schedule.create({
+            data: {
+                userId,
+                deviceIds: devices,
+                days,
+                repeat,
+                time,
+                timerNumber,
+            },
+        });
+        // (Opcional) Chamar a lógica de envio para o Tasmota aqui, se necessário
+        res.status(201).json({ message: 'Agendamento salvo com sucesso!', schedule });
+    } catch (error) {
+        console.error('[createSchedule] Erro ao criar agendamento:', error);
+        res.status(500).json({ message: 'Erro ao criar agendamento.' });
     }
 }
 
@@ -426,4 +442,6 @@ module.exports = {
     toggleDevicePower,
     getLiveTotalEnergyFromTasmota,
     schedulePowerOff, // Nova função exportada
+    listSchedules,
+    createSchedule,
 };

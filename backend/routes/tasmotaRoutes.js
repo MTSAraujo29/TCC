@@ -25,6 +25,10 @@ router.post('/devices/:deviceId/power', authenticateToken, tasmotaController.get
 // Rota para Agendamento de Desligamento
 router.post('/schedule-power-off', authenticateToken, tasmotaController.schedulePowerOff);
 
+// Rotas para Agendamentos de Desligamento
+router.get('/schedules', authenticateToken, tasmotaController.listSchedules);
+router.post('/schedules', authenticateToken, tasmotaController.createSchedule);
+
 // Endpoint para valor de energia total em tempo real (direto do cache)
 router.get('/devices/:deviceId/total-energy-live', authenticateToken, (req, res) => {
     const valor = tasmotaService.getTotalEnergyFromCache(req.params.deviceId);
