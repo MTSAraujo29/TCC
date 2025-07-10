@@ -227,10 +227,10 @@ function DashboardPage() {
         // Se estiver em modo real, você pode analisar os dados reais dos dispositivos para gerar sugestões.
         if (!isRealData) {
             return [{
-                    id: 1,
-                    name: 'Lâmpada do Quarto (Fictícia)',
-                    suggestion: 'Instalar temporizador para desligar automaticamente.'
-                },
+                id: 1,
+                name: 'Lâmpada do Quarto (Fictícia)',
+                suggestion: 'Instalar temporizador para desligar automaticamente.'
+            },
                 {
                     id: 2,
                     name: 'Ar Condicionado (Fictício)',
@@ -939,10 +939,10 @@ function DashboardPage() {
     }, [dropdownOpen]);
 
     if (sessionExpired) {
-        return ( <
-            div className = "modal-overlay"
-            style = {
-                {
+        return (
+            <div
+                className="modal-overlay"
+                style={{
                     position: 'fixed',
                     top: 0,
                     left: 0,
@@ -953,1858 +953,1219 @@ function DashboardPage() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
-                }
-            } >
-            <
-            div className = "modal-content"
-            style = {
-                {
-                    background: '#fff',
-                    borderRadius: 16,
-                    boxShadow: '0 4px 32px rgba(0,0,0,0.2)',
-                    padding: 32,
-                    maxWidth: 350,
-                    width: '90%',
-                    textAlign: 'center',
-                    position: 'relative'
-                }
-            } >
-            <
-            img src = "/icon.png"
-            alt = "Ícone"
-            style = {
-                {
-                    width: 64,
-                    height: 64,
-                    marginBottom: 16,
-                    marginTop: -48
-                }
-            }
-            /> <
-            h2 style = {
-                { marginBottom: 16, color: '#222' }
-            } >
-            Sua sessão expirou < br / > faça login novamente!!
-            <
-            /h2> <
-            button style = {
-                {
-                    marginTop: 16,
-                    padding: '10px 32px',
-                    background: '#00bcd4',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 8,
-                    fontSize: 18,
-                    fontWeight: 'bold',
-                    cursor: 'pointer'
-                }
-            }
-            onClick = {
-                () => {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('token_exp');
-                    localStorage.removeItem('userName');
-                    localStorage.removeItem('userEmail');
-                    setSessionExpired(false);
-                    navigate('/');
-                }
-            } >
-            OK <
-            /button> < /
-            div > <
-            /div>
+                }}
+            >
+                <div
+                    className="modal-content"
+                    style={{
+                        background: '#fff',
+                        borderRadius: 16,
+                        boxShadow: '0 4px 32px rgba(0,0,0,0.2)',
+                        padding: 32,
+                        maxWidth: 350,
+                        width: '90%',
+                        textAlign: 'center',
+                        position: 'relative'
+                    }}
+                >
+                    <img
+                        src="/icon.png"
+                        alt="Ícone"
+                        style={{
+                            width: 64,
+                            height: 64,
+                            marginBottom: 16,
+                            marginTop: -48
+                        }}
+                    />
+                    <h2 style={{ marginBottom: 16, color: '#222' }}>
+                        Sua sessão expirou <br /> faça login novamente!!
+                    </h2>
+                    <button
+                        style={{
+                            marginTop: 16,
+                            padding: '10px 32px',
+                            background: '#00bcd4',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: 8,
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            cursor: 'pointer'
+                        }}
+                        onClick={() => {
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('token_exp');
+                            localStorage.removeItem('userName');
+                            localStorage.removeItem('userEmail');
+                            setSessionExpired(false);
+                            navigate('/');
+                        }}
+                    >
+                        OK
+                    </button>
+                </div>
+            </div>
         );
     }
 
-    return ( <
-            div className = "container dashboard-container" > { /* ==================== SIDEBAR ==================== */ } <
-            div className = "sidebar"
-            style = {
-                { display: window.innerWidth <= 700 ? 'none' : 'flex' }
-            } >
-            <
-            div className = "logo-icon-sidebar" >
-            <
-            img src = "/icon.png"
-            alt = "Ícone"
-            style = {
-                { width: 32, height: 32, marginBottom: 4 }
-            }
-            /> < /
-            div >
+    return (
+        <div className="container dashboard-container">
+            {/* ==================== SIDEBAR ==================== */}
+            <div className="sidebar" style={{ display: window.innerWidth <= 700 ? 'none' : 'flex' }}>
+                <div className="logo-icon-sidebar">
+                    <img src="/icon.png" alt="Ícone" style={{ width: 32, height: 32, marginBottom: 4 }} />
+                </div>
 
-            <
-            div className = { `menu-item ${activeSection === 'inicio' ? 'active' : ''}` }
-            onClick = {
-                () => setActiveSection('inicio')
-            } > 🏠Home <
-            /div>
+                <div
+                    className={`menu-item ${activeSection === 'inicio' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('inicio')}
+                >
+                    🏠Home
+                </div>
 
-            <
-            div className = { `menu-item ${activeSection === 'controle' ? 'active' : ''}` }
-            onClick = {
-                () => setActiveSection('controle')
-            } > 🔌Controle de Energia <
-            /div>
+                <div
+                    className={`menu-item ${activeSection === 'controle' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('controle')}
+                >
+                    🔌Controle de Energia
+                </div>
 
-            <
-            div className = { `menu-item ${activeSection === 'relatorios' ? 'active' : ''}` }
-            onClick = {
-                () => setActiveSection('relatorios')
-            } > 📊Relatórios <
-            /div>
+                <div
+                    className={`menu-item ${activeSection === 'relatorios' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('relatorios')}
+                >
+                    📊Relatórios
+                </div>
 
-            <
-            div className = { `menu-item ${activeSection === 'ecobot' ? 'active' : ''}` }
-            onClick = {
-                () => setActiveSection('ecobot')
-            } >
-            <
-            img src = { process.env.PUBLIC_URL + '/ST.png' }
-            alt = "EcoBot"
-            style = {
-                {
-                    width: 24,
-                    height: 24,
-                    marginRight: 8,
-                    verticalAlign: 'middle'
-                }
-            }
-            />
-            EcoBot <
-            /div>
-
-            <
-            div className = { `menu-item ${activeSection === 'configuracoes' ? 'active' : ''}` }
-            onClick = {
-                () => setActiveSection('configuracoes')
-            } > ⚙️Configurações <
-            /div>
-
-            <
-            div className = "sidebar-bottom" >
-            <
-            button onClick = { handleLogout }
-            className = "menu-item logout-link-sidebar" > 🔒Sair <
-            /button> < /
-            div > <
-            /div>
-
-            { /* ==================== MOBILE MENU ==================== */ } {
-                window.innerWidth <= 700 && ( <
-                    div className = "mobile-menu-bar" >
-                    <
-                    div className = "mobile-menu-title" >
-                    <
-                    img src = "/icon.png"
-                    alt = "Ícone"
-                    className = "mobile-menu-icon" / >
-                    <
-                    h6 className = "mobile-menu-h6" > Smart energy < /h6> < /
-                    div > <
-                    button className = "hamburger-btn"
-                    onClick = {
-                        () => setIsMobileMenuOpen(!isMobileMenuOpen)
-                    } >
-                    <
-                    span className = "hamburger-icon" > ☰ < /span> < /
-                    button > <
-                    /div>
-                )
-            }
-
-            {
-                window.innerWidth <= 700 && isMobileMenuOpen && ( <
-                    div className = "mobile-menu-box" >
-                    <
-                    div className = "menu-item"
-                    onClick = {
-                        () => {
-                            setActiveSection('inicio');
-                            setIsMobileMenuOpen(false);
-                        }
-                    } > 🏠Home <
-                    /div>
-
-                    <
-                    div className = "menu-item"
-                    onClick = {
-                        () => {
-                            setActiveSection('controle');
-                            setIsMobileMenuOpen(false);
-                        }
-                    } > 🔌Controle de Energia <
-                    /div>
-
-                    <
-                    div className = "menu-item"
-                    onClick = {
-                        () => {
-                            setActiveSection('relatorios');
-                            setIsMobileMenuOpen(false);
-                        }
-                    } > 📊Relatórios <
-                    /div>
-
-                    <
-                    div className = { `menu-item ${activeSection === 'ecobot' ? 'active' : ''}` }
-                    onClick = {
-                        () => {
-                            setActiveSection('ecobot');
-                            setIsMobileMenuOpen(false);
-                        }
-                    }
-                    style = {
-                        { alignItems: 'center' }
-                    } >
-                    <
-                    img src = { process.env.PUBLIC_URL + '/ST.png' }
-                    alt = "EcoBot"
-                    style = {
-                        {
-                            width: 20,
-                            height: 20,
+                <div
+                    className={`menu-item ${activeSection === 'ecobot' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('ecobot')}
+                >
+                    <img
+                        src={process.env.PUBLIC_URL + '/ST.png'}
+                        alt="EcoBot"
+                        style={{
+                            width: 24,
+                            height: 24,
                             marginRight: 8,
                             verticalAlign: 'middle'
-                        }
-                    }
+                        }}
                     />
-                    EcoBot <
-                    /div>
+                    EcoBot
+                </div>
 
-                    <
-                    div className = "menu-item"
-                    onClick = {
-                        () => {
+                <div
+                    className={`menu-item ${activeSection === 'configuracoes' ? 'active' : ''}`}
+                    onClick={() => setActiveSection('configuracoes')}
+                >
+                    ⚙️Configurações
+                </div>
+
+                <div className="sidebar-bottom">
+                    <button onClick={handleLogout} className="menu-item logout-link-sidebar">
+                        🔒Sair
+                    </button>
+                </div>
+            </div>
+
+            {/* ==================== MOBILE MENU ==================== */}
+            {window.innerWidth <= 700 && (
+                <div className="mobile-menu-bar">
+                    <div className="mobile-menu-title">
+                        <img src="/icon.png" alt="Ícone" className="mobile-menu-icon" />
+                        <h6 className="mobile-menu-h6">Smart energy</h6>
+                    </div>
+                    <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                        <span className="hamburger-icon">☰</span>
+                    </button>
+                </div>
+            )}
+
+            {window.innerWidth <= 700 && isMobileMenuOpen && (
+                <div className="mobile-menu-box">
+                    <div
+                        className="menu-item"
+                        onClick={() => {
+                            setActiveSection('inicio');
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
+                        🏠Home
+                    </div>
+
+                    <div
+                        className="menu-item"
+                        onClick={() => {
+                            setActiveSection('controle');
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
+                        🔌Controle de Energia
+                    </div>
+
+                    <div
+                        className="menu-item"
+                        onClick={() => {
+                            setActiveSection('relatorios');
+                            setIsMobileMenuOpen(false);
+                        }}
+                    >
+                        📊Relatórios
+                    </div>
+
+                    <div
+                        className={`menu-item ${activeSection === 'ecobot' ? 'active' : ''}`}
+                        onClick={() => {
+                            setActiveSection('ecobot');
+                            setIsMobileMenuOpen(false);
+                        }}
+                        style={{ alignItems: 'center' }}
+                    >
+                        <img
+                            src={process.env.PUBLIC_URL + '/ST.png'}
+                            alt="EcoBot"
+                            style={{
+                                width: 20,
+                                height: 20,
+                                marginRight: 8,
+                                verticalAlign: 'middle'
+                            }}
+                        />
+                        EcoBot
+                    </div>
+
+                    <div
+                        className="menu-item"
+                        onClick={() => {
                             setActiveSection('configuracoes');
                             setIsMobileMenuOpen(false);
-                        }
-                    } > ⚙️Configurações <
-                    /div>
+                        }}
+                    >
+                        ⚙️Configurações
+                    </div>
 
-                    <
-                    div className = "menu-item logout-link-sidebar"
-                    onClick = {
-                        () => {
+                    <div
+                        className="menu-item logout-link-sidebar"
+                        onClick={() => {
                             handleLogout();
                             setIsMobileMenuOpen(false);
-                        }
-                    } > 🔒Sair <
-                    /div> < /
-                    div >
-                )
-            }
-
-            { /* ==================== MAIN CONTENT ==================== */ } <
-            div className = "main-content" > { /* Data Mode Notification */ } {
-                fictionalDataMessage && ( <
-                    div className = "data-mode-notification" > { fictionalDataMessage } < /div>
-                )
-            }
-
-            { /* ========== HOME SECTION ========== */ } {
-                activeSection === 'inicio' && ( <
+                        }}
                     >
-                    <
-                    h2 > Olá, { userName }! < /h2>
+                        🔒Sair
+                    </div>
+                </div>
+            )}
 
-                    { /* Metrics Grid */ } <
-                    div className = "metrics-grid" >
-                    <
-                    div className = "metric-card" >
-                    <
-                    h3 > Consumo de Watts atual < /h3> <
-                    p > {
-                        devices.length > 0 ?
-                        devices
-                        .reduce(
-                            (sum, d) =>
-                            sum +
-                            (d.latestReading &&
-                                d.powerState &&
-                                typeof d.latestReading.power === 'number' ?
-                                d.latestReading.power :
-                                0),
-                            0
-                        )
-                        .toFixed(2) + ' W' : '0.00 W'
-                    } <
-                    /p> < /
-                    div >
+            {/* ==================== MAIN CONTENT ==================== */}
+            <div className="main-content">
+                {/* Data Mode Notification */}
+                {fictionalDataMessage && <div className="data-mode-notification">{fictionalDataMessage}</div>}
 
-                    <
-                    div className = "metric-card" >
-                    <
-                    h3 > Consumo de quilowatt - hora do mês atual < /h3> <
-                    p > { currentMonthConsumption } < /p> < /
-                    div >
+                {/* ========== HOME SECTION ========== */}
+                {activeSection === 'inicio' && (
+                    <>
+                        <h2>Olá, {userName}!</h2>
 
-                    <
-                    div className = "metric-card" >
-                    <
-                    h3 > Consumo quilowatt - hora total < /h3> <
-                    p > { liveTotalEnergySum.toFixed(2) }
-                    kWh < /p> < /
-                    div >
+                        {/* Metrics Grid */}
+                        <div className="metrics-grid">
+                            <div className="metric-card">
+                                <h3>Consumo de Watts atual</h3>
+                                <p>
+                                    {devices.length > 0
+                                        ? devices
+                                        .reduce(
+                                            (sum, d) =>
+                                                sum +
+                                                (d.latestReading && d.powerState && typeof d.latestReading.power === 'number'
+                                                    ? d.latestReading.power
+                                                    : 0),
+                                            0
+                                        )
+                                        .toFixed(2) + ' W'
+                                        : '0.00 W'}
+                                </p>
+                            </div>
 
-                    <
-                    div className = "metric-card" >
-                    <
-                    h3 > Fatura Estimada < /h3> <
-                    p >
-                    R$ { ' ' } {
-                        (devices.length > 0 ?
-                            devices.reduce(
-                                (sum, d) =>
-                                sum +
-                                (d.latestReading &&
-                                    d.powerState &&
-                                    typeof d.latestReading.totalEnergy === 'number' ?
-                                    d.latestReading.totalEnergy :
-                                    0),
-                                0
-                            ) * 0.75 :
-                            0
-                        ).toFixed(2)
-                    } <
-                    /p> < /
-                    div >
+                            <div className="metric-card">
+                                <h3>Consumo de quilowatt-hora do mês atual</h3>
+                                <p>{currentMonthConsumption}</p>
+                            </div>
 
-                    <
-                    div className = "metric-card" >
-                    <
-                    h3 > Consumo de Amperes atual < /h3> <
-                    p > {
-                        devices
-                        .filter(
-                            (d) =>
-                            d.powerState &&
-                            d.latestReading &&
-                            typeof d.latestReading.current === 'number'
-                        )
-                        .reduce((sum, d) => sum + d.latestReading.current, 0)
-                        .toFixed(2)
-                    }
-                    A <
-                    /p> < /
-                    div >
+                            <div className="metric-card">
+                                <h3>Consumo quilowatt-hora total</h3>
+                                <p>{liveTotalEnergySum.toFixed(2)} kWh</p>
+                            </div>
 
-                    <
-                    div className = "metric-card" >
-                    <
-                    h3 > Gasto reduzido < /h3> <
-                    p > R$ 12, 50 < /p> < /
-                    div > <
-                    /div>
+                            <div className="metric-card">
+                                <h3>Fatura Estimada</h3>
+                                <p>
+                                    R${' '}
+                                    {(devices.length > 0
+                                            ? devices.reduce(
+                                            (sum, d) =>
+                                                sum +
+                                                (d.latestReading && d.powerState && typeof d.latestReading.totalEnergy === 'number'
+                                                    ? d.latestReading.totalEnergy
+                                                    : 0),
+                                            0
+                                        ) * 0.75
+                                            : 0
+                                    ).toFixed(2)}
+                                </p>
+                            </div>
 
-                    { /* Main Chart Area */ } <
-                    div className = "chart-area-main" >
-                    <
-                    div className = "chart-card-main" >
-                    <
-                    div className = "view-mode-buttons" >
-                    <
-                    button onClick = {
-                        () => setViewMode('day')
-                    }
-                    className = { viewMode === 'day' ? 'active-view-button' : 'view-button' } >
-                    Dia <
-                    /button> <
-                    button onClick = {
-                        () => setViewMode('week')
-                    }
-                    className = { viewMode === 'week' ? 'active-view-button' : 'view-button' } >
-                    Semana <
-                    /button> <
-                    button onClick = {
-                        () => setViewMode('month')
-                    }
-                    className = { viewMode === 'month' ? 'active-view-button' : 'view-button' } >
-                    Mês <
-                    /button> < /
-                    div >
+                            <div className="metric-card">
+                                <h3>Consumo de Amperes atual</h3>
+                                <p>
+                                    {devices
+                                        .filter(
+                                            (d) =>
+                                                d.powerState && d.latestReading && typeof d.latestReading.current === 'number'
+                                        )
+                                        .reduce((sum, d) => sum + d.latestReading.current, 0)
+                                        .toFixed(2)}
+                                    A
+                                </p>
+                            </div>
 
-                    {
-                        getChartData().labels.length > 0 ? ( <
-                            Line data = { getChartData() }
-                            options = { chartOptions }
-                            />
-                        ) : ( <
-                            p className = "chart-loading-message" >
-                            Carregando dados do gráfico... <
-                                /p>
-                        )
-                    }
+                            <div className="metric-card">
+                                <h3>Gasto reduzido</h3>
+                                <p>R$ 12,50</p>
+                            </div>
+                        </div>
 
-                    <
-                    button className = "expand-chart-button"
-                    onClick = {
-                        () => navigate('/grafico-cheio')
-                    } >
-                    Expandir Gráfico <
-                    /button> < /
-                    div > <
-                    /div>
+                        {/* Main Chart Area */}
+                        <div className="chart-area-main">
+                            <div className="chart-card-main">
+                                <div className="view-mode-buttons">
+                                    <button
+                                        onClick={() => setViewMode('day')}
+                                        className={viewMode === 'day' ? 'active-view-button' : 'view-button'}
+                                    >
+                                        Dia
+                                    </button>
+                                    <button
+                                        onClick={() => setViewMode('week')}
+                                        className={viewMode === 'week' ? 'active-view-button' : 'view-button'}
+                                    >
+                                        Semana
+                                    </button>
+                                    <button
+                                        onClick={() => setViewMode('month')}
+                                        className={viewMode === 'month' ? 'active-view-button' : 'view-button'}
+                                    >
+                                        Mês
+                                    </button>
+                                </div>
 
-                    { /* Bottom Sections */ } <
-                    div className = "bottom-sections-grid" >
-                    <
-                    div className = "bottom-card consumption-by-type-card" >
-                    <
-                    h3 > Consumo por Tipo de Dispositivo < /h3> <
-                    div className = "chart-wrapper"
-                    style = {
-                        { display: 'flex', alignItems: 'center', gap: 24 }
-                    } >
-                    <
-                    div style = {
-                        {
-                            width: 200,
-                            height: 200,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                        }
-                    } >
-                    <
-                    Doughnut data = { getConsumptionByTypeData() }
-                    options = {
-                        {
-                            ...consumptionByTypeOptions,
-                            plugins: {
-                                ...consumptionByTypeOptions.plugins,
-                                legend: { display: false },
-                                datalabels: { display: false }
-                            }
-                        }
-                    }
-                    /> < /
-                    div > {
-                        (() => {
-                            const data = getConsumptionByTypeData();
-                            const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                            const percentSala =
-                                total > 0 ?
-                                ((data.datasets[0].data[0] / total) * 100).toFixed(1) :
-                                '0.0';
-                            const percentCamera =
-                                total > 0 ?
-                                ((data.datasets[0].data[1] / total) * 100).toFixed(1) :
-                                '0.0';
-                            return ( <
-                                span style = {
-                                    {
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: 4,
+                                {getChartData().labels.length > 0 ? (
+                                    <Line data={getChartData()} options={chartOptions} />
+                                ) : (
+                                    <p className="chart-loading-message">Carregando dados do gráfico...</p>
+                                )}
+
+                                <button
+                                    className="expand-chart-button"
+                                    onClick={() => navigate('/grafico-cheio')}
+                                >
+                                    Expandir Gráfico
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Bottom Sections */}
+                        <div className="bottom-sections-grid">
+                            <div className="bottom-card consumption-by-type-card">
+                                <h3>Consumo por Tipo de Dispositivo</h3>
+                                <div className="chart-wrapper" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+                                    <div
+                                        style={{
+                                            width: 200,
+                                            height: 200,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}
+                                    >
+                                        <Doughnut
+                                            data={getConsumptionByTypeData()}
+                                            options={{
+                                                ...consumptionByTypeOptions,
+                                                plugins: {
+                                                    ...consumptionByTypeOptions.plugins,
+                                                    legend: { display: false },
+                                                    datalabels: { display: false }
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                    {(() => {
+                                        const data = getConsumptionByTypeData();
+                                        const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                        const percentSala =
+                                            total > 0 ? ((data.datasets[0].data[0] / total) * 100).toFixed(1) : '0.0';
+                                        const percentCamera =
+                                            total > 0 ? ((data.datasets[0].data[1] / total) * 100).toFixed(1) : '0.0';
+                                        return (
+                                            <span
+                                                style={{
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: 4,
+                                                    flexDirection: 'column',
+                                                    fontSize: 13
+                                                }}
+                                            >
+                      <span
+                          style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              whiteSpace: 'nowrap'
+                          }}
+                      >
+                        <span
+                            style={{
+                                display: 'inline-block',
+                                width: 12,
+                                height: 12,
+                                borderRadius: 6,
+                                background: data.datasets[0].backgroundColor[0],
+                                marginRight: 4
+                            }}
+                        />
+                        <span style={{ color: '#FFF', fontWeight: 500 }}>Sala:</span>
+                        <span style={{ color: '#FFF', fontWeight: 700 }}>{percentSala}%</span>
+                      </span>
+                      <span
+                          style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              whiteSpace: 'nowrap'
+                          }}
+                      >
+                        <span
+                            style={{
+                                display: 'inline-block',
+                                width: 12,
+                                height: 12,
+                                borderRadius: 6,
+                                background: data.datasets[0].backgroundColor[1],
+                                marginRight: 4
+                            }}
+                        />
+                        <span style={{ color: '#FFF', fontWeight: 500 }}>Câmera:</span>
+                        <span style={{ color: '#FFF', fontWeight: 700 }}>{percentCamera}%</span>
+                      </span>
+                    </span>
+                                        );
+                                    })()}
+                                </div>
+                            </div>
+
+                            <div className="bottom-card suggested-devices-card">
+                                <h3>Dispositivos Sugeridos</h3>
+                                <p className="suggestions-description">
+                                    Sugestões para otimizar o consumo de energia em seus dispositivos.
+                                </p>
+                                <ul className="device-suggestion-list">
+                                    {getSuggestedDevicesData().length > 0 ? (
+                                        getSuggestedDevicesData().map((device) => (
+                                            <li key={device.id}>
+                                                <strong>{device.name}:</strong> {device.suggestion}
+                                            </li>
+                                        ))
+                                    ) : (
+                                        <p className="no-suggestions-message">Nenhuma sugestão no momento.</p>
+                                    )}
+                                </ul>
+                            </div>
+                        </div>
+                    </>
+                )}
+
+                {/* ========== ENERGY CONTROL SECTION ========== */}
+                {activeSection === 'controle' && (
+                    <div className="energy-control-section">
+                        <h2>Controle de Dispositivos</h2>
+                        {deviceMessage && <p className="device-feedback-message">{deviceMessage}</p>}
+
+                        <h3>Meus Dispositivos de Energia</h3>
+
+                        {devices.length > 0 ? (
+                            <div className="device-control-list">
+                                {devices.map((device) => (
+                                    <div key={device.id} className="device-control-item">
+                                        <span className="device-control-name">{device.name}</span>
+                                        <button
+                                            onClick={() => toggleDevicePower(device.id, device.powerState, device.name)}
+                                            className="device-toggle-button power-on"
+                                            type="button"
+                                            disabled={device.powerState}
+                                        >
+                                            Ligar
+                                        </button>
+                                        <button
+                                            onClick={() => toggleDevicePower(device.id, device.powerState, device.name)}
+                                            className="device-toggle-button power-off"
+                                            type="button"
+                                            disabled={!device.powerState}
+                                        >
+                                            Desligar
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="no-devices-message">Nenhum dispositivo encontrado.</p>
+                        )}
+
+                        {/* ========== SCHEDULING CARDS ========== */}
+                        <div className="bottom-sections-grid">
+                            <div className="bottom-card">
+                                <h1
+                                    style={{
+                                        textAlign: 'center',
+                                        color: '#FFF',
+                                        marginBottom: '1.2rem',
+                                        fontSize: '1.3rem'
+                                    }}
+                                >
+                                    Agendar Desligamento
+                                </h1>
+                                <form
+                                    style={{
+                                        display: 'flex',
                                         flexDirection: 'column',
-                                        fontSize: 13
-                                    }
-                                } >
-                                <
-                                span style = {
-                                    {
-                                        display: 'inline-flex',
                                         alignItems: 'center',
-                                        gap: 4,
-                                        whiteSpace: 'nowrap'
-                                    }
-                                } >
-                                <
-                                span style = {
-                                    {
-                                        display: 'inline-block',
-                                        width: 12,
-                                        height: 12,
-                                        borderRadius: 6,
-                                        background: data.datasets[0].backgroundColor[0],
-                                        marginRight: 4
-                                    }
-                                }
-                                /> <
-                                span style = {
-                                    { color: '#FFF', fontWeight: 500 }
-                                } >
-                                Sala:
-                                <
-                                /span> <
-                                span style = {
-                                    { color: '#FFF', fontWeight: 700 }
-                                } > { percentSala } %
-                                <
-                                /span> < /
-                                span > <
-                                span style = {
-                                    {
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: 4,
-                                        whiteSpace: 'nowrap'
-                                    }
-                                } >
-                                <
-                                span style = {
-                                    {
-                                        display: 'inline-block',
-                                        width: 12,
-                                        height: 12,
-                                        borderRadius: 6,
-                                        background: data.datasets[0].backgroundColor[1],
-                                        marginRight: 4
-                                    }
-                                }
-                                /> <
-                                span style = {
-                                    { color: '#FFF', fontWeight: 500 }
-                                } >
-                                Câmera:
-                                <
-                                /span> <
-                                span style = {
-                                    { color: '#FFF', fontWeight: 700 }
-                                } > { percentCamera } %
-                                <
-                                /span> < /
-                                span > <
-                                /span>
-                            );
-                        })()
-                    } <
-                    /div> < /
-                    div >
-
-                    <
-                    div className = "bottom-card suggested-devices-card" >
-                    <
-                    h3 > Dispositivos Sugeridos < /h3> <
-                    p className = "suggestions-description" >
-                    Sugestões para otimizar o consumo de energia em seus dispositivos. <
-                    /p> <
-                    ul className = "device-suggestion-list" > {
-                        getSuggestedDevicesData().length > 0 ? (
-                            getSuggestedDevicesData().map((device) => ( <
-                                li key = { device.id } >
-                                <
-                                strong > { device.name }: < /strong> {device.suggestion} < /
-                                li >
-                            ))
-                        ) : ( <
-                            p className = "no-suggestions-message" >
-                            Nenhuma sugestão no momento. <
-                            /p>
-                        )
-                    } <
-                    /ul> < /
-                    div > <
-                    /div> < / >
-                )
-            }
-
-            { /* ========== ENERGY CONTROL SECTION ========== */ } {
-                activeSection === 'controle' && ( <
-                    div className = "energy-control-section" >
-                    <
-                    h2 > Controle de Dispositivos < /h2> {
-                    deviceMessage && ( <
-                        p className = "device-feedback-message" > { deviceMessage } < /p>
-                    )
-                }
-
-                <
-                h3 > Meus Dispositivos de Energia < /h3>
-
-                {
-                    devices.length > 0 ? ( <
-                        div className = "device-control-list" > {
-                            devices.map((device) => ( <
-                                div key = { device.id }
-                                className = "device-control-item" >
-                                <
-                                span className = "device-control-name" > { device.name } < /span> <
-                                button onClick = {
-                                    () =>
-                                    toggleDevicePower(device.id, device.powerState, device.name)
-                                }
-                                className = "device-toggle-button power-on"
-                                type = "button"
-                                disabled = { device.powerState } >
-                                Ligar <
-                                /button> <
-                                button onClick = {
-                                    () =>
-                                    toggleDevicePower(device.id, device.powerState, device.name)
-                                }
-                                className = "device-toggle-button power-off"
-                                type = "button"
-                                disabled = {!device.powerState } >
-                                Desligar <
-                                /button> < /
-                                div >
-                            ))
-                        } <
-                        /div>
-                    ) : ( <
-                        p className = "no-devices-message" > Nenhum dispositivo encontrado. < /p>
-                    )
-                }
-
-                { /* ========== SCHEDULING CARDS ========== */ } <
-                div className = "bottom-sections-grid" >
-                    <
-                    div className = "bottom-card" >
-                    <
-                    h1 style = {
-                        {
-                            textAlign: 'center',
-                            color: '#FFF',
-                            marginBottom: '1.2rem',
-                            fontSize: '1.3rem'
-                        }
-                    } >
-                    Agendar Desligamento <
-                    /h1> <
-                form style = {
-                    {
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: 14,
-                        width: '100%'
-                    }
-                }
-                onSubmit = { handleScheduleSubmit } > { /* Seleção de Dispositivo */ } <
-                    div style = {
-                        { width: '100%' }
-                    } >
-                    <
-                    label style = {
-                        {
-                            color: '#FFF',
-                            fontWeight: 500,
-                            marginBottom: 6,
-                            display: 'block',
-                            textAlign: 'center',
-                            fontSize: 15
-                        }
-                    } >
-                    Dispositivo:
-                    <
-                    /label> <
-                div className = "menu-box-group device-group" >
-                    <
-                    button type = "button"
-                className = { `menu-box-option device-btn${
+                                        gap: 14,
+                                        width: '100%'
+                                    }}
+                                    onSubmit={handleScheduleSubmit}
+                                >
+                                    {/* Seleção de Dispositivo */}
+                                    <div style={{ width: '100%' }}>
+                                        <label
+                                            style={{
+                                                color: '#FFF',
+                                                fontWeight: 500,
+                                                marginBottom: 6,
+                                                display: 'block',
+                                                textAlign: 'center',
+                                                fontSize: 15
+                                            }}
+                                        >
+                                            Dispositivo:
+                                        </label>
+                                        <div className="menu-box-group device-group">
+                                            <button
+                                                type="button"
+                                                className={`menu-box-option device-btn${
                                                     selectedDevices.includes('sala') ? ' selected' : ''
-                                                }` }
-                onClick = {
-                        () => handleDeviceSelect('sala')
-                    } >
-                    Sala <
-                    /button> <
-                button type = "button"
-                className = { `menu-box-option device-btn${
+                                                }`}
+                                                onClick={() => handleDeviceSelect('sala')}
+                                            >
+                                                Sala
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className={`menu-box-option device-btn${
                                                     selectedDevices.includes('camera') ? ' selected' : ''
-                                                }` }
-                onClick = {
-                        () => handleDeviceSelect('camera')
-                    } >
-                    Câmera <
-                    /button> <
-                button type = "button"
-                className = { `menu-box-option device-btn${
+                                                }`}
+                                                onClick={() => handleDeviceSelect('camera')}
+                                            >
+                                                Câmera
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className={`menu-box-option device-btn${
                                                     selectedDevices.length === 2 ? ' selected' : ''
-                                                }` }
-                onClick = {
-                        () => {
-                            if (selectedDevices.length === 2) setSelectedDevices([]);
-                            else setSelectedDevices(['sala', 'camera']);
-                        }
-                    } >
-                    Ambos <
-                    /button> < /
-                div > <
-                    /div>
+                                                }`}
+                                                onClick={() => {
+                                                    if (selectedDevices.length === 2) setSelectedDevices([]);
+                                                    else setSelectedDevices(['sala', 'camera']);
+                                                }}
+                                            >
+                                                Ambos
+                                            </button>
+                                        </div>
+                                    </div>
 
-                { /* Seleção de Dias - Dropdown */ } <
-                div style = {
-                        { width: '100%' }
-                    } >
-                    <
-                    label style = {
-                        {
-                            color: '#FFF',
-                            fontWeight: 500,
-                            marginBottom: 6,
-                            display: 'block',
-                            textAlign: 'center',
-                            fontSize: 15
-                        }
-                    } >
-                    Dias da Semana:
-                    <
-                    /label> <
-                div className = { `menu-box-dropdown${dropdownOpen ? ' open' : ''}` }
-                tabIndex = { 0 } >
-                    <
-                    button type = "button"
-                className = { `menu-box-dropdown-btn${
+                                    {/* Seleção de Dias - Dropdown */}
+                                    <div style={{ width: '100%' }}>
+                                        <label
+                                            style={{
+                                                color: '#FFF',
+                                                fontWeight: 500,
+                                                marginBottom: 6,
+                                                display: 'block',
+                                                textAlign: 'center',
+                                                fontSize: 15
+                                            }}
+                                        >
+                                            Dias da Semana:
+                                        </label>
+                                        <div className={`menu-box-dropdown${dropdownOpen ? ' open' : ''}`} tabIndex={0}>
+                                            <button
+                                                type="button"
+                                                className={`menu-box-dropdown-btn${
                                                     selectedDays.length > 0 ? ' selected' : ''
-                                                }` }
-                onClick = {
-                        () => setDropdownOpen(!dropdownOpen)
-                    } > {
-                        selectedDays.length === 0 ?
-                        'Selecionar dias' : selectedDays.length === 7 ?
-                            'Todos os dias' : selectedDays.map((idx) => weekDays[idx]).join(', ')
-                    } <
-                    span style = {
-                        { marginLeft: 8, fontSize: 13 }
-                    } > ▼ < /span> < /
-                button > <
-                    div className = "menu-box-dropdown-list" >
-                    <
-                    button type = "button"
-                className = { `menu-box-option${allDaysSelected ? ' selected' : ''}` }
-                onClick = {
-                        () => {
-                            handleAllDaysSelect();
-                            setDropdownOpen(true);
-                        }
-                    } >
-                    Todos os dias <
-                    /button> {
-                weekDays.map((day, idx) => ( <
-                    button key = { day }
-                    type = "button"
-                    className = { `menu-box-option${
+                                                }`}
+                                                onClick={() => setDropdownOpen(!dropdownOpen)}
+                                            >
+                                                {selectedDays.length === 0
+                                                    ? 'Selecionar dias'
+                                                    : selectedDays.length === 7
+                                                        ? 'Todos os dias'
+                                                        : selectedDays.map((idx) => weekDays[idx]).join(', ')}
+                                                <span style={{ marginLeft: 8, fontSize: 13 }}>▼</span>
+                                            </button>
+                                            <div className="menu-box-dropdown-list">
+                                                <button
+                                                    type="button"
+                                                    className={`menu-box-option${allDaysSelected ? ' selected' : ''}`}
+                                                    onClick={() => {
+                                                        handleAllDaysSelect();
+                                                        setDropdownOpen(true);
+                                                    }}
+                                                >
+                                                    Todos os dias
+                                                </button>
+                                                {weekDays.map((day, idx) => (
+                                                    <button
+                                                        key={day}
+                                                        type="button"
+                                                        className={`menu-box-option${
                                                             selectedDays.includes(idx) ? ' selected' : ''
-                                                        }` }
-                    onClick = {
-                        () => {
-                            handleDaySelect(idx);
-                            setDropdownOpen(true);
-                        }
-                    } > { day } <
-                    /button>
-                ))
-            } <
-            /div> < /
-            div > <
-            /div>
+                                                        }`}
+                                                        onClick={() => {
+                                                            handleDaySelect(idx);
+                                                            setDropdownOpen(true);
+                                                        }}
+                                                    >
+                                                        {day}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
 
-            { /* Repetição */ } <
-            div style = {
-                { width: '100%', display: 'flex', justifyContent: 'center' }
-            } >
-            <
-            button type = "button"
-            className = { `menu-box-option${repeat ? ' selected' : ''}` }
-            onClick = {
-                () => setRepeat(!repeat)
-            }
-            style = {
-                { minWidth: 160, fontSize: 0.95 + 'rem', padding: '7px 10px' }
-            } >
-            Repetir nos dias selecionados <
-            /button> < /
-            div >
+                                    {/* Repetição */}
+                                    <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                                        <button
+                                            type="button"
+                                            className={`menu-box-option${repeat ? ' selected' : ''}`}
+                                            onClick={() => setRepeat(!repeat)}
+                                            style={{ minWidth: 160, fontSize: 0.95 + 'rem', padding: '7px 10px' }}
+                                        >
+                                            Repetir nos dias selecionados
+                                        </button>
+                                    </div>
 
-            { /* Horário */ } <
-            div style = {
-                {
-                    width: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center'
-                }
-            } >
-            <
-            label style = {
-                {
-                    color: '#FFF',
-                    fontWeight: 500,
-                    marginBottom: 4,
-                    fontSize: 15
-                }
-            } >
-            Horário:
-            <
-            /label> <
-            input type = "time"
-            value = { time }
-            onChange = {
-                (e) => setTime(e.target.value)
-            }
-            className = "schedule-time-input"
-            required /
-            >
-            <
-            /div>
+                                    {/* Horário */}
+                                    <div
+                                        style={{
+                                            width: '100%',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center'
+                                        }}
+                                    >
+                                        <label
+                                            style={{
+                                                color: '#FFF',
+                                                fontWeight: 500,
+                                                marginBottom: 4,
+                                                fontSize: 15
+                                            }}
+                                        >
+                                            Horário:
+                                        </label>
+                                        <input
+                                            type="time"
+                                            value={time}
+                                            onChange={(e) => setTime(e.target.value)}
+                                            className="schedule-time-input"
+                                            required
+                                        />
+                                    </div>
 
-            { /* Botão */ } <
-            button type = "submit"
-            style = {
-                {
-                    marginTop: 6,
-                    background: 'linear-gradient(90deg, #00bcd4 60%, #4a4a7e 100%)',
-                    color: '#FFF',
-                    border: 'none',
-                    borderRadius: 8,
-                    padding: '10px 0',
-                    fontWeight: 'bold',
-                    fontSize: 17,
-                    cursor: 'pointer',
-                    width: '70%'
-                }
-            } >
-            Agendar <
-            /button> {
-            scheduleMessage && ( <
-                p style = {
-                    {
-                        color: scheduleMessageColor,
-                        marginTop: 8,
-                        textAlign: 'center'
-                    }
-                } > { scheduleMessage } <
-                /p>
-            )
-        } <
-        /form> < /
-    div >
+                                    {/* Botão */}
+                                    <button
+                                        type="submit"
+                                        style={{
+                                            marginTop: 6,
+                                            background: 'linear-gradient(90deg, #00bcd4 60%, #4a4a7e 100%)',
+                                            color: '#FFF',
+                                            border: 'none',
+                                            borderRadius: 8,
+                                            padding: '10px 0',
+                                            fontWeight: 'bold',
+                                            fontSize: 17,
+                                            cursor: 'pointer',
+                                            width: '70%'
+                                        }}
+                                    >
+                                        Agendar
+                                    </button>
+                                    {scheduleMessage && (
+                                        <p
+                                            style={{
+                                                color: scheduleMessageColor,
+                                                marginTop: 8,
+                                                textAlign: 'center'
+                                            }}
+                                        >
+                                            {scheduleMessage}
+                                        </p>
+                                    )}
+                                </form>
+                            </div>
 
-        <
-        div className = "bottom-card" >
-        <
-        h1 style = {
-            {
-                textAlign: 'center',
-                color: '#FFF',
-                marginBottom: '1.5rem',
-                fontSize: '1.5rem'
-            }
-        } >
-        Seus Agendamentos <
-        /h1> { / * Empty content
-    for now * / } < /
-    div > <
-        /div> < /
-    div >
-)
-}
+                            <div className="bottom-card">
+                                <h1
+                                    style={{
+                                        textAlign: 'center',
+                                        color: '#FFF',
+                                        marginBottom: '1.5rem',
+                                        fontSize: '1.5rem'
+                                    }}
+                                >
+                                    Seus Agendamentos
+                                </h1>
+                                {/* Empty content for now */}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
-{ /* ========== REPORTS SECTION ========== */ } {
-    activeSection === 'relatorios' && ( <
-            div className = "reports-section" >
-            <
-            h2 > Relatórios de Consumo < /h2> <
-            div className = "report-summary-card" >
-            <
-            h3 > Resumo Geral < /h3> <
-            p >
-            Total de Dispositivos: < strong > { report.summary.totalDevices } < /strong> < /
-            p > <
-            p >
-            Com uso Inteligente(estimado): { ' ' } <
-            strong > { report.summary.smartUsageDevices } < /strong> < /
-            p > <
-            p >
-            Dispositivos com Otimização Pendente(estimado): { ' ' } <
-            strong > { report.summary.nonSmartUsageDevices } < /strong> < /
-            p > <
-            p className = "overall-report-message" > { report.summary.overallMessage } <
-            /p> < /
-            div >
+                {/* ========== REPORTS SECTION ========== */}
+                {activeSection === 'relatorios' && (
+                    <div className="reports-section">
+                        <h2>Relatórios de Consumo</h2>
+                        <div className="report-summary-card">
+                            <h3>Resumo Geral</h3>
+                            <p>
+                                Total de Dispositivos: <strong>{report.summary.totalDevices}</strong>
+                            </p>
+                            <p>
+                                Com uso Inteligente(estimado):{' '}
+                                <strong>{report.summary.smartUsageDevices}</strong>
+                            </p>
+                            <p>
+                                Dispositivos com Otimização Pendente(estimado):{' '}
+                                <strong>{report.summary.nonSmartUsageDevices}</strong>
+                            </p>
+                            <p className="overall-report-message">{report.summary.overallMessage}</p>
+                        </div>
 
-            {
-                isRealData &&
-                devices.length > 0 &&
-                devices[0].latestReading && ( <
-                    div className = "energy-realtime-card" >
-                    <
-                    h3 > Dados em Tempo Real do Dispositivo Sonoff Sala < /h3> <
-                    table className = "energy-realtime-table" >
-                    <
-                    tbody className = "energy-realtime-tbody" >
-                    <
-                    tr >
-                    <
-                    td > Tensão < /td> <
-                    td > {
-                        devices[0].powerState &&
-                        typeof devices[0].latestReading.voltage === 'number' ?
-                        devices[0].latestReading.voltage : 0
-                    }
-                    V <
-                    /td> < /
-                    tr > <
-                    tr >
-                    <
-                    td > Corrente < /td> <
-                    td > {
-                        devices[0].powerState &&
-                        typeof devices[0].latestReading.current === 'number' ?
-                        devices[0].latestReading.current : 0
-                    }
-                    A <
-                    /td> < /
-                    tr > <
-                    tr >
-                    <
-                    td > Potência Ativa < /td> <
-                    td > {
-                        devices[0].powerState &&
-                        typeof devices[0].latestReading.power === 'number' ?
-                        devices[0].latestReading.power : 0
-                    }
-                    W <
-                    /td> < /
-                    tr > <
-                    tr >
-                    <
-                    td > Potência Aparente < /td> <
-                    td > {
-                        devices[0].powerState &&
-                        typeof devices[0].latestReading.ApparentPower === 'number' ?
-                        devices[0].latestReading.ApparentPower : 0
-                    }
-                    VA <
-                    /td> < /
-                    tr > <
-                    tr >
-                    <
-                    td > Potência Reativa < /td> <
-                    td > {
-                        devices[0].powerState &&
-                        typeof devices[0].latestReading.ReactivePower === 'number' ?
-                        devices[0].latestReading.ReactivePower : 0
-                    }
-                    var <
-                    /td> < /
-                    tr > <
-                    tr >
-                    <
-                    td > Fator de Potência < /td> <
-                    td > {
-                        devices[0].powerState &&
-                        typeof devices[0].latestReading.PowerFactor === 'number' ?
-                        devices[0].latestReading.PowerFactor : 0
-                    } <
-                    /td> < /
-                    tr > <
-                    tr >
-                    <
-                    td > Energia Hoje < /td> <
-                    td > {
-                        typeof devices[0].latestReading.EnergyToday === 'number' ?
-                        devices[0].latestReading.EnergyToday : '--'
-                    }
-                    kWh <
-                    /td> < /
-                    tr > <
-                    tr >
-                    <
-                    td > Energia Ontem < /td> <
-                    td > {
-                        typeof devices[0].latestReading.EnergyYesterday === 'number' ?
-                        devices[0].latestReading.EnergyYesterday : '--'
-                    }
-                    kWh <
-                    /td> < /
-                    tr > <
-                    tr >
-                    <
-                    td > Energia Total < /td> <
-                    td > {
-                        devices[0].powerState ?
-                        liveTotalEnergyBroker1.toFixed(2) + ' kWh' : '0.00 kWh'
-                    } <
-                    /td> < /
-                    tr > <
-                    /tbody> < /
-                    table > <
-                    /div>
-                )
-            }
+                        {isRealData && devices.length > 0 && devices[0].latestReading && (
+                            <div className="energy-realtime-card">
+                                <h3>Dados em Tempo Real do Dispositivo Sonoff Sala</h3>
+                                <table className="energy-realtime-table">
+                                    <tbody className="energy-realtime-tbody">
+                                    <tr>
+                                        <td>Tensão</td>
+                                        <td>
+                                            {devices[0].powerState &&
+                                            typeof devices[0].latestReading.voltage === 'number'
+                                                ? devices[0].latestReading.voltage
+                                                : 0}
+                                            V
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Corrente</td>
+                                        <td>
+                                            {devices[0].powerState &&
+                                            typeof devices[0].latestReading.current === 'number'
+                                                ? devices[0].latestReading.current
+                                                : 0}
+                                            A
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Potência Ativa</td>
+                                        <td>
+                                            {devices[0].powerState &&
+                                            typeof devices[0].latestReading.power === 'number'
+                                                ? devices[0].latestReading.power
+                                                : 0}
+                                            W
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Potência Aparente</td>
+                                        <td>
+                                            {devices[0].powerState &&
+                                            typeof devices[0].latestReading.ApparentPower === 'number'
+                                                ? devices[0].latestReading.ApparentPower
+                                                : 0}
+                                            VA
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Potência Reativa</td>
+                                        <td>
+                                            {devices[0].powerState &&
+                                            typeof devices[0].latestReading.ReactivePower === 'number'
+                                                ? devices[0].latestReading.ReactivePower
+                                                : 0}
+                                            var
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Fator de Potência</td>
+                                        <td>
+                                            {devices[0].powerState &&
+                                            typeof devices[0].latestReading.PowerFactor === 'number'
+                                                ? devices[0].latestReading.PowerFactor
+                                                : 0}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Energia Hoje</td>
+                                        <td>
+                                            {typeof devices[0].latestReading.EnergyToday === 'number'
+                                                ? devices[0].latestReading.EnergyToday
+                                                : '--'}
+                                            kWh
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Energia Ontem</td>
+                                        <td>
+                                            {typeof devices[0].latestReading.EnergyYesterday === 'number'
+                                                ? devices[0].latestReading.EnergyYesterday
+                                                : '--'}
+                                            kWh
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Energia Total</td>
+                                        <td>
+                                            {devices[0].powerState
+                                                ? liveTotalEnergyBroker1.toFixed(2) + ' kWh'
+                                                : '0.00 kWh'}
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
 
-            {
-                isRealData &&
-                    devices.length > 1 &&
-                    devices[1].latestReading && ( <
-                        div className = "energy-realtime-card"
-                        style = {
-                            { marginTop: '32px' }
-                        } >
-                        <
-                        h3 > Dados em Tempo Real do Dispositivo Sonoff Câmera < /h3> <
-                        table className = "energy-realtime-table" >
-                        <
-                        tbody className = "energy-realtime-tbody" >
-                        <
-                        tr >
-                        <
-                        td > Tensão < /td> <
-                        td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.voltage === 'number' ?
-                            devices[1].latestReading.voltage : 0
-                        }
-                        V <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Corrente < /td> <
-                        td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.current === 'number' ?
-                            devices[1].latestReading.current : 0
-                        }
-                        A <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Potência Ativa < /td> <
-                        td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.power === 'number' ?
-                            devices[1].latestReading.power : 0
-                        }
-                        W <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Potência Aparente < /td> <
-                        td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.ApparentPower === 'number' ?
-                            devices[1].latestReading.ApparentPower : 0
-                        }
-                        VA <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Potência Reativa < /td> <
-                        td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.ReactivePower === 'number' ?
-                            devices[1].latestReading.ReactivePower : 0
-                        }
-                        var <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Fator de Potência < /td> <
-                        td > {
-                            devices[1].powerState &&
-                            typeof devices[1].latestReading.PowerFactor === 'number' ?
-                            devices[1].latestReading.PowerFactor : 0
-                        } <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Energia Hoje < /td> <
-                        td > {
-                            typeof devices[1].latestReading.EnergyToday === 'number' ?
-                            devices[1].latestReading.EnergyToday : '--'
-                        }
-                        kWh <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Energia Ontem < /td> <
-                        td > {
-                            typeof devices[1].latestReading.EnergyYesterday === 'number' ?
-                            devices[1].latestReading.EnergyYesterday : '--'
-                        }
-                        kWh <
-                        /td> < /
-                        tr > <
-                        tr >
-                        <
-                        td > Energia Total < /td> <
-                        td > {
-                            devices[1].powerState ?
-                            liveTotalEnergyBroker2.toFixed(2) + ' kWh' : '0.00 kWh'
-                        } <
-                        /td> < /
-                        tr > <
-                        /tbody> < /
-                        table > <
-                        /div>
-                    )
-            }
+                        {isRealData && devices.length > 1 && devices[1].latestReading && (
+                            <div className="energy-realtime-card" style={{ marginTop: '32px' }}>
+                                <h3>Dados em Tempo Real do Dispositivo Sonoff Câmera</h3>
+                                <table className="energy-realtime-table">
+                                    <tbody className="energy-realtime-tbody">
+                                    <tr>
+                                        <td>Tensão</td>
+                                        <td>
+                                            {devices[1].powerState &&
+                                            typeof devices[1].latestReading.voltage === 'number'
+                                                ? devices[1].latestReading.voltage
+                                                : 0}
+                                            V
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Corrente</td>
+                                        <td>
+                                            {devices[1].powerState &&
+                                            typeof devices[1].latestReading.current === 'number'
+                                                ? devices[1].latestReading.current
+                                                : 0}
+                                            A
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Potência Ativa</td>
+                                        <td>
+                                            {devices[1].powerState &&
+                                            typeof devices[1].latestReading.power === 'number'
+                                                ? devices[1].latestReading.power
+                                                : 0}
+                                            W
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Potência Aparente</td>
+                                        <td>
+                                            {devices[1].powerState &&
+                                            typeof devices[1].latestReading.ApparentPower === 'number'
+                                                ? devices[1].latestReading.ApparentPower
+                                                : 0}
+                                            VA
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Potência Reativa</td>
+                                        <td>
+                                            {devices[1].powerState &&
+                                            typeof devices[1].latestReading.ReactivePower === 'number'
+                                                ? devices[1].latestReading.ReactivePower
+                                                : 0}
+                                            var
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Fator de Potência</td>
+                                        <td>
+                                            {devices[1].powerState &&
+                                            typeof devices[1].latestReading.PowerFactor === 'number'
+                                                ? devices[1].latestReading.PowerFactor
+                                                : 0}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Energia Hoje</td>
+                                        <td>
+                                            {typeof devices[1].latestReading.EnergyToday === 'number'
+                                                ? devices[1].latestReading.EnergyToday
+                                                : '--'}
+                                            kWh
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Energia Ontem</td>
+                                        <td>
+                                            {typeof devices[1].latestReading.EnergyYesterday === 'number'
+                                                ? devices[1].latestReading.EnergyYesterday
+                                                : '--'}
+                                            kWh
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Energia Total</td>
+                                        <td>
+                                            {devices[1].powerState
+                                                ? liveTotalEnergyBroker2.toFixed(2) + ' kWh'
+                                                : '0.00 kWh'}
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
 
-            <
-            h3 > Detalhes por Dispositivo < /h3> <
-            div className = "device-report-list" > {
-                report.details.length > 0 ? (
-                    report.details.map((detail, index) => ( <
-                            div key = { index }
-                            className = "device-report-item" >
-                            <
-                            h4 > { detail.name } < /h4> <
-                            p >
-                            Status Atual: { ' ' } <
-                            span className = {
-                                devices[index] && devices[index].powerState ?
-                                'status-on-text' : 'status-off-text'
-                            } > {
-                                devices[index] && devices[index].powerState ?
-                                'Ligado' : 'Desligado'
-                            } <
-                            /span> < /
-                            p > <
-                            p > Tipo: { detail.type } < /p> <
-                            p > Recomendação: { detail.recommendation } < /p> {
-                            parseFloat(detail.potentialImpact) !== 0.0 && ( <
-                                p className = {
-                                    parseFloat(detail.potentialImpact) > 0 ?
-                                    'impact-positive' : 'impact-negative'
-                                } >
-                                Impacto Potencial: { detail.potentialImpact }
-                                kWh no próximo mês <
-                                /p>
-                            )
-                        } <
-                        /div>
-                    ))
-            ): ( <
-                p className = "no-reports-message" > Nenhum relatório disponível. < /p>
-            )
-        } <
-        /div> < /
-    div >
-)
-}
+                        <h3>Detalhes por Dispositivo</h3>
+                        <div className="device-report-list">
+                            {report.details.length > 0 ? (
+                                report.details.map((detail, index) => (
+                                    <div key={index} className="device-report-item">
+                                        <h4>{detail.name}</h4>
+                                        <p>
+                                            Status Atual:{' '}
+                                            <span
+                                                className={
+                                                    devices[index] && devices[index].powerState
+                                                        ? 'status-on-text'
+                                                        : 'status-off-text'
+                                                }
+                                            >
+                      {devices[index] && devices[index].powerState ? 'Ligado' : 'Desligado'}
+                    </span>
+                                        </p>
+                                        <p>Tipo: {detail.type}</p>
+                                        <p>Recomendação: {detail.recommendation}</p>
+                                        {parseFloat(detail.potentialImpact) !== 0.0 && (
+                                            <p
+                                                className={
+                                                    parseFloat(detail.potentialImpact) > 0
+                                                        ? 'impact-positive'
+                                                        : 'impact-negative'
+                                                }
+                                            >
+                                                Impacto Potencial: {detail.potentialImpact}
+                                                kWh no próximo mês
+                                            </p>
+                                        )}
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="no-reports-message">Nenhum relatório disponível.</p>
+                            )}
+                        </div>
+                    </div>
+                )}
 
-{ /* ========== ECOBOT SECTION ========== */ } {
-    activeSection === 'ecobot' && ( <
-        div className = "main-content2" >
-        <
-        div style = {
-            {
-                width: '100%',
-                maxWidth: 600,
-                minWidth: 340,
-                position: 'sticky',
-                top: 0,
-                background: 'transparent',
-                zIndex: 2
-            }
-        } >
-        <
-        h1 style = {
-            { color: 'white', marginBottom: 8 }
-        } >
-        Olá, eu sou EcoBot👋 <
-        /h1> <
-        h4 style = {
-            { color: '#e0e0e0', marginBottom: 24 }
-        } >
-        Aqui { userName }, você pode me perguntar sobre previsões de consumo futuro de energia e receber dicas para um uso mais eficiente dos seus eletrodomésticos.Fique à vontade!
-        <
-        /h4> < /
-        div > <
-        div style = {
-            {
-                background: '#23234a',
-                borderRadius: 12,
-                padding: 24,
-                maxWidth: 600,
-                width: '100%',
-                minWidth: 320,
-                margin: '0 auto',
-                minHeight: 320,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 12,
-                flex: 1,
-                overflow: 'auto'
-            }
-        } >
-        <
-        div style = {
-            { flex: 1, overflowY: 'auto', marginBottom: 16 }
-        } > {
-            chatMessages.map((msg, idx) => ( <
-                div key = { idx }
-                style = {
-                    {
-                        color: msg.sender === 'EcoBot' ? '#00e676' : '#fff',
-                        textAlign: msg.sender === 'EcoBot' ? 'left' : 'right',
-                        margin: '8px 0'
-                    }
-                } >
-                <
-                strong > { msg.sender }: < /strong> {msg.text} < /
-                div >
-            ))
-        } <
-        /div> <
-        form onSubmit = { handleSendMessage }
-        style = {
-            { display: 'flex', gap: 8 }
-        } >
-        <
-        input type = "text"
-        value = { chatInput }
-        onChange = {
-            (e) => setChatInput(e.target.value)
-        }
-        placeholder = "Digite sua mensagem..."
-        style = {
-            { flex: 1, borderRadius: 8, border: 'none', padding: 10 }
-        }
-        /> <
-        button type = "submit"
-        style = {
-            {
-                background: '#00e676',
-                color: '#222',
-                border: 'none',
-                borderRadius: 8,
-                padding: '0 18px',
-                fontWeight: 'bold'
-            }
-        } >
-        Enviar <
-        /button> < /
-        form > <
-        /div> < /
-        div >
-    )
-}
+                {/* ========== ECOBOT SECTION ========== */}
+                {activeSection === 'ecobot' && (
+                    <div className="main-content2">
+                        <div
+                            style={{
+                                width: '100%',
+                                maxWidth: 600,
+                                minWidth: 340,
+                                position: 'sticky',
+                                top: 0,
+                                background: 'transparent',
+                                zIndex: 2
+                            }}
+                        >
+                            <h1 style={{ color: 'white', marginBottom: 8 }}>Olá, eu sou EcoBot👋</h1>
+                            <h4 style={{ color: '#e0e0e0', marginBottom: 24 }}>
+                                Aqui {userName}, você pode me perguntar sobre previsões de consumo futuro de energia e
+                                receber dicas para um uso mais eficiente dos seus eletrodomésticos. Fique à vontade!
+                            </h4>
+                        </div>
+                        <div
+                            style={{
+                                background: '#23234a',
+                                borderRadius: 12,
+                                padding: 24,
+                                maxWidth: 600,
+                                width: '100%',
+                                minWidth: 320,
+                                margin: '0 auto',
+                                minHeight: 320,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 12,
+                                flex: 1,
+                                overflow: 'auto'
+                            }}
+                        >
+                            <div style={{ flex: 1, overflowY: 'auto', marginBottom: 16 }}>
+                                {chatMessages.map((msg, idx) => (
+                                    <div
+                                        key={idx}
+                                        style={{
+                                            color: msg.sender === 'EcoBot' ? '#00e676' : '#fff',
+                                            textAlign: msg.sender === 'EcoBot' ? 'left' : 'right',
+                                            margin: '8px 0'
+                                        }}
+                                    >
+                                        <strong>{msg.sender}:</strong> {msg.text}
+                                    </div>
+                                ))}
+                            </div>
+                            <form onSubmit={handleSendMessage} style={{ display: 'flex', gap: 8 }}>
+                                <input
+                                    type="text"
+                                    value={chatInput}
+                                    onChange={(e) => setChatInput(e.target.value)}
+                                    placeholder="Digite sua mensagem..."
+                                    style={{ flex: 1, borderRadius: 8, border: 'none', padding: 10 }}
+                                />
+                                <button
+                                    type="submit"
+                                    style={{
+                                        background: '#00e676',
+                                        color: '#222',
+                                        border: 'none',
+                                        borderRadius: 8,
+                                        padding: '0 18px',
+                                        fontWeight: 'bold'
+                                    }}
+                                >
+                                    Enviar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                )}
 
-{ /* ========== SETTINGS SECTION ========== */ } {
-    activeSection === 'configuracoes' && ( <
-            div className = "settings-section" >
-            <
-            h2 > Configurações da Conta < /h2>
+                {/* ========== SETTINGS SECTION ========== */}
+                {activeSection === 'configuracoes' && (
+                    <div className="settings-section">
+                        <h2>Configurações da Conta</h2>
 
-            <
-            div className = "user-settings-card" >
-            <
-            h3 > Informações do Usuário < /h3> <
-            p >
-            <
-            strong > Nome de Usuário: < /strong> {userName} < /
-            p > <
-            p >
-            <
-            strong > Email: < /strong> {userEmail} < /
-            p > <
-            p >
-            <
-            button className = "edit-profile-button"
-            onClick = { openEditModal } >
-            Editar Perfil <
-            /button> {
-            whatsappNumberSaved ? ( <
-                >
-                <
-                span style = {
-                    { marginLeft: 8, color: 'green', fontWeight: 'bold' }
-                } >
-                Número vinculado: { whatsappNumberSaved } <
-                /span> <
-                button className = "edit-profile-button unlink-whatsapp-btn"
-                style = {
-                    { marginLeft: 8, background: 'red', color: 'white' }
-                }
-                onClick = { handleUnlinkWhatsapp } >
-                Desvincular <
-                /button> < / >
-            ) : ( <
-                button className = "edit-profile-button add-whatsapp-btn"
-                style = {
-                    { marginLeft: 8 }
-                }
-                onClick = {
-                    () => setShowWhatsappModal(true)
-                } >
-                Adicionar Número <
-                /button>
-            )
-        } <
-        /p> <
-    p className = "settings-note" >
-        *
-        Após editar ou excluir a conta, será necessário fazer login novamente. <
-        /p> < /
-    div >
+                        <div className="user-settings-card">
+                            <h3>Informações do Usuário</h3>
+                            <p>
+                                <strong>Nome de Usuário:</strong> {userName}
+                            </p>
+                            <p>
+                                <strong>Email:</strong> {userEmail}
+                            </p>
+                            <p>
+                                <button className="edit-profile-button" onClick={openEditModal}>
+                                    Editar Perfil
+                                </button>
+                                {whatsappNumberSaved ? (
+                                    <>
+                  <span style={{ marginLeft: 8, color: 'green', fontWeight: 'bold' }}>
+                    Número vinculado: {whatsappNumberSaved}
+                  </span>
+                                        <button
+                                            className="edit-profile-button unlink-whatsapp-btn"
+                                            style={{ marginLeft: 8, background: 'red', color: 'white' }}
+                                            onClick={handleUnlinkWhatsapp}
+                                        >
+                                            Desvincular
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button
+                                        className="edit-profile-button add-whatsapp-btn"
+                                        style={{ marginLeft: 8 }}
+                                        onClick={() => setShowWhatsappModal(true)}
+                                    >
+                                        Adicionar Número
+                                    </button>
+                                )}
+                            </p>
+                            <p className="settings-note">
+                                * Após editar ou excluir a conta, será necessário fazer login novamente.
+                            </p>
+                        </div>
 
-        { /* Edit Account Modal */ } {
-            showEditModal && ( <
-                div className = "modal-overlay" >
-                <
-                div className = "modal-card" >
-                <
-                h3 > Editar Conta < /h3> <
-                form onSubmit = { handleEditAccount } >
-                <
-                label > Novo Nome: < /label> <
-                input type = "text"
-                value = { editName }
-                onChange = {
-                    (e) => setEditName(e.target.value)
-                }
-                placeholder = "Novo nome" /
-                >
+                        {/* Edit Account Modal */}
+                        {showEditModal && (
+                            <div className="modal-overlay">
+                                <div className="modal-card">
+                                    <h3>Editar Conta</h3>
+                                    <form onSubmit={handleEditAccount}>
+                                        <label>Novo Nome:</label>
+                                        <input
+                                            type="text"
+                                            value={editName}
+                                            onChange={(e) => setEditName(e.target.value)}
+                                            placeholder="Novo nome"
+                                        />
 
-                <
-                label > Nova Senha: < /label> <
-                input type = "password"
-                value = { editPassword }
-                onChange = {
-                    (e) => setEditPassword(e.target.value)
-                }
-                placeholder = "Nova senha" /
-                >
+                                        <label>Nova Senha:</label>
+                                        <input
+                                            type="password"
+                                            value={editPassword}
+                                            onChange={(e) => setEditPassword(e.target.value)}
+                                            placeholder="Nova senha"
+                                        />
 
-                {
-                    editError && < p className = "error-message" > { editError } < /p>}
+                                        {editError && <p className="error-message">{editError}</p>}
 
-                    <
-                    div className = "button-group small-buttons" >
-                    <
-                    button
-                    type = "submit"
-                    disabled = { editLoading }
-                    className = "submit-button small-btn" > { editLoading ? 'Salvando...' : 'Salvar' } <
-                    /button> <
-                    button
-                    type = "button"
-                    onClick = {
-                        () => {
-                            setShowEditModal(false);
-                            openDeleteModal();
-                        }
-                    }
-                    className = "delete-account-button small-btn" >
-                    Excluir Conta <
-                    /button> <
-                    button
-                    type = "button"
-                    onClick = {
-                        () => setShowEditModal(false)
-                    }
-                    className = "cancel-button small-btn" >
-                    Cancelar <
-                    /button> < /
-                    div > <
-                    /form> < /
-                    div > <
-                    /div>
-                )
-            }
+                                        <div className="button-group small-buttons">
+                                            <button
+                                                type="submit"
+                                                disabled={editLoading}
+                                                className="submit-button small-btn"
+                                            >
+                                                {editLoading ? 'Salvando...' : 'Salvar'}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setShowEditModal(false);
+                                                    openDeleteModal();
+                                                }}
+                                                className="delete-account-button small-btn"
+                                            >
+                                                Excluir Conta
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowEditModal(false)}
+                                                className="cancel-button small-btn"
+                                            >
+                                                Cancelar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        )}
 
-            { /* Delete Account Modal */ } {
-                showDeleteModal && ( <
-                    div className = "modal-overlay" >
-                    <
-                    div className = "modal-card" >
-                    <
-                    h3 > Excluir Conta < /h3> <
-                    p >
-                    Tem certeza que deseja excluir sua conta ? Esta ação é irreversível. <
-                    /p> {
-                    deleteError && < p className = "error-message" > { deleteError } < /p>} <
-                    div className = "button-group" >
-                    <
-                    button onClick = { handleDeleteAccount }
-                    disabled = { deleteLoading }
-                    className = "delete-button" > { deleteLoading ? 'Excluindo...' : 'Excluir' } <
-                    /button> <
-                    button onClick = {
-                        () => setShowDeleteModal(false)
-                    }
-                    className = "cancel-button" >
-                    Cancelar <
-                    /button> < /
-                    div > <
-                    /div> < /
-                    div >
-                )
-            }
+                        {/* Delete Account Modal */}
+                        {showDeleteModal && (
+                            <div className="modal-overlay">
+                                <div className="modal-card">
+                                    <h3>Excluir Conta</h3>
+                                    <p>
+                                        Tem certeza que deseja excluir sua conta? Esta ação é irreversível.
+                                    </p>
+                                    {deleteError && <p className="error-message">{deleteError}</p>}
+                                    <div className="button-group">
+                                        <button
+                                            onClick={handleDeleteAccount}
+                                            disabled={deleteLoading}
+                                            className="delete-button"
+                                        >
+                                            {deleteLoading ? 'Excluindo...' : 'Excluir'}
+                                        </button>
+                                        <button
+                                            onClick={() => setShowDeleteModal(false)}
+                                            className="cancel-button"
+                                        >
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
-            { /* WhatsApp Modal */ } {
-                showWhatsappModal && ( <
-                        div className = "modal-overlay" >
-                        <
-                        div className = "modal-card" >
-                        <
-                        h3 >
-                        Adicione seu número de Whatsapp para receber notificação do
-                            EcoBot, bot inteligente da Smart Energy!
-                            <
-                            /h3> <
-                        form onSubmit = { handleSaveWhatsapp } >
-                        <
-                        label > Número(com código do país, DDD e número): < /label> <
-                        input type = "text"
-                        value = { whatsappNumber }
-                        onChange = {
-                            (e) => setWhatsappNumber(e.target.value)
-                        }
-                        placeholder = "Ex: 5562999999999"
-                        maxLength = { 13 }
-                        /> {
-                        whatsappError && ( <
-                            p className = "error-message" > { whatsappError } < /p>
-                        )
-                    } {
-                        whatsappSuccess && ( <
-                            p className = "success-message" > { whatsappSuccess } < /p>
-                        )
-                    } <
-                    div className = "button-group small-buttons" >
-                    <
-                    button type = "submit"
-                className = "submit-button small-btn" >
-                    Salvar <
-                    /button> <
-                button type = "button"
-                className = "cancel-button small-btn"
-                onClick = {
-                        () => setShowWhatsappModal(false)
-                    } >
-                    Cancelar <
-                    /button> < /
-                div > <
-                    /form> < /
-                div > <
-                    /div>
-            )
-        }
+                        {/* WhatsApp Modal */}
+                        {showWhatsappModal && (
+                            <div className="modal-overlay">
+                                <div className="modal-card">
+                                    <h3>
+                                        Adicione seu número de Whatsapp para receber notificação do EcoBot, bot
+                                        inteligente da Smart Energy!
+                                    </h3>
+                                    <form onSubmit={handleSaveWhatsapp}>
+                                        <label>Número(com código do país, DDD e número):</label>
+                                        <input
+                                            type="text"
+                                            value={whatsappNumber}
+                                            onChange={(e) => setWhatsappNumber(e.target.value)}
+                                            placeholder="Ex: 5562999999999"
+                                            maxLength={13}
+                                        />
+                                        {whatsappError && <p className="error-message">{whatsappError}</p>}
+                                        {whatsappSuccess && <p className="success-message">{whatsappSuccess}</p>}
+                                        <div className="button-group small-buttons">
+                                            <button type="submit" className="submit-button small-btn">
+                                                Salvar
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="cancel-button small-btn"
+                                                onClick={() => setShowWhatsappModal(false)}
+                                            >
+                                                Cancelar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        )}
 
-    <
-    div className = "tasmota-settings-card" >
-        <
-        h3 > Gerenciamento de Dispositivos < /h3> <
-    p className = "device-management-description" >
-        Aqui você pode gerenciar seus dispositivos Tasmota. <
-        /p>
+                        <div className="tasmota-settings-card">
+                            <h3>Gerenciamento de Dispositivos</h3>
+                            <p className="device-management-description">
+                                Aqui você pode gerenciar seus dispositivos Tasmota.
+                            </p>
 
-    {
-        isRealData ? ( <
-            p >
-            <
-            button className = "add-device-btn"
-            onClick = {
-                () => navigate('/add-device')
-            } >
-            Adicionar Novo Dispositivo <
-            /button> <
-            button className = "refresh-devices-btn"
-            onClick = { fetchDashboardData } >
-            Atualizar Lista de Dispositivos <
-            /button> < /
-            p >
-        ) : ( <
-            p className = "admin-only-message" >
-            O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador. <
-            /p>
-        )
-    } <
-    /div> < /
-    div >
-)
-} <
-/div> < /
-div >
-);
-}
-
-export default DashboardPage;
-)
-} <
-/p> <
-p className = "settings-note" >
-    *
-    Após editar ou excluir a conta, será necessário fazer login novamente. <
-    /p> < /
-div >
-
-    { /* Edit Account Modal */ } {
-        showEditModal && ( <
-            div className = "modal-overlay" >
-            <
-            div className = "modal-card" >
-            <
-            h3 > Editar Conta < /h3> <
-            form onSubmit = { handleEditAccount } >
-            <
-            label > Novo Nome: < /label> <
-            input type = "text"
-            value = { editName }
-            onChange = {
-                (e) => setEditName(e.target.value)
-            }
-            placeholder = "Novo nome" /
-            >
-
-            <
-            label > Nova Senha: < /label> <
-            input type = "password"
-            value = { editPassword }
-            onChange = {
-                (e) => setEditPassword(e.target.value)
-            }
-            placeholder = "Nova senha" /
-            >
-
-            {
-                editError && < p className = "error-message" > { editError } < /p>}
-
-                <
-                div className = "button-group small-buttons" >
-                <
-                button
-                type = "submit"
-                disabled = { editLoading }
-                className = "submit-button small-btn" > { editLoading ? 'Salvando...' : 'Salvar' } <
-                /button> <
-                button
-                type = "button"
-                onClick = {
-                    () => {
-                        setShowEditModal(false);
-                        openDeleteModal();
-                    }
-                }
-                className = "delete-account-button small-btn" >
-                Excluir Conta <
-                /button> <
-                button
-                type = "button"
-                onClick = {
-                    () => setShowEditModal(false)
-                }
-                className = "cancel-button small-btn" >
-                Cancelar <
-                /button> < /
-                div > <
-                /form> < /
-                div > <
-                /div>
-            )
-        }
-
-        { /* Delete Account Modal */ } {
-            showDeleteModal && ( <
-                div className = "modal-overlay" >
-                <
-                div className = "modal-card" >
-                <
-                h3 > Excluir Conta < /h3> <
-                p >
-                Tem certeza que deseja excluir sua conta ? Esta ação é irreversível. <
-                /p> {
-                deleteError && < p className = "error-message" > { deleteError } < /p>} <
-                div className = "button-group" >
-                <
-                button onClick = { handleDeleteAccount }
-                disabled = { deleteLoading }
-                className = "delete-button" > { deleteLoading ? 'Excluindo...' : 'Excluir' } <
-                /button> <
-                button onClick = {
-                    () => setShowDeleteModal(false)
-                }
-                className = "cancel-button" >
-                Cancelar <
-                /button> < /
-                div > <
-                /div> < /
-                div >
-            )
-        }
-
-        { /* WhatsApp Modal */ } {
-            showWhatsappModal && ( <
-                    div className = "modal-overlay" >
-                    <
-                    div className = "modal-card" >
-                    <
-                    h3 >
-                    Adicione seu número de Whatsapp para receber notificação do
-                        EcoBot, bot inteligente da Smart Energy!
-                        <
-                        /h3> <
-                    form onSubmit = { handleSaveWhatsapp } >
-                    <
-                    label > Número(com código do país, DDD e número): < /label> <
-                    input type = "text"
-                    value = { whatsappNumber }
-                    onChange = {
-                        (e) => setWhatsappNumber(e.target.value)
-                    }
-                    placeholder = "Ex: 5562999999999"
-                    maxLength = { 13 }
-                    /> {
-                    whatsappError && ( <
-                        p className = "error-message" > { whatsappError } < /p>
-                    )
-                } {
-                    whatsappSuccess && ( <
-                        p className = "success-message" > { whatsappSuccess } < /p>
-                    )
-                } <
-                div className = "button-group small-buttons" >
-                <
-                button type = "submit"
-            className = "submit-button small-btn" >
-                Salvar <
-                /button> <
-            button type = "button"
-            className = "cancel-button small-btn"
-            onClick = {
-                    () => setShowWhatsappModal(false)
-                } >
-                Cancelar <
-                /button> < /
-            div > <
-                /form> < /
-            div > <
-                /div>
-        )
-    }
-
-<
-div className = "tasmota-settings-card" >
-    <
-    h3 > Gerenciamento de Dispositivos < /h3> <
-p className = "device-management-description" >
-    Aqui você pode gerenciar seus dispositivos Tasmota. <
-    /p>
-
-{
-    isRealData ? ( <
-        p >
-        <
-        button className = "add-device-btn"
-        onClick = {
-            () => navigate('/add-device')
-        } >
-        Adicionar Novo Dispositivo <
-        /button> <
-        button className = "refresh-devices-btn"
-        onClick = { fetchDashboardData } >
-        Atualizar Lista de Dispositivos <
-        /button> < /
-        p >
-    ) : ( <
-        p className = "admin-only-message" >
-        O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador. <
-        /p>
-    )
-} <
-/div> < /
-div >
-)
-} <
-/div> < /
-div >
-);
-}
-
-export default DashboardPage;
-)
-} <
-/p> <
-p className = "settings-note" >
-    *
-    Após editar ou excluir a conta, será necessário fazer login novamente. <
-    /p> < /
-div >
-
-    { /* Edit Account Modal */ } {
-        showEditModal && ( <
-            div className = "modal-overlay" >
-            <
-            div className = "modal-card" >
-            <
-            h3 > Editar Conta < /h3> <
-            form onSubmit = { handleEditAccount } >
-            <
-            label > Novo Nome: < /label> <
-            input type = "text"
-            value = { editName }
-            onChange = {
-                (e) => setEditName(e.target.value)
-            }
-            placeholder = "Novo nome" /
-            >
-
-            <
-            label > Nova Senha: < /label> <
-            input type = "password"
-            value = { editPassword }
-            onChange = {
-                (e) => setEditPassword(e.target.value)
-            }
-            placeholder = "Nova senha" /
-            >
-
-            {
-                editError && < p className = "error-message" > { editError } < /p>}
-
-                <
-                div className = "button-group small-buttons" >
-                <
-                button
-                type = "submit"
-                disabled = { editLoading }
-                className = "submit-button small-btn" > { editLoading ? 'Salvando...' : 'Salvar' } <
-                /button> <
-                button
-                type = "button"
-                onClick = {
-                    () => {
-                        setShowEditModal(false);
-                        openDeleteModal();
-                    }
-                }
-                className = "delete-account-button small-btn" >
-                Excluir Conta <
-                /button> <
-                button
-                type = "button"
-                onClick = {
-                    () => setShowEditModal(false)
-                }
-                className = "cancel-button small-btn" >
-                Cancelar <
-                /button> < /
-                div > <
-                /form> < /
-                div > <
-                /div>
-            )
-        }
-
-        { /* Delete Account Modal */ } {
-            showDeleteModal && ( <
-                div className = "modal-overlay" >
-                <
-                div className = "modal-card" >
-                <
-                h3 > Excluir Conta < /h3> <
-                p >
-                Tem certeza que deseja excluir sua conta ? Esta ação é irreversível. <
-                /p> {
-                deleteError && < p className = "error-message" > { deleteError } < /p>} <
-                div className = "button-group" >
-                <
-                button onClick = { handleDeleteAccount }
-                disabled = { deleteLoading }
-                className = "delete-button" > { deleteLoading ? 'Excluindo...' : 'Excluir' } <
-                /button> <
-                button onClick = {
-                    () => setShowDeleteModal(false)
-                }
-                className = "cancel-button" >
-                Cancelar <
-                /button> < /
-                div > <
-                /div> < /
-                div >
-            )
-        }
-
-        { /* WhatsApp Modal */ } {
-            showWhatsappModal && ( <
-                    div className = "modal-overlay" >
-                    <
-                    div className = "modal-card" >
-                    <
-                    h3 >
-                    Adicione seu número de Whatsapp para receber notificação do
-                        EcoBot, bot inteligente da Smart Energy!
-                        <
-                        /h3> <
-                    form onSubmit = { handleSaveWhatsapp } >
-                    <
-                    label > Número(com código do país, DDD e número): < /label> <
-                    input type = "text"
-                    value = { whatsappNumber }
-                    onChange = {
-                        (e) => setWhatsappNumber(e.target.value)
-                    }
-                    placeholder = "Ex: 5562999999999"
-                    maxLength = { 13 }
-                    /> {
-                    whatsappError && ( <
-                        p className = "error-message" > { whatsappError } < /p>
-                    )
-                } {
-                    whatsappSuccess && ( <
-                        p className = "success-message" > { whatsappSuccess } < /p>
-                    )
-                } <
-                div className = "button-group small-buttons" >
-                <
-                button type = "submit"
-            className = "submit-button small-btn" >
-                Salvar <
-                /button> <
-            button type = "button"
-            className = "cancel-button small-btn"
-            onClick = {
-                    () => setShowWhatsappModal(false)
-                } >
-                Cancelar <
-                /button> < /
-            div > <
-                /form> < /
-            div > <
-                /div>
-        )
-    }
-
-<
-div className = "tasmota-settings-card" >
-    <
-    h3 > Gerenciamento de Dispositivos < /h3> <
-p className = "device-management-description" >
-    Aqui você pode gerenciar seus dispositivos Tasmota. <
-    /p>
-
-{
-    isRealData ? ( <
-        p >
-        <
-        button className = "add-device-btn"
-        onClick = {
-            () => navigate('/add-device')
-        } >
-        Adicionar Novo Dispositivo <
-        /button> <
-        button className = "refresh-devices-btn"
-        onClick = { fetchDashboardData } >
-        Atualizar Lista de Dispositivos <
-        /button> < /
-        p >
-    ) : ( <
-        p className = "admin-only-message" >
-        O gerenciamento completo de dispositivos está disponível apenas para a conta de administrador. <
-        /p>
-    )
-} <
-/div> < /
-div >
-)
-} <
-/div> < /
-div >
-);
+                            {isRealData ? (
+                                <p>
+                                    <button
+                                        className="add-device-btn"
+                                        onClick={() => navigate('/add-device')}
+                                    >
+                                        Adicionar Novo Dispositivo
+                                    </button>
+                                    <button
+                                        className="refresh-devices-btn"
+                                        onClick={fetchDashboardData}
+                                    >
+                                        Atualizar Lista de Dispositivos
+                                    </button>
+                                </p>
+                            ) : (
+                                <p className="admin-only-message">
+                                    O gerenciamento completo de dispositivos está disponível apenas para a conta de
+                                    administrador.
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
 }
 
 export default DashboardPage;
