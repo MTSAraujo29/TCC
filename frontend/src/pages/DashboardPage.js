@@ -1753,18 +1753,17 @@ function DashboardPage() {
                   dispositivos.{" "}
                 </p>{" "}
                 <ul className="device-suggestion-list">
-                  {" "}
                   {getSuggestedDevicesData().length > 0 ? (
                     getSuggestedDevicesData().map((device) => (
                       <li key={device.id}>
-                        <strong> {device.name}: </strong> {device.suggestion}{" "}
+                        <strong> {device.name}: </strong> {device.suggestion}
                       </li>
                     ))
                   ) : (
-                    <p className="no-suggestions-message">
-                      Nenhuma sugestão no momento.{" "}
-                    </p>
-                  )}{" "}
+                    <li className="no-suggestions-message">
+                      Nenhuma sugestão no momento.
+                    </li>
+                  )}
                 </ul>{" "}
               </div>{" "}
             </div>{" "}
@@ -2252,54 +2251,47 @@ function DashboardPage() {
                 >
                   Seus Agendamentos{" "}
                 </h1>{" "}
-                {loadingSchedules ? (
-                  <p style={{ color: "#FFF", textAlign: "center" }}>
-                    Carregando agendamentos...{" "}
-                  </p>
-                ) : scheduleError ? (
-                  <p style={{ color: "red", textAlign: "center" }}>
-                    {" "}
-                    {scheduleError}{" "}
-                  </p>
-                ) : schedules.length === 0 ? (
-                  <p style={{ color: "#FFF", textAlign: "center" }}>
-                    Nenhum agendamento encontrado.{" "}
-                  </p>
-                ) : (
-                  <ul
-                    style={{
-                      color: "#FFF",
-                      listStyle: "none",
-                      padding: 0,
-                    }}
-                  >
-                    {" "}
-                    {schedules.map((sch) => (
-                      <li
-                        key={sch.id}
-                        style={{
-                          marginBottom: 12,
-                          background: "#222",
-                          borderRadius: 8,
-                          padding: 12,
-                        }}
-                      >
-                        <strong> Dispositivos: </strong>{" "}
-                        {sch.deviceIds.join(", ")} <br />
-                        <strong> Dias: </strong>{" "}
-                        {sch.days.length === 7
-                          ? "Todos"
-                          : sch.days
-                              .map((i) => safeWeekDays[i])
-                              .join(", ")}{" "}
-                        <br />
-                        <strong> Repetir: </strong> {sch.repeat ? "Sim" : "Não"}{" "}
-                        <br />
-                        <strong> Horário: </strong> {sch.time}{" "}
+                <ul style={{ color: "#FFF", listStyle: "none", padding: 0 }}>
+                  {schedules.map((sch) => (
+                    <li
+                      key={sch.id}
+                      style={{
+                        marginBottom: 12,
+                        background: "#222",
+                        borderRadius: 8,
+                        padding: 12,
+                      }}
+                    >
+                      <strong> Dispositivos: </strong>{" "}
+                      {sch.deviceIds.join(", ")} <br />
+                      <strong> Dias: </strong>{" "}
+                      {sch.days.length === 7
+                        ? "Todos"
+                        : sch.days.map((i) => safeWeekDays[i]).join(", ")}{" "}
+                      <br />
+                      <strong> Repetir: </strong> {sch.repeat ? "Sim" : "Não"}{" "}
+                      <br />
+                      <strong> Horário: </strong> {sch.time}
+                    </li>
+                  ))}
+                  {schedules.length === 0 &&
+                    !loadingSchedules &&
+                    !scheduleError && (
+                      <li style={{ color: "#FFF", textAlign: "center" }}>
+                        Nenhum agendamento encontrado.
                       </li>
-                    ))}{" "}
-                  </ul>
-                )}{" "}
+                    )}
+                  {scheduleError && (
+                    <li style={{ color: "red", textAlign: "center" }}>
+                      {scheduleError}
+                    </li>
+                  )}
+                  {loadingSchedules && (
+                    <li style={{ color: "#FFF", textAlign: "center" }}>
+                      Carregando agendamentos...
+                    </li>
+                  )}
+                </ul>{" "}
               </div>{" "}
             </div>{" "}
           </div>
