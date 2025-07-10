@@ -345,7 +345,7 @@ async function toggleDevicePower(req, res) {
       (deviceName.toLowerCase().includes("sala") ||
         deviceName.toLowerCase().includes("câmera"))
     ) {
-      await enviarAlertaWhatsapp("5562999999999", deviceName, newStatus);
+      await enviarAlertaWhatsapp("5562993955126", deviceName, newStatus);
     }
   } catch (error) {
     console.error(
