@@ -906,74 +906,7 @@ function DashboardPage() {
       : 0;
   }
 
-  // [NOVO] Estado para modal e número do WhatsApp
-  const [showWhatsappModal, setShowWhatsappModal] = useState(false);
-  const [whatsappNumber, setWhatsappNumber] = useState("");
-  const [whatsappError, setWhatsappError] = useState("");
-  const [whatsappSuccess, setWhatsappSuccess] = useState("");
 
-  // [NOVO] Função para validar e salvar número do WhatsApp
-  const handleSaveWhatsapp = async (e) => {
-    e.preventDefault();
-    setWhatsappError("");
-    setWhatsappSuccess("");
-    // Regex: começa com 2 dígitos (país), depois 2 dígitos (DDD), depois 9 dígitos
-    const regex = /^\d{2}\d{2}9\d{8}$/;
-    if (!regex.test(whatsappNumber.replace(/\D/g, ""))) {
-      setWhatsappError("Formato inválido. Exemplo: 5562999999999");
-      return;
-    }
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        API_ENDPOINTS.DASHBOARD + "/update-whatsapp",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
-          },
-          body: JSON.stringify({
-            whatsappNumber: whatsappNumber.replace(/\D/g, ""),
-          }),
-        }
-      );
-      if (!response.ok) throw new Error("Erro ao salvar número");
-      setWhatsappSuccess("Número salvo com sucesso!");
-      setWhatsappNumberSaved(whatsappNumber.replace(/\D/g, ""));
-      setTimeout(() => setShowWhatsappModal(false), 1500);
-    } catch {
-      setWhatsappError("Erro ao salvar número. Tente novamente.");
-    }
-  };
-
-  // [NOVO] Estado para armazenar o número de WhatsApp salvo
-  const [whatsappNumberSaved, setWhatsappNumberSaved] = useState(null);
-
-  // [NOVO] Função para desvincular número do WhatsApp
-  const handleUnlinkWhatsapp = async () => {
-    setWhatsappError("");
-    setWhatsappSuccess("");
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        API_ENDPOINTS.DASHBOARD + "/update-whatsapp",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
-          },
-          body: JSON.stringify({ whatsappNumber: null }),
-        }
-      );
-      if (!response.ok) throw new Error("Erro ao desvincular número");
-      setWhatsappNumberSaved(null);
-      setWhatsappSuccess("Número desvinculado com sucesso!");
-    } catch {
-      setWhatsappError("Erro ao desvincular número. Tente novamente.");
-    }
-  };
 
   // [NOVO] Estado para controlar a seção EcoBot
   const [chatMessages, setChatMessages] = useState([
@@ -2218,43 +2151,6 @@ function DashboardPage() {
               <p>
                 <strong> Email: </strong> {userEmail}{" "}
               </p>{" "}
-              <p>
-                <button className="edit-profile-button" onClick={openEditModal}>
-                  Editar Perfil{" "}
-                </button>{" "}
-                {whatsappNumberSaved ? (
-                  <>
-                    <span
-                      style={{
-                        marginLeft: 8,
-                        color: "green",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      Número vinculado: {whatsappNumberSaved}{" "}
-                    </span>{" "}
-                    <button
-                      className="edit-profile-button unlink-whatsapp-btn"
-                      style={{
-                        marginLeft: 8,
-                        background: "red",
-                        color: "white",
-                      }}
-                      onClick={handleUnlinkWhatsapp}
-                    >
-                      Desvincular{" "}
-                    </button>{" "}
-                  </>
-                ) : (
-                  <button
-                    className="edit-profile-button add-whatsapp-btn"
-                    style={{ marginLeft: 8 }}
-                    onClick={() => setShowWhatsappModal(true)}
-                  >
-                    Adicionar Número{" "}
-                  </button>
-                )}{" "}
-              </p>{" "}
               <p className="settings-note">
                 * Após editar ou excluir a conta, será necessário fazer login
                 novamente.{" "}
@@ -2342,45 +2238,6 @@ function DashboardPage() {
                       Cancelar{" "}
                     </button>{" "}
                   </div>{" "}
-                </div>{" "}
-              </div>
-            )}
-            {/* WhatsApp Modal */}{" "}
-            {showWhatsappModal && (
-              <div className="modal-overlay">
-                <div className="modal-card">
-                  <h3>
-                    Adicione seu número de Whatsapp para receber notificação do
-                    EcoBot, bot inteligente da Smart Energy!
-                  </h3>{" "}
-                  <form onSubmit={handleSaveWhatsapp}>
-                    <label>Número(com código do país, DDD e número):</label>{" "}
-                    <input
-                      type="text"
-                      value={whatsappNumber}
-                      onChange={(e) => setWhatsappNumber(e.target.value)}
-                      placeholder="Ex: 5562999999999"
-                      maxLength={13}
-                    />{" "}
-                    {whatsappError && (
-                      <p className="error-message"> {whatsappError} </p>
-                    )}{" "}
-                    {whatsappSuccess && (
-                      <p className="success-message"> {whatsappSuccess} </p>
-                    )}{" "}
-                    <div className="button-group small-buttons">
-                      <button type="submit" className="submit-button small-btn">
-                        Salvar{" "}
-                      </button>{" "}
-                      <button
-                        type="button"
-                        className="cancel-button small-btn"
-                        onClick={() => setShowWhatsappModal(false)}
-                      >
-                        Cancelar{" "}
-                      </button>{" "}
-                    </div>{" "}
-                  </form>{" "}
                 </div>{" "}
               </div>
             )}
