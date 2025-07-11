@@ -516,7 +516,6 @@ async function getDashboardData(req, res) {
         },
       };
 
-      // Remova toda a lógica relacionada a whatsappNumber (salvar, atualizar, retornar, etc).
     } else {
       console.log(`Non-admin user ${userEmail} accessing fictional data.`);
       // Retornar dados fictícios para usuários não-admin
@@ -600,29 +599,6 @@ async function getDashboardData(req, res) {
     res.status(500).json({
       message: "Erro interno do servidor ao carregar dados do dashboard.",
     });
-  }
-}
-
-// Atualiza o número do WhatsApp do usuário logado
-async function updateWhatsappNumber(req, res) {
-  const userId = req.user.userId;
-  const { whatsappNumber } = req.body;
-  // Validação simples: só aceita número com 13 dígitos (ex: 5562999999999)
-  if (!/^\d{13}$/.test(whatsappNumber)) {
-    return res
-      .status(400)
-      .json({ error: "Formato inválido. Exemplo: 5562999999999" });
-  }
-  try {
-    await prisma.user.update({
-      where: { id: userId },
-      data: { whatsappNumber },
-    });
-    return res.json({ success: true });
-  } catch (err) {
-    return res
-      .status(500)
-      .json({ error: "Erro ao atualizar número do WhatsApp." });
   }
 }
 

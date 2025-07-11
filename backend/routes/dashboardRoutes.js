@@ -8,7 +8,4 @@ const authenticateToken = require('../middleware/authenticateToken');
 // Protegida pelo middleware de autenticação
 router.get('/data', authenticateToken, dashboardController.getDashboardData);
 
-// Rota para atualizar o número do WhatsApp do usuário
-router.put('/update-whatsapp', authenticateToken, dashboardController.updateWhatsappNumber);
-
 module.exports = router;
