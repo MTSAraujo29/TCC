@@ -34,7 +34,6 @@ app.set("trust proxy", 1); // Necessário para identificar IP real atrás de pro
 app.use(express.json());
 
 // --- CONFIGURAÇÃO CORS ---
-// A URL do seu frontend no Netlify será passada para o Render como uma variável de ambiente (FRONTEND_URL).
 // Durante o desenvolvimento local do frontend, ela usará 'http://localhost:3000'.
 const ALLOWED_ORIGIN = process.env.FRONTEND_URL || "http://localhost:3000";
 
@@ -132,7 +131,7 @@ app.get("/health", (req, res) => {
 // Rota inicial
 app.get("/", (req, res) => {
   res.send(
-    "Servidor Backend (Node.js com Express) rodando com Prisma, Hashing e JWT, e integração Tasmota/MQTT!"
+    "Servidor Rodando 🚀"
   );
 });
 
