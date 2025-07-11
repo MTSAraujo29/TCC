@@ -1334,29 +1334,19 @@ function DashboardPage() {
           {" "}
           ⚙️Configurações{" "}
         </div>
-        <div className="sidebar-bottom">
-          <button
-            onClick={handleLogout}
-            className="menu-item logout-link-sidebar"
-          >
-            {" "}
-            🔒Sair{" "}
-          </button>{" "}
-        </div>{" "}
+        {/* Removido: <div className="sidebar-bottom"> ... botão sair ... </div> */}
       </div>
       {/* ==================== MOBILE MENU ==================== */}{" "}
       {window.innerWidth <= 700 && (
         <div className="mobile-menu-bar">
-          <div className="mobile-menu-title">
-            <img src="/icon.png" alt="Ícone" className="mobile-menu-icon" />
-            <h6 className="mobile-menu-h6"> Smart energy </h6>{" "}
-          </div>{" "}
+          <img src="/icon.png" alt="Ícone" className="mobile-menu-icon" />
+          <span className="mobile-menu-title">Smart Energy</span>
           <button
             className="hamburger-btn"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            <span className="hamburger-icon"> ☰ </span>{" "}
-          </button>{" "}
+            <span className="hamburger-icon">☰</span>
+          </button>
         </div>
       )}
       {window.innerWidth <= 700 && isMobileMenuOpen && (
@@ -1420,19 +1410,8 @@ function DashboardPage() {
               setIsMobileMenuOpen(false);
             }}
           >
-            {" "}
-            ⚙️Configurações{" "}
+            ⚙️Configurações
           </div>
-          <div
-            className="menu-item logout-link-sidebar"
-            onClick={() => {
-              handleLogout();
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            {" "}
-            🔒Sair{" "}
-          </div>{" "}
         </div>
       )}
       {/* ==================== MAIN CONTENT ==================== */}{" "}
@@ -1568,20 +1547,8 @@ function DashboardPage() {
             {/* Bottom Sections */}{" "}
             <div className="bottom-sections-grid">
               <div className="bottom-card consumption-by-type-card">
-                <h3> Consumo por Tipo de Dispositivo </h3>{" "}
-                <div
-                  className="chart-wrapper"
-                  style={{ display: "flex", alignItems: "center", gap: 24 }}
-                >
-                  <div
-                    style={{
-                      width: 200,
-                      height: 200,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
+                <div className="chart-legend-vertical">
+                  <div className="chart-wrapper-pizza">
                     <Doughnut
                       data={getConsumptionByTypeData()}
                       options={{
@@ -1592,88 +1559,58 @@ function DashboardPage() {
                           datalabels: { display: false },
                         },
                       }}
-                    />{" "}
-                  </div>{" "}
-                  {(() => {
-                    const data = getConsumptionByTypeData();
-                    const total = data.datasets[0].data.reduce(
-                      (a, b) => a + b,
-                      0
-                    );
-                    const percentSala =
-                      total > 0
-                        ? ((data.datasets[0].data[0] / total) * 100).toFixed(1)
-                        : "0.0";
-                    const percentCamera =
-                      total > 0
-                        ? ((data.datasets[0].data[1] / total) * 100).toFixed(1)
-                        : "0.0";
-                    return (
-                      <span
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 4,
-                          flexDirection: "column",
-                          fontSize: 13,
-                        }}
-                      >
-                        <span
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 4,
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          <span
-                            style={{
-                              display: "inline-block",
-                              width: 12,
-                              height: 12,
-                              borderRadius: 6,
-                              background: data.datasets[0].backgroundColor[0],
-                              marginRight: 4,
-                            }}
-                          />{" "}
-                          <span style={{ color: "#FFF", fontWeight: 500 }}>
-                            Sala:
-                          </span>{" "}
-                          <span style={{ color: "#FFF", fontWeight: 700 }}>
-                            {" "}
-                            {percentSala} %
-                          </span>{" "}
-                        </span>{" "}
-                        <span
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 4,
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          <span
-                            style={{
-                              display: "inline-block",
-                              width: 12,
-                              height: 12,
-                              borderRadius: 6,
-                              background: data.datasets[0].backgroundColor[1],
-                              marginRight: 4,
-                            }}
-                          />{" "}
-                          <span style={{ color: "#FFF", fontWeight: 500 }}>
-                            Câmera:
-                          </span>{" "}
-                          <span style={{ color: "#FFF", fontWeight: 700 }}>
-                            {" "}
-                            {percentCamera} %
-                          </span>{" "}
-                        </span>{" "}
-                      </span>
-                    );
-                  })()}{" "}
-                </div>{" "}
+                    />
+                  </div>
+                  <div className="legend-list">
+                    {(() => {
+                      const data = getConsumptionByTypeData();
+                      const total = data.datasets[0].data.reduce(
+                        (a, b) => a + b,
+                        0
+                      );
+                      const percentSala =
+                        total > 0
+                          ? ((data.datasets[0].data[0] / total) * 100).toFixed(
+                              1
+                            )
+                          : "0.0";
+                      const percentCamera =
+                        total > 0
+                          ? ((data.datasets[0].data[1] / total) * 100).toFixed(
+                              1
+                            )
+                          : "0.0";
+                      return (
+                        <>
+                          <span className="legend-item">
+                            <span
+                              className="legend-color"
+                              style={{
+                                background: data.datasets[0].backgroundColor[0],
+                              }}
+                            />
+                            <span className="legend-label">Sala:</span>
+                            <span className="legend-value">
+                              {percentSala} %
+                            </span>
+                          </span>
+                          <span className="legend-item">
+                            <span
+                              className="legend-color"
+                              style={{
+                                background: data.datasets[0].backgroundColor[1],
+                              }}
+                            />
+                            <span className="legend-label">Câmera:</span>
+                            <span className="legend-value">
+                              {percentCamera} %
+                            </span>
+                          </span>
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
               </div>
               <div className="bottom-card suggested-devices-card">
                 <h3> Dispositivos Sugeridos </h3>{" "}
@@ -1700,14 +1637,20 @@ function DashboardPage() {
         )}
         {/* ========== ENERGY CONTROL SECTION ========== */}{" "}
         {activeSection === "controle" && (
-          <div className="energy-control-section">
+          <div
+            className="energy-control-section"
+            style={{ overflowX: "hidden", maxWidth: "100%", width: "100%" }}
+          >
             <h2> Controle de Dispositivos </h2>{" "}
             {deviceMessage && (
               <p className="device-feedback-message"> {deviceMessage} </p>
             )}
             <h3> Meus Dispositivos de Energia </h3>
             {safeDevices.length > 0 ? (
-              <div className="device-control-list">
+              <div
+                className="device-control-list"
+                style={{ overflowX: "hidden", maxWidth: "100%", width: "100%" }}
+              >
                 {safeDevices.map((device) => (
                   <div key={device.id} className="device-control-item">
                     <span className="device-control-name"> {device.name} </span>{" "}
@@ -1744,8 +1687,7 @@ function DashboardPage() {
               </div>
             ) : (
               <p className="no-devices-message">
-                {" "}
-                Nenhum dispositivo encontrado.{" "}
+                Nenhum dispositivo encontrado.
               </p>
             )}
           </div>
@@ -1787,8 +1729,8 @@ function DashboardPage() {
                           {safeDevices[0].powerState &&
                           typeof safeDevices[0].latestReading.voltage ===
                             "number"
-                            ? safeDevices[0].latestReading.voltage
-                            : 0}
+                            ? safeDevices[0].latestReading.voltage.toFixed(2)
+                            : "0.00"}
                           V{" "}
                         </td>{" "}
                       </tr>{" "}
@@ -1799,8 +1741,8 @@ function DashboardPage() {
                           {safeDevices[0].powerState &&
                           typeof safeDevices[0].latestReading.current ===
                             "number"
-                            ? safeDevices[0].latestReading.current
-                            : 0}
+                            ? safeDevices[0].latestReading.current.toFixed(2)
+                            : "0.00"}
                           A{" "}
                         </td>{" "}
                       </tr>{" "}
@@ -1810,8 +1752,8 @@ function DashboardPage() {
                           {" "}
                           {safeDevices[0].powerState &&
                           typeof safeDevices[0].latestReading.power === "number"
-                            ? safeDevices[0].latestReading.power
-                            : 0}
+                            ? safeDevices[0].latestReading.power.toFixed(2)
+                            : "0.00"}
                           W{" "}
                         </td>{" "}
                       </tr>{" "}
@@ -1822,8 +1764,10 @@ function DashboardPage() {
                           {safeDevices[0].powerState &&
                           typeof safeDevices[0].latestReading.ApparentPower ===
                             "number"
-                            ? safeDevices[0].latestReading.ApparentPower
-                            : 0}
+                            ? safeDevices[0].latestReading.ApparentPower.toFixed(
+                                2
+                              )
+                            : "0.00"}
                           VA{" "}
                         </td>{" "}
                       </tr>{" "}
@@ -1834,8 +1778,10 @@ function DashboardPage() {
                           {safeDevices[0].powerState &&
                           typeof safeDevices[0].latestReading.ReactivePower ===
                             "number"
-                            ? safeDevices[0].latestReading.ReactivePower
-                            : 0}
+                            ? safeDevices[0].latestReading.ReactivePower.toFixed(
+                                2
+                              )
+                            : "0.00"}
                           var{" "}
                         </td>{" "}
                       </tr>{" "}
@@ -1846,8 +1792,10 @@ function DashboardPage() {
                           {safeDevices[0].powerState &&
                           typeof safeDevices[0].latestReading.PowerFactor ===
                             "number"
-                            ? safeDevices[0].latestReading.PowerFactor
-                            : 0}{" "}
+                            ? safeDevices[0].latestReading.PowerFactor.toFixed(
+                                2
+                              )
+                            : "0.00"}
                         </td>{" "}
                       </tr>{" "}
                       <tr>
@@ -1856,7 +1804,9 @@ function DashboardPage() {
                           {" "}
                           {typeof safeDevices[0].latestReading.EnergyToday ===
                           "number"
-                            ? safeDevices[0].latestReading.EnergyToday
+                            ? safeDevices[0].latestReading.EnergyToday.toFixed(
+                                2
+                              )
                             : "--"}
                           kWh{" "}
                         </td>{" "}
@@ -1867,7 +1817,9 @@ function DashboardPage() {
                           {" "}
                           {typeof safeDevices[0].latestReading
                             .EnergyYesterday === "number"
-                            ? safeDevices[0].latestReading.EnergyYesterday
+                            ? safeDevices[0].latestReading.EnergyYesterday.toFixed(
+                                2
+                              )
                             : "--"}
                           kWh{" "}
                         </td>{" "}
@@ -1902,8 +1854,8 @@ function DashboardPage() {
                           {safeDevices[1].powerState &&
                           typeof safeDevices[1].latestReading.voltage ===
                             "number"
-                            ? safeDevices[1].latestReading.voltage
-                            : 0}
+                            ? safeDevices[1].latestReading.voltage.toFixed(2)
+                            : "0.00"}
                           V{" "}
                         </td>{" "}
                       </tr>{" "}
@@ -1914,8 +1866,8 @@ function DashboardPage() {
                           {safeDevices[1].powerState &&
                           typeof safeDevices[1].latestReading.current ===
                             "number"
-                            ? safeDevices[1].latestReading.current
-                            : 0}
+                            ? safeDevices[1].latestReading.current.toFixed(2)
+                            : "0.00"}
                           A{" "}
                         </td>{" "}
                       </tr>{" "}
@@ -1925,8 +1877,8 @@ function DashboardPage() {
                           {" "}
                           {safeDevices[1].powerState &&
                           typeof safeDevices[1].latestReading.power === "number"
-                            ? safeDevices[1].latestReading.power
-                            : 0}
+                            ? safeDevices[1].latestReading.power.toFixed(2)
+                            : "0.00"}
                           W{" "}
                         </td>{" "}
                       </tr>{" "}
@@ -1937,8 +1889,10 @@ function DashboardPage() {
                           {safeDevices[1].powerState &&
                           typeof safeDevices[1].latestReading.ApparentPower ===
                             "number"
-                            ? safeDevices[1].latestReading.ApparentPower
-                            : 0}
+                            ? safeDevices[1].latestReading.ApparentPower.toFixed(
+                                2
+                              )
+                            : "0.00"}
                           VA{" "}
                         </td>{" "}
                       </tr>{" "}
@@ -1949,8 +1903,10 @@ function DashboardPage() {
                           {safeDevices[1].powerState &&
                           typeof safeDevices[1].latestReading.ReactivePower ===
                             "number"
-                            ? safeDevices[1].latestReading.ReactivePower
-                            : 0}
+                            ? safeDevices[1].latestReading.ReactivePower.toFixed(
+                                2
+                              )
+                            : "0.00"}
                           var{" "}
                         </td>{" "}
                       </tr>{" "}
@@ -1961,8 +1917,10 @@ function DashboardPage() {
                           {safeDevices[1].powerState &&
                           typeof safeDevices[1].latestReading.PowerFactor ===
                             "number"
-                            ? safeDevices[1].latestReading.PowerFactor
-                            : 0}{" "}
+                            ? safeDevices[1].latestReading.PowerFactor.toFixed(
+                                2
+                              )
+                            : "0.00"}
                         </td>{" "}
                       </tr>{" "}
                       <tr>
@@ -1971,7 +1929,9 @@ function DashboardPage() {
                           {" "}
                           {typeof safeDevices[1].latestReading.EnergyToday ===
                           "number"
-                            ? safeDevices[1].latestReading.EnergyToday
+                            ? safeDevices[1].latestReading.EnergyToday.toFixed(
+                                2
+                              )
                             : "--"}
                           kWh{" "}
                         </td>{" "}
@@ -1982,7 +1942,9 @@ function DashboardPage() {
                           {" "}
                           {typeof safeDevices[1].latestReading
                             .EnergyYesterday === "number"
-                            ? safeDevices[1].latestReading.EnergyYesterday
+                            ? safeDevices[1].latestReading.EnergyYesterday.toFixed(
+                                2
+                              )
                             : "--"}
                           kWh{" "}
                         </td>{" "}
@@ -2061,15 +2023,37 @@ function DashboardPage() {
                 zIndex: 2,
               }}
             >
-              <h1 style={{ color: "white", marginBottom: 8 }}>
-                Olá, eu sou EcoBot👋{" "}
-              </h1>{" "}
+              <h1
+                style={{
+                  color: "white",
+                  marginBottom: 8,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                  flexWrap: "wrap",
+                }}
+              >
+                Olá, eu sou
+                <img
+                  src={process.env.PUBLIC_URL + "/EcoBotSF.png"}
+                  alt="EcoBot"
+                  className="ecobot-h1-img"
+                  style={{
+                    height: "2.2em",
+                    maxWidth: "38vw",
+                    width: "auto",
+                    objectFit: "contain",
+                    marginLeft: 8,
+                  }}
+                />
+              </h1>
               <h4 style={{ color: "#e0e0e0", marginBottom: 24 }}>
                 Aqui {userName}, você pode me perguntar sobre previsões de
                 consumo futuro de energia e receber dicas para um uso mais
                 eficiente dos seus eletrodomésticos.Fique à vontade!
-              </h4>{" "}
-            </div>{" "}
+              </h4>
+            </div>
             <div
               style={{
                 background: "#23234a",
@@ -2093,12 +2077,37 @@ function DashboardPage() {
                   <div
                     key={idx}
                     style={{
-                      color: msg.sender === "EcoBot" ? "#00e676" : "#fff",
-                      textAlign: msg.sender === "EcoBot" ? "left" : "right",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent:
+                        msg.sender === "EcoBot" ? "flex-start" : "flex-end",
                       margin: "8px 0",
+                      gap: 8,
                     }}
                   >
-                    <strong> {msg.sender}: </strong> {msg.text}{" "}
+                    {msg.sender === "EcoBot" ? (
+                      <>
+                        <img
+                          src={process.env.PUBLIC_URL + "/ST.png"}
+                          alt="EcoBot"
+                          className="ecobot-chat-avatar"
+                        />
+                        <span style={{ color: "#00e676", textAlign: "left" }}>
+                          {msg.text}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="user-chat-avatar">
+                          {userName && userName.length > 0
+                            ? userName[0].toUpperCase()
+                            : "U"}
+                        </span>
+                        <span style={{ color: "#fff", textAlign: "right" }}>
+                          {msg.text}
+                        </span>
+                      </>
+                    )}
                   </div>
                 ))}{" "}
               </div>{" "}
@@ -2137,140 +2146,161 @@ function DashboardPage() {
         )}
         {/* ========== SETTINGS SECTION ========== */}{" "}
         {activeSection === "configuracoes" && (
-          <div className="settings-section">
-            <h2> Configurações da Conta </h2>
-            <div className="user-settings-card">
-              <h3> Informações do Usuário </h3>{" "}
-              <p>
-                <strong> Nome de Usuário: </strong> {userName}{" "}
-              </p>{" "}
-              <p>
-                <strong> Email: </strong> {userEmail}{" "}
-              </p>{" "}
-              <p>
-                <button className="edit-profile-button" onClick={openEditModal}>
-                  Editar Perfil
-                </button>
-              </p>
-              <p className="settings-note">
-                * Após editar ou excluir a conta, será necessário fazer login
-                novamente.{" "}
-              </p>{" "}
-            </div>
-            {/* Edit Account Modal */}{" "}
-            {showEditModal && (
-              <div className="modal-overlay">
-                <div className="modal-card">
-                  <h3> Editar Conta </h3>{" "}
-                  <form onSubmit={handleEditAccount}>
-                    <label> Novo Nome: </label>{" "}
-                    <input
-                      type="text"
-                      value={editName}
-                      onChange={(e) => setEditName(e.target.value)}
-                      placeholder="Novo nome"
-                    />
-                    <label> Nova Senha: </label>{" "}
-                    <input
-                      type="password"
-                      value={editPassword}
-                      onChange={(e) => setEditPassword(e.target.value)}
-                      placeholder="Nova senha"
-                    />
-                    {editError && (
-                      <p className="error-message"> {editError} </p>
-                    )}
-                    <div className="button-group small-buttons">
+          <>
+            <div className="settings-section">
+              <h2> Configurações da Conta </h2>
+              <div className="user-settings-card">
+                <h3> Informações do Usuário </h3>{" "}
+                <p>
+                  <strong> Nome de Usuário: </strong> {userName}{" "}
+                </p>{" "}
+                <p>
+                  <strong> Email: </strong> {userEmail}{" "}
+                </p>{" "}
+                <p>
+                  <button
+                    className="edit-profile-button"
+                    onClick={openEditModal}
+                  >
+                    Editar Perfil
+                  </button>
+                </p>
+                <p className="settings-note">
+                  * Após editar ou excluir a conta, será necessário fazer login
+                  novamente.{" "}
+                </p>{" "}
+              </div>
+              {/* Edit Account Modal */}{" "}
+              {showEditModal && (
+                <div className="modal-overlay">
+                  <div className="modal-card">
+                    <h3> Editar Conta </h3>{" "}
+                    <form onSubmit={handleEditAccount}>
+                      <label> Novo Nome: </label>{" "}
+                      <input
+                        type="text"
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        placeholder="Novo nome"
+                      />
+                      <label> Nova Senha: </label>{" "}
+                      <input
+                        type="password"
+                        value={editPassword}
+                        onChange={(e) => setEditPassword(e.target.value)}
+                        placeholder="Nova senha"
+                      />
+                      {editError && (
+                        <p className="error-message"> {editError} </p>
+                      )}
+                      <div className="button-group small-buttons">
+                        <button
+                          type="submit"
+                          disabled={editLoading}
+                          className="submit-button small-btn"
+                        >
+                          {" "}
+                          {editLoading ? "Salvando..." : "Salvar"}{" "}
+                        </button>{" "}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowEditModal(false);
+                            openDeleteModal();
+                          }}
+                          className="delete-account-button small-btn"
+                        >
+                          Excluir Conta{" "}
+                        </button>{" "}
+                        <button
+                          type="button"
+                          onClick={() => setShowEditModal(false)}
+                          className="cancel-button small-btn"
+                        >
+                          Cancelar{" "}
+                        </button>{" "}
+                      </div>{" "}
+                    </form>{" "}
+                  </div>{" "}
+                </div>
+              )}
+              {/* Delete Account Modal */}{" "}
+              {showDeleteModal && (
+                <div className="modal-overlay">
+                  <div className="modal-card">
+                    <h3> Excluir Conta </h3>{" "}
+                    <p>
+                      Tem certeza que deseja excluir sua conta ? Esta ação é
+                      irreversível.{" "}
+                    </p>{" "}
+                    {deleteError && (
+                      <p className="error-message"> {deleteError} </p>
+                    )}{" "}
+                    <div className="button-group">
                       <button
-                        type="submit"
-                        disabled={editLoading}
-                        className="submit-button small-btn"
+                        onClick={handleDeleteAccount}
+                        disabled={deleteLoading}
+                        className="delete-button"
                       >
                         {" "}
-                        {editLoading ? "Salvando..." : "Salvar"}{" "}
+                        {deleteLoading ? "Excluindo..." : "Excluir"}{" "}
                       </button>{" "}
                       <button
-                        type="button"
-                        onClick={() => {
-                          setShowEditModal(false);
-                          openDeleteModal();
-                        }}
-                        className="delete-account-button small-btn"
-                      >
-                        Excluir Conta{" "}
-                      </button>{" "}
-                      <button
-                        type="button"
-                        onClick={() => setShowEditModal(false)}
-                        className="cancel-button small-btn"
+                        onClick={() => setShowDeleteModal(false)}
+                        className="cancel-button"
                       >
                         Cancelar{" "}
                       </button>{" "}
                     </div>{" "}
-                  </form>{" "}
-                </div>{" "}
-              </div>
-            )}
-            {/* Delete Account Modal */}{" "}
-            {showDeleteModal && (
-              <div className="modal-overlay">
-                <div className="modal-card">
-                  <h3> Excluir Conta </h3>{" "}
-                  <p>
-                    Tem certeza que deseja excluir sua conta ? Esta ação é
-                    irreversível.{" "}
-                  </p>{" "}
-                  {deleteError && (
-                    <p className="error-message"> {deleteError} </p>
-                  )}{" "}
-                  <div className="button-group">
-                    <button
-                      onClick={handleDeleteAccount}
-                      disabled={deleteLoading}
-                      className="delete-button"
-                    >
-                      {" "}
-                      {deleteLoading ? "Excluindo..." : "Excluir"}{" "}
-                    </button>{" "}
-                    <button
-                      onClick={() => setShowDeleteModal(false)}
-                      className="cancel-button"
-                    >
-                      Cancelar{" "}
-                    </button>{" "}
                   </div>{" "}
-                </div>{" "}
-              </div>
-            )}
-            <div className="tasmota-settings-card">
-              <h3> Gerenciamento de Dispositivos </h3>{" "}
-              <p className="device-management-description">
-                Aqui você pode gerenciar seus dispositivos Tasmota.{" "}
-              </p>
-              {isRealData ? (
-                <p>
-                  <button
-                    className="add-device-btn"
-                    onClick={() => navigate("/add-device")}
-                  >
-                    Adicionar Novo Dispositivo{" "}
-                  </button>{" "}
-                  <button
-                    className="refresh-devices-btn"
-                    onClick={fetchDashboardData}
-                  >
-                    Atualizar Lista de Dispositivos{" "}
-                  </button>{" "}
+                </div>
+              )}
+              <div className="tasmota-settings-card">
+                <h3> Gerenciamento de Dispositivos </h3>{" "}
+                <p className="device-management-description">
+                  Aqui você pode gerenciar seus dispositivos Tasmota.{" "}
                 </p>
-              ) : (
-                <p className="admin-only-message">
-                  O gerenciamento completo de dispositivos está disponível
-                  apenas para a conta de administrador.{" "}
-                </p>
-              )}{" "}
-            </div>{" "}
-          </div>
-        )}{" "}
+                {isRealData ? (
+                  <p>
+                    <button
+                      className="add-device-btn"
+                      onClick={() => navigate("/add-device")}
+                    >
+                      Adicionar Novo Dispositivo{" "}
+                    </button>{" "}
+                    <button
+                      className="refresh-devices-btn"
+                      onClick={fetchDashboardData}
+                    >
+                      Atualizar Lista de Dispositivos{" "}
+                    </button>{" "}
+                  </p>
+                ) : (
+                  <p className="admin-only-message">
+                    O gerenciamento completo de dispositivos está disponível
+                    apenas para a conta de administrador.{" "}
+                  </p>
+                )}{" "}
+              </div>{" "}
+            </div>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                marginTop: 24,
+              }}
+            >
+              <button
+                onClick={handleLogout}
+                className="menu-item logout-link-sidebar"
+                style={{ maxWidth: 220 }}
+              >
+                🔒Sair
+              </button>
+            </div>
+          </>
+        )}
       </div>{" "}
     </div>
   );
