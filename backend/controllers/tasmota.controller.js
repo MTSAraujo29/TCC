@@ -413,44 +413,76 @@ async function schedulePowerOff(req, res) {
       });
     }
 
-    // Converter dias da semana para formato do Tasmota (bit 0 = sábado, bit 6 = domingo)
+    // --- INÍCIO DAS ALTERAÇÕES ---
+
+    // Mapeamento de índices do frontend para a máscara de bits do Tasmota.
+    // ESTE MAPEO É CRÍTICO! Ele assume que o seu array `weekDays` no frontend
+    // está definido na ordem: [0=Segunda, 1=Terça, ..., 5=Sábado, 6=Domingo].
+    // Se a ordem for diferente (ex: Domingo no índice 0), você precisará ajustar este switch.
+    const frontendDayIndexToTasmotaBit = (index) => {
+      switch (index) {
+        case 0:
+          return 1; // Segunda-feira (Tasmota Bit 1)
+        case 1:
+          return 2; // Terça-feira (Tasmota Bit 2)
+        case 2:
+          return 3; // Quarta-feira (Tasmota Bit 3)
+        case 3:
+          return 4; // Quinta-feira (Tasmota Bit 4)
+        case 4:
+          return 5; // Sexta-feira (Tasmota Bit 5)
+        case 5:
+          return 6; // Sábado (Tasmota Bit 6)
+        case 6:
+          return 0; // Domingo (Tasmota Bit 0)
+        default:
+          return -1; // Índice inválido
+      }
+    };
+
     let tasmotaDaysMask = 0;
+    // Se 'repeat' for verdadeiro, significa que o botão "Todos os dias" foi selecionado.
     if (repeat) {
-      tasmotaDaysMask = 127; // Todos os dias (1111111 em binário)
+      tasmotaDaysMask = 127; // Todos os dias: 01111111 em binário (bits 0 a 6 ativados)
     } else {
+      // Se dias específicos foram selecionados, iteramos sobre eles e construímos a máscara.
       days.forEach((dayIndex) => {
-        // Agora: 0 = sábado, 1 = sexta, ..., 6 = domingo
-        const bitMask = 1 << dayIndex;
-        tasmotaDaysMask |= bitMask;
+        const tasmotaBitIndex = frontendDayIndexToTasmotaBit(dayIndex);
+        if (tasmotaBitIndex !== -1) {
+          tasmotaDaysMask |= 1 << tasmotaBitIndex; // Adiciona o bit correspondente
+        }
       });
     }
+    // --- FIM DAS ALTERAÇÕES ---
 
     // Para cada dispositivo, enviar comando de agendamento para o timer correto
     const results = [];
     for (const device of userDevices) {
       try {
-        // 1. Habilitar o temporizador global (Enable Timers)
+        // 1. Habilitar o temporizador global (Enable Timers) no Tasmota
         const timersTopic = `cmnd/${device.tasmotaTopic}/Timers`;
         const broker = device.broker || "broker1";
         await tasmotaService.publishMqttCommand(timersTopic, "1", broker);
 
-        // 2. Configurar o timer individual
+        // 2. Configurar o timer individual com os dados recebidos
         const timerCommand = {
-          Enable: 1,
-          Mode: 0, // Timer
-          Time: time,
-          Window: 0,
-          Days: tasmotaDaysMask,
-          Repeat: repeat ? 1 : 0,
-          Output: 1,
-          Action: 0, // 0 = OFF, 1 = ON
+          Enable: 1, // Habilita o timer
+          Mode: 0, // Modo Timer (não cronômetro ou pulso)
+          Time: time, // Hora de desligar/ligar (ex: "18:00")
+          Window: 0, // Janela de tempo (0 para exato)
+          Days: tasmotaDaysMask, // Máscara de bits dos dias da semana (ex: 64 para Sábado, 127 para Todos)
+          Repeat: repeat ? 1 : 0, // Se 1, o timer repete semanalmente; se 0, executa apenas uma vez no próximo dia correspondente
+          Output: 1, // Saída do relé (geralmente 1 para o relé principal)
+          Action: 0, // Ação: 0 = OFF (desligar), 1 = ON (ligar)
         };
-        // Log detalhado do comando enviado
+
+        // Log detalhado do comando enviado para depuração
         console.log(
-          `[DEBUG] Enviando para Timer${timerNumber}:`,
+          `[DEBUG] Enviando para Timer${timerNumber} do dispositivo ${device.name}:`,
           JSON.stringify(timerCommand)
         );
-        // O slot do timer é Timer1, Timer2, Timer3, Timer4, Timer5
+
+        // O slot do timer é Timer1, Timer2, Timer3, etc., dependendo do `timerNumber`
         const topic = `cmnd/${device.tasmotaTopic}/Timer${timerNumber}`;
         await tasmotaService.publishMqttCommand(
           topic,
@@ -470,6 +502,7 @@ async function schedulePowerOff(req, res) {
         });
       }
     }
+
     const successfulResults = results.filter((r) => r.status === "success");
     if (successfulResults.length === 0) {
       return res.status(500).json({
@@ -477,6 +510,7 @@ async function schedulePowerOff(req, res) {
         details: results,
       });
     }
+
     res.status(200).json({
       message: "Agendamento configurado com sucesso!",
       details: results,
