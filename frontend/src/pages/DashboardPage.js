@@ -792,6 +792,10 @@ function DashboardPage() {
   const [scheduleRepeat, setScheduleRepeat] = useState(false);
   const [scheduleMessage, setScheduleMessage] = useState("");
   const [scheduleMessageColor, setScheduleMessageColor] = useState("#1976d2");
+  // NOVO: Estado para slot selecionado (1 a 5)
+  const [selectedSlot, setSelectedSlot] = useState(1);
+  // NOVO: Estado para Enable Timers
+  const [enableTimers, setEnableTimers] = useState(false);
 
   // Função para enviar agendamento para o backend
   async function handleScheduleShutdown(e) {
@@ -811,6 +815,8 @@ function DashboardPage() {
           day: scheduleDay,
           time: scheduleTime,
           repeat: scheduleRepeat,
+          slot: selectedSlot, // Envia o slot selecionado
+          enableTimers: enableTimers, // Envia o estado do Enable Timers
         }),
       });
       const data = await res.json();
@@ -1129,7 +1135,12 @@ function DashboardPage() {
           {" "}
           ⚙️Configurações{" "}
         </div>
-        {/* Removido: <div className="sidebar-bottom"> ... botão sair ... </div> */}
+        <div className="sidebar-bottom">
+          <button onClick={handleLogout} className="logout-button-sidebar">
+            <span style={{ fontSize: "1rem" }}>🔒</span>
+            Sair
+          </button>
+        </div>
       </div>
       {/* ==================== MOBILE MENU ==================== */}{" "}
       {window.innerWidth <= 700 && (
@@ -1206,6 +1217,16 @@ function DashboardPage() {
             }}
           >
             ⚙️Configurações
+          </div>
+          <div
+            className="menu-item logout-button-mobile"
+            onClick={() => {
+              handleLogout();
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            <span style={{ fontSize: "1.1rem" }}>🔒</span>
+            Sair da Conta
           </div>
         </div>
       )}
@@ -1545,6 +1566,73 @@ function DashboardPage() {
                       onChange={(e) => setScheduleRepeat(e.target.checked)}
                     />
                     Repetir semanalmente
+                  </label>
+                </div>
+
+                {/* Botões de Slot */}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: 12,
+                    margin: "12px 0",
+                  }}
+                >
+                  {[1, 2, 3, 4, 5].map((slot) => (
+                    <button
+                      key={slot}
+                      type="button"
+                      onClick={() => setSelectedSlot(slot)}
+                      style={{
+                        background:
+                          selectedSlot === slot ? "#00bcd4" : "#23243a",
+                        color: selectedSlot === slot ? "#fff" : "#bbb",
+                        border:
+                          selectedSlot === slot
+                            ? "2px solid #00bcd4"
+                            : "2px solid #4a4a7e",
+                        borderRadius: 8,
+                        padding: "8px 18px",
+                        fontWeight: "bold",
+                        fontSize: "1rem",
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                        boxShadow:
+                          selectedSlot === slot
+                            ? "0 2px 8px rgba(0,188,212,0.18)"
+                            : "none",
+                      }}
+                    >
+                      {`Slot ${slot}`}
+                    </button>
+                  ))}
+                </div>
+                {/* Enable Timers */}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    margin: "8px 0 18px 0",
+                  }}
+                >
+                  <label
+                    style={{
+                      color: "#fff",
+                      fontWeight: 500,
+                      fontSize: "1.1rem",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={enableTimers}
+                      onChange={(e) => setEnableTimers(e.target.checked)}
+                      style={{ width: 18, height: 18 }}
+                    />
+                    Enable Timers
                   </label>
                 </div>
 
@@ -2133,15 +2221,14 @@ function DashboardPage() {
                 width: "100%",
                 display: "flex",
                 justifyContent: "center",
-                marginTop: 24,
+                marginTop: 32,
+                padding: "24px 0",
+                borderTop: "1px solid rgba(255, 255, 255, 0.1)",
               }}
             >
-              <button
-                onClick={handleLogout}
-                className="menu-item logout-link-sidebar"
-                style={{ maxWidth: 220 }}
-              >
-                🔒Sair
+              <button onClick={handleLogout} className="logout-button-modern">
+                <span style={{ fontSize: "1.2rem" }}>🔒</span>
+                Sair da Conta
               </button>
             </div>
           </>
