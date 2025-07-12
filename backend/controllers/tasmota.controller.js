@@ -357,140 +357,66 @@ async function getLiveTotalEnergyFromTasmota(req, res) {
   }
 }
 
-// Função para agendar desligamento de dispositivos
-async function schedulePowerOff(req, res) {
-  const { devices, days, repeat, time, timerNumber } = req.body;
-  const userId = req.user.userId;
-
-  console.log("[schedulePowerOff] Payload recebido:", {
-    devices,
-    days,
-    repeat,
-    time,
-    timerNumber,
-  });
-
-  // Validação dos dados recebidos
-  if (!devices || devices.length === 0) {
-    return res
-      .status(400)
-      .json({ message: "Pelo menos um dispositivo deve ser selecionado." });
-  }
-  if (!days || days.length === 0) {
-    return res
-      .status(400)
-      .json({ message: "Pelo menos um dia deve ser selecionado." });
-  }
-  if (!time) {
-    return res.status(400).json({ message: "Horário é obrigatório." });
-  }
-  if (!timerNumber || timerNumber < 1 || timerNumber > 4) {
-    return res
-      .status(400)
-      .json({ message: "Timer inválido. Escolha de 1 a 4." });
-  }
-
+// Agendar desligamento de dispositivo(s) Tasmota
+async function scheduleShutdown(req, res) {
+  const { device, day, time, repeat } = req.body;
+  // device: 'sala', 'camera' ou 'ambos'
+  // day: 'todos', 'domingo', ...
+  // time: 'HH:MM'
+  // repeat: true/false
   try {
-    // Ajuste no mapeamento dos dispositivos para agendamento
-    const deviceTopicMap = (device) => {
-      if (device === "sala") return "sonoff_sala"; // broker1
-      if (device === "sonoff sala") return "tasmota_C2BE64"; // broker1
-      if (device === "camera") return "tasmota_C3B7EC"; // broker2
-      return device;
+    // Buscar dispositivos conforme seleção
+    let devicesToSchedule = [];
+    if (device === "sala" || device === "ambos") {
+      const sala = await prisma.device.findFirst({
+        where: { name: { contains: "Sala" } },
+      });
+      if (sala) devicesToSchedule.push(sala);
+    }
+    if (device === "camera" || device === "ambos") {
+      const camera = await prisma.device.findFirst({
+        where: { name: { contains: "Câmera" } },
+      });
+      if (camera) devicesToSchedule.push(camera);
+    }
+    if (devicesToSchedule.length === 0) {
+      return res.status(404).json({ message: "Dispositivo não encontrado." });
+    }
+    // Montar comando de timer para Tasmota
+    // Tasmota aceita comando: cmnd/<TOPICO>/Timer<n> {"Enable":1,"Time":"HH:MM","Days":"1111111","Repeat":1,"Mode":0,"Action":0}
+    // Days: 7 dígitos (Domingo a Sábado), 1=ativo, 0=inativo
+    const daysMap = {
+      domingo: "1000000",
+      segunda: "0100000",
+      terca: "0010000",
+      quarta: "0001000",
+      quinta: "0000100",
+      sexta: "0000010",
+      sabado: "0000001",
+      todos: "1111111",
     };
-
-    // Buscar os dispositivos do usuário
-    const userDevices = await prisma.device.findMany({
-      where: {
-        userId: userId,
-        tasmotaTopic: { in: devices.map(deviceTopicMap) },
-      },
-    });
-
-    if (userDevices.length === 0) {
-      return res.status(404).json({
-        message: "Nenhum dispositivo encontrado para os tópicos selecionados.",
-      });
+    const daysStr = daysMap[day] || "1111111";
+    const timerPayload = {
+      Enable: 1,
+      Time: time,
+      Days: daysStr,
+      Repeat: repeat ? 1 : 0,
+      Mode: 0, // Timer absoluto
+      Action: 0, // 0 = desligar
+    };
+    // Enviar comando para cada dispositivo
+    for (const dev of devicesToSchedule) {
+      const topic = `cmnd/${dev.tasmotaTopic}/Timer1`;
+      await tasmotaService.publishMqttCommand(
+        topic,
+        JSON.stringify(timerPayload),
+        dev.broker || "broker1"
+      );
     }
-
-    // --- INÍCIO DAS ALTERAÇÕES ---
-
-    // Converter dias da semana para formato do Tasmota (bit 6 = domingo, bit 0 = sábado)
-    let tasmotaDaysMask = 0;
-    if (repeat) {
-      tasmotaDaysMask = 127; // Todos os dias (1111111 em binário)
-    } else {
-      days.forEach((dayIndex) => {
-        tasmotaDaysMask |= 1 << dayIndex;
-      });
-    }
-    // --- FIM DAS ALTERAÇÕES ---
-
-    // Para cada dispositivo, enviar comando de agendamento para o timer correto
-    const results = [];
-    for (const device of userDevices) {
-      try {
-        // 1. Habilitar o temporizador global (Enable Timers) no Tasmota
-        const timersTopic = `cmnd/${device.tasmotaTopic}/Timers`;
-        const broker = device.broker || "broker1";
-        await tasmotaService.publishMqttCommand(timersTopic, "1", broker);
-
-        // 2. Configurar o timer individual com os dados recebidos
-        const timerCommand = {
-          Enable: 1, // Habilita o timer
-          Mode: 0, // Modo Timer (não cronômetro ou pulso)
-          Time: time, // Hora de desligar/ligar (ex: "18:00")
-          Window: 0, // Janela de tempo (0 para exato)
-          Days: tasmotaDaysMask, // Máscara de bits dos dias da semana (ex: 64 para Sábado, 127 para Todos)
-          Repeat: repeat ? 1 : 0, // Se 1, o timer repete semanalmente; se 0, executa apenas uma vez no próximo dia correspondente
-          Output: 1, // Saída do relé (geralmente 1 para o relé principal)
-          Action: 0, // Ação: 0 = OFF (desligar), 1 = ON (ligar)
-        };
-
-        // Log detalhado do comando enviado para depuração
-        console.log(
-          `[DEBUG] Enviando para Timer${timerNumber} do dispositivo ${device.name}:`,
-          JSON.stringify(timerCommand)
-        );
-
-        // O slot do timer é Timer1, Timer2, Timer3, etc., dependendo do `timerNumber`
-        const topic = `cmnd/${device.tasmotaTopic}/Timer${timerNumber}`;
-        await tasmotaService.publishMqttCommand(
-          topic,
-          JSON.stringify(timerCommand),
-          broker
-        );
-        results.push({
-          device: device.name,
-          status: "success",
-          message: `Agendamento configurado para ${device.name} no Timer ${timerNumber} às ${time}`,
-        });
-      } catch (error) {
-        results.push({
-          device: device.name,
-          status: "error",
-          message: `Erro ao agendar ${device.name}: ${error.message}`,
-        });
-      }
-    }
-
-    const successfulResults = results.filter((r) => r.status === "success");
-    if (successfulResults.length === 0) {
-      return res.status(500).json({
-        message: "Erro ao configurar agendamentos.",
-        details: results,
-      });
-    }
-
-    res.status(200).json({
-      message: "Agendamento configurado com sucesso!",
-      details: results,
-    });
+    res.json({ message: "Agendamento enviado para o(s) dispositivo(s)." });
   } catch (error) {
-    res.status(500).json({
-      message: "Erro interno do servidor ao configurar agendamento.",
-      error: error.message,
-    });
+    console.error("Erro ao agendar desligamento:", error);
+    res.status(500).json({ message: "Erro ao agendar desligamento." });
   }
 }
 
@@ -563,7 +489,7 @@ module.exports = {
   getHistoricalEnergyReadings,
   toggleDevicePower,
   getLiveTotalEnergyFromTasmota,
-  schedulePowerOff, // Nova função exportada
+  scheduleShutdown,
   listSchedules,
   createSchedule,
 };
