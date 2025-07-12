@@ -795,13 +795,13 @@ function DashboardPage() {
   const [scheduleMessageColor, setScheduleMessageColor] = useState("green"); // 'green' ou 'red'
 
   const weekDays = [
-    "Segunda-feira", // index 0
-    "Terça-feira",    // index 1
-    "Quarta-feira",   // index 2
-    "Quinta-feira",   // index 3
-    "Sexta-feira",    // index 4
-    "Sábado",       // index 5
-    "Domingo"       // index 6
+    "Domingo",   // 0
+    "Segunda",   // 1
+    "Terça",     // 2
+    "Quarta",    // 3
+    "Quinta",    // 4
+    "Sexta",     // 5
+    "Sábado"     // 6
   ];
 
   const handleDeviceSelect = (device) => {
