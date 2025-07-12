@@ -231,154 +231,9 @@ function DashboardPage() {
     fetchLiveTotalEnergyIndividual();
   }, [devices, fetchLiveTotalEnergyIndividual]);
 
-  // ALTERADO: Esta função agora deve processar os `devices` (que podem ser reais do Tasmota ou os mocks)
-  const getConsumptionByTypeData = () => {
-    // Se houver dois dispositivos, Sonoff Sala e Sonoff Câmera
-    if (devices.length >= 2) {
-      const sala = devices[0];
-      const camera = devices[1];
-      const salaYesterday =
-        sala.latestReading &&
-        typeof sala.latestReading.EnergyYesterday === "number"
-          ? sala.latestReading.EnergyYesterday
-          : 0;
-      const cameraYesterday =
-        camera.latestReading &&
-        typeof camera.latestReading.EnergyYesterday === "number"
-          ? camera.latestReading.EnergyYesterday
-          : 0;
-      return {
-        labels: ["Sala", "Câmera"],
-        datasets: [
-          {
-            data: [salaYesterday, cameraYesterday],
-            backgroundColor: ["#00bcd4", "#ff9800"],
-            borderColor: ["#00838f", "#f57c00"],
-            borderWidth: 1,
-          },
-        ],
-      };
-    }
-    // Fallback para lógica antiga se não houver dois dispositivos
-    const deviceTypeConsumption = {};
-    devices.forEach((device) => {
-      const type = device.model || "Dispositivo de Energia";
-      const consumption =
-        device.latestReading &&
-        typeof device.latestReading.EnergyYesterday === "number"
-          ? device.latestReading.EnergyYesterday
-          : 0;
-      if (deviceTypeConsumption[type]) {
-        deviceTypeConsumption[type] += consumption;
-      } else {
-        deviceTypeConsumption[type] = consumption;
-      }
-    });
-    const labels = Object.keys(deviceTypeConsumption);
-    const data = Object.values(deviceTypeConsumption);
-    const singleColor = ["#00bcd4"];
-    const singleBorder = ["#00838f"];
-    const backgroundColors =
-      labels.length === 1
-        ? singleColor
-        : [
-            "#00bcd4",
-            "#ff9800",
-            "#e91e63",
-            "#4caf50",
-            "#9c27b0",
-            "#f44336",
-            "#2196f3",
-            "#ffeb3b",
-          ];
-    const borderColors =
-      labels.length === 1
-        ? singleBorder
-        : [
-            "#00838f",
-            "#f57c00",
-            "#c2185b",
-            "#388e3c",
-            "#7b1fa2",
-            "#d32f2f",
-            "#1976d2",
-            "#fbc02d",
-          ];
-    return {
-      labels: labels.length > 0 ? labels : ["Nenhum dado"],
-      datasets: [
-        {
-          data: data.length > 0 ? data : [1],
-          backgroundColor: backgroundColors,
-          borderColor: borderColors,
-          borderWidth: 1,
-        },
-      ],
-    };
-  };
-
-  // ALTERADO: Adapte esta função para basear as sugestões nos dispositivos reais/fictícios.
-  const getSuggestedDevicesData = () => {
-    // Se estiver em modo de dados fictícios, pode retornar sugestões mais genéricas.
-    // Se estiver em modo real, você pode analisar os dados reais dos dispositivos para gerar sugestões.
-    if (!isRealData) {
-      return [
-        {
-          id: 1,
-          name: "Lâmpada do Quarto (Fictícia)",
-          suggestion: "Instalar temporizador para desligar automaticamente.",
-        },
-        {
-          id: 2,
-          name: "Ar Condicionado (Fictício)",
-          suggestion: "Configurar automação para ajustar temperatura ao sair.",
-        },
-        {
-          id: 3,
-          name: "Geladeira (Fictícia)",
-          suggestion:
-            "Verificar vedação da porta para evitar perda de energia.",
-        },
-        {
-          id: 4,
-          name: "TV da Sala (Fictícia)",
-          suggestion: "Ativar modo de economia de energia nas configurações.",
-        },
-      ];
-    }
-
-    // Lógica para dados reais (simplificada por enquanto)
-    // Aqui você pode iterar sobre `devices` e suas `latestReading` para dar sugestões
-    // Por exemplo, se um dispositivo está ligado há muito tempo com alto consumo.
-    const suggestions = [];
-    devices.forEach((device) => {
-      if (
-        device.powerState &&
-        device.latestReading &&
-        device.latestReading.power > 100
-      ) {
-        // Exemplo: ligado e com consumo alto
-        suggestions.push({
-          id: device.id,
-          name: device.name,
-          suggestion: `Dispositivo ligado com alto consumo (${device.latestReading.power}W). Considere automação ou desligamento quando não estiver em uso.`,
-        });
-      } else if (!device.powerState) {
-        suggestions.push({
-          id: device.id,
-          name: device.name,
-          suggestion: `Dispositivo ${device.name} está desligado. Ótima gestão de energia!`,
-        });
-      } else {
-        suggestions.push({
-          id: device.id,
-          name: device.name,
-          suggestion: `Consumo de ${device.name} está normal. Pequenos ajustes podem otimizar mais.`,
-        });
-      }
-    });
-    return suggestions;
-  };
+  // Adicionar estado para armazenar o gráfico pizza do backend
+  const [consumptionByTypeChartData, setConsumptionByTypeChartData] =
+    useState(null);
 
   // ALTERADO: `getChartData` agora usará dados reais quando `isRealData` for true.
   // Por enquanto, `daily_consumption_kwh` é mockado no backend para ambos, então esta parte não muda muito.
@@ -607,6 +462,9 @@ function DashboardPage() {
         } else {
           setDailyConsumption("0.00 kWh");
         }
+
+        // NOVO: Salvar o gráfico pizza fictício do backend
+        setConsumptionByTypeChartData(data.consumptionByTypeChartData || null);
       } else if (response.status === 401 || response.status === 403) {
         setSessionExpired(true);
         localStorage.removeItem("token");
@@ -1196,6 +1054,112 @@ function DashboardPage() {
       });
     }
     updateTimerForm(idx, { loading: false });
+  };
+
+  const getConsumptionByTypeData = () => {
+    // Se não for admin e existir dado fictício do backend, usa ele direto
+    if (
+      !isRealData &&
+      consumptionByTypeChartData &&
+      consumptionByTypeChartData.labels &&
+      consumptionByTypeChartData.data
+    ) {
+      return {
+        labels: consumptionByTypeChartData.labels,
+        datasets: [
+          {
+            data: consumptionByTypeChartData.data,
+            backgroundColor: consumptionByTypeChartData.backgroundColor,
+            borderColor: consumptionByTypeChartData.backgroundColor?.map((c) =>
+              c.replace("0.7", "1")
+            ),
+            borderWidth: 1,
+          },
+        ],
+      };
+    }
+    // Lógica antiga para admin
+    if (devices.length >= 2) {
+      const sala = devices[0];
+      const camera = devices[1];
+      const salaYesterday =
+        sala.latestReading &&
+        typeof sala.latestReading.EnergyYesterday === "number"
+          ? sala.latestReading.EnergyYesterday
+          : 0;
+      const cameraYesterday =
+        camera.latestReading &&
+        typeof camera.latestReading.EnergyYesterday === "number"
+          ? camera.latestReading.EnergyYesterday
+          : 0;
+      return {
+        labels: ["Sala", "Câmera"],
+        datasets: [
+          {
+            data: [salaYesterday, cameraYesterday],
+            backgroundColor: ["#00bcd4", "#ff9800"],
+            borderColor: ["#00838f", "#f57c00"],
+            borderWidth: 1,
+          },
+        ],
+      };
+    }
+    // Fallback para lógica antiga se não houver dois dispositivos
+    const deviceTypeConsumption = {};
+    devices.forEach((device) => {
+      const type = device.model || "Dispositivo de Energia";
+      const consumption =
+        device.latestReading &&
+        typeof device.latestReading.EnergyYesterday === "number"
+          ? device.latestReading.EnergyYesterday
+          : 0;
+      if (deviceTypeConsumption[type]) {
+        deviceTypeConsumption[type] += consumption;
+      } else {
+        deviceTypeConsumption[type] = consumption;
+      }
+    });
+    const labels = Object.keys(deviceTypeConsumption);
+    const data = Object.values(deviceTypeConsumption);
+    const singleColor = ["#00bcd4"];
+    const singleBorder = ["#00838f"];
+    const backgroundColors =
+      labels.length === 1
+        ? singleColor
+        : [
+            "#00bcd4",
+            "#ff9800",
+            "#e91e63",
+            "#4caf50",
+            "#9c27b0",
+            "#f44336",
+            "#2196f3",
+            "#ffeb3b",
+          ];
+    const borderColors =
+      labels.length === 1
+        ? singleBorder
+        : [
+            "#00838f",
+            "#f57c00",
+            "#c2185b",
+            "#388e3c",
+            "#7b1fa2",
+            "#d32f2f",
+            "#1976d2",
+            "#fbc02d",
+          ];
+    return {
+      labels: labels.length > 0 ? labels : ["Nenhum dado"],
+      datasets: [
+        {
+          data: data.length > 0 ? data : [1],
+          backgroundColor: backgroundColors,
+          borderColor: borderColors,
+          borderWidth: 1,
+        },
+      ],
+    };
   };
 
   if (sessionExpired) {
