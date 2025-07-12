@@ -1588,46 +1588,28 @@ function DashboardPage() {
                         (a, b) => a + b,
                         0
                       );
-                      const percentSala =
-                        total > 0
-                          ? ((data.datasets[0].data[0] / total) * 100).toFixed(
-                              1
-                            )
-                          : "0.0";
-                      const percentCamera =
-                        total > 0
-                          ? ((data.datasets[0].data[1] / total) * 100).toFixed(
-                              1
-                            )
-                          : "0.0";
-                      return (
-                        <>
-                          <span className="legend-item">
+                      return data.labels.map((label, idx) => {
+                        const percent =
+                          total > 0
+                            ? (
+                                (data.datasets[0].data[idx] / total) *
+                                100
+                              ).toFixed(1)
+                            : "0.0";
+                        return (
+                          <span className="legend-item" key={label}>
                             <span
                               className="legend-color"
                               style={{
-                                background: data.datasets[0].backgroundColor[0],
+                                background:
+                                  data.datasets[0].backgroundColor[idx],
                               }}
                             />
-                            <span className="legend-label">Sala:</span>
-                            <span className="legend-value">
-                              {percentSala} %
-                            </span>
+                            <span className="legend-label">{label}:</span>
+                            <span className="legend-value">{percent} %</span>
                           </span>
-                          <span className="legend-item">
-                            <span
-                              className="legend-color"
-                              style={{
-                                background: data.datasets[0].backgroundColor[1],
-                              }}
-                            />
-                            <span className="legend-label">Câmera:</span>
-                            <span className="legend-value">
-                              {percentCamera} %
-                            </span>
-                          </span>
-                        </>
-                      );
+                        );
+                      });
                     })()}
                   </div>
                 </div>
