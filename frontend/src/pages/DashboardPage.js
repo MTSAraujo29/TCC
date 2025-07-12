@@ -797,6 +797,10 @@ function DashboardPage() {
   // NOVO: Estado para Enable Timers
   const [enableTimers, setEnableTimers] = useState(false);
 
+  // Estados auxiliares para dropdowns
+  const [showDeviceDropdown, setShowDeviceDropdown] = useState(false);
+  const [showDayDropdown, setShowDayDropdown] = useState(false);
+
   // Função para enviar agendamento para o backend
   async function handleScheduleShutdown(e) {
     e.preventDefault();
@@ -1517,102 +1521,201 @@ function DashboardPage() {
               <h2>Agendar Desligamento</h2>
               <form onSubmit={handleScheduleShutdown}>
                 {/* Dispositivo */}
-                <div className="form-group">
+                <div
+                  className="form-group"
+                  style={{ position: "relative", marginBottom: 18 }}
+                >
                   <label>Dispositivo:</label>
                   <div
-                    style={{
-                      display: "flex",
-                      gap: 10,
-                      flexWrap: "wrap",
-                      justifyContent: "center",
-                      margin: "8px 0",
-                    }}
+                    style={{ width: "100%", maxWidth: 260, margin: "0 auto" }}
                   >
-                    {[
-                      { value: "sala", label: "Sala" },
-                      { value: "camera", label: "Câmera" },
-                      { value: "ambos", label: "Ambos" },
-                    ].map((opt) => (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => setScheduleDevice(opt.value)}
+                    <button
+                      type="button"
+                      onClick={() => setShowDeviceDropdown((v) => !v)}
+                      style={{
+                        width: "100%",
+                        background: "#23243a",
+                        color: scheduleDevice ? "#fff" : "#bbb",
+                        border: "2px solid #4a4a7e",
+                        borderRadius: 10,
+                        padding: "10px 18px",
+                        fontWeight: "bold",
+                        fontSize: "1rem",
+                        cursor: "pointer",
+                        textAlign: "left",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        transition: "all 0.2s",
+                      }}
+                    >
+                      {scheduleDevice
+                        ? [
+                            { value: "sala", label: "Sala" },
+                            { value: "camera", label: "Câmera" },
+                            { value: "ambos", label: "Ambos" },
+                          ].find((opt) => opt.value === scheduleDevice)
+                            ?.label || "Selecionar"
+                        : "Selecionar"}
+                      <span style={{ marginLeft: 8, fontSize: 18 }}>
+                        &#9662;
+                      </span>
+                    </button>
+                    {showDeviceDropdown && (
+                      <div
                         style={{
-                          background:
-                            scheduleDevice === opt.value
-                              ? "#00bcd4"
-                              : "#23243a",
-                          color: scheduleDevice === opt.value ? "#fff" : "#bbb",
-                          border:
-                            scheduleDevice === opt.value
-                              ? "2px solid #00bcd4"
-                              : "2px solid #4a4a7e",
+                          position: "absolute",
+                          top: 48,
+                          left: 0,
+                          width: "100%",
+                          background: "#23243a",
+                          border: "2px solid #4a4a7e",
                           borderRadius: 10,
-                          padding: "8px 18px",
-                          fontWeight: "bold",
-                          fontSize: "1rem",
-                          cursor: "pointer",
-                          transition: "all 0.2s",
-                          boxShadow:
-                            scheduleDevice === opt.value
-                              ? "0 2px 8px rgba(0,188,212,0.18)"
-                              : "none",
+                          zIndex: 10,
+                          boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
+                          display: "flex",
+                          flexDirection: "column",
                         }}
                       >
-                        {opt.label}
-                      </button>
-                    ))}
+                        {[
+                          { value: "sala", label: "Sala" },
+                          { value: "camera", label: "Câmera" },
+                          { value: "ambos", label: "Ambos" },
+                        ].map((opt) => (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            onClick={() => {
+                              setScheduleDevice(opt.value);
+                              setShowDeviceDropdown(false);
+                            }}
+                            style={{
+                              background:
+                                scheduleDevice === opt.value
+                                  ? "#00bcd4"
+                                  : "#23243a",
+                              color:
+                                scheduleDevice === opt.value ? "#fff" : "#bbb",
+                              border: "none",
+                              borderBottom: "1px solid #444",
+                              borderRadius: 0,
+                              padding: "10px 18px",
+                              fontWeight: "bold",
+                              fontSize: "1rem",
+                              cursor: "pointer",
+                              textAlign: "left",
+                              transition: "all 0.2s",
+                            }}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
                 {/* Dia da Semana */}
-                <div className="form-group">
+                <div
+                  className="form-group"
+                  style={{ position: "relative", marginBottom: 18 }}
+                >
                   <label>Dia da Semana:</label>
                   <div
-                    style={{
-                      display: "flex",
-                      gap: 8,
-                      flexWrap: "wrap",
-                      justifyContent: "center",
-                      margin: "8px 0",
-                    }}
+                    style={{ width: "100%", maxWidth: 260, margin: "0 auto" }}
                   >
-                    {[
-                      { value: "todos", label: "Todos" },
-                      { value: "domingo", label: "Dom" },
-                      { value: "segunda", label: "Seg" },
-                      { value: "terca", label: "Ter" },
-                      { value: "quarta", label: "Qua" },
-                      { value: "quinta", label: "Qui" },
-                      { value: "sexta", label: "Sex" },
-                      { value: "sabado", label: "Sáb" },
-                    ].map((opt) => (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => setScheduleDay(opt.value)}
+                    <button
+                      type="button"
+                      onClick={() => setShowDayDropdown((v) => !v)}
+                      style={{
+                        width: "100%",
+                        background: "#23243a",
+                        color: scheduleDay ? "#fff" : "#bbb",
+                        border: "2px solid #4a4a7e",
+                        borderRadius: 10,
+                        padding: "10px 18px",
+                        fontWeight: "bold",
+                        fontSize: "1rem",
+                        cursor: "pointer",
+                        textAlign: "left",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        transition: "all 0.2s",
+                      }}
+                    >
+                      {scheduleDay
+                        ? [
+                            { value: "todos", label: "Todos" },
+                            { value: "domingo", label: "Dom" },
+                            { value: "segunda", label: "Seg" },
+                            { value: "terca", label: "Ter" },
+                            { value: "quarta", label: "Qua" },
+                            { value: "quinta", label: "Qui" },
+                            { value: "sexta", label: "Sex" },
+                            { value: "sabado", label: "Sáb" },
+                          ].find((opt) => opt.value === scheduleDay)?.label ||
+                          "Selecionar"
+                        : "Selecionar"}
+                      <span style={{ marginLeft: 8, fontSize: 18 }}>
+                        &#9662;
+                      </span>
+                    </button>
+                    {showDayDropdown && (
+                      <div
                         style={{
-                          background:
-                            scheduleDay === opt.value ? "#00bcd4" : "#23243a",
-                          color: scheduleDay === opt.value ? "#fff" : "#bbb",
-                          border:
-                            scheduleDay === opt.value
-                              ? "2px solid #00bcd4"
-                              : "2px solid #4a4a7e",
+                          position: "absolute",
+                          top: 48,
+                          left: 0,
+                          width: "100%",
+                          background: "#23243a",
+                          border: "2px solid #4a4a7e",
                           borderRadius: 10,
-                          padding: "8px 14px",
-                          fontWeight: "bold",
-                          fontSize: "0.98rem",
-                          cursor: "pointer",
-                          transition: "all 0.2s",
-                          boxShadow:
-                            scheduleDay === opt.value
-                              ? "0 2px 8px rgba(0,188,212,0.18)"
-                              : "none",
+                          zIndex: 10,
+                          boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
+                          display: "flex",
+                          flexDirection: "column",
                         }}
                       >
-                        {opt.label}
-                      </button>
-                    ))}
+                        {[
+                          { value: "todos", label: "Todos" },
+                          { value: "domingo", label: "Dom" },
+                          { value: "segunda", label: "Seg" },
+                          { value: "terca", label: "Ter" },
+                          { value: "quarta", label: "Qua" },
+                          { value: "quinta", label: "Qui" },
+                          { value: "sexta", label: "Sex" },
+                          { value: "sabado", label: "Sáb" },
+                        ].map((opt) => (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            onClick={() => {
+                              setScheduleDay(opt.value);
+                              setShowDayDropdown(false);
+                            }}
+                            style={{
+                              background:
+                                scheduleDay === opt.value
+                                  ? "#00bcd4"
+                                  : "#23243a",
+                              color:
+                                scheduleDay === opt.value ? "#fff" : "#bbb",
+                              border: "none",
+                              borderBottom: "1px solid #444",
+                              borderRadius: 0,
+                              padding: "10px 18px",
+                              fontWeight: "bold",
+                              fontSize: "1rem",
+                              cursor: "pointer",
+                              textAlign: "left",
+                              transition: "all 0.2s",
+                            }}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="form-group">
@@ -1625,13 +1728,31 @@ function DashboardPage() {
                   />
                 </div>
 
-                <div className="form-group">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={scheduleRepeat}
-                      onChange={(e) => setScheduleRepeat(e.target.checked)}
-                    />
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    margin: "16px 0 8px 0",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={scheduleRepeat}
+                    onChange={(e) => setScheduleRepeat(e.target.checked)}
+                    id="repeat-weekly-checkbox"
+                    style={{ width: 18, height: 18, marginRight: 8 }}
+                  />
+                  <label
+                    htmlFor="repeat-weekly-checkbox"
+                    style={{
+                      color: "#fff",
+                      fontWeight: 500,
+                      fontSize: "1.08rem",
+                      cursor: "pointer",
+                      margin: 0,
+                    }}
+                  >
                     Repetir semanalmente
                   </label>
                 </div>
@@ -1699,7 +1820,6 @@ function DashboardPage() {
                       onChange={(e) => setEnableTimers(e.target.checked)}
                       style={{ width: 18, height: 18 }}
                     />
-                    
                     Habilitar temporizadores
                   </label>
                 </div>
