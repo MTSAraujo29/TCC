@@ -404,14 +404,14 @@ a.link-button {
 
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  /* 200px fixo */
-  gap: 10px;
-  margin-bottom: 1.875rem;
+  grid-template-columns: repeat(3, 1fr); /* Sempre 3 colunas */
+  gap: 6px;
+  margin-bottom: 1.2rem;
   width: 100%;
-  /* Melhor manter 100% para ocupar espaço disponível */
-  justify-content: center;
-  /* Centraliza os cards horizontalmente */
+  max-width: 700px; /* opcional: limite de largura para melhor controle */
+  margin-left: auto;
+  margin-right: auto;
+  justify-items: center; /* centraliza os cards nas colunas */
 }
 
 .metric-card {
@@ -423,7 +423,6 @@ a.link-button {
   text-align: center;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   border: 1px solid #4a4a7e;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -433,17 +432,13 @@ a.link-button {
 .metric-card h3 {
   color: #aaa;
   font-size: 0.7rem;
-  /* Convertido para REM */
   margin-top: 0;
   margin-bottom: 0.625rem;
-  /* Convertido para REM */
 }
 
 .metric-card p {
   color: #00bcd4;
-  /* Cor vibrante para os valores */
   font-size: 1.1rem;
-  /* Convertido para REM */
   font-weight: bold;
   margin: 0;
 }
