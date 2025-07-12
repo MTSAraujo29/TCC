@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css"; // Certifique-se de que este caminho está correto
 import { API_ENDPOINTS } from "../config/api";
@@ -948,14 +948,15 @@ function DashboardPage() {
   }, [fetchSchedules]);
 
   // Adicione estados para múltiplos agendamentos (um para cada timer)
-  const initialTimerForms = [1, 2, 3, 4].map(() => ({
+  // Inicialização correta dos 5 slots de agendamento
+  const initialTimerForms = [1, 2, 3, 4, 5].map(() => ({
     selectedDevices: [],
     selectedDays: [],
     allDaysSelected: false,
     repeat: false,
-    time: "00:00",
+    timeHour: "",
+    timeMinute: "",
     dropdownOpen: false,
-    deviceDropdownOpen: false,
     scheduleMessage: "",
     scheduleMessageColor: "#FFF",
     loading: false,
@@ -996,7 +997,7 @@ function DashboardPage() {
       });
       return;
     }
-    if (form.time === "00:00") {
+    if (form.timeHour === "" || form.timeMinute === "") {
       updateTimerForm(idx, {
         scheduleMessage: "Por favor, selecione um horário para o agendamento.",
         scheduleMessageColor: "red",
@@ -1017,7 +1018,7 @@ function DashboardPage() {
       devices: selectedTopics,
       days: form.allDaysSelected ? [0, 1, 2, 3, 4, 5, 6] : form.selectedDays,
       repeat: form.repeat,
-      time: form.time,
+      time: `${form.timeHour}:${form.timeMinute}`,
       timerNumber: idx + 1,
     };
     try {
@@ -1216,6 +1217,56 @@ function DashboardPage() {
       }
     });
     return suggestions;
+  };
+
+  const dropdownRefs = useRef([null, null, null, null, null]);
+
+  // Fecha o dropdown ao clicar fora
+  useEffect(() => {
+    function handleClickOutside(event) {
+      timerForms.forEach((form, idx) => {
+        if (form.dropdownOpen && dropdownRefs.current[idx]) {
+          if (!dropdownRefs.current[idx].contains(event.target)) {
+            updateTimerForm(idx, { dropdownOpen: false });
+          }
+        }
+      });
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [timerForms]);
+
+  // [NOVO] Estado para habilitar temporizador
+  const [enableTimers, setEnableTimers] = useState(false);
+
+  // [NOVO] Função para lidar com mudança do checkbox
+  const handleEnableTimersChange = async (e) => {
+    const checked = e.target.checked;
+    setEnableTimers(checked);
+    // Enviar comando para o backend habilitar/desabilitar timers do Tasmota
+    try {
+      // Aqui você pode pegar o(s) dispositivo(s) selecionado(s) ou o dispositivo atual
+      // Exemplo: pegar o primeiro dispositivo da lista
+      const selectedDevice = devices && devices.length > 0 ? devices[0] : null;
+      if (!selectedDevice) return;
+      const token = localStorage.getItem("token");
+      await fetch(`${API_ENDPOINTS.TASMOTA}/enable-timers`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          tasmotaTopic: selectedDevice.tasmotaTopic,
+          enable: checked,
+        }),
+      });
+    } catch (err) {
+      // Trate o erro se necessário
+      console.error("Erro ao habilitar/desabilitar temporizador:", err);
+    }
   };
 
   if (sessionExpired) {
@@ -1701,19 +1752,364 @@ function DashboardPage() {
                 </p>
               )}
             </div>
-          </>
-        )}
-               {/* ========== Agendar Desligamento========== */}{" "}
-               {activeSection === "controle" && (
-          <>
+            {/* Novo Card: Agendar Desligamento compacto */}
             <div
-              className="energy-control-section"
-              style={{ overflowX: "hidden", maxWidth: "100%", width: "100%" }}
+              className="schedule-shutdown-card"
+              style={{
+                background: "#3a3a5e",
+                borderRadius: 16,
+                border: "2px solid #4a4a7e",
+                boxShadow: "0 2px 16px rgba(0, 0, 0, 0.18)",
+                padding: 20,
+                margin: "24px auto 0 auto",
+                maxWidth: 480,
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
             >
-              <h2> Agendar Desligamento </h2>{" "}
-              {deviceMessage && (
-                <p className="device-feedback-message"> {deviceMessage} </p>
-              )}
+              <h1
+                style={{
+                  color: "#fff",
+                  textAlign: "center",
+                  margin: 0,
+                  marginBottom: 12,
+                  fontSize: 30,
+                  fontWeight: 700,
+                  letterSpacing: 1,
+                }}
+              >
+                Agendar Desligamento
+              </h1>
+             
+              {/* Botões dos slots */}
+              <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+                {[1, 2, 3, 4, 5].map((n, idx) => (
+                  <button
+                    key={n}
+                    type="button"
+                    style={{
+                      background: selectedTimer === n ? "#00bcd4" : "#4a4a7e",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: 6,
+                      padding: "6px 16px",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                    onClick={() => setSelectedTimer(n)}
+                  >
+                    Slot {n}
+                  </button>
+                ))}
+              </div>
+              {/* Formulário único para o slot selecionado */}
+              <form
+                onSubmit={handleTimerSubmit(selectedTimer - 1)}
+                style={{
+                  background: "#4a4a7e",
+                  borderRadius: 10,
+                  padding: 14,
+                  marginBottom: 0,
+                  width: "100%",
+                  boxShadow: "0 1px 8px rgba(0,0,0,0.10)",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+                  <label style={{ color: "#fff", fontSize: 14 }}>
+                    <input
+                      type="radio"
+                      name="device"
+                      value="sala"
+                      checked={timerForms[
+                        selectedTimer - 1
+                      ].selectedDevices.includes("sala")}
+                      onChange={() =>
+                        updateTimerForm(selectedTimer - 1, {
+                          selectedDevices: ["sala"],
+                        })
+                      }
+                    />
+                    Sala
+                  </label>
+                  <label style={{ color: "#fff", fontSize: 14 }}>
+                    <input
+                      type="radio"
+                      name="device"
+                      value="camera"
+                      checked={timerForms[
+                        selectedTimer - 1
+                      ].selectedDevices.includes("camera")}
+                      onChange={() =>
+                        updateTimerForm(selectedTimer - 1, {
+                          selectedDevices: ["camera"],
+                        })
+                      }
+                    />
+                    Câmera
+                  </label>
+                  <label style={{ color: "#fff", fontSize: 14 }}>
+                    <input
+                      type="radio"
+                      name="device"
+                      value="ambos"
+                      checked={
+                        timerForms[selectedTimer - 1].selectedDevices.includes(
+                          "sala"
+                        ) &&
+                        timerForms[selectedTimer - 1].selectedDevices.includes(
+                          "camera"
+                        )
+                      }
+                      onChange={() =>
+                        updateTimerForm(selectedTimer - 1, {
+                          selectedDevices: ["sala", "camera"],
+                        })
+                      }
+                    />
+                    Ambos
+                  </label>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    marginBottom: 8,
+                  }}
+                >
+                  <label style={{ color: "#fff", fontSize: 14 }}>
+                    <input
+                      type="checkbox"
+                      checked={timerForms[selectedTimer - 1].repeat}
+                      onChange={(e) =>
+                        updateTimerForm(selectedTimer - 1, {
+                          repeat: e.target.checked,
+                        })
+                      }
+                    />
+                    Repetir os desligamentos
+                  </label>
+                </div>
+                <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
+                  <label style={{ color: "#fff", fontSize: 14 }}>
+                    Horário:
+                    <input
+                      type="number"
+                      min="0"
+                      max="23"
+                      value={timerForms[selectedTimer - 1].timeHour}
+                      onChange={(e) => {
+                        const h = e.target.value;
+                        updateTimerForm(selectedTimer - 1, { timeHour: h });
+                      }}
+                      style={{ width: 90, marginLeft: 8, height: 40 }}
+                      required
+                    />
+                  </label>
+                  <span style={{ color: "#fff" }}>:</span>
+                  <label style={{ color: "#fff", fontSize: 14 }}>
+                    <input
+                      type="number"
+                      min="0"
+                      max="59"
+                      value={timerForms[selectedTimer - 1].timeMinute}
+                      onChange={(e) => {
+                        const m = e.target.value;
+                        updateTimerForm(selectedTimer - 1, { timeMinute: m });
+                      }}
+                      style={{ width: 90, marginLeft: 8, height: 40 }}
+                      required
+                    />
+                    min
+                  </label>
+                </div>
+
+                       {/* Dropdown Dias da Semana */}
+              <div
+                style={{
+                  marginBottom: 8,
+                  width: "100%",
+                  position: "relative",
+                }}
+              >
+                <button
+                  type="button"
+                  style={{
+                    background: "#3a3a5e",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 6,
+                    padding: "6px 12px",
+                    cursor: "pointer",
+                    width: "100%",
+                    textAlign: "left",
+                  }}
+                  onClick={() =>
+                    updateTimerForm(selectedTimer - 1, {
+                      dropdownOpen: !timerForms[selectedTimer - 1].dropdownOpen,
+                    })
+                  }
+                >
+                  {timerForms[selectedTimer - 1].allDaysSelected
+                    ? "Todos os dias"
+                    : timerForms[selectedTimer - 1].selectedDays.length > 0
+                    ? timerForms[selectedTimer - 1].selectedDays
+                        .map((i) => weekDays[i])
+                        .join(", ")
+                    : "Selecione os dias da semana"}
+                  <span style={{ float: "right" }}>
+                    {timerForms[selectedTimer - 1].dropdownOpen ? "▲" : "▼"}
+                  </span>
+                </button>
+                {timerForms[selectedTimer - 1].dropdownOpen && (
+                  <div
+                    ref={(el) => (dropdownRefs.current[selectedTimer - 1] = el)}
+                    style={{
+                      position: "absolute",
+                      top: 36,
+                      left: 0,
+                      background: "#23243a",
+                      borderRadius: 6,
+                      boxShadow: "#3a3a5e",
+                      zIndex: 10,
+                      padding: 8,
+                      minWidth: 180,
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
+                      gap: 6,
+                    }}
+                  >
+                    <button
+                      type="button"
+                      style={{
+                        gridColumn: "1 / span 2",
+                        background: timerForms[selectedTimer - 1]
+                          .allDaysSelected
+                          ? "#00bcd4"
+                          : "#444",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 6,
+                        padding: "6px 12px",
+                        cursor: "pointer",
+                        width: "100%",
+                        marginBottom: 4,
+                        fontWeight: 600,
+                      }}
+                      onClick={() =>
+                        updateTimerForm(selectedTimer - 1, {
+                          allDaysSelected:
+                            !timerForms[selectedTimer - 1].allDaysSelected,
+                          selectedDays: !timerForms[selectedTimer - 1]
+                            .allDaysSelected
+                            ? [0, 1, 2, 3, 4, 5, 6]
+                            : [],
+                          dropdownOpen: true,
+                        })
+                      }
+                    >
+                      Todos os dias
+                    </button>
+                    {weekDays.map((day, i) => (
+                      <button
+                        key={day}
+                        type="button"
+                        style={{
+                          background: timerForms[
+                            selectedTimer - 1
+                          ].selectedDays.includes(i)
+                            ? "#00bcd4"
+                            : "#444",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: 6,
+                          padding: "6px 12px",
+                          cursor: "pointer",
+                          width: "100%",
+                          fontWeight: 500,
+                        }}
+                        onClick={() => {
+                          const selected =
+                            timerForms[selectedTimer - 1].selectedDays;
+                          updateTimerForm(selectedTimer - 1, {
+                            selectedDays: selected.includes(i)
+                              ? selected.filter((d) => d !== i)
+                              : [...selected, i],
+                          });
+                        }}
+                      >
+                        {day}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {/* Checkbox Habilitar Temporizador */}
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 16,
+                }}
+              >
+                <input
+                  type="checkbox"
+                  id="enable-timers-checkbox"
+                  checked={enableTimers}
+                  onChange={handleEnableTimersChange}
+                  style={{ marginRight: 8, width: 18, height: 18 }}
+                />
+                <label
+                  htmlFor="enable-timers-checkbox"
+                  style={{
+                    color: "#fff",
+                    fontSize: 18,
+                    fontWeight: 500,
+                    cursor: "pointer",
+                  }}
+                >
+                  Habilitar Temporizador
+                </label>
+              </div>
+
+                <button
+                  type="submit"
+                  style={{
+                    background: "#00bcd4",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 8,
+                    padding: "8px 24px",
+                    fontSize: 16,
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                    marginTop: 6,
+                    width: 140,
+                  }}
+                  disabled={timerForms[selectedTimer - 1].loading}
+                >
+                  {timerForms[selectedTimer - 1].loading
+                    ? "Salvando..."
+                    : "Salvar"}
+                </button>
+                {timerForms[selectedTimer - 1].scheduleMessage && (
+                  <p
+                    style={{
+                      color: timerForms[selectedTimer - 1].scheduleMessageColor,
+                      marginTop: 6,
+                    }}
+                  >
+                    {timerForms[selectedTimer - 1].scheduleMessage}
+                  </p>
+                )}
+              </form>
             </div>
           </>
         )}

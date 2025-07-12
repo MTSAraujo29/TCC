@@ -2496,3 +2496,15 @@ textarea {
     font-size: 0.9em;
   }
 }
+
+/* Remove as setas dos inputs type=number no Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Remove as setas dos inputs type=number no Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
