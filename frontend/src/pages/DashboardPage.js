@@ -1424,7 +1424,7 @@ function DashboardPage() {
                 <p className="device-feedback-message"> {deviceMessage} </p>
               )}
               <h3> Meus Dispositivos de Energia </h3>
-              {safeDevices.length > 0 ? (
+              {devices.length > 0 ? (
                 <div
                   className="device-control-list"
                   style={{
@@ -1433,7 +1433,7 @@ function DashboardPage() {
                     width: "100%",
                   }}
                 >
-                  {safeDevices.map((device) => (
+                  {devices.map((device) => (
                     <div key={device.id} className="device-control-item">
                       <span className="device-control-name">
                         {" "}
@@ -1590,253 +1590,223 @@ function DashboardPage() {
                 {report.summary.overallMessage}{" "}
               </p>{" "}
             </div>
-            {isRealData &&
-              safeDevices.length > 0 &&
-              safeDevices[0].latestReading && (
-                <div className="energy-realtime-card">
-                  <h3> Dados em Tempo Real do Dispositivo Sonoff Sala </h3>{" "}
-                  <table className="energy-realtime-table">
-                    <tbody className="energy-realtime-tbody">
-                      <tr>
-                        <td> Tensão </td>{" "}
-                        <td>
-                          {" "}
-                          {safeDevices[0].powerState &&
-                          typeof safeDevices[0].latestReading.voltage ===
-                            "number"
-                            ? safeDevices[0].latestReading.voltage.toFixed(2)
-                            : "0.00"}
-                          V{" "}
-                        </td>{" "}
-                      </tr>{" "}
-                      <tr>
-                        <td> Corrente </td>{" "}
-                        <td>
-                          {" "}
-                          {safeDevices[0].powerState &&
-                          typeof safeDevices[0].latestReading.current ===
-                            "number"
-                            ? safeDevices[0].latestReading.current.toFixed(2)
-                            : "0.00"}
-                          A{" "}
-                        </td>{" "}
-                      </tr>{" "}
-                      <tr>
-                        <td> Potência Ativa </td>{" "}
-                        <td>
-                          {" "}
-                          {safeDevices[0].powerState &&
-                          typeof safeDevices[0].latestReading.power === "number"
-                            ? safeDevices[0].latestReading.power.toFixed(2)
-                            : "0.00"}
-                          W{" "}
-                        </td>{" "}
-                      </tr>{" "}
-                      <tr>
-                        <td> Potência Aparente </td>{" "}
-                        <td>
-                          {" "}
-                          {safeDevices[0].powerState &&
-                          typeof safeDevices[0].latestReading.ApparentPower ===
-                            "number"
-                            ? safeDevices[0].latestReading.ApparentPower.toFixed(
-                                2
-                              )
-                            : "0.00"}
-                          VA{" "}
-                        </td>{" "}
-                      </tr>{" "}
-                      <tr>
-                        <td> Potência Reativa </td>{" "}
-                        <td>
-                          {" "}
-                          {safeDevices[0].powerState &&
-                          typeof safeDevices[0].latestReading.ReactivePower ===
-                            "number"
-                            ? safeDevices[0].latestReading.ReactivePower.toFixed(
-                                2
-                              )
-                            : "0.00"}
-                          var{" "}
-                        </td>{" "}
-                      </tr>{" "}
-                      <tr>
-                        <td> Fator de Potência </td>{" "}
-                        <td>
-                          {" "}
-                          {safeDevices[0].powerState &&
-                          typeof safeDevices[0].latestReading.PowerFactor ===
-                            "number"
-                            ? safeDevices[0].latestReading.PowerFactor.toFixed(
-                                2
-                              )
-                            : "0.00"}
-                        </td>{" "}
-                      </tr>{" "}
-                      <tr>
-                        <td> Energia Hoje </td>{" "}
-                        <td>
-                          {" "}
-                          {typeof safeDevices[0].latestReading.EnergyToday ===
+            {isRealData && devices.length > 0 && devices[0].latestReading && (
+              <div className="energy-realtime-card">
+                <h3> Dados em Tempo Real do Dispositivo Sonoff Sala </h3>{" "}
+                <table className="energy-realtime-table">
+                  <tbody className="energy-realtime-tbody">
+                    <tr>
+                      <td> Tensão </td>{" "}
+                      <td>
+                        {" "}
+                        {devices[0].powerState &&
+                        typeof devices[0].latestReading.voltage === "number"
+                          ? devices[0].latestReading.voltage.toFixed(2)
+                          : "0.00"}
+                        V{" "}
+                      </td>{" "}
+                    </tr>{" "}
+                    <tr>
+                      <td> Corrente </td>{" "}
+                      <td>
+                        {" "}
+                        {devices[0].powerState &&
+                        typeof devices[0].latestReading.current === "number"
+                          ? devices[0].latestReading.current.toFixed(2)
+                          : "0.00"}
+                        A{" "}
+                      </td>{" "}
+                    </tr>{" "}
+                    <tr>
+                      <td> Potência Ativa </td>{" "}
+                      <td>
+                        {" "}
+                        {devices[0].powerState &&
+                        typeof devices[0].latestReading.power === "number"
+                          ? devices[0].latestReading.power.toFixed(2)
+                          : "0.00"}
+                        W{" "}
+                      </td>{" "}
+                    </tr>{" "}
+                    <tr>
+                      <td> Potência Aparente </td>{" "}
+                      <td>
+                        {" "}
+                        {devices[0].powerState &&
+                        typeof devices[0].latestReading.ApparentPower ===
                           "number"
-                            ? safeDevices[0].latestReading.EnergyToday.toFixed(
-                                2
-                              )
-                            : "--"}
-                          kWh{" "}
-                        </td>{" "}
-                      </tr>{" "}
-                      <tr>
-                        <td> Energia Ontem </td>{" "}
-                        <td>
-                          {" "}
-                          {typeof safeDevices[0].latestReading
-                            .EnergyYesterday === "number"
-                            ? safeDevices[0].latestReading.EnergyYesterday.toFixed(
-                                2
-                              )
-                            : "--"}
-                          kWh{" "}
-                        </td>{" "}
-                      </tr>{" "}
-                      <tr>
-                        <td> Energia Total </td>{" "}
-                        <td>
-                          {" "}
-                          {safeDevices[0].powerState
-                            ? liveTotalEnergyBroker1.toFixed(2) + " kWh"
-                            : "0.00 kWh"}{" "}
-                        </td>{" "}
-                      </tr>{" "}
-                    </tbody>{" "}
-                  </table>{" "}
-                </div>
-              )}
-            {isRealData &&
-              safeDevices.length > 1 &&
-              safeDevices[1].latestReading && (
-                <div
-                  className="energy-realtime-card"
-                  style={{ marginTop: "32px" }}
-                >
-                  <h3> Dados em Tempo Real do Dispositivo Sonoff Câmera </h3>{" "}
-                  <table className="energy-realtime-table">
-                    <tbody className="energy-realtime-tbody">
-                      <tr>
-                        <td> Tensão </td>{" "}
-                        <td>
-                          {" "}
-                          {safeDevices[1].powerState &&
-                          typeof safeDevices[1].latestReading.voltage ===
-                            "number"
-                            ? safeDevices[1].latestReading.voltage.toFixed(2)
-                            : "0.00"}
-                          V{" "}
-                        </td>{" "}
-                      </tr>{" "}
-                      <tr>
-                        <td> Corrente </td>{" "}
-                        <td>
-                          {" "}
-                          {safeDevices[1].powerState &&
-                          typeof safeDevices[1].latestReading.current ===
-                            "number"
-                            ? safeDevices[1].latestReading.current.toFixed(2)
-                            : "0.00"}
-                          A{" "}
-                        </td>{" "}
-                      </tr>{" "}
-                      <tr>
-                        <td> Potência Ativa </td>{" "}
-                        <td>
-                          {" "}
-                          {safeDevices[1].powerState &&
-                          typeof safeDevices[1].latestReading.power === "number"
-                            ? safeDevices[1].latestReading.power.toFixed(2)
-                            : "0.00"}
-                          W{" "}
-                        </td>{" "}
-                      </tr>{" "}
-                      <tr>
-                        <td> Potência Aparente </td>{" "}
-                        <td>
-                          {" "}
-                          {safeDevices[1].powerState &&
-                          typeof safeDevices[1].latestReading.ApparentPower ===
-                            "number"
-                            ? safeDevices[1].latestReading.ApparentPower.toFixed(
-                                2
-                              )
-                            : "0.00"}
-                          VA{" "}
-                        </td>{" "}
-                      </tr>{" "}
-                      <tr>
-                        <td> Potência Reativa </td>{" "}
-                        <td>
-                          {" "}
-                          {safeDevices[1].powerState &&
-                          typeof safeDevices[1].latestReading.ReactivePower ===
-                            "number"
-                            ? safeDevices[1].latestReading.ReactivePower.toFixed(
-                                2
-                              )
-                            : "0.00"}
-                          var{" "}
-                        </td>{" "}
-                      </tr>{" "}
-                      <tr>
-                        <td> Fator de Potência </td>{" "}
-                        <td>
-                          {" "}
-                          {safeDevices[1].powerState &&
-                          typeof safeDevices[1].latestReading.PowerFactor ===
-                            "number"
-                            ? safeDevices[1].latestReading.PowerFactor.toFixed(
-                                2
-                              )
-                            : "0.00"}
-                        </td>{" "}
-                      </tr>{" "}
-                      <tr>
-                        <td> Energia Hoje </td>{" "}
-                        <td>
-                          {" "}
-                          {typeof safeDevices[1].latestReading.EnergyToday ===
+                          ? devices[0].latestReading.ApparentPower.toFixed(2)
+                          : "0.00"}
+                        VA{" "}
+                      </td>{" "}
+                    </tr>{" "}
+                    <tr>
+                      <td> Potência Reativa </td>{" "}
+                      <td>
+                        {" "}
+                        {devices[0].powerState &&
+                        typeof devices[0].latestReading.ReactivePower ===
                           "number"
-                            ? safeDevices[1].latestReading.EnergyToday.toFixed(
-                                2
-                              )
-                            : "--"}
-                          kWh{" "}
-                        </td>{" "}
-                      </tr>{" "}
-                      <tr>
-                        <td> Energia Ontem </td>{" "}
-                        <td>
-                          {" "}
-                          {typeof safeDevices[1].latestReading
-                            .EnergyYesterday === "number"
-                            ? safeDevices[1].latestReading.EnergyYesterday.toFixed(
-                                2
-                              )
-                            : "--"}
-                          kWh{" "}
-                        </td>{" "}
-                      </tr>{" "}
-                      <tr>
-                        <td> Energia Total </td>{" "}
-                        <td>
-                          {" "}
-                          {safeDevices[1].powerState
-                            ? liveTotalEnergyBroker2.toFixed(2) + " kWh"
-                            : "0.00 kWh"}{" "}
-                        </td>{" "}
-                      </tr>{" "}
-                    </tbody>{" "}
-                  </table>{" "}
-                </div>
-              )}
+                          ? devices[0].latestReading.ReactivePower.toFixed(2)
+                          : "0.00"}
+                        var{" "}
+                      </td>{" "}
+                    </tr>{" "}
+                    <tr>
+                      <td> Fator de Potência </td>{" "}
+                      <td>
+                        {" "}
+                        {devices[0].powerState &&
+                        typeof devices[0].latestReading.PowerFactor === "number"
+                          ? devices[0].latestReading.PowerFactor.toFixed(2)
+                          : "0.00"}
+                      </td>{" "}
+                    </tr>{" "}
+                    <tr>
+                      <td> Energia Hoje </td>{" "}
+                      <td>
+                        {" "}
+                        {typeof devices[0].latestReading.EnergyToday ===
+                        "number"
+                          ? devices[0].latestReading.EnergyToday.toFixed(2)
+                          : "--"}
+                        kWh{" "}
+                      </td>{" "}
+                    </tr>{" "}
+                    <tr>
+                      <td> Energia Ontem </td>{" "}
+                      <td>
+                        {" "}
+                        {typeof devices[0].latestReading.EnergyYesterday ===
+                        "number"
+                          ? devices[0].latestReading.EnergyYesterday.toFixed(2)
+                          : "--"}
+                        kWh{" "}
+                      </td>{" "}
+                    </tr>{" "}
+                    <tr>
+                      <td> Energia Total </td>{" "}
+                      <td>
+                        {" "}
+                        {devices[0].powerState
+                          ? liveTotalEnergyBroker1.toFixed(2) + " kWh"
+                          : "0.00 kWh"}{" "}
+                      </td>{" "}
+                    </tr>{" "}
+                  </tbody>{" "}
+                </table>{" "}
+              </div>
+            )}
+            {isRealData && devices.length > 1 && devices[1].latestReading && (
+              <div
+                className="energy-realtime-card"
+                style={{ marginTop: "32px" }}
+              >
+                <h3> Dados em Tempo Real do Dispositivo Sonoff Câmera </h3>{" "}
+                <table className="energy-realtime-table">
+                  <tbody className="energy-realtime-tbody">
+                    <tr>
+                      <td> Tensão </td>{" "}
+                      <td>
+                        {" "}
+                        {devices[1].powerState &&
+                        typeof devices[1].latestReading.voltage === "number"
+                          ? devices[1].latestReading.voltage.toFixed(2)
+                          : "0.00"}
+                        V{" "}
+                      </td>{" "}
+                    </tr>{" "}
+                    <tr>
+                      <td> Corrente </td>{" "}
+                      <td>
+                        {" "}
+                        {devices[1].powerState &&
+                        typeof devices[1].latestReading.current === "number"
+                          ? devices[1].latestReading.current.toFixed(2)
+                          : "0.00"}
+                        A{" "}
+                      </td>{" "}
+                    </tr>{" "}
+                    <tr>
+                      <td> Potência Ativa </td>{" "}
+                      <td>
+                        {" "}
+                        {devices[1].powerState &&
+                        typeof devices[1].latestReading.power === "number"
+                          ? devices[1].latestReading.power.toFixed(2)
+                          : "0.00"}
+                        W{" "}
+                      </td>{" "}
+                    </tr>{" "}
+                    <tr>
+                      <td> Potência Aparente </td>{" "}
+                      <td>
+                        {" "}
+                        {devices[1].powerState &&
+                        typeof devices[1].latestReading.ApparentPower ===
+                          "number"
+                          ? devices[1].latestReading.ApparentPower.toFixed(2)
+                          : "0.00"}
+                        VA{" "}
+                      </td>{" "}
+                    </tr>{" "}
+                    <tr>
+                      <td> Potência Reativa </td>{" "}
+                      <td>
+                        {" "}
+                        {devices[1].powerState &&
+                        typeof devices[1].latestReading.ReactivePower ===
+                          "number"
+                          ? devices[1].latestReading.ReactivePower.toFixed(2)
+                          : "0.00"}
+                        var{" "}
+                      </td>{" "}
+                    </tr>{" "}
+                    <tr>
+                      <td> Fator de Potência </td>{" "}
+                      <td>
+                        {" "}
+                        {devices[1].powerState &&
+                        typeof devices[1].latestReading.PowerFactor === "number"
+                          ? devices[1].latestReading.PowerFactor.toFixed(2)
+                          : "0.00"}
+                      </td>{" "}
+                    </tr>{" "}
+                    <tr>
+                      <td> Energia Hoje </td>{" "}
+                      <td>
+                        {" "}
+                        {typeof devices[1].latestReading.EnergyToday ===
+                        "number"
+                          ? devices[1].latestReading.EnergyToday.toFixed(2)
+                          : "--"}
+                        kWh{" "}
+                      </td>{" "}
+                    </tr>{" "}
+                    <tr>
+                      <td> Energia Ontem </td>{" "}
+                      <td>
+                        {" "}
+                        {typeof devices[1].latestReading.EnergyYesterday ===
+                        "number"
+                          ? devices[1].latestReading.EnergyYesterday.toFixed(2)
+                          : "--"}
+                        kWh{" "}
+                      </td>{" "}
+                    </tr>{" "}
+                    <tr>
+                      <td> Energia Total </td>{" "}
+                      <td>
+                        {" "}
+                        {devices[1].powerState
+                          ? liveTotalEnergyBroker2.toFixed(2) + " kWh"
+                          : "0.00 kWh"}{" "}
+                      </td>{" "}
+                    </tr>{" "}
+                  </tbody>{" "}
+                </table>{" "}
+              </div>
+            )}
             <h3> Detalhes por Dispositivo </h3>{" "}
             <div className="device-report-list">
               {" "}
@@ -1848,13 +1818,13 @@ function DashboardPage() {
                       Status Atual:{" "}
                       <span
                         className={
-                          safeDevices[index] && safeDevices[index].powerState
+                          devices[index] && devices[index].powerState
                             ? "status-on-text"
                             : "status-off-text"
                         }
                       >
                         {" "}
-                        {safeDevices[index] && safeDevices[index].powerState
+                        {devices[index] && devices[index].powerState
                           ? "Ligado"
                           : "Desligado"}{" "}
                       </span>{" "}
