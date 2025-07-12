@@ -1516,38 +1516,105 @@ function DashboardPage() {
             >
               <h2>Agendar Desligamento</h2>
               <form onSubmit={handleScheduleShutdown}>
+                {/* Dispositivo */}
                 <div className="form-group">
                   <label>Dispositivo:</label>
-                  <select
-                    value={scheduleDevice}
-                    onChange={(e) => setScheduleDevice(e.target.value)}
-                    required
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 10,
+                      flexWrap: "wrap",
+                      justifyContent: "center",
+                      margin: "8px 0",
+                    }}
                   >
-                    <option value="">Selecione um dispositivo</option>
-                    <option value="sala">Sala</option>
-                    <option value="camera">Câmera</option>
-                    <option value="ambos">Ambos</option>
-                  </select>
+                    {[
+                      { value: "sala", label: "Sala" },
+                      { value: "camera", label: "Câmera" },
+                      { value: "ambos", label: "Ambos" },
+                    ].map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setScheduleDevice(opt.value)}
+                        style={{
+                          background:
+                            scheduleDevice === opt.value
+                              ? "#00bcd4"
+                              : "#23243a",
+                          color: scheduleDevice === opt.value ? "#fff" : "#bbb",
+                          border:
+                            scheduleDevice === opt.value
+                              ? "2px solid #00bcd4"
+                              : "2px solid #4a4a7e",
+                          borderRadius: 10,
+                          padding: "8px 18px",
+                          fontWeight: "bold",
+                          fontSize: "1rem",
+                          cursor: "pointer",
+                          transition: "all 0.2s",
+                          boxShadow:
+                            scheduleDevice === opt.value
+                              ? "0 2px 8px rgba(0,188,212,0.18)"
+                              : "none",
+                        }}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
+                {/* Dia da Semana */}
                 <div className="form-group">
                   <label>Dia da Semana:</label>
-                  <select
-                    value={scheduleDay}
-                    onChange={(e) => setScheduleDay(e.target.value)}
-                    required
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 8,
+                      flexWrap: "wrap",
+                      justifyContent: "center",
+                      margin: "8px 0",
+                    }}
                   >
-                    <option value="">Selecione um dia</option>
-                    <option value="todos">Todos os dias</option>
-                    <option value="domingo">Domingo</option>
-                    <option value="segunda">Segunda-feira</option>
-                    <option value="terca">Terça-feira</option>
-                    <option value="quarta">Quarta-feira</option>
-                    <option value="quinta">Quinta-feira</option>
-                    <option value="sexta">Sexta-feira</option>
-                    <option value="sabado">Sábado</option>
-                  </select>
+                    {[
+                      { value: "todos", label: "Todos" },
+                      { value: "domingo", label: "Dom" },
+                      { value: "segunda", label: "Seg" },
+                      { value: "terca", label: "Ter" },
+                      { value: "quarta", label: "Qua" },
+                      { value: "quinta", label: "Qui" },
+                      { value: "sexta", label: "Sex" },
+                      { value: "sabado", label: "Sáb" },
+                    ].map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setScheduleDay(opt.value)}
+                        style={{
+                          background:
+                            scheduleDay === opt.value ? "#00bcd4" : "#23243a",
+                          color: scheduleDay === opt.value ? "#fff" : "#bbb",
+                          border:
+                            scheduleDay === opt.value
+                              ? "2px solid #00bcd4"
+                              : "2px solid #4a4a7e",
+                          borderRadius: 10,
+                          padding: "8px 14px",
+                          fontWeight: "bold",
+                          fontSize: "0.98rem",
+                          cursor: "pointer",
+                          transition: "all 0.2s",
+                          boxShadow:
+                            scheduleDay === opt.value
+                              ? "0 2px 8px rgba(0,188,212,0.18)"
+                              : "none",
+                        }}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-
                 <div className="form-group">
                   <label>Horário:</label>
                   <input
@@ -1632,7 +1699,8 @@ function DashboardPage() {
                       onChange={(e) => setEnableTimers(e.target.checked)}
                       style={{ width: 18, height: 18 }}
                     />
-                    Enable Timers
+                    
+                    Habilitar temporizadores
                   </label>
                 </div>
 
