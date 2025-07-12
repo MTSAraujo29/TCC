@@ -446,6 +446,11 @@ async function schedulePowerOff(req, res) {
           Output: 1,
           Action: 0, // 0 = OFF, 1 = ON
         };
+        // Log detalhado do comando enviado
+        console.log(
+          `[DEBUG] Enviando para Timer${timerNumber}:`,
+          JSON.stringify(timerCommand)
+        );
         // O slot do timer é Timer1, Timer2, Timer3, Timer4, Timer5
         const topic = `cmnd/${device.tasmotaTopic}/Timer${timerNumber}`;
         await tasmotaService.publishMqttCommand(
