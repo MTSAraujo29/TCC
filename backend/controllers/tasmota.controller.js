@@ -415,42 +415,13 @@ async function schedulePowerOff(req, res) {
 
     // --- INÍCIO DAS ALTERAÇÕES ---
 
-    // Mapeamento de índices do frontend para a máscara de bits do Tasmota.
-    // ESTE MAPEO É CRÍTICO! Ele assume que o seu array `weekDays` no frontend
-    // está definido na ordem: [0=Segunda, 1=Terça, ..., 5=Sábado, 6=Domingo].
-    // Se a ordem for diferente (ex: Domingo no índice 0), você precisará ajustar este switch.
-    const frontendDayIndexToTasmotaBit = (index) => {
-      switch (index) {
-        case 0:
-          return 1; // Segunda-feira (Tasmota Bit 1)
-        case 1:
-          return 2; // Terça-feira (Tasmota Bit 2)
-        case 2:
-          return 3; // Quarta-feira (Tasmota Bit 3)
-        case 3:
-          return 4; // Quinta-feira (Tasmota Bit 4)
-        case 4:
-          return 5; // Sexta-feira (Tasmota Bit 5)
-        case 5:
-          return 6; // Sábado (Tasmota Bit 6)
-        case 6:
-          return 0; // Domingo (Tasmota Bit 0)
-        default:
-          return -1; // Índice inválido
-      }
-    };
-
+    // Converter dias da semana para formato do Tasmota (bit 0 = domingo, bit 6 = sábado)
     let tasmotaDaysMask = 0;
-    // Se 'repeat' for verdadeiro, significa que o botão "Todos os dias" foi selecionado.
     if (repeat) {
-      tasmotaDaysMask = 127; // Todos os dias: 01111111 em binário (bits 0 a 6 ativados)
+      tasmotaDaysMask = 127; // Todos os dias (1111111 em binário)
     } else {
-      // Se dias específicos foram selecionados, iteramos sobre eles e construímos a máscara.
       days.forEach((dayIndex) => {
-        const tasmotaBitIndex = frontendDayIndexToTasmotaBit(dayIndex);
-        if (tasmotaBitIndex !== -1) {
-          tasmotaDaysMask |= 1 << tasmotaBitIndex; // Adiciona o bit correspondente
-        }
+        tasmotaDaysMask |= 1 << dayIndex;
       });
     }
     // --- FIM DAS ALTERAÇÕES ---
