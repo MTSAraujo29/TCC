@@ -1639,60 +1639,83 @@ function DashboardPage() {
         )}
         {/* ========== ENERGY CONTROL SECTION ========== */}{" "}
         {activeSection === "controle" && (
-          <div
-            className="energy-control-section"
-            style={{ overflowX: "hidden", maxWidth: "100%", width: "100%" }}
-          >
-            <h2> Controle de Dispositivos </h2>{" "}
-            {deviceMessage && (
-              <p className="device-feedback-message"> {deviceMessage} </p>
-            )}
-            <h3> Meus Dispositivos de Energia </h3>
-            {safeDevices.length > 0 ? (
-              <div
-                className="device-control-list"
-                style={{ overflowX: "hidden", maxWidth: "100%", width: "100%" }}
-              >
-                {safeDevices.map((device) => (
-                  <div key={device.id} className="device-control-item">
-                    <span className="device-control-name"> {device.name} </span>{" "}
-                    <button
-                      onClick={() =>
-                        toggleDevicePower(
-                          device.id,
-                          device.powerState,
-                          device.name
-                        )
-                      }
-                      className="device-toggle-button power-on"
-                      type="button"
-                      disabled={device.powerState}
-                    >
-                      Ligar
-                    </button>{" "}
-                    <button
-                      onClick={() =>
-                        toggleDevicePower(
-                          device.id,
-                          device.powerState,
-                          device.name
-                        )
-                      }
-                      className="device-toggle-button power-off"
-                      type="button"
-                      disabled={!device.powerState}
-                    >
-                      Desligar
-                    </button>{" "}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="no-devices-message">
-                Nenhum dispositivo encontrado.
-              </p>
-            )}
-          </div>
+          <>
+            <div
+              className="energy-control-section"
+              style={{ overflowX: "hidden", maxWidth: "100%", width: "100%" }}
+            >
+              <h2> Controle de Dispositivos </h2>{" "}
+              {deviceMessage && (
+                <p className="device-feedback-message"> {deviceMessage} </p>
+              )}
+              <h3> Meus Dispositivos de Energia </h3>
+              {safeDevices.length > 0 ? (
+                <div
+                  className="device-control-list"
+                  style={{
+                    overflowX: "hidden",
+                    maxWidth: "100%",
+                    width: "100%",
+                  }}
+                >
+                  {safeDevices.map((device) => (
+                    <div key={device.id} className="device-control-item">
+                      <span className="device-control-name">
+                        {" "}
+                        {device.name}{" "}
+                      </span>{" "}
+                      <button
+                        onClick={() =>
+                          toggleDevicePower(
+                            device.id,
+                            device.powerState,
+                            device.name
+                          )
+                        }
+                        className="device-toggle-button power-on"
+                        type="button"
+                        disabled={device.powerState}
+                      >
+                        Ligar
+                      </button>{" "}
+                      <button
+                        onClick={() =>
+                          toggleDevicePower(
+                            device.id,
+                            device.powerState,
+                            device.name
+                          )
+                        }
+                        className="device-toggle-button power-off"
+                        type="button"
+                        disabled={!device.powerState}
+                      >
+                        Desligar
+                      </button>{" "}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="no-devices-message">
+                  Nenhum dispositivo encontrado.
+                </p>
+              )}
+            </div>
+          </>
+        )}
+               {/* ========== Agendar Desligamento========== */}{" "}
+               {activeSection === "controle" && (
+          <>
+            <div
+              className="energy-control-section"
+              style={{ overflowX: "hidden", maxWidth: "100%", width: "100%" }}
+            >
+              <h2> Agendar Desligamento </h2>{" "}
+              {deviceMessage && (
+                <p className="device-feedback-message"> {deviceMessage} </p>
+              )}
+            </div>
+          </>
         )}
         {/* ========== REPORTS SECTION ========== */}{" "}
         {activeSection === "relatorios" && (
