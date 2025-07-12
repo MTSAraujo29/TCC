@@ -413,14 +413,14 @@ async function schedulePowerOff(req, res) {
       });
     }
 
-    // Converter dias da semana para formato do Tasmota (bit 6 = domingo, bit 0 = sábado)
+    // Converter dias da semana para formato do Tasmota (bit 0 = sábado, bit 6 = domingo)
     let tasmotaDaysMask = 0;
     if (repeat) {
       tasmotaDaysMask = 127; // Todos os dias (1111111 em binário)
     } else {
       days.forEach((dayIndex) => {
-        // Corrigido: inverter o índice para o padrão do Tasmota
-        const bitMask = 1 << (6 - dayIndex);
+        // Agora: 0 = sábado, 1 = sexta, ..., 6 = domingo
+        const bitMask = 1 << dayIndex;
         tasmotaDaysMask |= bitMask;
       });
     }
