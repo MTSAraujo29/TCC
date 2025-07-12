@@ -359,11 +359,13 @@ async function getLiveTotalEnergyFromTasmota(req, res) {
 
 // Agendar desligamento de dispositivo(s) Tasmota
 async function scheduleShutdown(req, res) {
-  const { device, day, time, repeat } = req.body;
+  const { device, day, time, repeat, slot, enableTimers } = req.body;
   // device: 'sala', 'camera' ou 'ambos'
   // day: 'todos', 'domingo', ...
   // time: 'HH:MM'
   // repeat: true/false
+  // slot: número do slot (1 a 5)
+  // enableTimers: true/false
   try {
     // Buscar dispositivos conforme seleção
     let devicesToSchedule = [];
@@ -382,8 +384,19 @@ async function scheduleShutdown(req, res) {
     if (devicesToSchedule.length === 0) {
       return res.status(404).json({ message: "Dispositivo não encontrado." });
     }
+    // Se enableTimers está definido, enviar comando para cada dispositivo
+    if (typeof enableTimers === "boolean") {
+      for (const dev of devicesToSchedule) {
+        const timersTopic = `cmnd/${dev.tasmotaTopic}/Timers`;
+        await tasmotaService.publishMqttCommand(
+          timersTopic,
+          enableTimers ? "1" : "0",
+          dev.broker || "broker1"
+        );
+      }
+    }
     // Montar comando de timer para Tasmota
-    // Tasmota aceita comando: cmnd/<TOPICO>/Timer<n> {"Enable":1,"Time":"HH:MM","Days":"1111111","Repeat":1,"Mode":0,"Action":0}
+    // Tasmota aceita comando: cmnd/<TOPICO>/Timer<n> { ... }
     // Days: 7 dígitos (Domingo a Sábado), 1=ativo, 0=inativo
     const daysMap = {
       domingo: "1000000",
@@ -404,9 +417,11 @@ async function scheduleShutdown(req, res) {
       Mode: 0, // Timer absoluto
       Action: 0, // 0 = desligar
     };
-    // Enviar comando para cada dispositivo
+    // Enviar comando para cada dispositivo, usando o slot selecionado
+    const timerSlot =
+      slot && Number(slot) >= 1 && Number(slot) <= 16 ? Number(slot) : 1;
     for (const dev of devicesToSchedule) {
-      const topic = `cmnd/${dev.tasmotaTopic}/Timer1`;
+      const topic = `cmnd/${dev.tasmotaTopic}/Timer${timerSlot}`;
       await tasmotaService.publishMqttCommand(
         topic,
         JSON.stringify(timerPayload),
