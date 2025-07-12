@@ -421,7 +421,7 @@ async function schedulePowerOff(req, res) {
       tasmotaDaysMask = 127; // Todos os dias (1111111 em binário)
     } else {
       days.forEach((dayIndex) => {
-        tasmotaDaysMask |= 1 << dayIndex;
+        tasmotaDaysMask |= 1 << (6 - dayIndex);
       });
     }
     // --- FIM DAS ALTERAÇÕES ---
