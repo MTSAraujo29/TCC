@@ -1162,6 +1162,62 @@ function DashboardPage() {
     };
   };
 
+  const getSuggestedDevicesData = () => {
+    if (!isRealData) {
+      return [
+        {
+          id: 1,
+          name: "Lâmpada do Quarto (Fictícia)",
+          suggestion: "Instalar temporizador para desligar automaticamente.",
+        },
+        {
+          id: 2,
+          name: "Ar Condicionado (Fictício)",
+          suggestion: "Configurar automação para ajustar temperatura ao sair.",
+        },
+        {
+          id: 3,
+          name: "Geladeira (Fictícia)",
+          suggestion:
+            "Verificar vedação da porta para evitar perda de energia.",
+        },
+        {
+          id: 4,
+          name: "TV da Sala (Fictícia)",
+          suggestion: "Ativar modo de economia de energia nas configurações.",
+        },
+      ];
+    }
+    // Lógica para dados reais (simplificada)
+    const suggestions = [];
+    devices.forEach((device) => {
+      if (
+        device.powerState &&
+        device.latestReading &&
+        device.latestReading.power > 100
+      ) {
+        suggestions.push({
+          id: device.id,
+          name: device.name,
+          suggestion: `Dispositivo ligado com alto consumo (${device.latestReading.power}W). Considere automação ou desligamento quando não estiver em uso.`,
+        });
+      } else if (!device.powerState) {
+        suggestions.push({
+          id: device.id,
+          name: device.name,
+          suggestion: `Dispositivo ${device.name} está desligado. Ótima gestão de energia!`,
+        });
+      } else {
+        suggestions.push({
+          id: device.id,
+          name: device.name,
+          suggestion: `Consumo de ${device.name} está normal. Pequenos ajustes podem otimizar mais.`,
+        });
+      }
+    });
+    return suggestions;
+  };
+
   if (sessionExpired) {
     return (
       <div
