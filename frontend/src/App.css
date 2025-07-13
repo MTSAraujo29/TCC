@@ -2301,9 +2301,15 @@ textarea {
     display: flex;
     padding: 0 24px;
   }
+
   .main-content {
-    margin-top: 40px;
-    margin-left: 20px;
+    margin-top: 100px; /* abaixo da barra */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* opcional, dependendo do conteúdo */
+    height: calc(100vh - 100px); /* restante da tela após a sidebar */
+    width: 100%;
   }
 }
 
