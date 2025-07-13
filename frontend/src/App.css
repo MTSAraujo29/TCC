@@ -372,6 +372,8 @@ a.link-button {
   border: none;
   border-radius: 30px;
   padding: 14px 32px;
+  width: 250px;
+  height: 40px;
   font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
@@ -499,8 +501,8 @@ a.link-button {
 }
 
 .metric-card {
-  width: 200px;
-  height: 100px;
+  width: 220px;
+  height: 120px;
   background-color: #23272f;
   border-radius: 8px;
   padding: 1rem;
@@ -511,13 +513,20 @@ a.link-button {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
 }
 
 .metric-card h3 {
   color: #aaa;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   margin-top: 0;
   margin-bottom: 0.625rem;
+  line-height: 1.2;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .metric-card p {
@@ -525,6 +534,8 @@ a.link-button {
   font-size: 1.1rem;
   font-weight: bold;
   margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Área do Gráfico Principal */
@@ -1776,7 +1787,7 @@ a.link-button {
   }
 }
 
-/* tablet- 850px a 1279px */
+/* tablet- 850px a 1000px */
 
 @media screen and (min-width: 880px) and (max-width: 1000px) {
   .main-content {
@@ -2591,4 +2602,56 @@ input[type="number"]::-webkit-outer-spin-button {
 /* Remove as setas dos inputs type=number no Firefox */
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+/* Grupo de botões de slots */
+.slot-buttons-group {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  justify-content: center;
+  margin: 10px 0 18px 0;
+  flex-wrap: wrap;
+}
+
+.slot-btn {
+  background: #23243a;
+  color: #bbb;
+  border: 2px solid #4a4a7e;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: none;
+  min-width: 60px;
+}
+
+.slot-btn.selected {
+  background: #00bcd4;
+  color: #fff;
+  border: 2px solid #00bcd4;
+  box-shadow: 0 2px 8px rgba(0, 188, 212, 0.18);
+}
+
+@media (max-width: 600px) {
+  .slot-buttons-group {
+    gap: 6px;
+    margin: 8px 0 14px 0;
+  }
+  .slot-btn {
+    padding: 6px 8px;
+    font-size: 0.92rem;
+    min-width: 44px;
+    border-radius: 6px;
+  }
+}
+
+@media (max-width: 400px) {
+  .slot-btn {
+    padding: 4px 4px;
+    font-size: 0.85rem;
+    min-width: 36px;
+  }
 }

@@ -800,6 +800,8 @@ function DashboardPage() {
   // Estados auxiliares para dropdowns
   const [showDeviceDropdown, setShowDeviceDropdown] = useState(false);
   const [showDayDropdown, setShowDayDropdown] = useState(false);
+  // Estado auxiliar para dropdown de slot
+  const [showSlotDropdown, setShowSlotDropdown] = useState(false);
 
   // Função para enviar agendamento para o backend
   async function handleScheduleShutdown(e) {
@@ -1002,6 +1004,42 @@ function DashboardPage() {
     });
     return suggestions;
   };
+
+  // Adicione o useEffect para fechar dropdowns ao clicar fora
+  useEffect(() => {
+    function handleClickOutside(event) {
+      // Dispositivo
+      if (
+        showDeviceDropdown &&
+        !event.target.closest(".device-dropdown-btn") &&
+        !event.target.closest(".device-dropdown-menu")
+      ) {
+        setShowDeviceDropdown(false);
+      }
+      // Dias da Semana
+      if (
+        showDayDropdown &&
+        !event.target.closest(".day-dropdown-btn") &&
+        !event.target.closest(".day-dropdown-menu")
+      ) {
+        setShowDayDropdown(false);
+      }
+      // Slots
+      if (
+        showSlotDropdown &&
+        !event.target.closest(".slot-dropdown-btn") &&
+        !event.target.closest(".slot-dropdown-menu")
+      ) {
+        setShowSlotDropdown(false);
+      }
+    }
+    if (showDeviceDropdown || showDayDropdown || showSlotDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDeviceDropdown, showDayDropdown, showSlotDropdown]);
 
   if (sessionExpired) {
     return (
@@ -1440,11 +1478,12 @@ function DashboardPage() {
         {/* ========== ENERGY CONTROL SECTION ========== */}{" "}
         {activeSection === "controle" && (
           <>
+            <h2> Controle de Dispositivos </h2>
             <div
               className="energy-control-section"
               style={{ overflowX: "hidden", maxWidth: "100%", width: "100%" }}
             >
-              <h2> Controle de Dispositivos </h2>{" "}
+              {" "}
               {deviceMessage && (
                 <p className="device-feedback-message"> {deviceMessage} </p>
               )}
@@ -1506,26 +1545,51 @@ function DashboardPage() {
               className="schedule-shutdown-card"
               style={{
                 background: "#3a3a5e",
-                borderRadius: 16,
+                borderRadius: 12,
                 border: "2px solid #4a4a7e",
-                boxShadow: "0 2px 16px rgba(0, 0, 0, 0.18)",
-                padding: 20,
-                margin: "24px auto 0 auto",
-                maxWidth: 480,
+                boxShadow: "0 2px 12px rgba(0, 0, 0, 0.13)",
+                padding: 12,
+                margin: "16px auto 0 auto",
+                maxWidth: 380,
                 width: "100%",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
+                gap: 0,
               }}
             >
-              <h2>Agendar Desligamento</h2>
-              <form onSubmit={handleScheduleShutdown}>
+              <h2
+                style={{
+                  fontSize: "1.4rem",
+                  margin: "10px 0 8px 0",
+                  letterSpacing: 0.5,
+                }}
+              >
+                Agendar Desligamento
+              </h2>
+              <form
+                onSubmit={handleScheduleShutdown}
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 0,
+                }}
+              >
                 {/* Dispositivo */}
                 <div
                   className="form-group"
                   style={{ position: "relative", marginBottom: 18 }}
                 >
-                  <label>Dispositivo:</label>
+                  <label
+                    style={{
+                      textAlign: "center",
+                      width: "100%",
+                      display: "block",
+                    }}
+                  >
+                    Dispositivo:
+                  </label>
                   <div
                     style={{ width: "100%", maxWidth: 260, margin: "0 auto" }}
                   >
@@ -1548,6 +1612,7 @@ function DashboardPage() {
                         justifyContent: "space-between",
                         transition: "all 0.2s",
                       }}
+                      className="device-dropdown-btn"
                     >
                       {scheduleDevice
                         ? [
@@ -1566,8 +1631,9 @@ function DashboardPage() {
                         style={{
                           position: "absolute",
                           top: 48,
-                          left: 0,
-                          width: "100%",
+                          left: "50%",
+                          transform: "translateX(-50%)",
+                          width: 220,
                           background: "#23243a",
                           border: "2px solid #4a4a7e",
                           borderRadius: 10,
@@ -1576,6 +1642,7 @@ function DashboardPage() {
                           display: "flex",
                           flexDirection: "column",
                         }}
+                        className="device-dropdown-menu"
                       >
                         {[
                           { value: "sala", label: "Sala" },
@@ -1599,9 +1666,9 @@ function DashboardPage() {
                               border: "none",
                               borderBottom: "1px solid #444",
                               borderRadius: 0,
-                              padding: "10px 18px",
+                              padding: "7px 10px",
                               fontWeight: "bold",
-                              fontSize: "1rem",
+                              fontSize: "0.95rem",
                               cursor: "pointer",
                               textAlign: "left",
                               transition: "all 0.2s",
@@ -1619,7 +1686,15 @@ function DashboardPage() {
                   className="form-group"
                   style={{ position: "relative", marginBottom: 18 }}
                 >
-                  <label>Dia da Semana:</label>
+                  <label
+                    style={{
+                      textAlign: "center",
+                      width: "100%",
+                      display: "block",
+                    }}
+                  >
+                    Dia da Semana:
+                  </label>
                   <div
                     style={{ width: "100%", maxWidth: 260, margin: "0 auto" }}
                   >
@@ -1642,6 +1717,7 @@ function DashboardPage() {
                         justifyContent: "space-between",
                         transition: "all 0.2s",
                       }}
+                      className="day-dropdown-btn"
                     >
                       {scheduleDay
                         ? [
@@ -1665,16 +1741,21 @@ function DashboardPage() {
                         style={{
                           position: "absolute",
                           top: 48,
-                          left: 0,
-                          width: "100%",
+                          left: "50%",
+                          transform: "translateX(-50%)",
+                          width: 220,
+                          maxHeight: 220,
+                          overflowY: "auto",
                           background: "#23243a",
                           border: "2px solid #4a4a7e",
                           borderRadius: 10,
                           zIndex: 10,
                           boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
-                          display: "flex",
-                          flexDirection: "column",
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr",
+                          gap: 0,
                         }}
+                        className="day-dropdown-menu"
                       >
                         {[
                           { value: "todos", label: "Todos" },
@@ -1685,7 +1766,7 @@ function DashboardPage() {
                           { value: "quinta", label: "Qui" },
                           { value: "sexta", label: "Sex" },
                           { value: "sabado", label: "Sáb" },
-                        ].map((opt) => (
+                        ].map((opt, idx) => (
                           <button
                             key={opt.value}
                             type="button"
@@ -1701,11 +1782,13 @@ function DashboardPage() {
                               color:
                                 scheduleDay === opt.value ? "#fff" : "#bbb",
                               border: "none",
-                              borderBottom: "1px solid #444",
+                              borderBottom: idx < 6 ? "1px solid #444" : "none",
+                              borderRight:
+                                idx % 2 === 0 ? "1px solid #444" : "none",
                               borderRadius: 0,
-                              padding: "10px 18px",
+                              padding: "7px 10px",
                               fontWeight: "bold",
-                              fontSize: "1rem",
+                              fontSize: "0.95rem",
                               cursor: "pointer",
                               textAlign: "left",
                               transition: "all 0.2s",
@@ -1719,12 +1802,36 @@ function DashboardPage() {
                   </div>
                 </div>
                 <div className="form-group">
-                  <label>Horário:</label>
+                  <label
+                    style={{
+                      textAlign: "center",
+                      width: "100%",
+                      display: "block",
+                    }}
+                  >
+                    Horário:
+                  </label>
+                  <style>{`
+                    .schedule-time-input-custom {
+                      width: 30%;
+                      display: block;
+                      margin: 0 auto;
+                      min-width: 90px;
+                      max-width: 140px;
+                    }
+                  `}</style>
                   <input
                     type="time"
                     value={scheduleTime}
                     onChange={(e) => setScheduleTime(e.target.value)}
                     required
+                    style={{
+                      width: "40%",
+                      display: "block",
+                      margin: "0 auto",
+                      minWidth: 90,
+                      maxWidth: 140,
+                    }}
                   />
                 </div>
 
@@ -1759,41 +1866,97 @@ function DashboardPage() {
 
                 {/* Botões de Slot */}
                 <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    gap: 12,
-                    margin: "12px 0",
-                  }}
+                  className="form-group"
+                  style={{ position: "relative", marginBottom: 18 }}
                 >
-                  {[1, 2, 3, 4, 5].map((slot) => (
+                  <label
+                    style={{
+                      textAlign: "center",
+                      width: "100%",
+                      display: "block",
+                    }}
+                  >
+                    Slot:
+                  </label>
+                  <div
+                    style={{ width: "100%", maxWidth: 260, margin: "0 auto" }}
+                  >
                     <button
-                      key={slot}
                       type="button"
-                      onClick={() => setSelectedSlot(slot)}
+                      onClick={() => setShowSlotDropdown((v) => !v)}
                       style={{
-                        background:
-                          selectedSlot === slot ? "#00bcd4" : "#23243a",
-                        color: selectedSlot === slot ? "#fff" : "#bbb",
-                        border:
-                          selectedSlot === slot
-                            ? "2px solid #00bcd4"
-                            : "2px solid #4a4a7e",
-                        borderRadius: 8,
-                        padding: "8px 18px",
+                        width: "100%",
+                        background: "#23243a",
+                        color: selectedSlot ? "#fff" : "#bbb",
+                        border: "2px solid #4a4a7e",
+                        borderRadius: 10,
+                        padding: "10px 18px",
                         fontWeight: "bold",
                         fontSize: "1rem",
                         cursor: "pointer",
+                        textAlign: "left",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
                         transition: "all 0.2s",
-                        boxShadow:
-                          selectedSlot === slot
-                            ? "0 2px 8px rgba(0,188,212,0.18)"
-                            : "none",
                       }}
+                      className="slot-dropdown-btn"
                     >
-                      {`Slot ${slot}`}
+                      {selectedSlot ? `Slot ${selectedSlot}` : "Selecionar"}
+                      <span style={{ marginLeft: 8, fontSize: 18 }}>
+                        &#9662;
+                      </span>
                     </button>
-                  ))}
+                    {showSlotDropdown && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 48,
+                          left: "50%",
+                          transform: "translateX(-50%)",
+                          width: 120,
+                          background: "#23243a",
+                          border: "2px solid #4a4a7e",
+                          borderRadius: 10,
+                          zIndex: 10,
+                          boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr",
+                          gap: 0,
+                        }}
+                        className="slot-dropdown-menu"
+                      >
+                        {[1, 2, 3, 4].map((slot, idx) => (
+                          <button
+                            key={slot}
+                            type="button"
+                            onClick={() => {
+                              setSelectedSlot(slot);
+                              setShowSlotDropdown(false);
+                            }}
+                            style={{
+                              background:
+                                selectedSlot === slot ? "#00bcd4" : "#23243a",
+                              color: selectedSlot === slot ? "#fff" : "#bbb",
+                              border: "none",
+                              borderBottom: idx < 2 ? "1px solid #444" : "none",
+                              borderRight:
+                                idx % 2 === 0 ? "1px solid #444" : "none",
+                              borderRadius: 0,
+                              padding: "7px 8px",
+                              fontWeight: "bold",
+                              fontSize: "0.85rem",
+                              cursor: "pointer",
+                              textAlign: "center",
+                              transition: "all 0.2s",
+                            }}
+                          >
+                            {`Slot ${slot}`}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 {/* Enable Timers */}
                 <div
@@ -1801,7 +1964,7 @@ function DashboardPage() {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    margin: "8px 0 18px 0",
+                    margin: "6px 0 10px 0",
                   }}
                 >
                   <label
@@ -1824,7 +1987,16 @@ function DashboardPage() {
                   </label>
                 </div>
 
-                <button type="submit" className="schedule-button">
+                <button
+                  type="submit"
+                  className="schedule-button"
+                  style={{
+                    marginTop: 8,
+                    marginBottom: 0,
+                    padding: "8px 0",
+                    fontSize: "1rem",
+                  }}
+                >
                   Agendar Desligamento
                 </button>
 
@@ -1832,8 +2004,9 @@ function DashboardPage() {
                   <p
                     style={{
                       color: scheduleMessageColor,
-                      marginTop: "10px",
+                      marginTop: "6px",
                       textAlign: "center",
+                      fontSize: "0.98rem",
                     }}
                   >
                     {scheduleMessage}
