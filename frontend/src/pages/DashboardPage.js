@@ -803,11 +803,36 @@ function DashboardPage() {
   // Estado auxiliar para dropdown de slot
   const [showSlotDropdown, setShowSlotDropdown] = useState(false);
 
+  // Substituir opções de dispositivos para usuários não admin
+  const nonAdminDevices = [
+    { value: "lampada_sala", label: "Lâmpada Sala" },
+    { value: "tomada_cozinha", label: "Tomada Cozinha" },
+    { value: "ar_condicionado", label: "Ar Condicionado" },
+    { value: "chuveiro", label: "Chuveiro" },
+    { value: "tv_sala", label: "TV Sala" },
+    { value: "ambos", label: "Ambos" },
+  ];
+
+  // Novo estado para controlar o dropdown customizado dos dispositivos fictícios
+  const [showNonAdminDeviceDropdown, setShowNonAdminDeviceDropdown] =
+    useState(false);
+
   // Função para enviar agendamento para o backend
   async function handleScheduleShutdown(e) {
     e.preventDefault();
     setScheduleMessage("");
     setScheduleMessageColor("#1976d2");
+    if (!isRealData) {
+      setTimeout(() => {
+        setScheduleMessage("Agendamento fictício realizado com sucesso!");
+        setScheduleMessageColor("green");
+        setScheduleDevice("");
+        setScheduleDay("");
+        setScheduleTime("");
+        setScheduleRepeat(false);
+      }, 500);
+      return;
+    }
     const token = localStorage.getItem("token");
     try {
       const res = await fetch(API_ENDPOINTS.TASMOTA + "/schedule", {
@@ -1593,40 +1618,133 @@ function DashboardPage() {
                   <div
                     style={{ width: "100%", maxWidth: 260, margin: "0 auto" }}
                   >
-                    <button
-                      type="button"
-                      onClick={() => setShowDeviceDropdown((v) => !v)}
-                      style={{
-                        width: "100%",
-                        background: "#23243a",
-                        color: scheduleDevice ? "#fff" : "#bbb",
-                        border: "2px solid #4a4a7e",
-                        borderRadius: 10,
-                        padding: "10px 18px",
-                        fontWeight: "bold",
-                        fontSize: "1rem",
-                        cursor: "pointer",
-                        textAlign: "left",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        transition: "all 0.2s",
-                      }}
-                      className="device-dropdown-btn"
-                    >
-                      {scheduleDevice
-                        ? [
-                            { value: "sala", label: "Sala" },
-                            { value: "camera", label: "Câmera" },
-                            { value: "ambos", label: "Ambos" },
-                          ].find((opt) => opt.value === scheduleDevice)
-                            ?.label || "Selecionar"
-                        : "Selecionar"}
-                      <span style={{ marginLeft: 8, fontSize: 18 }}>
-                        &#9662;
-                      </span>
-                    </button>
-                    {showDeviceDropdown && (
+                    {!isRealData ? (
+                      <div style={{ position: "relative", width: "100%" }}>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowNonAdminDeviceDropdown((v) => !v)
+                          }
+                          style={{
+                            width: "100%",
+                            background: "#23243a",
+                            color: scheduleDevice ? "#fff" : "#bbb",
+                            border: "2px solid #4a4a7e",
+                            borderRadius: 10,
+                            padding: "10px 18px",
+                            fontWeight: "bold",
+                            fontSize: "1rem",
+                            cursor: "pointer",
+                            textAlign: "left",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            transition: "all 0.2s",
+                          }}
+                          className="device-dropdown-btn"
+                        >
+                          {scheduleDevice
+                            ? nonAdminDevices.find(
+                                (opt) => opt.value === scheduleDevice
+                              )?.label || "Selecionar"
+                            : "Selecionar"}
+                          <span style={{ marginLeft: 8, fontSize: 18 }}>
+                            &#9662;
+                          </span>
+                        </button>
+                        {showNonAdminDeviceDropdown && (
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: 48,
+                              left: "50%",
+                              transform: "translateX(-50%)",
+                              width: 220,
+                              background: "#23243a",
+                              border: "2px solid #4a4a7e",
+                              borderRadius: 10,
+                              zIndex: 10,
+                              boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
+                              display: "grid",
+                              gridTemplateColumns: "1fr 1fr",
+                              gap: 6,
+                              padding: 8,
+                            }}
+                          >
+                            {nonAdminDevices.map((opt) => (
+                              <button
+                                key={opt.value}
+                                type="button"
+                                onClick={() => {
+                                  setScheduleDevice(opt.value);
+                                  setShowNonAdminDeviceDropdown(false);
+                                }}
+                                style={{
+                                  background:
+                                    scheduleDevice === opt.value
+                                      ? "#00bcd4"
+                                      : "#23243a",
+                                  color:
+                                    scheduleDevice === opt.value
+                                      ? "#fff"
+                                      : "#bbb",
+                                  border:
+                                    scheduleDevice === opt.value
+                                      ? "2px solid #00bcd4"
+                                      : "2px solid #4a4a7e",
+                                  borderRadius: 8,
+                                  padding: "7px 4px",
+                                  fontWeight: "bold",
+                                  fontSize: "0.92rem",
+                                  cursor: "pointer",
+                                  margin: 2,
+                                  minWidth: 0,
+                                  minHeight: 0,
+                                  textAlign: "center",
+                                }}
+                              >
+                                {opt.label}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setShowDeviceDropdown((v) => !v)}
+                        style={{
+                          width: "100%",
+                          background: "#23243a",
+                          color: scheduleDevice ? "#fff" : "#bbb",
+                          border: "2px solid #4a4a7e",
+                          borderRadius: 10,
+                          padding: "10px 18px",
+                          fontWeight: "bold",
+                          fontSize: "1rem",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          transition: "all 0.2s",
+                        }}
+                        className="device-dropdown-btn"
+                      >
+                        {scheduleDevice
+                          ? [
+                              { value: "sala", label: "Sala" },
+                              { value: "camera", label: "Câmera" },
+                              { value: "ambos", label: "Ambos" },
+                            ].find((opt) => opt.value === scheduleDevice)
+                              ?.label || "Selecionar"
+                          : "Selecionar"}
+                        <span style={{ marginLeft: 8, fontSize: 18 }}>
+                          &#9662;
+                        </span>
+                      </button>
+                    )}
+                    {isRealData && showDeviceDropdown && (
                       <div
                         style={{
                           position: "absolute",
