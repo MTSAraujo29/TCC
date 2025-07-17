@@ -359,13 +359,14 @@ async function getLiveTotalEnergyFromTasmota(req, res) {
 
 // Agendar desligamento de dispositivo(s) Tasmota
 async function scheduleShutdown(req, res) {
-  const { device, day, time, repeat, slot, enableTimers } = req.body;
+  const { device, day, time, repeat, slot, enableTimers, action } = req.body;
   // device: 'sala', 'camera' ou 'ambos'
   // day: 'todos', 'domingo', ...
   // time: 'HH:MM'
   // repeat: true/false
   // slot: número do slot (1 a 5)
   // enableTimers: true/false
+  // action: 'ON' | 'OFF' (pode ser expandido para 'TOGGLE', 'RULE')
   try {
     // Buscar dispositivos conforme seleção
     let devicesToSchedule = [];
@@ -395,8 +396,13 @@ async function scheduleShutdown(req, res) {
         );
       }
     }
-    // Montar comando de timer para Tasmota
-    // Tasmota aceita comando: cmnd/<TOPICO>/Timer<n> { ... }
+    // Mapear ação para valor do Tasmota
+    // 0 = OFF, 1 = ON, 2 = TOGGLE, 3 = RULE
+    let actionValue = 0;
+    if (action === "ON") actionValue = 1;
+    else if (action === "OFF") actionValue = 0;
+    else if (action === "TOGGLE") actionValue = 2;
+    else if (action === "RULE") actionValue = 3;
     // Days: 7 dígitos (Domingo a Sábado), 1=ativo, 0=inativo
     const daysMap = {
       domingo: "1000000",
@@ -415,7 +421,7 @@ async function scheduleShutdown(req, res) {
       Days: daysStr,
       Repeat: repeat ? 1 : 0,
       Mode: 0, // Timer absoluto
-      Action: 0, // 0 = desligar
+      Action: actionValue, // 0 = desligar, 1 = ligar, 2 = toggle, 3 = rule
     };
     // Enviar comando para cada dispositivo, usando o slot selecionado
     const timerSlot =
