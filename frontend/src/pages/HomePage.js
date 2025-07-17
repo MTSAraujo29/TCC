@@ -73,9 +73,9 @@ function HomePage() {
     const renderMainContent = () => (
         <main className="homepage-main">
             <section className="homepage-card">
-                <h2>Olá, eu sou Matheus</h2>
+                <h2>Olá, eu sou Matheus Araújo</h2>
                 <p className="homepage-intro">
-                    Sou Cientista da Computação é fudandor da ferramenta!!
+                    Tenho 25 anos, sou estudante de Ciências da Computação é fudandor da ferramenta!!
                 </p>
             </section>
 
