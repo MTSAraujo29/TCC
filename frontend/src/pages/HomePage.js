@@ -75,7 +75,7 @@ function HomePage() {
             <section className="homepage-card">
                 <h2>Olá, eu sou Matheus Araújo</h2>
                 <p className="homepage-intro">
-                    Tenho 25 anos, sou estudante de Ciências da Computação é fudandor da ferramenta!!
+                    Sou Cientista da Computação é fudandor da ferramenta!!
                 </p>
             </section>
 
