@@ -792,10 +792,10 @@ function DashboardPage() {
   const [scheduleRepeat, setScheduleRepeat] = useState(false);
   const [scheduleMessage, setScheduleMessage] = useState("");
   const [scheduleMessageColor, setScheduleMessageColor] = useState("#1976d2");
-  // NOVO: Estado para slot selecionado (1 a 5)
   const [selectedSlot, setSelectedSlot] = useState(1);
-  // NOVO: Estado para Enable Timers
   const [enableTimers, setEnableTimers] = useState(false);
+  // NOVO: Estado para ação ON/OFF
+  const [scheduleAction, setScheduleAction] = useState("OFF");
 
   // Estados auxiliares para dropdowns
   const [showDeviceDropdown, setShowDeviceDropdown] = useState(false);
@@ -830,6 +830,8 @@ function DashboardPage() {
         setScheduleDay("");
         setScheduleTime("");
         setScheduleRepeat(false);
+        // NOVO: resetar ação para OFF
+        setScheduleAction("OFF");
       }, 500);
       return;
     }
@@ -846,8 +848,9 @@ function DashboardPage() {
           day: scheduleDay,
           time: scheduleTime,
           repeat: scheduleRepeat,
-          slot: selectedSlot, // Envia o slot selecionado
-          enableTimers: enableTimers, // Envia o estado do Enable Timers
+          slot: selectedSlot,
+          enableTimers: enableTimers,
+          action: scheduleAction, // NOVO: envia ação ON/OFF
         }),
       });
       const data = await res.json();
@@ -858,6 +861,7 @@ function DashboardPage() {
         setScheduleDay("");
         setScheduleTime("");
         setScheduleRepeat(false);
+        setScheduleAction("OFF"); // resetar para OFF
       } else {
         setScheduleMessage(data.message || "Erro ao agendar desligamento.");
         setScheduleMessageColor("red");
@@ -1590,7 +1594,7 @@ function DashboardPage() {
                   letterSpacing: 0.5,
                 }}
               >
-                Agendar Desligamento
+                Agendar ON/OFF
               </h2>
               <form
                 onSubmit={handleScheduleShutdown}
@@ -2102,6 +2106,53 @@ function DashboardPage() {
                       style={{ width: 18, height: 18 }}
                     />
                     Habilitar temporizadores
+                  </label>
+                </div>
+
+                {/* NOVO: Checkbox ON/OFF */}
+                <div
+                  className="form-group"
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: 24,
+                    marginBottom: 12,
+                  }}
+                >
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      fontWeight: 500,
+                      color: "#fff",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={scheduleAction === "ON"}
+                      onChange={() => setScheduleAction("ON")}
+                      style={{ width: 18, height: 18 }}
+                    />
+                    ON
+                  </label>
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      fontWeight: 500,
+                      color: "#fff",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={scheduleAction === "OFF"}
+                      onChange={() => setScheduleAction("OFF")}
+                      style={{ width: 18, height: 18 }}
+                    />
+                    OFF
                   </label>
                 </div>
 
