@@ -1,18 +1,47 @@
-// backend/controllers/tasmota.controller.js
+/**
+ * Controller dos Dispositivos Tasmota
+ * 
+ * Gerencia todas as operações CRUD e controle de dispositivos IoT Tasmota.
+ * Inclui funcionalidades para:
+ * - Registro e configuração de dispositivos
+ * - Controle remoto via MQTT (ligar/desligar)
+ * - Consulta de dados históricos e em tempo real
+ * - Agendamentos automáticos
+ * - Validação de permissões por usuário
+ * 
+ * @module TasmotaController
+ * @requires ../services/tasmota.service
+ * @requires ../services/energyTotalManager
+ * @requires @prisma/client
+ */
+
 const tasmotaService = require("../services/tasmota.service");
-const energyTotalManager = require("../services/energyTotalManager"); // NOVO: Importa o serviço de energia total
+const energyTotalManager = require("../services/energyTotalManager");
 const { PrismaClient } = require("@prisma/client");
+
+// === CONFIGURAÇÃO GLOBAL ===
 const prisma = new PrismaClient();
 
-// A função 'getDevice' é um bom middleware para rotas que precisam de um 'deviceId'
-// Certifique-se de que ela seja usada nas rotas apropriadas em tasmotaRoutes.js.
+// === MIDDLEWARE DE VALIDAÇÃO ===
+
+/**
+ * Middleware para validação de dispositivo e permissões
+ * 
+ * Verifica se o dispositivo existe e pertence ao usuário autenticado.
+ * Anexa dados do dispositivo ao objeto de requisição para uso posterior.
+ * 
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ */
 async function getDevice(req, res, next) {
   const { deviceId } = req.params;
   const userId = req.user.userId; // ID do usuário do token JWT
 
   try {
+    // Busca dispositivo garantindo que pertence ao usuário
     const device = await prisma.device.findUnique({
-      where: { id: deviceId, userId: userId }, // Garante que o dispositivo pertence ao usuário
+      where: { id: deviceId, userId: userId },
     });
 
     if (!device) {
@@ -21,7 +50,9 @@ async function getDevice(req, res, next) {
           "Dispositivo não encontrado ou você não tem permissão para acessá-lo.",
       });
     }
-    req.device = device; // Adiciona o dispositivo ao objeto de requisição para uso posterior
+    
+    // Anexa dispositivo ao request para uso em próximos middlewares
+    req.device = device;
     next();
   } catch (error) {
     console.error("Erro no middleware getDevice:", error);
@@ -31,7 +62,17 @@ async function getDevice(req, res, next) {
   }
 }
 
-// Adicionar um novo dispositivo Tasmota ao usuário
+// === GERENCIAMENTO DE DISPOSITIVOS ===
+
+/**
+ * Adiciona novo dispositivo Tasmota ao usuário
+ * 
+ * Registra dispositivo IoT com validações de tópico único
+ * e configurações específicas do broker MQTT.
+ * 
+ * @param {Object} req - Request com dados do dispositivo
+ * @param {Object} res - Response object
+ */
 async function addDevice(req, res) {
   const { name, tasmotaTopic, macAddress, model, broker } = req.body;
   const userId = req.user.userId; // ID do usuário do token JWT
@@ -43,8 +84,8 @@ async function addDevice(req, res) {
   }
 
   try {
-    // Verifica se o tópico Tasmota já está em uso por QUALQUER usuário,
-    // pois tópicos devem ser únicos na rede MQTT para evitar conflitos.
+    // Validação de tópico único na rede MQTT
+    // Tópicos devem ser únicos globalmente para evitar conflitos
     const existingDeviceByTopic = await prisma.device.findUnique({
       where: { tasmotaTopic: tasmotaTopic },
     });
@@ -62,6 +103,7 @@ async function addDevice(req, res) {
       }
     }
 
+    // Cria novo dispositivo com configurações padrão
     const newDevice = await prisma.device.create({
       data: {
         name,
@@ -69,12 +111,13 @@ async function addDevice(req, res) {
         macAddress: macAddress || null,
         model: model || "Desconhecido",
         userId,
-        powerState: false,
+        powerState: false, // Inicia desligado por segurança
         lastSeen: null,
         ipAddress: null,
-        broker, // Salva o broker
+        broker, // Identifica qual broker MQTT usar
       },
     });
+    
     res.status(201).json({
       message: "Dispositivo adicionado com sucesso!",
       device: newDevice,
@@ -87,8 +130,15 @@ async function addDevice(req, res) {
   }
 }
 
-// Obter todos os dispositivos de um usuário
-// Essa função já é usada em dashboard.controller.js, mas aqui é para uma API específica.
+/**
+ * Obtém todos os dispositivos do usuário autenticado
+ * 
+ * Retorna lista completa com última leitura de energia
+ * para exibição na interface de gerenciamento.
+ * 
+ * @param {Object} req - Request com dados do usuário
+ * @param {Object} res - Response object
+ */
 async function getUserDevices(req, res) {
   const userId = req.user.userId;
   try {

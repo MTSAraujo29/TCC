@@ -1,9 +1,30 @@
+/**
+ * Página de Criação de Conta
+ * 
+ * Interface para registro de novos usuários no sistema.
+ * Inclui validação de formulário, confirmação de senha e
+ * integração com API de registro.
+ * 
+ * Funcionalidades principais:
+ * - Formulário de registro com validação
+ * - Componente reutilizável para campos de senha
+ * - Toggle de visibilidade para senhas
+ * - Validação de confirmação de senha
+ * - Feedback visual de erros e carregamento
+ * - Auto-login após registro bem-sucedido
+ * 
+ * @module CreateAccountPage
+ * @requires react
+ * @requires react-router-dom
+ */
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../App.css';
 import { API_ENDPOINTS } from '../config/api';
 
-// SVG Components
+// === COMPONENTES SVG ===
+// Ícone para mostrar senha
 const EyeOpen = () => (
     <svg
         width="22"
@@ -20,6 +41,7 @@ const EyeOpen = () => (
     </svg>
 );
 
+// Ícone para ocultar senha
 const EyeClosed = () => (
     <svg
         width="22"
@@ -37,7 +59,20 @@ const EyeClosed = () => (
     </svg>
 );
 
-// Reusable Password Input Component
+// === COMPONENTES REUTILIZÁVEIS ===
+
+/**
+ * Componente de input de senha reutilizável
+ * Inclui toggle de visibilidade integrado
+ * 
+ * @param {Object} props - Propriedades do componente
+ * @param {string} props.name - Nome do campo
+ * @param {string} props.placeholder - Texto placeholder
+ * @param {string} props.value - Valor atual
+ * @param {boolean} props.show - Se senha está visível
+ * @param {Function} props.setShow - Função para toggle de visibilidade
+ * @param {Function} props.onChange - Handler de mudança
+ */
 const PasswordInput = ({
                            name,
                            placeholder,

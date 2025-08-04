@@ -1,25 +1,38 @@
-// TCC Site/backend/api/index.js
+/**
+ * Sistema de Monitoramento de Energia - Backend API
+ * 
+ * Este é o arquivo principal do servidor Express que gerencia:
+ * - Autenticação de usuários (JWT)
+ * - Rotas modulares para dashboard e dispositivos Tasmota
+ * - Configurações de segurança e CORS
+ * - Integração com banco de dados Prisma
+ * - Inicialização do cliente MQTT para dispositivos IoT
+ * 
+ * @author TCC Project
+ * @version 1.0.0
+ */
+
+// === DEPENDÊNCIAS E IMPORTAÇÕES ===
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { PrismaClient } = require("@prisma/client");
-const mqtt = require("mqtt"); // Importa o módulo MQTT
-// Importa o serviço MQTT, ajustando o caminho para o nível correto
+const mqtt = require("mqtt");
 const tasmotaService = require("../services/tasmota.service");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const { body, validationResult } = require("express-validator");
 const winston = require("winston");
 
-// Carrega as variáveis de ambiente. No Render, elas são injetadas diretamente.
-// Esta linha é mantida por compatibilidade ou para uso em outros ambientes.
+// Carrega variáveis de ambiente (compatibilidade local/produção)
 require("dotenv").config();
 
-// --- Instância Global do Prisma ---
+// === CONFIGURAÇÕES GLOBAIS ===
 const prisma = new PrismaClient();
+const app = express();
 
-// Configurações de segurança
+// Validação de variáveis críticas
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
   console.error(
@@ -27,26 +40,23 @@ if (!JWT_SECRET) {
   );
 }
 
-const app = express();
-app.set("trust proxy", 1); // Necessário para identificar IP real atrás de proxy (Render)
+// Configuração para proxy (necessário em produção)
+app.set("trust proxy", 1);
 
-// Middlewares
+// === MIDDLEWARES GLOBAIS ===
 app.use(express.json());
 
-// --- CONFIGURAÇÃO CORS ---
-// A URL do seu frontend no Netlify será passada para o Render como uma variável de ambiente (FRONTEND_URL).
-// Durante o desenvolvimento local do frontend, ela usará 'http://localhost:3000'.
+// Configuração CORS - permite comunicação entre frontend e backend
 const ALLOWED_ORIGIN = process.env.FRONTEND_URL || "http://localhost:3000";
-
 app.use(
   cors({
     origin: ALLOWED_ORIGIN,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Inclua todos os métodos HTTP que seu frontend usará
-    credentials: true, // Se você usa cookies, sessões ou headers de autorização
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true,
   })
 );
 
-// Configuração do logger Winston
+// Sistema de logging estruturado
 const logger = winston.createLogger({
   level: "info",
   format: winston.format.combine(
@@ -56,9 +66,15 @@ const logger = winston.createLogger({
   transports: [new winston.transports.Console()],
 });
 
-// =========================================================================
-// Middleware de Autenticação JWT
-// =========================================================================
+// === MIDDLEWARE DE AUTENTICAÇÃO ===
+/**
+ * Middleware para validação de tokens JWT
+ * Verifica se o usuário está autenticado e autorizado
+ * 
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object  
+ * @param {Function} next - Next middleware function
+ */
 async function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -83,6 +99,7 @@ async function authenticateToken(req, res, next) {
     }
 
     try {
+      // Valida se o usuário ainda existe no banco de dados
       const dbUser = await prisma.user.findUnique({
         where: { id: user.userId },
         select: { id: true, email: true, isAdmin: true },
@@ -109,37 +126,30 @@ async function authenticateToken(req, res, next) {
   });
 }
 
-// =========================================================================
-// Importação e Uso das Rotas Modularizadas
-// =========================================================================
-
-// As rotas agora estão no mesmo nível que 'api', então o caminho é "../routes/..."
+// === ROTAS MODULARES ===
+// Importação das rotas organizadas por funcionalidade
 const tasmotaRoutes = require("../routes/tasmotaRoutes");
 app.use("/api/tasmota", tasmotaRoutes);
 
 const dashboardRoutes = require("../routes/dashboardRoutes");
 app.use("/api/dashboard", dashboardRoutes);
 
-// =========================================================================
-// Rotas de Autenticação (Registro e Login)
-// =========================================================================
-
-// Rota de saúde (health check)
+// === ROTAS DE SISTEMA ===
+// Health check para monitoramento de status
 app.get("/health", (req, res) => {
   res.status(200).send("OK");
 });
 
-// Rota inicial
+// Rota inicial informativa
 app.get("/", (req, res) => {
-  res.send(
-    "Servidor Rodando 🚀"
-  );
+  res.send("Servidor Rodando 🚀");
 });
 
-// Rate limiting para rotas de autenticação
+// === CONFIGURAÇÃO DE RATE LIMITING ===
+// Proteção contra ataques de força bruta em autenticação
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 5, // Limite de 5 tentativas por IP
+  max: 5, // Máximo 5 tentativas por IP
   message: {
     message:
       "Muitas tentativas de login/registro. Tente novamente em 15 minutos.",
@@ -148,7 +158,12 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Rotas de autenticação com rate limit e validação
+// === ROTAS DE AUTENTICAÇÃO ===
+
+/**
+ * Rota para registro de novos usuários
+ * Inclui validação de dados e criptografia de senha
+ */
 app.post(
   "/api/register",
   authLimiter,
@@ -164,6 +179,7 @@ app.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
+    
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
       return res
@@ -174,6 +190,7 @@ app.post(
     }
 
     try {
+      // Verifica se email já está em uso
       const existingUser = await prisma.user.findUnique({
         where: { email: email },
       });
@@ -186,8 +203,10 @@ app.post(
           });
       }
 
+      // Criptografa a senha antes de salvar
       const hashedPassword = await bcrypt.hash(password, 10);
 
+      // Cria novo usuário (admin definido por email específico)
       const newUser = await prisma.user.create({
         data: {
           name: name,
@@ -218,6 +237,10 @@ app.post(
   }
 );
 
+/**
+ * Rota para autenticação de usuários
+ * Gera token JWT válido por 1 hora
+ */
 app.post(
   "/api/login",
   authLimiter,
@@ -230,6 +253,7 @@ app.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
+    
     const { email, password } = req.body;
     if (!email || !password) {
       return res
@@ -238,6 +262,7 @@ app.post(
     }
 
     try {
+      // Busca usuário no banco de dados
       const user = await prisma.user.findUnique({
         where: { email: email },
       });
@@ -246,12 +271,13 @@ app.post(
         return res.status(401).json({ message: "Credenciais inválidas." });
       }
 
+      // Verifica se a senha está correta
       const isMatch = await bcrypt.compare(password, user.password);
-
       if (!isMatch) {
         return res.status(401).json({ message: "Credenciais inválidas." });
       }
 
+      // Gera token JWT com expiração de 1 hora
       const token = jwt.sign(
         { userId: user.id, email: user.email },
         JWT_SECRET,
@@ -280,19 +306,22 @@ app.post(
   }
 );
 
-// =========================================================================
-// Rotas de Conta do Usuário (Editar e Excluir)
-// =========================================================================
+// === GERENCIAMENTO DE CONTA ===
 
-// Editar nome e/ou senha da conta
+/**
+ * Atualiza dados da conta do usuário autenticado
+ * Permite alterar nome e/ou senha
+ */
 app.put("/api/account", authenticateToken, async (req, res) => {
   const userId = req.user.userId;
   const { name, password } = req.body;
+  
   if (!name && !password) {
     return res
       .status(400)
       .json({ message: "Informe um novo nome ou nova senha." });
   }
+  
   try {
     const updateData = {};
     if (name) updateData.name = name;
@@ -300,10 +329,12 @@ app.put("/api/account", authenticateToken, async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, 10);
       updateData.password = hashedPassword;
     }
+    
     await prisma.user.update({
       where: { id: userId },
       data: updateData,
     });
+    
     res.json({ message: "Dados da conta atualizados com sucesso." });
   } catch (error) {
     console.error("Erro ao atualizar conta:", error);
@@ -311,14 +342,19 @@ app.put("/api/account", authenticateToken, async (req, res) => {
   }
 });
 
-// Excluir conta do usuário
+/**
+ * Remove conta do usuário e todos os dados associados
+ * Operação irreversível que limpa dispositivos e leituras
+ */
 app.delete("/api/account", authenticateToken, async (req, res) => {
   const userId = req.user.userId;
+  
   try {
-    // Remove todos os dispositivos e leituras do usuário antes de remover o usuário
+    // Remove dados em cascata: leituras -> dispositivos -> usuário
     await prisma.energyReading.deleteMany({ where: { device: { userId } } });
     await prisma.device.deleteMany({ where: { userId } });
     await prisma.user.delete({ where: { id: userId } });
+    
     res.json({ message: "Conta excluída com sucesso." });
   } catch (error) {
     console.error("Erro ao excluir conta:", error);
@@ -326,13 +362,15 @@ app.delete("/api/account", authenticateToken, async (req, res) => {
   }
 });
 
-// =========================================================================
-// Inicialização do Cliente MQTT
-// =========================================================================
-// Esta função será chamada uma vez quando o processo Node.js for iniciado no Render.
+// === INICIALIZAÇÃO DE SERVIÇOS ===
+// Inicializa conexões MQTT para comunicação com dispositivos IoT
 tasmotaService.initializeMqttClients();
 
-// Middleware global de tratamento de erros
+// === TRATAMENTO GLOBAL DE ERROS ===
+/**
+ * Middleware global para captura e logging de erros
+ * Registra erros detalhados e retorna resposta padronizada
+ */
 app.use((err, req, res, next) => {
   logger.error({
     message: err.message,
@@ -345,6 +383,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Erro interno do servidor." });
 });
 
+// === INICIALIZAÇÃO DO SERVIDOR ===
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);

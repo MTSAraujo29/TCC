@@ -1,25 +1,50 @@
+/**
+ * Página de Adição de Dispositivos
+ * 
+ * Interface para registro de novos dispositivos Tasmota no sistema.
+ * Inclui formulário com validação e seleção automática de broker MQTT.
+ * 
+ * Funcionalidades principais:
+ * - Formulário de registro de dispositivos IoT
+ * - Validação de campos obrigatórios
+ * - Seleção automática de broker baseada no tópico
+ * - Feedback visual de carregamento e erros
+ * - Navegação de retorno ao dashboard
+ * 
+ * @module AddDevicePage
+ * @requires react
+ * @requires react-router-dom
+ */
+
 import React, { useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import './AddDevicePage.css';
 import { API_ENDPOINTS } from '../config/api';
 
 function AddDevicePage() {
-    // State management
+    // === GERENCIAMENTO DE ESTADO ===
+    // Dados do dispositivo a ser adicionado
     const [deviceData, setDeviceData] = useState({
         name: '',
         tasmotaTopic: '',
         macAddress: '',
         model: ''
     });
+    
+    // Estado da interface
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // Router hooks
+    // === HOOKS DE NAVEGAÇÃO ===
     const navigate = useNavigate();
     const location = useLocation();
     const [searchParams] = useSearchParams();
 
-    // Event handlers
+    // === HANDLERS DE EVENTOS ===
+    
+    /**
+     * Atualiza dados do dispositivo conforme usuário digita
+     */
     const handleInputChange = (e) => {
         const { id, value } = e.target;
         setDeviceData(prev => ({
