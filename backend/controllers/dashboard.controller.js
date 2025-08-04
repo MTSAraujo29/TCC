@@ -1,28 +1,49 @@
-// backend/controllers/dashboard.controller.js
+/**
+ * Controller do Dashboard
+ * 
+ * Gerencia todas as operações relacionadas ao painel de controle,
+ * incluindo métricas de consumo, dados para gráficos e informações
+ * de dispositivos. Implementa sistema dual com dados reais para
+ * administradores e dados fictícios para usuários comuns.
+ * 
+ * Funcionalidades principais:
+ * - Consolidação de métricas de energia
+ * - Geração de dados para gráficos temporais
+ * - Gerenciamento de cache para otimização
+ * - Sistema de mock data para demonstração
+ * - Integração com serviços Tasmota
+ * 
+ * @module DashboardController
+ * @requires @prisma/client
+ * @requires ../services/tasmota.service
+ */
+
 const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient(); // Instância do Prisma
+const tasmotaService = require("../services/tasmota.service");
 
-// Importa o serviço Tasmota. Ele será usado para interagir com o DB agora,
-// já que as funções como getDevices, getLatestEnergyReading etc.
-// devem ser implementadas lá ou diretamente aqui no controller usando prisma.
-// Se essas funções já estão no tasmota.service.js, o import está correto.
-// Se elas não estão e você vai implementá-las aqui, você não precisaria do import.
-// Pela estrutura atual do seu código, parece que você quer que tasmotaService contenha essas funções.
-const tasmotaService = require("../services/tasmota.service"); // Serviço para interagir com dados Tasmota
+// === CONFIGURAÇÃO GLOBAL ===
+const prisma = new PrismaClient();
 
-// Cache para evitar logs repetitivos
+// === SISTEMA DE CACHE ===
+// Cache para evitar logs repetitivos e otimizar performance
 const lastLoggedData = new Map();
-const adminUserLogCache = new Map(); // Cache para logs de admin user
+const adminUserLogCache = new Map();
 
-// Função para limpar cache antigo (mais de 1 hora)
+/**
+ * Limpa entradas antigas do cache (mais de 1 hora)
+ * Executada automaticamente para prevenir vazamentos de memória
+ */
 function cleanupOldCache() {
   const oneHourAgo = Date.now() - 3600000; // 1 hora em ms
+  
+  // Limpa cache de dados de dispositivos
   for (const [deviceId, data] of lastLoggedData.entries()) {
     if (data.timestamp < oneHourAgo) {
       lastLoggedData.delete(deviceId);
     }
   }
-  // Limpar cache de admin user também
+  
+  // Limpa cache de logs de usuário admin
   for (const [userId, data] of adminUserLogCache.entries()) {
     if (data.timestamp < oneHourAgo) {
       adminUserLogCache.delete(userId);
@@ -30,15 +51,25 @@ function cleanupOldCache() {
   }
 }
 
-// Limpa o cache a cada 30 minutos
-setInterval(cleanupOldCache, 1800000); // 30 minutos
+// Executa limpeza automática a cada 30 minutos
+setInterval(cleanupOldCache, 1800000);
 
-// Função para verificar se os dados mudaram significativamente
+/**
+ * Verifica se houve mudança significativa nos dados do dispositivo
+ * 
+ * Implementa lógica inteligente para evitar logs excessivos,
+ * considerando mudanças de estado, variações de potência e tempo.
+ * 
+ * @param {string} deviceId - ID do dispositivo
+ * @param {Object} currentReading - Leitura atual de energia
+ * @param {boolean} devicePowerState - Estado atual do dispositivo
+ * @returns {boolean} True se houve mudança significativa
+ */
 function hasSignificantChange(deviceId, currentReading, devicePowerState) {
   const lastData = lastLoggedData.get(deviceId);
 
+  // Primeira leitura do dispositivo - sempre registra
   if (!lastData) {
-    // Primeira vez que vemos este dispositivo, sempre loga
     lastLoggedData.set(deviceId, {
       power: currentReading ? currentReading.power : 0,
       totalEnergy: currentReading ? currentReading.totalEnergy : 0,
@@ -48,7 +79,7 @@ function hasSignificantChange(deviceId, currentReading, devicePowerState) {
     return true;
   }
 
-  // Verifica se houve mudança significativa (mais de 1W de diferença ou mudança de estado)
+  // Calcula diferenças entre leitura atual e anterior
   const powerDiff = Math.abs(
     (currentReading ? currentReading.power : 0) - lastData.power
   );
@@ -56,18 +87,18 @@ function hasSignificantChange(deviceId, currentReading, devicePowerState) {
     (currentReading ? currentReading.totalEnergy : 0) - lastData.totalEnergy
   );
   const stateChanged = devicePowerState !== lastData.powerState;
-
-  // Só considera mudança significativa se:
-  // 1. Mudou o estado do dispositivo (ligado/desligado)
-  // 2. Potência mudou mais de 1W
-  // 3. Energia total mudou mais de 0.01 kWh
-  // 4. Passou mais de 5 minutos desde o último log
   const timeDiff = Date.now() - lastData.timestamp;
+
+  // Critérios para mudança significativa:
+  // 1. Estado ligado/desligado mudou
+  // 2. Potência variou mais de 1W
+  // 3. Energia total variou mais de 0.01 kWh
+  // 4. Passou mais de 5 minutos desde último log
   const significantChange =
-    stateChanged || powerDiff > 1 || energyDiff > 0.01 || timeDiff > 300000; // 5 minutos
+    stateChanged || powerDiff > 1 || energyDiff > 0.01 || timeDiff > 300000;
 
   if (significantChange) {
-    // Atualiza o cache
+    // Atualiza cache com novos valores
     lastLoggedData.set(deviceId, {
       power: currentReading ? currentReading.power : 0,
       totalEnergy: currentReading ? currentReading.totalEnergy : 0,
@@ -79,15 +110,24 @@ function hasSignificantChange(deviceId, currentReading, devicePowerState) {
   return significantChange;
 }
 
-// === Dados Fictícios (Mock Data) ===
-// Estes dados serão enviados para usuários NÃO-ADMIN
+// === DADOS FICTÍCIOS (MOCK DATA) ===
+// Sistema de demonstração para usuários não-administradores
+
+/**
+ * Métricas fictícias para demonstração
+ * Simula dados realistas de consumo energético
+ */
 const mockMetrics = {
   totalConsumption: 1850.75, // Wh (Watt-hora)
   currentPower: 450.2, // W (Watts)
-  devicesOnline: 3, // Número de dispositivos "online" fictícios
-  energySaved: 75.3, // Wh (Exemplo de economia fictícia)
+  devicesOnline: 3, // Dispositivos "online" fictícios
+  energySaved: 75.3, // Wh (Economia simulada)
 };
 
+/**
+ * Lista de dispositivos fictícios para demonstração
+ * Representa cenário típico de casa inteligente
+ */
 const mockDevices = [
   {
     id: "mockDev1",
@@ -131,7 +171,12 @@ const mockDevices = [
   },
 ];
 
-// Função para gerar dados de gráfico fictícios dinamicamente
+/**
+ * Gera dados fictícios para gráficos baseados no período
+ * 
+ * @param {string} period - Período do gráfico (day/week/month)
+ * @returns {Object} Dados formatados para Chart.js
+ */
 const generateMockChartData = (period) => {
   let labels = [];
   let data = [];
@@ -163,17 +208,22 @@ const generateMockChartData = (period) => {
   return { labels, data };
 };
 
-// Função para gerar dados de consumo por tipo fictícios
+/**
+ * Gera dados fictícios de consumo por categoria
+ * Simula distribuição típica de consumo residencial
+ * 
+ * @returns {Object} Dados formatados para gráfico de pizza
+ */
 const generateMockConsumptionByType = () => {
   return {
     labels: [
       "Iluminação",
-      "Refrigeração",
+      "Refrigeração", 
       "Aquecimento",
       "Entretenimento",
       "Outros",
     ],
-    data: [25, 30, 15, 20, 10], // Percentuais fictícios
+    data: [25, 30, 15, 20, 10], // Percentuais realistas
     backgroundColor: [
       "rgba(255, 99, 132, 0.7)",
       "rgba(54, 162, 235, 0.7)",
@@ -185,7 +235,17 @@ const generateMockConsumptionByType = () => {
   };
 };
 
-// === Função Principal do Controlador do Dashboard ===
+// === CONTROLLER PRINCIPAL ===
+
+/**
+ * Obtém todos os dados consolidados do dashboard
+ * 
+ * Função principal que retorna métricas, gráficos e dados de dispositivos.
+ * Implementa lógica dual: dados reais para admins, dados fictícios para usuários.
+ * 
+ * @param {Object} req - Request object com dados do usuário autenticado
+ * @param {Object} res - Response object para retorno dos dados
+ */
 async function getDashboardData(req, res) {
   const userId = req.user.userId;
   const userEmail = req.user.email;

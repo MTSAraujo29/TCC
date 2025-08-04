@@ -1,9 +1,25 @@
+/**
+ * Página de Login
+ * 
+ * Interface de autenticação de usuários com:
+ * - Formulário de login responsivo
+ * - Validação de campos em tempo real
+ * - Toggle de visibilidade de senha
+ * - Feedback visual de carregamento e erros
+ * - Integração com API de autenticação
+ * 
+ * @module LoginPage
+ * @requires react
+ * @requires react-router-dom
+ */
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../App.css';
 import { API_ENDPOINTS } from '../config/api';
 
-// Constants
+// === ÍCONES SVG ===
+// Ícone para mostrar senha (olho aberto)
 const EyeOpen = (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#888"
          strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -12,6 +28,7 @@ const EyeOpen = (
     </svg>
 );
 
+// Ícone para ocultar senha (olho fechado)
 const EyeClosed = (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#888"
          strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -22,26 +39,32 @@ const EyeClosed = (
 );
 
 function LoginPage() {
-    // Hooks
+    // === HOOKS E NAVEGAÇÃO ===
     const navigate = useNavigate();
 
-    // State management
+    // === GERENCIAMENTO DE ESTADO ===
+    // Dados do formulário
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
 
+    // Estado da interface
     const [uiState, setUiState] = useState({
         error: '',
         loading: false,
         showPassword: false
     });
 
-    // Derived values
+    // === VALORES DERIVADOS ===
     const passwordToggleIcon = uiState.showPassword ? EyeClosed : EyeOpen;
     const passwordToggleTitle = uiState.showPassword ? 'Ocultar senha' : 'Mostrar senha';
 
-    // Event handlers
+    // === HANDLERS DE EVENTOS ===
+    
+    /**
+     * Atualiza dados do formulário conforme usuário digita
+     */
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));

@@ -1,9 +1,31 @@
+/**
+ * Página Principal do Dashboard
+ * 
+ * Interface principal do sistema de monitoramento de energia.
+ * Apresenta métricas consolidadas, gráficos interativos e
+ * controle de dispositivos IoT em tempo real.
+ * 
+ * Funcionalidades principais:
+ * - Dashboard com métricas de consumo energético
+ * - Gráficos interativos (Chart.js) para análise temporal
+ * - Controle remoto de dispositivos Tasmota
+ * - Sistema dual: dados reais (admin) / fictícios (usuário)
+ * - Navegação por abas (início, dispositivos, gráficos, conta)
+ * - Atualizações em tempo real via polling
+ * 
+ * @module DashboardPage
+ * @requires react
+ * @requires react-router-dom
+ * @requires chart.js
+ * @requires react-chartjs-2
+ */
+
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import "../App.css"; // Certifique-se de que este caminho está correto
+import "../App.css";
 import { API_ENDPOINTS } from "../config/api";
 
-// Importações do Chart.js
+// === CONFIGURAÇÃO DE GRÁFICOS ===
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -17,7 +39,7 @@ import {
 } from "chart.js";
 import { Line, Doughnut } from "react-chartjs-2";
 
-// Registra os componentes necessários do Chart.js
+// Registra componentes necessários do Chart.js
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -30,23 +52,22 @@ ChartJS.register(
 );
 
 function DashboardPage() {
+  // === HOOKS E NAVEGAÇÃO ===
   const navigate = useNavigate();
+  
+  // === ESTADO DO USUÁRIO ===
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
-  // ALTERADO: `devices` agora guardará os dispositivos do Tasmota (reais ou fictícios)
-  const [devices, setDevices] = useState([]);
+  const [devices, setDevices] = useState([]); // Dispositivos do usuário (reais ou fictícios)
 
-  // Estados para as métricas exibidas
-  const [currentMonthConsumption, setCurrentMonthConsumption] =
-    useState("0.00 kWh");
+  // === MÉTRICAS DE ENERGIA ===
+  const [currentMonthConsumption, setCurrentMonthConsumption] = useState("0.00 kWh");
   const [dailyConsumption, setDailyConsumption] = useState("0.00 kWh");
   const [totalConsumption, setTotalConsumption] = useState("0.00 kWh");
 
-  // Estado para controlar a seção ativa na sidebar
-  const [activeSection, setActiveSection] = useState("inicio");
-
-  // Estado para mensagens de feedback dos dispositivos
-  const [deviceMessage, setDeviceMessage] = useState("");
+  // === ESTADO DA INTERFACE ===
+  const [activeSection, setActiveSection] = useState("inicio"); // Seção ativa na sidebar
+  const [deviceMessage, setDeviceMessage] = useState(""); // Feedback de operações
 
   // NOVO: Estado para controlar o modo de visualização do gráfico (day, week, month)
   const [viewMode, setViewMode] = useState("day");
