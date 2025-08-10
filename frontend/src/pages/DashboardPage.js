@@ -2,6 +2,8 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css"; // Certifique-se de que este caminho está correto
 import { API_ENDPOINTS } from "../config/api";
+import CustomAlert from "../components/CustomAlert";
+import useCustomAlert from "../hooks/useCustomAlert";
 
 // Importações do Chart.js
 import {
@@ -31,6 +33,8 @@ ChartJS.register(
 
 function DashboardPage() {
   const navigate = useNavigate();
+  const { alertState, showSuccess, showError, showWarning, hideAlert } =
+    useCustomAlert();
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   // ALTERADO: `devices` agora guardará os dispositivos do Tasmota (reais ou fictícios)
@@ -551,13 +555,16 @@ function DashboardPage() {
   // Logout automático após 10 minutos
   useEffect(() => {
     const logoutTimer = setTimeout(() => {
-      alert(
-        "Por segurança, você foi desconectado após 10 minutos de sessão. Faça login novamente."
+      showWarning(
+        "Por segurança, você foi desconectado após 10 minutos de sessão. Faça login novamente.",
+        "Sessão Expirada"
       );
-      handleLogout();
+      setTimeout(() => {
+        handleLogout();
+      }, 3000);
     }, 600000); // 10 minutos
     return () => clearTimeout(logoutTimer);
-  }, [handleLogout]);
+  }, [handleLogout, showWarning]);
 
   // FUNÇÃO PARA GERAR O RELATÓRIO
   // ALTERADO: Adapte esta função para considerar `isRealData` e os dados reais.
@@ -693,9 +700,14 @@ function DashboardPage() {
       });
       const data = await response.json();
       if (response.ok) {
-        alert("Dados atualizados com sucesso! Faça login novamente.");
+        showSuccess(
+          "Dados atualizados com sucesso! Faça login novamente.",
+          "Dados Atualizados!"
+        );
         setShowEditModal(false);
-        handleLogout();
+        setTimeout(() => {
+          handleLogout();
+        }, 2000);
       } else {
         setEditError(data.message || "Erro ao atualizar dados.");
       }
@@ -723,9 +735,11 @@ function DashboardPage() {
       });
       const data = await response.json();
       if (response.ok) {
-        alert("Conta excluída com sucesso!");
+        showSuccess("Conta excluída com sucesso!", "Conta Excluída!");
         setShowDeleteModal(false);
-        handleLogout();
+        setTimeout(() => {
+          handleLogout();
+        }, 2000);
       } else {
         setDeleteError(data.message || "Erro ao excluir conta.");
       }
@@ -2763,7 +2777,16 @@ function DashboardPage() {
             </div>
           </>
         )}
-      </div>{" "}
+      </div>
+      <CustomAlert
+        isOpen={alertState.isOpen}
+        onClose={hideAlert}
+        type={alertState.type}
+        title={alertState.title}
+        message={alertState.message}
+        autoClose={alertState.autoClose}
+        autoCloseTime={alertState.autoCloseTime}
+      />
     </div>
   );
 }
