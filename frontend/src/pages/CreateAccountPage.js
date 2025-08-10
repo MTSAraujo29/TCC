@@ -105,8 +105,12 @@ function CreateAccountPage() {
     if (!validateForm()) return;
 
     try {
+      console.log("Iniciando registro de usuário...");
       const response = await registerUser();
+      console.log("Resposta da API:", response);
+
       const data = await response.json();
+      console.log("Dados da resposta:", data);
 
       if (response.ok) {
         handleRegistrationSuccess(data);
@@ -114,29 +118,67 @@ function CreateAccountPage() {
         handleRegistrationError(data);
       }
     } catch (err) {
+      console.error("Erro durante o registro:", err);
       handleNetworkError(err);
     }
   };
 
   // Form validation
   const validateForm = () => {
-    if (formData.password !== formData.confirmPassword) {
-      setError("As senhas não coincidem!");
+    console.log("Validando formulário:", formData);
+
+    // Verificar se todos os campos estão preenchidos
+    if (!formData.name || !formData.name.trim()) {
+      setError("Nome é obrigatório!");
+      showError("Nome é obrigatório!", "Campo Obrigatório");
       return false;
     }
+
+    if (!formData.email || !formData.email.trim()) {
+      setError("Email é obrigatório!");
+      showError("Email é obrigatório!", "Campo Obrigatório");
+      return false;
+    }
+
+    // Validar formato do email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Formato de email inválido!");
+      showError("Formato de email inválido!", "Email Inválido");
+      return false;
+    }
+
+    if (!formData.password || formData.password.length < 6) {
+      setError("Senha deve ter pelo menos 6 caracteres!");
+      showError("Senha deve ter pelo menos 6 caracteres!", "Senha Inválida");
+      return false;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("As senhas não coincidem!");
+      showError("As senhas não coincidem!", "Senhas Diferentes");
+      return false;
+    }
+
+    console.log("Formulário validado com sucesso!");
     return true;
   };
 
   // API functions
   const registerUser = async () => {
+    const requestData = {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+    };
+
+    console.log("Enviando dados para API:", requestData);
+    console.log("URL da API:", API_ENDPOINTS.REGISTER);
+
     return await fetch(API_ENDPOINTS.REGISTER, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-      }),
+      body: JSON.stringify(requestData),
     });
   };
 
@@ -153,9 +195,17 @@ function CreateAccountPage() {
   };
 
   const handleRegistrationError = (data) => {
-    console.error("Account creation failed:", data.message || "Unknown error");
-    const errorMessage =
-      data.message || "Erro ao criar conta. Tente novamente.";
+    console.error("Account creation failed:", data);
+
+    let errorMessage = "Erro ao criar conta. Tente novamente.";
+
+    // Se há erros de validação específicos, mostrar o primeiro
+    if (data.errors && data.errors.length > 0) {
+      errorMessage = data.errors[0].msg;
+    } else if (data.message) {
+      errorMessage = data.message;
+    }
+
     setError(errorMessage);
     showError(errorMessage, "Erro na Criação");
   };

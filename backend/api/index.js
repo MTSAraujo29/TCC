@@ -19,6 +19,16 @@ require("dotenv").config();
 // --- Instância Global do Prisma ---
 const prisma = new PrismaClient();
 
+// Teste de conexão com o banco
+prisma
+  .$connect()
+  .then(() => {
+    console.log("✅ Conectado ao banco de dados MongoDB via Prisma");
+  })
+  .catch((error) => {
+    console.error("❌ Erro ao conectar ao banco de dados:", error);
+  });
+
 // Configurações de segurança
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
@@ -33,16 +43,39 @@ app.set("trust proxy", 1); // Necessário para identificar IP real atrás de pro
 // Middlewares
 app.use(express.json());
 
+// Middleware de logging para todas as requisições
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  console.log("Headers:", req.headers);
+  console.log("Body:", req.body);
+  next();
+});
+
 // --- CONFIGURAÇÃO CORS ---
 // A URL do seu frontend no Netlify será passada para o Render como uma variável de ambiente (FRONTEND_URL).
 // Durante o desenvolvimento local do frontend, ela usará 'http://localhost:3000'.
 const ALLOWED_ORIGIN = process.env.FRONTEND_URL || "http://localhost:3000";
 
+console.log("Origem permitida para CORS:", ALLOWED_ORIGIN);
+
 app.use(
   cors({
-    origin: ALLOWED_ORIGIN,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Inclua todos os métodos HTTP que seu frontend usará
-    credentials: true, // Se você usa cookies, sessões ou headers de autorização
+    origin: function (origin, callback) {
+      // Permitir requisições sem origem (como apps mobile ou Postman)
+      if (!origin) return callback(null, true);
+
+      // Permitir a origem configurada
+      if (origin === ALLOWED_ORIGIN) {
+        return callback(null, true);
+      }
+
+      // Log para debug
+      console.log("Origem bloqueada pelo CORS:", origin);
+      return callback(new Error("Não permitido pelo CORS"));
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -71,11 +104,9 @@ async function authenticateToken(req, res, next) {
     if (err) {
       console.error("Erro de verificação JWT:", err.message);
       if (err.name === "TokenExpiredError") {
-        return res
-          .status(401)
-          .json({
-            message: "Token expirado. Por favor, faça login novamente.",
-          });
+        return res.status(401).json({
+          message: "Token expirado. Por favor, faça login novamente.",
+        });
       }
       return res
         .status(403)
@@ -131,21 +162,21 @@ app.get("/health", (req, res) => {
 
 // Rota inicial
 app.get("/", (req, res) => {
-  res.send(
-    "Servidor Rodando 🚀"
-  );
+  res.send("Servidor Rodando 🚀");
 });
 
 // Rate limiting para rotas de autenticação
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 5, // Limite de 5 tentativas por IP
+  max: 10, // Aumentado para 10 tentativas por IP
   message: {
     message:
       "Muitas tentativas de login/registro. Tente novamente em 15 minutos.",
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skipSuccessfulRequests: true, // Não contar requisições bem-sucedidas
+  skipFailedRequests: false, // Contar requisições que falharam
 });
 
 // Rotas de autenticação com rate limit e validação
@@ -153,24 +184,57 @@ app.post(
   "/api/register",
   authLimiter,
   [
-    body("name").trim().notEmpty().withMessage("Nome é obrigatório."),
-    body("email").isEmail().withMessage("Email inválido.").normalizeEmail(),
+    body("name")
+      .trim()
+      .notEmpty()
+      .withMessage("Nome é obrigatório.")
+      .isLength({ min: 2, max: 100 })
+      .withMessage("Nome deve ter entre 2 e 100 caracteres."),
+    body("email")
+      .trim()
+      .notEmpty()
+      .withMessage("Email é obrigatório.")
+      .isEmail()
+      .withMessage("Formato de email inválido.")
+      .normalizeEmail()
+      .isLength({ max: 255 })
+      .withMessage("Email muito longo."),
     body("password")
-      .isLength({ min: 6 })
-      .withMessage("A senha deve ter pelo menos 6 caracteres."),
+      .notEmpty()
+      .withMessage("Senha é obrigatória.")
+      .isLength({ min: 6, max: 100 })
+      .withMessage("Senha deve ter entre 6 e 100 caracteres."),
   ],
   async (req, res) => {
+    console.log("Dados recebidos na API:", req.body); // Log para debug
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      console.log("❌ Erros de validação encontrados:");
+      errors.array().forEach((error, index) => {
+        console.log(
+          `  ${index + 1}. Campo: ${error.path}, Valor: ${error.value}, Erro: ${
+            error.msg
+          }`
+        );
+      });
+
+      return res.status(400).json({
+        message: "Dados inválidos",
+        errors: errors.array(),
+      });
     }
+
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
-      return res
-        .status(400)
-        .json({
-          message: "Todos os campos (Nome, Email, Senha) são obrigatórios.",
-        });
+      console.log("Campos obrigatórios ausentes:", {
+        name: !!name,
+        email: !!email,
+        password: !!password,
+      }); // Log para debug
+      return res.status(400).json({
+        message: "Todos os campos (Nome, Email, Senha) são obrigatórios.",
+      });
     }
 
     try {
@@ -179,11 +243,9 @@ app.post(
       });
 
       if (existingUser) {
-        return res
-          .status(409)
-          .json({
-            message: "Este email já está registrado. Por favor, faça login.",
-          });
+        return res.status(409).json({
+          message: "Este email já está registrado. Por favor, faça login.",
+        });
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -208,12 +270,10 @@ app.post(
       });
     } catch (error) {
       console.error("Erro ao registrar usuário:", error);
-      res
-        .status(500)
-        .json({
-          message:
-            "Erro interno do servidor ao tentar registrar. Tente novamente mais tarde.",
-        });
+      res.status(500).json({
+        message:
+          "Erro interno do servidor ao tentar registrar. Tente novamente mais tarde.",
+      });
     }
   }
 );
@@ -270,12 +330,10 @@ app.post(
       });
     } catch (error) {
       console.error("Erro ao fazer login do usuário:", error);
-      res
-        .status(500)
-        .json({
-          message:
-            "Erro interno do servidor ao tentar fazer login. Tente novamente mais tarde.",
-        });
+      res.status(500).json({
+        message:
+          "Erro interno do servidor ao tentar fazer login. Tente novamente mais tarde.",
+      });
     }
   }
 );
@@ -334,6 +392,15 @@ tasmotaService.initializeMqttClients();
 
 // Middleware global de tratamento de erros
 app.use((err, req, res, next) => {
+  console.error("❌ Erro capturado pelo middleware global:", {
+    message: err.message,
+    stack: err.stack,
+    url: req.originalUrl,
+    method: req.method,
+    body: req.body,
+    user: req.user || null,
+  });
+
   logger.error({
     message: err.message,
     stack: err.stack,
@@ -342,6 +409,15 @@ app.use((err, req, res, next) => {
     body: req.body,
     user: req.user || null,
   });
+
+  // Se for erro de CORS, retornar 403
+  if (err.message === "Não permitido pelo CORS") {
+    return res.status(403).json({
+      message: "Acesso negado. Verifique a origem da requisição.",
+      error: "CORS_ERROR",
+    });
+  }
+
   res.status(500).json({ message: "Erro interno do servidor." });
 });
 
