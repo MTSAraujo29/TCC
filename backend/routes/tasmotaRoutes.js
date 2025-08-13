@@ -49,16 +49,6 @@ router.post("/schedule", authenticateToken, tasmotaController.scheduleShutdown);
 router.get("/schedules", authenticateToken, tasmotaController.listSchedules);
 router.post("/schedules", authenticateToken, tasmotaController.createSchedule);
 
-// Endpoint para valor de energia total em tempo real (direto do cache)
-router.get(
-  "/devices/:deviceId/total-energy-live",
-  authenticateToken,
-  (req, res) => {
-    const valor = tasmotaService.getTotalEnergyFromCache(req.params.deviceId);
-    res.json({ totalEnergy: valor });
-  }
-);
-
 // Nova rota para buscar Energia Total diretamente do Tasmota (apenas admin)
 const {
   getLiveTotalEnergyFromTasmota,

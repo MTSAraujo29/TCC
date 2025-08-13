@@ -11,6 +11,7 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const { body, validationResult } = require("express-validator");
 const winston = require("winston");
+const authenticateToken = require("../middleware/authenticateToken");
 
 // Carrega as variáveis de ambiente. No Render, elas são injetadas diretamente.
 // Esta linha é mantida por compatibilidade ou para uso em outros ambientes.
@@ -42,6 +43,7 @@ app.set("trust proxy", 1); // Necessário para identificar IP real atrás de pro
 
 // Middlewares
 app.use(express.json());
+app.use(helmet());
 
 // Middleware de logging para todas as requisições
 app.use((req, res, next) => {
@@ -92,53 +94,6 @@ const logger = winston.createLogger({
 // =========================================================================
 // Middleware de Autenticação JWT
 // =========================================================================
-async function authenticateToken(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (token == null) {
-    return res.status(401).json({ message: "Token de autenticação ausente." });
-  }
-
-  jwt.verify(token, JWT_SECRET, async (err, user) => {
-    if (err) {
-      console.error("Erro de verificação JWT:", err.message);
-      if (err.name === "TokenExpiredError") {
-        return res.status(401).json({
-          message: "Token expirado. Por favor, faça login novamente.",
-        });
-      }
-      return res
-        .status(403)
-        .json({ message: "Token inválido. Por favor, faça login novamente." });
-    }
-
-    try {
-      const dbUser = await prisma.user.findUnique({
-        where: { id: user.userId },
-        select: { id: true, email: true, isAdmin: true },
-      });
-
-      if (!dbUser) {
-        return res
-          .status(403)
-          .json({ message: "Usuário não encontrado no banco de dados." });
-      }
-
-      req.user = {
-        userId: dbUser.id,
-        email: dbUser.email,
-        isAdmin: dbUser.isAdmin,
-      };
-      next();
-    } catch (dbError) {
-      console.error("Erro ao buscar usuário no DB para autenticação:", dbError);
-      return res
-        .status(500)
-        .json({ message: "Erro interno do servidor ao autenticar." });
-    }
-  });
-}
 
 // =========================================================================
 // Importação e Uso das Rotas Modularizadas

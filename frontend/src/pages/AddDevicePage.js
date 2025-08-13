@@ -12,6 +12,7 @@ function AddDevicePage() {
     tasmotaTopic: "",
     macAddress: "",
     model: "",
+    broker: "broker1",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -156,6 +157,19 @@ function AddDevicePage() {
               onChange={handleInputChange}
               placeholder="Ex: Sonoff POWR316D"
             />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="broker">Broker:</label>
+            <select
+              id="broker"
+              value={deviceData.broker}
+              onChange={handleInputChange}
+              required
+            >
+              <option value="broker1">Broker 1</option>
+              <option value="broker2">Broker 2</option>
+            </select>
           </div>
 
           {error && <p className="error-message">{error}</p>}
