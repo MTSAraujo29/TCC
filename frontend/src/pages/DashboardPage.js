@@ -239,19 +239,23 @@ function DashboardPage() {
   const [consumptionByTypeChartData, setConsumptionByTypeChartData] =
     useState(null);
 
+  // Estados para dados reais dos gráficos (dia e semana)
+  const [realDailyChartData, setRealDailyChartData] = useState(null);
+  const [realWeeklyChartData, setRealWeeklyChartData] = useState(null);
+
   // ALTERADO: `getChartData` agora usará dados reais quando `isRealData` for true.
   // Por enquanto, `daily_consumption_kwh` é mockado no backend para ambos, então esta parte não muda muito.
   // Mas no futuro, esta função precisaria buscar dados históricos REAIS.
   const getChartData = () => {
     switch (viewMode) {
       case "day":
-        return mockDailyData;
+        return realDailyChartData || mockDailyData;
       case "week":
-        return mockWeeklyData;
+        return realWeeklyChartData || mockWeeklyData;
       case "month":
         return mockMonthlyData;
       default:
-        return mockDailyData;
+        return realDailyChartData || mockDailyData;
     }
   };
 
@@ -1083,6 +1087,66 @@ function DashboardPage() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showDeviceDropdown, showDayDropdown, showSlotDropdown]);
+
+  // Buscar dados reais quando usuário é admin (isRealData) e modo de visualização mudar
+  useEffect(() => {
+    const fetchRealCharts = async () => {
+      const token = localStorage.getItem("token");
+      if (!token || !isRealData) return;
+      try {
+        if (viewMode === "day") {
+          const res = await fetch(
+            API_ENDPOINTS.DASHBOARD_CHART_DAILY_YESTERDAY,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            setRealDailyChartData({
+              labels: data.labels,
+              datasets: [
+                {
+                  label: data.datasets?.[0]?.label || "Consumo Diário (kWh)",
+                  data: data.datasets?.[0]?.data || [],
+                  borderColor: "#00bcd4",
+                  backgroundColor: "rgba(0, 188, 212, 0.4)",
+                  tension: 0.4,
+                  fill: true,
+                },
+              ],
+            });
+          }
+        } else if (viewMode === "week") {
+          const res = await fetch(
+            API_ENDPOINTS.DASHBOARD_CHART_WEEKLY_YESTERDAY,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            setRealWeeklyChartData({
+              labels: data.labels,
+              datasets: [
+                {
+                  label: data.datasets?.[0]?.label || "Consumo Semanal (kWh)",
+                  data: data.datasets?.[0]?.data || [],
+                  borderColor: "#ff9800",
+                  backgroundColor: "rgba(255, 152, 0, 0.4)",
+                  tension: 0.4,
+                  fill: true,
+                },
+              ],
+            });
+          }
+        }
+      } catch (e) {
+        console.warn("Falha ao buscar gráficos reais:", e);
+      }
+    };
+    fetchRealCharts();
+  }, [viewMode, isRealData]);
 
   if (sessionExpired) {
     return (

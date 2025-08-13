@@ -626,7 +626,200 @@ async function updateWhatsappNumber(req, res) {
   }
 }
 
+// Retorna os valores diários (últimos 7 dias) somando, por dia, o último EnergyYesterday salvo de cada dispositivo do usuário
+async function getDailyEnergyYesterday(req, res) {
+  const userId = req.user.userId;
+  try {
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 6);
+    startDate.setHours(0, 0, 0, 0);
+
+    // Buscar dispositivos do usuário
+    const devices = await prisma.device.findMany({
+      where: { userId },
+      select: { id: true },
+    });
+    const deviceIds = devices.map((d) => d.id);
+
+    if (deviceIds.length === 0) {
+      return res.json({
+        labels: [],
+        datasets: [{ label: "Consumo Diário (kWh)", data: [] }],
+      });
+    }
+
+    // Buscar todas leituras do período com EnergyYesterday não nulo
+    const readings = await prisma.energyReading.findMany({
+      where: {
+        deviceId: { in: deviceIds },
+        timestamp: { gte: startDate, lte: today },
+        EnergyYesterday: { not: null },
+      },
+      select: { deviceId: true, timestamp: true, EnergyYesterday: true },
+      orderBy: { timestamp: "asc" },
+    });
+
+    // Mapear: dia -> deviceId -> última leitura do dia
+    const perDayPerDeviceLatest = new Map();
+
+    for (const r of readings) {
+      const d = new Date(r.timestamp);
+      d.setHours(0, 0, 0, 0);
+      const dayKey = d.toISOString().split("T")[0];
+      if (!perDayPerDeviceLatest.has(dayKey))
+        perDayPerDeviceLatest.set(dayKey, new Map());
+      const deviceMap = perDayPerDeviceLatest.get(dayKey);
+      const prev = deviceMap.get(r.deviceId);
+      if (!prev || new Date(r.timestamp) > new Date(prev.timestamp)) {
+        deviceMap.set(r.deviceId, r);
+      }
+    }
+
+    // Construir labels dos últimos 7 dias e somar valores
+    const labels = [];
+    const data = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      d.setHours(0, 0, 0, 0);
+      const dayKey = d.toISOString().split("T")[0];
+      const label = d.toLocaleDateString("pt-BR", { weekday: "short" }); // seg., ter., ...
+      labels.push(
+        label.charAt(0).toUpperCase() + label.slice(1).replace(".", "")
+      );
+
+      const deviceMap = perDayPerDeviceLatest.get(dayKey) || new Map();
+      let sum = 0;
+      for (const [, reading] of deviceMap.entries()) {
+        if (typeof reading.EnergyYesterday === "number")
+          sum += reading.EnergyYesterday;
+      }
+      data.push(parseFloat(sum.toFixed(2)));
+    }
+
+    return res.json({
+      labels,
+      datasets: [
+        {
+          label: "Consumo Diário (kWh)",
+          data,
+        },
+      ],
+    });
+  } catch (err) {
+    console.error("Erro em getDailyEnergyYesterday:", err);
+    return res.status(500).json({ message: "Erro ao obter dados diários." });
+  }
+}
+
+// Retorna 4 valores semanais do mês atual: soma dos últimos EnergyYesterday por dia, agrupados por semanas (1-7, 8-14, 15-21, 22-final)
+async function getWeeklyEnergyYesterday(req, res) {
+  const userId = req.user.userId;
+  try {
+    const now = new Date();
+    const startOfMonth = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      1,
+      0,
+      0,
+      0,
+      0
+    );
+    const endOfMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999
+    );
+
+    // Buscar dispositivos do usuário
+    const devices = await prisma.device.findMany({
+      where: { userId },
+      select: { id: true },
+    });
+    const deviceIds = devices.map((d) => d.id);
+
+    if (deviceIds.length === 0) {
+      return res.json({
+        labels: ["Semana 1", "Semana 2", "Semana 3", "Semana 4"],
+        datasets: [{ label: "Consumo Semanal (kWh)", data: [0, 0, 0, 0] }],
+      });
+    }
+
+    // Buscar leituras do mês com EnergyYesterday não nulo
+    const readings = await prisma.energyReading.findMany({
+      where: {
+        deviceId: { in: deviceIds },
+        timestamp: { gte: startOfMonth, lte: endOfMonth },
+        EnergyYesterday: { not: null },
+      },
+      select: { deviceId: true, timestamp: true, EnergyYesterday: true },
+      orderBy: { timestamp: "asc" },
+    });
+
+    // Mapear: dia -> deviceId -> última leitura do dia
+    const perDayPerDeviceLatest = new Map();
+    for (const r of readings) {
+      const d = new Date(r.timestamp);
+      d.setHours(0, 0, 0, 0);
+      const dayKey = d.toISOString().split("T")[0];
+      if (!perDayPerDeviceLatest.has(dayKey))
+        perDayPerDeviceLatest.set(dayKey, new Map());
+      const deviceMap = perDayPerDeviceLatest.get(dayKey);
+      const prev = deviceMap.get(r.deviceId);
+      if (!prev || new Date(r.timestamp) > new Date(prev.timestamp)) {
+        deviceMap.set(r.deviceId, r);
+      }
+    }
+
+    // Converter para soma diária
+    const dailySumByDayKey = new Map();
+    for (const [dayKey, deviceMap] of perDayPerDeviceLatest.entries()) {
+      let sum = 0;
+      for (const [, reading] of deviceMap.entries()) {
+        if (typeof reading.EnergyYesterday === "number")
+          sum += reading.EnergyYesterday;
+      }
+      dailySumByDayKey.set(dayKey, parseFloat(sum.toFixed(2)));
+    }
+
+    // Agregar por semanas do mês
+    const weekSums = [0, 0, 0, 0];
+    const labels = ["Semana 1", "Semana 2", "Semana 3", "Semana 4"];
+
+    for (let day = 1; day <= endOfMonth.getDate(); day++) {
+      const d = new Date(now.getFullYear(), now.getMonth(), day);
+      d.setHours(0, 0, 0, 0);
+      const dayKey = d.toISOString().split("T")[0];
+      const weekIndex = day <= 7 ? 0 : day <= 14 ? 1 : day <= 21 ? 2 : 3;
+      const val = dailySumByDayKey.get(dayKey) || 0;
+      weekSums[weekIndex] += val;
+    }
+
+    return res.json({
+      labels,
+      datasets: [
+        {
+          label: "Consumo Semanal (kWh)",
+          data: weekSums.map((v) => parseFloat(v.toFixed(2))),
+        },
+      ],
+    });
+  } catch (err) {
+    console.error("Erro em getWeeklyEnergyYesterday:", err);
+    return res.status(500).json({ message: "Erro ao obter dados semanais." });
+  }
+}
+
 module.exports = {
   getDashboardData,
   updateWhatsappNumber,
+  getDailyEnergyYesterday,
+  getWeeklyEnergyYesterday,
 };
