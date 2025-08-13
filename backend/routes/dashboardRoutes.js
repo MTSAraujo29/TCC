@@ -19,6 +19,11 @@ router.get(
   authenticateToken,
   dashboardController.getWeeklyEnergyYesterday
 );
+router.get(
+  "/chart/monthly-energy-data",
+  authenticateToken,
+  dashboardController.getMonthlyEnergyData
+);
 
 // Rota para atualizar o número do WhatsApp do usuário
 router.put(

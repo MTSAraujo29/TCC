@@ -817,9 +817,147 @@ async function getWeeklyEnergyYesterday(req, res) {
   }
 }
 
+// Retorna dados mensais dinâmicos baseados nos meses que realmente têm dados no MongoDB
+async function getMonthlyEnergyData(req, res) {
+  const userId = req.user.userId;
+  try {
+    // Buscar dispositivos do usuário
+    const devices = await prisma.device.findMany({
+      where: { userId },
+      select: { id: true },
+    });
+    const deviceIds = devices.map((d) => d.id);
+
+    if (deviceIds.length === 0) {
+      return res.json({
+        labels: [],
+        datasets: [{ label: "Consumo Mensal (kWh)", data: [] }],
+      });
+    }
+
+    // Buscar todas as leituras com EnergyYesterday não nulo
+    const readings = await prisma.energyReading.findMany({
+      where: {
+        deviceId: { in: deviceIds },
+        EnergyYesterday: { not: null },
+      },
+      select: { deviceId: true, timestamp: true, EnergyYesterday: true },
+      orderBy: { timestamp: "asc" },
+    });
+
+    if (readings.length === 0) {
+      return res.json({
+        labels: [],
+        datasets: [{ label: "Consumo Mensal (kWh)", data: [] }],
+      });
+    }
+
+    // Encontrar o primeiro e último mês com dados
+    const firstReading = readings[0];
+    const lastReading = readings[readings.length - 1];
+
+    const startMonth = new Date(firstReading.timestamp);
+    const endMonth = new Date(lastReading.timestamp);
+
+    // Ajustar para o primeiro dia de cada mês
+    const startDate = new Date(
+      startMonth.getFullYear(),
+      startMonth.getMonth(),
+      1
+    );
+    const endDate = new Date(
+      endMonth.getFullYear(),
+      endMonth.getMonth() + 1,
+      0
+    );
+
+    // Mapear: mês -> deviceId -> última leitura do mês
+    const perMonthPerDeviceLatest = new Map();
+
+    for (const r of readings) {
+      const d = new Date(r.timestamp);
+      const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}`;
+
+      if (!perMonthPerDeviceLatest.has(monthKey)) {
+        perMonthPerDeviceLatest.set(monthKey, new Map());
+      }
+      const deviceMap = perMonthPerDeviceLatest.get(monthKey);
+      const prev = deviceMap.get(r.deviceId);
+      if (!prev || new Date(r.timestamp) > new Date(prev.timestamp)) {
+        deviceMap.set(r.deviceId, r);
+      }
+    }
+
+    // Construir array de meses e dados
+    const labels = [];
+    const data = [];
+    const monthNames = [
+      "Jan",
+      "Fev",
+      "Mar",
+      "Abr",
+      "Mai",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Set",
+      "Out",
+      "Nov",
+      "Dez",
+    ];
+
+    let currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+      const monthKey = `${currentDate.getFullYear()}-${String(
+        currentDate.getMonth() + 1
+      ).padStart(2, "0")}`;
+      const monthLabel = monthNames[currentDate.getMonth()];
+
+      // Adicionar ano se não for o ano atual
+      const currentYear = new Date().getFullYear();
+      const label =
+        currentDate.getFullYear() === currentYear
+          ? monthLabel
+          : `${monthLabel} ${currentDate.getFullYear()}`;
+
+      labels.push(label);
+
+      // Calcular soma do mês
+      const deviceMap = perMonthPerDeviceLatest.get(monthKey) || new Map();
+      let monthSum = 0;
+      for (const [, reading] of deviceMap.entries()) {
+        if (typeof reading.EnergyYesterday === "number") {
+          monthSum += reading.EnergyYesterday;
+        }
+      }
+      data.push(parseFloat(monthSum.toFixed(2)));
+
+      // Avançar para o próximo mês
+      currentDate.setMonth(currentDate.getMonth() + 1);
+    }
+
+    return res.json({
+      labels,
+      datasets: [
+        {
+          label: "Consumo Mensal (kWh)",
+          data,
+        },
+      ],
+    });
+  } catch (err) {
+    console.error("Erro em getMonthlyEnergyData:", err);
+    return res.status(500).json({ message: "Erro ao obter dados mensais." });
+  }
+}
+
 module.exports = {
   getDashboardData,
   updateWhatsappNumber,
   getDailyEnergyYesterday,
   getWeeklyEnergyYesterday,
+  getMonthlyEnergyData,
 };

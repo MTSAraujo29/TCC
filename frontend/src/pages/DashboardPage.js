@@ -242,6 +242,7 @@ function DashboardPage() {
   // Estados para dados reais dos gráficos (dia e semana)
   const [realDailyChartData, setRealDailyChartData] = useState(null);
   const [realWeeklyChartData, setRealWeeklyChartData] = useState(null);
+  const [realMonthlyChartData, setRealMonthlyChartData] = useState(null);
 
   // ALTERADO: `getChartData` agora usará dados reais quando `isRealData` for true.
   // Por enquanto, `daily_consumption_kwh` é mockado no backend para ambos, então esta parte não muda muito.
@@ -253,7 +254,7 @@ function DashboardPage() {
       case "week":
         return realWeeklyChartData || mockWeeklyData;
       case "month":
-        return mockMonthlyData;
+        return realMonthlyChartData || mockMonthlyData;
       default:
         return realDailyChartData || mockDailyData;
     }
@@ -1134,6 +1135,29 @@ function DashboardPage() {
                   data: data.datasets?.[0]?.data || [],
                   borderColor: "#ff9800",
                   backgroundColor: "rgba(255, 152, 0, 0.4)",
+                  tension: 0.4,
+                  fill: true,
+                },
+              ],
+            });
+          }
+        } else if (viewMode === "month") {
+          const res = await fetch(
+            API_ENDPOINTS.DASHBOARD_CHART_MONTHLY_ENERGY_DATA,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            setRealMonthlyChartData({
+              labels: data.labels,
+              datasets: [
+                {
+                  label: data.datasets?.[0]?.label || "Consumo Mensal (kWh)",
+                  data: data.datasets?.[0]?.data || [],
+                  borderColor: "#e91e63",
+                  backgroundColor: "rgba(233, 30, 99, 0.4)",
                   tension: 0.4,
                   fill: true,
                 },

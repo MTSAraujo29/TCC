@@ -212,6 +212,7 @@ export default function FullScreenChartPage() {
   const styles = useStyles(isMobile);
   const [realDailyChart, setRealDailyChart] = useState(null);
   const [realWeeklyChart, setRealWeeklyChart] = useState(null);
+  const [realMonthlyChart, setRealMonthlyChart] = useState(null);
 
   // Buscar dados reais quando possível (token presente). Fallback para MOCK_DATA
   React.useEffect(() => {
@@ -259,8 +260,33 @@ export default function FullScreenChartPage() {
         });
       }
     };
+    const fetchMonthly = async () => {
+      const res = await fetch(
+        API_ENDPOINTS.DASHBOARD_CHART_MONTHLY_ENERGY_DATA,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setRealMonthlyChart({
+          labels: data.labels,
+          datasets: [
+            {
+              label: data.datasets?.[0]?.label || "Consumo Mensal (kWh)",
+              data: data.datasets?.[0]?.data || [],
+              borderColor: "#e91e63",
+              backgroundColor: "rgba(233, 30, 99, 0.4)",
+              tension: 0.4,
+              fill: true,
+            },
+          ],
+        });
+      }
+    };
     fetchDaily();
     fetchWeekly();
+    fetchMonthly();
   }, []);
 
   const chartData = (() => {
@@ -268,7 +294,7 @@ export default function FullScreenChartPage() {
       return realDailyChart || MOCK_DATA[CHART_MODES.DAY];
     if (viewMode === CHART_MODES.WEEK)
       return realWeeklyChart || MOCK_DATA[CHART_MODES.WEEK];
-    return MOCK_DATA[CHART_MODES.MONTH];
+    return realMonthlyChart || MOCK_DATA[CHART_MODES.MONTH];
   })();
 
   // Register ChartJS components
