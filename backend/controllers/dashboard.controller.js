@@ -824,7 +824,7 @@ async function getMonthlyEnergyData(req, res) {
     // Buscar dispositivos do usuário
     const devices = await prisma.device.findMany({
       where: { userId },
-      select: { id: true },
+      select: { id: true, broker: true },
     });
     const deviceIds = devices.map((d) => d.id);
 
@@ -835,8 +835,8 @@ async function getMonthlyEnergyData(req, res) {
       });
     }
 
-    // Buscar todas as leituras com EnergyYesterday não nulo
-    const readings = await prisma.energyReading.findMany({
+    // Buscar todas as leituras com EnergyYesterday não nulo (para junho)
+    const readingsWithEnergyYesterday = await prisma.energyReading.findMany({
       where: {
         deviceId: { in: deviceIds },
         EnergyYesterday: { not: null },
@@ -845,7 +845,25 @@ async function getMonthlyEnergyData(req, res) {
       orderBy: { timestamp: "asc" },
     });
 
-    if (readings.length === 0) {
+    // Buscar leituras com totalEnergy não nulo (para julho+)
+    const readingsWithTotalEnergy = await prisma.energyReading.findMany({
+      where: {
+        deviceId: { in: deviceIds },
+        totalEnergy: { not: null },
+      },
+      select: {
+        deviceId: true,
+        timestamp: true,
+        totalEnergy: true,
+        brokerLabel: true,
+      },
+      orderBy: { timestamp: "asc" },
+    });
+
+    if (
+      readingsWithEnergyYesterday.length === 0 &&
+      readingsWithTotalEnergy.length === 0
+    ) {
       return res.json({
         labels: [],
         datasets: [{ label: "Consumo Mensal (kWh)", data: [] }],
@@ -853,11 +871,19 @@ async function getMonthlyEnergyData(req, res) {
     }
 
     // Encontrar o primeiro e último mês com dados
-    const firstReading = readings[0];
-    const lastReading = readings[readings.length - 1];
+    let startMonth, endMonth;
 
-    const startMonth = new Date(firstReading.timestamp);
-    const endMonth = new Date(lastReading.timestamp);
+    if (readingsWithEnergyYesterday.length > 0) {
+      startMonth = new Date(readingsWithEnergyYesterday[0].timestamp);
+    }
+    if (readingsWithTotalEnergy.length > 0) {
+      const lastTotalEnergyReading =
+        readingsWithTotalEnergy[readingsWithTotalEnergy.length - 1];
+      endMonth = new Date(lastTotalEnergyReading.timestamp);
+    }
+
+    if (!startMonth) startMonth = endMonth;
+    if (!endMonth) endMonth = startMonth;
 
     // Ajustar para o primeiro dia de cada mês
     const startDate = new Date(
@@ -871,23 +897,41 @@ async function getMonthlyEnergyData(req, res) {
       0
     );
 
-    // Mapear: mês -> deviceId -> última leitura do mês
-    const perMonthPerDeviceLatest = new Map();
-
-    for (const r of readings) {
+    // Mapear: mês -> deviceId -> última leitura do mês (para EnergyYesterday)
+    const perMonthPerDeviceLatestEnergyYesterday = new Map();
+    for (const r of readingsWithEnergyYesterday) {
       const d = new Date(r.timestamp);
       const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
         2,
         "0"
       )}`;
 
-      if (!perMonthPerDeviceLatest.has(monthKey)) {
-        perMonthPerDeviceLatest.set(monthKey, new Map());
+      if (!perMonthPerDeviceLatestEnergyYesterday.has(monthKey)) {
+        perMonthPerDeviceLatestEnergyYesterday.set(monthKey, new Map());
       }
-      const deviceMap = perMonthPerDeviceLatest.get(monthKey);
+      const deviceMap = perMonthPerDeviceLatestEnergyYesterday.get(monthKey);
       const prev = deviceMap.get(r.deviceId);
       if (!prev || new Date(r.timestamp) > new Date(prev.timestamp)) {
         deviceMap.set(r.deviceId, r);
+      }
+    }
+
+    // Mapear: mês -> broker -> última leitura do mês (para totalEnergy)
+    const perMonthPerBrokerLatestTotalEnergy = new Map();
+    for (const r of readingsWithTotalEnergy) {
+      const d = new Date(r.timestamp);
+      const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}`;
+
+      if (!perMonthPerBrokerLatestTotalEnergy.has(monthKey)) {
+        perMonthPerBrokerLatestTotalEnergy.set(monthKey, new Map());
+      }
+      const brokerMap = perMonthPerBrokerLatestTotalEnergy.get(monthKey);
+      const prev = brokerMap.get(r.brokerLabel);
+      if (!prev || new Date(r.timestamp) > new Date(prev.timestamp)) {
+        brokerMap.set(r.brokerLabel, r);
       }
     }
 
@@ -915,25 +959,52 @@ async function getMonthlyEnergyData(req, res) {
         currentDate.getMonth() + 1
       ).padStart(2, "0")}`;
       const monthLabel = monthNames[currentDate.getMonth()];
+      const currentMonth = currentDate.getMonth();
+      const currentYear = currentDate.getFullYear();
 
       // Adicionar ano se não for o ano atual
-      const currentYear = new Date().getFullYear();
       const label =
-        currentDate.getFullYear() === currentYear
+        currentYear === new Date().getFullYear()
           ? monthLabel
-          : `${monthLabel} ${currentDate.getFullYear()}`;
-
+          : `${monthLabel} ${currentYear}`;
       labels.push(label);
 
-      // Calcular soma do mês
-      const deviceMap = perMonthPerDeviceLatest.get(monthKey) || new Map();
       let monthSum = 0;
-      for (const [, reading] of deviceMap.entries()) {
-        if (typeof reading.EnergyYesterday === "number") {
-          monthSum += reading.EnergyYesterday;
+
+      // Lógica específica por mês
+      if (currentYear === 2025 && currentMonth === 5) {
+        // JUNHO 2025: Usa EnergyYesterday (lógica antiga)
+        const deviceMap =
+          perMonthPerDeviceLatestEnergyYesterday.get(monthKey) || new Map();
+        for (const [, reading] of deviceMap.entries()) {
+          if (typeof reading.EnergyYesterday === "number") {
+            monthSum += reading.EnergyYesterday;
+          }
+        }
+      } else if (currentYear === 2025 && currentMonth === 6) {
+        // JULHO 2025: Soma totalEnergy do último dia (31/07)
+        const brokerMap =
+          perMonthPerBrokerLatestTotalEnergy.get(monthKey) || new Map();
+        for (const [, reading] of brokerMap.entries()) {
+          if (typeof reading.totalEnergy === "number") {
+            monthSum += reading.totalEnergy;
+          }
+        }
+      } else if (currentYear === 2025 && currentMonth === 7) {
+        // AGOSTO 2025: Zera (ainda não finalizou)
+        monthSum = 0;
+      } else {
+        // SETEMBRO 2025+: Nova lógica com totalEnergy do último dia
+        const brokerMap =
+          perMonthPerBrokerLatestTotalEnergy.get(monthKey) || new Map();
+        for (const [, reading] of brokerMap.entries()) {
+          if (typeof reading.totalEnergy === "number") {
+            monthSum += reading.totalEnergy;
+          }
         }
       }
-      data.push(parseFloat(monthSum.toFixed(2)));
+
+      data.push(parseFloat(monthSum.toFixed(3)));
 
       // Avançar para o próximo mês
       currentDate.setMonth(currentDate.getMonth() + 1);
