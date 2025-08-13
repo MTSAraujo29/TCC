@@ -25,6 +25,13 @@ router.get(
   dashboardController.getMonthlyEnergyData
 );
 
+// Rota para previsão de consumo futuro
+router.get(
+  "/forecast/consumption",
+  authenticateToken,
+  dashboardController.getConsumptionForecast
+);
+
 // Rota para atualizar o número do WhatsApp do usuário
 router.put(
   "/update-whatsapp",

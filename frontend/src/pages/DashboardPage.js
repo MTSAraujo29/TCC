@@ -814,6 +814,58 @@ function DashboardPage() {
   const generateEcoBotResponse = (userMessage) => {
     const message = userMessage.toLowerCase();
 
+    // Perguntas sobre previsões futuras
+    if (
+      message.includes("previsão") ||
+      message.includes("previsao") ||
+      message.includes("próximo mês") ||
+      message.includes("proximo mes") ||
+      message.includes("estimativa") ||
+      message.includes("futuro") ||
+      message.includes("gasto estimado") ||
+      message.includes("quanto vou pagar")
+    ) {
+      return `�� **Previsão de Consumo Futuro**
+
+Posso calcular uma estimativa para o próximo mês baseada nos seus dados históricos!
+
+**Para obter a previsão:**
+• Digite: "Calcular previsão do próximo mês"
+• Ou: "Quanto vou gastar no próximo mês?"
+• Ou: "Previsão de consumo futuro"
+
+**O que analiso:**
+• Tendências dos últimos 3 meses
+• Padrões sazonais (verão vs inverno)
+• Consumo médio diário
+• Projeção em kWh e reais (tarifa Goiânia-Goiás)
+
+**Nível de confiança:** Baseado na quantidade de dados disponíveis
+
+Quer que eu calcule agora?`;
+    }
+
+    // Comando para executar previsão
+    if (
+      message.includes("calcular previsão") ||
+      message.includes("calcular previsao") ||
+      message.includes("quanto vou gastar") ||
+      message.includes("previsão do próximo mês") ||
+      message.includes("previsao do proximo mes")
+    ) {
+      // Executar previsão em background
+      executeConsumptionForecast();
+      return `🔮 **Calculando previsão...**
+
+Analisando seus dados históricos para calcular:
+• Consumo estimado do próximo mês
+• Valor em reais (tarifa Goiânia-Goiás)
+• Tendências identificadas
+• Nível de confiança
+
+Aguarde um momento...`;
+    }
+
     // Perguntas sobre Tensão
     if (
       message.includes("tensão") ||
@@ -1035,7 +1087,114 @@ Olá! Posso te ajudar com perguntas sobre:
 • Como economizar energia
 • Dicas de eficiência energética
 
+🔮 **Previsões:**
+• Consumo estimado do próximo mês
+• Valor em reais (tarifa Goiânia-Goiás)
+• Análise de tendências
+
 Pergunte sobre qualquer um desses temas!`;
+  };
+
+  // [NOVO] Função para executar previsão de consumo
+  const executeConsumptionForecast = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const response = await fetch(
+        API_ENDPOINTS.DASHBOARD_FORECAST_CONSUMPTION,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+
+        if (data.forecast) {
+          // Adicionar resultado da previsão ao chat
+          setTimeout(() => {
+            setChatMessages((msgs) => [
+              ...msgs,
+              {
+                sender: "EcoBot",
+                text: `🔮 **Previsão Calculada com Sucesso!**
+
+**Próximo Mês:** ${data.forecast.nextMonth}
+
+⚡ **Consumo Estimado:** ${data.forecast.estimatedConsumption} kWh
+💰 **Valor Estimado:** R$ ${data.forecast.estimatedValue}
+
+📊 **Análise Detalhada:**
+• **Consumo médio diário:** ${
+                  data.forecast.analysis.averageDailyConsumption
+                } kWh
+• **Tendência:** ${data.forecast.analysis.trendDirection}
+• **Fator sazonal:** ${data.forecast.analysis.seasonalFactor > 1 ? "+" : ""}${(
+                  (data.forecast.analysis.seasonalFactor - 1) *
+                  100
+                ).toFixed(0)}%
+• **Confiança:** ${data.forecast.confidence}
+• **Tarifa:** R$ ${data.forecast.tariff}/kWh (Goiânia-Goiás)
+
+💡 **Dicas baseadas na análise:**
+${
+  data.forecast.analysis.trendDirection === "crescendo"
+    ? "• Seu consumo está aumentando. Considere revisar hábitos de uso."
+    : ""
+}
+${
+  data.forecast.analysis.trendDirection === "diminuindo"
+    ? "• Parabéns! Seu consumo está diminuindo. Continue assim!"
+    : ""
+}
+${
+  data.forecast.analysis.seasonalFactor > 1
+    ? "• Consumo sazonal: Verão tende a aumentar o uso de ar condicionado."
+    : ""
+}
+
+*Previsão baseada em ${
+                  data.forecast.analysis.dataPoints
+                } pontos de dados históricos*`,
+              },
+            ]);
+          }, 2000); // Delay para simular "processamento"
+        }
+      } else {
+        // Adicionar mensagem de erro
+        setTimeout(() => {
+          setChatMessages((msgs) => [
+            ...msgs,
+            {
+              sender: "EcoBot",
+              text: `❌ **Erro ao calcular previsão**
+
+Não foi possível calcular a previsão no momento. Possíveis causas:
+• Dados insuficientes (mínimo 1 mês)
+• Problema temporário no sistema
+• Dispositivos não configurados
+
+Tente novamente em alguns minutos ou verifique se seus dispositivos estão funcionando.`,
+            },
+          ]);
+        }, 2000);
+      }
+    } catch (error) {
+      console.error("Erro ao executar previsão:", error);
+      // Adicionar mensagem de erro
+      setTimeout(() => {
+        setChatMessages((msgs) => [
+          ...msgs,
+          {
+            sender: "EcoBot",
+            text: `❌ **Erro de conexão**
+
+Não foi possível conectar ao servidor para calcular a previsão. Verifique sua conexão com a internet e tente novamente.`,
+          },
+        ]);
+      }, 2000);
+    }
   };
 
   // ========== ESTADOS PARA AGENDAMENTO DE DESLIGAMENTO ==========

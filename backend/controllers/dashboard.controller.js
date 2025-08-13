@@ -1025,10 +1025,219 @@ async function getMonthlyEnergyData(req, res) {
   }
 }
 
+// Retorna previsão de consumo futuro baseada em análise de tendências dos dados históricos
+async function getConsumptionForecast(req, res) {
+  const userId = req.user.userId;
+  try {
+    // Buscar dispositivos do usuário
+    const devices = await prisma.device.findMany({
+      where: { userId },
+      select: { id: true, broker: true },
+    });
+    const deviceIds = devices.map((d) => d.id);
+
+    if (deviceIds.length === 0) {
+      return res.json({
+        message: "Nenhum dispositivo encontrado para análise.",
+        forecast: null,
+      });
+    }
+
+    // Buscar dados históricos dos últimos 3 meses para análise
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+    const historicalReadings = await prisma.energyReading.findMany({
+      where: {
+        deviceId: { in: deviceIds },
+        timestamp: { gte: threeMonthsAgo },
+        OR: [
+          { EnergyYesterday: { not: null } },
+          { totalEnergy: { not: null } },
+        ],
+      },
+      select: {
+        deviceId: true,
+        timestamp: true,
+        EnergyYesterday: true,
+        totalEnergy: true,
+        brokerLabel: true,
+      },
+      orderBy: { timestamp: "asc" },
+    });
+
+    if (historicalReadings.length === 0) {
+      return res.json({
+        message:
+          "Dados insuficientes para análise. Necessário pelo menos 1 mês de dados.",
+        forecast: null,
+      });
+    }
+
+    // Análise de tendências e padrões
+    const analysis = analyzeConsumptionPatterns(historicalReadings);
+
+    // Calcular previsão para o próximo mês
+    const nextMonthForecast = calculateNextMonthForecast(analysis);
+
+    // Tarifas de Goiânia-Goiás (ENEL)
+    const goianiaTariff = 0.7; // R$/kWh (aproximado - pode ser ajustado)
+    const forecastValue = nextMonthForecast.consumption * goianiaTariff;
+
+    return res.json({
+      message: "Previsão calculada com sucesso!",
+      forecast: {
+        nextMonth: nextMonthForecast.month,
+        estimatedConsumption: parseFloat(
+          nextMonthForecast.consumption.toFixed(2)
+        ),
+        estimatedValue: parseFloat(forecastValue.toFixed(2)),
+        confidence: nextMonthForecast.confidence,
+        currency: "BRL",
+        tariff: goianiaTariff,
+        analysis: {
+          averageDailyConsumption: parseFloat(analysis.averageDaily.toFixed(3)),
+          trendDirection: analysis.trend,
+          seasonalFactor: analysis.seasonalFactor,
+          dataPoints: analysis.dataPoints,
+        },
+      },
+    });
+  } catch (err) {
+    console.error("Erro em getConsumptionForecast:", err);
+    return res
+      .status(500)
+      .json({ message: "Erro ao calcular previsão de consumo." });
+  }
+}
+
+// Função auxiliar para analisar padrões de consumo
+function analyzeConsumptionPatterns(readings) {
+  // Agrupar dados por dia
+  const dailyConsumption = new Map();
+
+  for (const reading of readings) {
+    const date = new Date(reading.timestamp);
+    const dayKey = date.toISOString().split("T")[0];
+
+    if (!dailyConsumption.has(dayKey)) {
+      dailyConsumption.set(dayKey, []);
+    }
+
+    // Usar EnergyYesterday se disponível, senão totalEnergy
+    const value = reading.EnergyYesterday || reading.totalEnergy;
+    if (typeof value === "number" && value > 0) {
+      dailyConsumption.get(dayKey).push(value);
+    }
+  }
+
+  // Calcular consumo médio diário
+  let totalConsumption = 0;
+  let validDays = 0;
+
+  for (const [, values] of dailyConsumption.entries()) {
+    if (values.length > 0) {
+      // Pegar o valor mais alto do dia (mais representativo)
+      const maxValue = Math.max(...values);
+      totalConsumption += maxValue;
+      validDays++;
+    }
+  }
+
+  const averageDaily = validDays > 0 ? totalConsumption / validDays : 0;
+
+  // Análise de tendência simples (últimos 30 dias vs anteriores)
+  const sortedDays = Array.from(dailyConsumption.keys()).sort();
+  const recentDays = sortedDays.slice(-30);
+  const olderDays = sortedDays.slice(0, -30);
+
+  let recentAvg = 0;
+  let olderAvg = 0;
+
+  if (recentDays.length > 0) {
+    const recentValues = recentDays
+      .map((day) => {
+        const values = dailyConsumption.get(day);
+        return values.length > 0 ? Math.max(...values) : 0;
+      })
+      .filter((v) => v > 0);
+    recentAvg =
+      recentValues.length > 0
+        ? recentValues.reduce((a, b) => a + b, 0) / recentValues.length
+        : 0;
+  }
+
+  if (olderDays.length > 0) {
+    const olderValues = olderDays
+      .map((day) => {
+        const values = dailyConsumption.get(day);
+        return values.length > 0 ? Math.max(...values) : 0;
+      })
+      .filter((v) => v > 0);
+    olderAvg =
+      olderValues.length > 0
+        ? olderValues.reduce((a, b) => a + b, 0) / olderValues.length
+        : 0;
+  }
+
+  // Determinar direção da tendência
+  let trend = "estável";
+  if (recentAvg > olderAvg * 1.1) trend = "crescendo";
+  else if (recentAvg < olderAvg * 0.9) trend = "diminuindo";
+
+  // Fator sazonal (verão = mais ar condicionado)
+  const currentMonth = new Date().getMonth();
+  const isSummer = currentMonth >= 11 || currentMonth <= 2; // Dez-Mar
+  const seasonalFactor = isSummer ? 1.15 : 1.0; // 15% mais no verão
+
+  return {
+    averageDaily,
+    trend,
+    seasonalFactor,
+    dataPoints: validDays,
+    recentAverage: recentAvg,
+    olderAverage: olderAvg,
+  };
+}
+
+// Função para calcular previsão do próximo mês
+function calculateNextMonthForecast(analysis) {
+  const nextMonth = new Date();
+  nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+  // Consumo base mensal (média diária × 30 dias)
+  let baseConsumption = analysis.averageDaily * 30;
+
+  // Aplicar fator sazonal
+  baseConsumption *= analysis.seasonalFactor;
+
+  // Aplicar tendência
+  if (analysis.trend === "crescendo") {
+    baseConsumption *= 1.1; // +10%
+  } else if (analysis.trend === "diminuindo") {
+    baseConsumption *= 0.9; // -10%
+  }
+
+  // Calcular nível de confiança baseado na quantidade de dados
+  let confidence = "baixa";
+  if (analysis.dataPoints >= 60) confidence = "alta";
+  else if (analysis.dataPoints >= 30) confidence = "média";
+
+  return {
+    month: nextMonth.toLocaleDateString("pt-BR", {
+      month: "long",
+      year: "numeric",
+    }),
+    consumption: baseConsumption,
+    confidence,
+  };
+}
+
 module.exports = {
   getDashboardData,
   updateWhatsappNumber,
   getDailyEnergyYesterday,
   getWeeklyEnergyYesterday,
   getMonthlyEnergyData,
+  getConsumptionForecast,
 };
