@@ -783,25 +783,259 @@ function DashboardPage() {
 
   // [NOVO] Estado para controlar a seção EcoBot
   const [chatMessages, setChatMessages] = useState([
-    { sender: "EcoBot", text: "Olá! Como posso ajudar você hoje?" },
+    {
+      sender: "EcoBot",
+      text: "🤖 **Olá! Eu sou o EcoBot, seu assistente de energia!**\n\nPosso te explicar sobre:\n\n⚡ **Conceitos elétricos:** Tensão, corrente, potências, fator de potência\n💰 **Economia:** O que influencia sua conta de energia\n🔌 **Diferenças:** 110V vs 220V no Brasil\n\nPergunte sobre qualquer tema relacionado à energia elétrica!",
+    },
   ]);
   const [chatInput, setChatInput] = useState("");
 
-  // [NOVO] Função para enviar mensagem fictícia
+  // [NOVO] Função inteligente para responder perguntas sobre energia
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (!chatInput.trim()) return;
-    setChatMessages([...chatMessages, { sender: userName, text: chatInput }]);
+
+    const userMessage = chatInput.trim();
+    setChatMessages([...chatMessages, { sender: userName, text: userMessage }]);
+
+    // Processar a mensagem e gerar resposta inteligente
     setTimeout(() => {
+      const botResponse = generateEcoBotResponse(userMessage);
       setChatMessages((msgs) => [
         ...msgs,
-        {
-          sender: "EcoBot",
-          text: "Sou um bot fictício! Em breve responderei suas perguntas de verdade.",
-        },
+        { sender: "EcoBot", text: botResponse },
       ]);
     }, 800);
+
     setChatInput("");
+  };
+
+  // [NOVO] Função para gerar respostas inteligentes do EcoBot
+  const generateEcoBotResponse = (userMessage) => {
+    const message = userMessage.toLowerCase();
+
+    // Perguntas sobre Tensão
+    if (
+      message.includes("tensão") ||
+      message.includes("voltagem") ||
+      message.includes("110v") ||
+      message.includes("220v")
+    ) {
+      if (
+        message.includes("diferença") ||
+        message.includes("por que") ||
+        message.includes("brasil")
+      ) {
+        return `🔌 **Diferenças de Tensão no Brasil:**
+
+No Brasil, temos duas tensões principais:
+• **110V**: Mais comum no Nordeste e algumas regiões do Sudeste
+• **220V**: Mais comum no Sul, Centro-Oeste e parte do Sudeste
+
+**Por que isso acontece?**
+Historicamente, cada região escolheu uma tensão baseada em:
+• Disponibilidade de equipamentos na época
+• Infraestrutura elétrica existente
+• Padrões internacionais adotados
+
+**Impacto na conta:**
+A tensão NÃO afeta o valor da sua conta de energia. O que importa é o **consumo em kWh**, independente se é 110V ou 220V.`;
+      } else {
+        return `⚡ **O que é Tensão Elétrica?**
+
+**Tensão (Voltagem)** é a "força" que empurra os elétrons através dos fios elétricos. É medida em **Volts (V)**.
+
+**Como funciona:**
+• É como a pressão da água em um cano
+• Quanto maior a tensão, mais "força" para mover os elétrons
+• No Brasil: 110V ou 220V (dependendo da região)
+
+**Exemplo prático:**
+Uma lâmpada de 60W funciona tanto em 110V quanto em 220V, mas consome a mesma quantidade de energia (60W).`;
+      }
+    }
+
+    // Perguntas sobre Corrente
+    if (
+      message.includes("corrente") ||
+      message.includes("amperes") ||
+      message.includes("ampère")
+    ) {
+      return `🔋 **O que é Corrente Elétrica?**
+
+**Corrente** é o fluxo de elétrons que passa pelos fios elétricos. É medida em **Ampères (A)**.
+
+**Como funciona:**
+• É como a quantidade de água que passa por um cano
+• Quanto maior a corrente, mais elétrons estão se movendo
+• Depende da tensão e da resistência do equipamento
+
+**Fórmula: Corrente = Potência ÷ Tensão**
+Exemplo: Um chuveiro de 4400W em 220V consome 20A de corrente.`;
+    }
+
+    // Perguntas sobre Potência Ativa
+    if (
+      message.includes("potência ativa") ||
+      message.includes("potencia ativa") ||
+      message.includes("watts") ||
+      message.includes("watt")
+    ) {
+      return `⚡ **O que é Potência Ativa?**
+
+**Potência Ativa** é a energia que realmente é convertida em trabalho útil (luz, movimento, calor). É medida em **Watts (W)**.
+
+**Como funciona:**
+• É a potência que efetivamente "faz algo" no seu equipamento
+• É o que aparece na etiqueta dos aparelhos (ex: TV 100W)
+• É o que determina o consumo de energia
+
+**Impacto na conta:**
+**É o principal fator que determina o valor da sua conta!** Quanto mais Watts um aparelho consome, mais kWh ele gera e mais você paga.`;
+    }
+
+    // Perguntas sobre Potência Aparente
+    if (
+      message.includes("potência aparente") ||
+      message.includes("potencia aparente") ||
+      message.includes("va") ||
+      message.includes("volt-ampère")
+    ) {
+      return `📊 **O que é Potência Aparente?**
+
+**Potência Aparente** é a potência total que o sistema elétrico precisa fornecer. É medida em **Volt-Ampères (VA)**.
+
+**Como funciona:**
+• É a combinação da potência ativa + potência reativa
+• Sempre maior ou igual à potência ativa
+• Representa a "carga total" no sistema elétrico
+
+**Exemplo prático:**
+Um motor pode ter:
+• Potência Ativa: 1000W (trabalho útil)
+• Potência Aparente: 1250VA (carga total no sistema)
+• Diferença: 250VA de potência reativa`;
+    }
+
+    // Perguntas sobre Potência Reativa
+    if (
+      message.includes("potência reativa") ||
+      message.includes("potencia reativa") ||
+      message.includes("var")
+    ) {
+      return `🔄 **O que é Potência Reativa?**
+
+**Potência Reativa** é a energia que vai e volta no sistema elétrico sem fazer trabalho útil. É medida em **Volt-Ampères Reativos (var)**.
+
+**Como funciona:**
+• É necessária para o funcionamento de motores, transformadores
+• Não gera trabalho útil, mas ocupa capacidade do sistema
+• Pode causar perdas e reduzir a eficiência
+
+**Impacto na conta:**
+Em residências, geralmente não afeta o valor. Mas em indústrias, pode gerar multas por baixo fator de potência.`;
+    }
+
+    // Perguntas sobre Fator de Potência
+    if (
+      message.includes("fator de potência") ||
+      message.includes("fator potencia") ||
+      message.includes("cos φ")
+    ) {
+      return `📈 **O que é Fator de Potência?**
+
+**Fator de Potência** é a relação entre potência ativa e aparente. Varia de 0 a 1 (ou 0% a 100%).
+
+**Como funciona:**
+• **Fator = 1 (100%)**: Potência ativa = Potência aparente (ideal)
+• **Fator < 1**: Há potência reativa no sistema
+• Quanto mais próximo de 1, mais eficiente o sistema
+
+**Impacto na conta:**
+Em residências: geralmente não afeta o valor
+Em indústrias: fator baixo pode gerar multas
+
+**Exemplo:**
+Fator = 0.8 significa que 80% da potência é útil, 20% é reativa.`;
+    }
+
+    // Perguntas sobre kWh mensal
+    if (
+      message.includes("quilowatt") ||
+      message.includes("kwh") ||
+      message.includes("consumo mensal") ||
+      message.includes("mês atual")
+    ) {
+      return `📊 **O que é Quilowatt-hora (kWh)?**
+
+**kWh** é a unidade de medida da **energia consumida** ao longo do tempo.
+
+**Como funciona:**
+• **1 kWh** = 1000 Watts funcionando por 1 hora
+• **Exemplo**: Uma lâmpada de 100W ligada por 10 horas = 1 kWh
+
+**Impacto na conta:**
+**É exatamente o que determina o valor da sua conta de energia!**
+
+**Cálculo da conta:**
+Valor = Consumo em kWh × Tarifa da concessionária
+
+**Dicas para economizar:**
+• Desligue aparelhos em standby
+• Use lâmpadas LED
+• Aproveite a luz natural
+• Evite usar chuveiro elétrico em horários de pico`;
+    }
+
+    // Perguntas sobre o que influencia o valor da conta
+    if (
+      (message.includes("valor") && message.includes("conta")) ||
+      message.includes("preço") ||
+      message.includes("pagar") ||
+      message.includes("gasta") ||
+      message.includes("economizar")
+    ) {
+      return `💰 **O que determina o valor da sua conta de energia?**
+
+**Fatores principais:**
+
+1️⃣ **Consumo em kWh** (mais importante!)
+   • Quanto mais energia você consome, mais paga
+   • Aparelhos de alta potência = maior consumo
+
+2️⃣ **Tarifa da concessionária**
+   • Varia por região e tipo de consumidor
+   • Pode ter bandeiras (verde, amarela, vermelha)
+
+3️⃣ **Horário de uso**
+   • Algumas tarifas são mais caras em horários de pico
+   • Evite usar chuveiro elétrico das 18h às 21h
+
+**Dicas para economizar:**
+• Monitore o consumo dos seus dispositivos
+• Use aparelhos de baixa potência
+• Desligue equipamentos em standby
+• Aproveite a luz natural durante o dia`;
+    }
+
+    // Resposta padrão para outras perguntas
+    return `🤖 **EcoBot - Assistente de Energia**
+
+Olá! Posso te ajudar com perguntas sobre:
+
+⚡ **Conceitos básicos:**
+• Tensão (110V vs 220V)
+• Corrente elétrica
+• Potência ativa, aparente e reativa
+• Fator de potência
+• Consumo em kWh
+
+💰 **Economia:**
+• O que influencia o valor da conta
+• Como economizar energia
+• Dicas de eficiência energética
+
+Pergunte sobre qualquer um desses temas!`;
   };
 
   // ========== ESTADOS PARA AGENDAMENTO DE DESLIGAMENTO ==========
@@ -2614,9 +2848,10 @@ function DashboardPage() {
                 />
               </h1>
               <h4 style={{ color: "#e0e0e0", marginBottom: 24 }}>
-                Aqui {userName}, você pode me perguntar sobre previsões de
-                consumo futuro de energia e receber dicas para um uso mais
-                eficiente dos seus eletrodomésticos.Fique à vontade!
+                Aqui {userName}, você pode me perguntar sobre conceitos de
+                energia elétrica, entender o que influencia sua conta de luz e
+                receber dicas para um uso mais eficiente dos seus
+                eletrodomésticos. Fique à vontade!
               </h4>
             </div>
             <div
