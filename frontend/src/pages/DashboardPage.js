@@ -785,7 +785,7 @@ function DashboardPage() {
   const [chatMessages, setChatMessages] = useState([
     {
       sender: "EcoBot",
-      text: "🤖 **Olá! Eu sou o EcoBot, seu assistente de energia!**\n\nPosso te explicar sobre:\n\n⚡ **Conceitos elétricos:** Tensão, corrente, potências, fator de potência\n💰 **Economia:** O que influencia sua conta de energia\n🔌 **Diferenças:** 110V vs 220V no Brasil\n\nPergunte sobre qualquer tema relacionado à energia elétrica!",
+      text: "🤖 **Olá! Eu sou o EcoBot, seu assistente de energia!**\n\nPosso te explicar sobre:\n\n⚡ **Conceitos elétricos:** Tensão, corrente, potências, fator de potência\n💰 **Economia:** O que influencia sua conta de energia\n🔌 **Diferenças:** 110V vs 220V no Brasil\n\nPergunte sobre qualquer tema relacionado à energia elétrica! Ou pergunte sobre previsão de consumo futuro de energia!",
     },
   ]);
   const [chatInput, setChatInput] = useState("");
