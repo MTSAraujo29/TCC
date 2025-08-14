@@ -25,11 +25,4 @@ router.get(
   dashboardController.getMonthlyEnergyData
 );
 
-// Rota para atualizar o número do WhatsApp do usuário
-router.put(
-  "/update-whatsapp",
-  authenticateToken,
-  dashboardController.updateWhatsappNumber
-);
-
 module.exports = router;
