@@ -32,11 +32,35 @@ prisma
 
 // Configurações de segurança
 const JWT_SECRET = process.env.JWT_SECRET;
+console.log(`[CONFIG] JWT_SECRET configurado: ${JWT_SECRET ? "Sim" : "Não"}`);
+if (JWT_SECRET) {
+  console.log(`[CONFIG] JWT_SECRET tamanho: ${JWT_SECRET.length} caracteres`);
+  console.log(`[CONFIG] JWT_SECRET início: ${JWT_SECRET.substring(0, 10)}...`);
+}
+
 if (!JWT_SECRET) {
   console.error(
     "ERRO: JWT_SECRET não está definido nas variáveis de ambiente! Por favor, configure-o no Render."
   );
 }
+
+// Log de todas as variáveis de ambiente para debug
+console.log(`[CONFIG] Variáveis de ambiente disponíveis:`);
+console.log(`[CONFIG] NODE_ENV: ${process.env.NODE_ENV}`);
+console.log(`[CONFIG] PORT: ${process.env.PORT}`);
+console.log(
+  `[CONFIG] DATABASE_URL: ${
+    process.env.DATABASE_URL ? "Configurado" : "Não configurado"
+  }`
+);
+console.log(
+  `[CONFIG] FRONTEND_URL: ${process.env.FRONTEND_URL || "Não configurado"}`
+);
+console.log(
+  `[CONFIG] MQTT_HOST: ${
+    process.env.MQTT_HOST ? "Configurado" : "Não configurado"
+  }`
+);
 
 const app = express();
 app.set("trust proxy", 1); // Necessário para identificar IP real atrás de proxy (Render)
@@ -71,7 +95,8 @@ app.use((req, res, next) => {
 // --- CONFIGURAÇÃO CORS ---
 // A URL do seu frontend no Netlify será passada para o Render como uma variável de ambiente (FRONTEND_URL).
 // Durante o desenvolvimento local do frontend, ela usará 'http://localhost:3000'.
-const ALLOWED_ORIGIN = process.env.FRONTEND_URL || "http://localhost:3000";
+const ALLOWED_ORIGIN =
+  process.env.FRONTEND_URL || "https://smartenergytcc.com.br";
 
 console.log("Origem permitida para CORS:", ALLOWED_ORIGIN);
 
@@ -79,18 +104,22 @@ app.use(
   cors({
     origin: function (origin, callback) {
       // Permitir requisições sem origem (como apps mobile ou Postman)
-      if (!origin) return callback(null, true);
+      if (!origin) {
+        console.log("[CORS] Requisição sem origem permitida");
+        return callback(null, true);
+      }
 
       // Permitir a origem configurada
       if (origin === ALLOWED_ORIGIN) {
+        console.log(`[CORS] Origem permitida: ${origin}`);
         return callback(null, true);
       }
 
       // Log para debug
-      console.log("Origem bloqueada pelo CORS:", origin);
+      console.log(`[CORS] Origem bloqueada: ${origin}`);
       return callback(new Error("Não permitido pelo CORS"));
     },
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
   })
