@@ -796,18 +796,32 @@ function DashboardPage() {
     if (!chatInput.trim()) return;
 
     const userMessage = chatInput.trim();
-    setChatMessages([...chatMessages, { sender: userName, text: userMessage }]);
+
+    // Adicionar mensagem do usuário ao chat
+    setChatMessages((prev) => [
+      ...prev,
+      { sender: userName, text: userMessage },
+    ]);
+
+    // Limpar input imediatamente
+    setChatInput("");
 
     // Processar a mensagem e gerar resposta inteligente
     setTimeout(() => {
       const botResponse = generateEcoBotResponse(userMessage);
-      setChatMessages((msgs) => [
-        ...msgs,
+
+      // Adicionar resposta do bot ao chat
+      setChatMessages((prev) => [
+        ...prev,
         { sender: "EcoBot", text: botResponse },
       ]);
-    }, 800);
 
-    setChatInput("");
+      // Se for um comando de previsão, executar em background
+      if (botResponse.includes("Calculando previsão")) {
+        console.log("Executando previsão de consumo...");
+        executeConsumptionForecast();
+      }
+    }, 800);
   };
 
   // [NOVO] Função para gerar respostas inteligentes do EcoBot
@@ -853,8 +867,7 @@ Quer que eu calcule agora?`;
       message.includes("previsão do próximo mês") ||
       message.includes("previsao do proximo mes")
     ) {
-      // Executar previsão em background
-      executeConsumptionForecast();
+      // Retornar mensagem de processamento (a execução será feita em handleSendMessage)
       return `🔮 **Calculando previsão...**
 
 Analisando seus dados históricos para calcular:
@@ -1098,18 +1111,36 @@ Pergunte sobre qualquer um desses temas!`;
   // [NOVO] Função para executar previsão de consumo
   const executeConsumptionForecast = async () => {
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token) {
+      console.error("Token não encontrado para executar previsão");
+      return;
+    }
+
+    console.log("Iniciando execução da previsão de consumo...");
+    console.log("URL da API:", API_ENDPOINTS.DASHBOARD_FORECAST_CONSUMPTION);
 
     try {
+      console.log("Fazendo requisição para a API...");
       const response = await fetch(
         API_ENDPOINTS.DASHBOARD_FORECAST_CONSUMPTION,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
+      );
+
+      console.log(
+        "Resposta da API recebida:",
+        response.status,
+        response.statusText
       );
 
       if (response.ok) {
         const data = await response.json();
+        console.log("Dados da previsão recebidos:", data);
 
         if (data.forecast) {
           // Adicionar resultado da previsão ao chat
@@ -1160,8 +1191,34 @@ ${
               },
             ]);
           }, 2000); // Delay para simular "processamento"
+        } else {
+          console.warn("Resposta da API não contém dados de previsão:", data);
+          // Adicionar mensagem de erro
+          setTimeout(() => {
+            setChatMessages((msgs) => [
+              ...msgs,
+              {
+                sender: "EcoBot",
+                text: `❌ **Erro ao calcular previsão**
+
+Resposta da API: ${data.message || "Dados insuficientes"}
+
+Possíveis causas:
+• Dados insuficientes (mínimo 1 mês)
+• Problema temporário no sistema
+• Dispositivos não configurados
+
+Tente novamente em alguns minutos ou verifique se seus dispositivos estão funcionando.`,
+              },
+            ]);
+          }, 2000);
         }
       } else {
+        console.error(
+          "Erro na resposta da API:",
+          response.status,
+          response.statusText
+        );
         // Adicionar mensagem de erro
         setTimeout(() => {
           setChatMessages((msgs) => [
@@ -1169,6 +1226,8 @@ ${
             {
               sender: "EcoBot",
               text: `❌ **Erro ao calcular previsão**
+
+Status da API: ${response.status} ${response.statusText}
 
 Não foi possível calcular a previsão no momento. Possíveis causas:
 • Dados insuficientes (mínimo 1 mês)
@@ -1189,6 +1248,8 @@ Tente novamente em alguns minutos ou verifique se seus dispositivos estão funci
           {
             sender: "EcoBot",
             text: `❌ **Erro de conexão**
+
+Erro: ${error.message}
 
 Não foi possível conectar ao servidor para calcular a previsão. Verifique sua conexão com a internet e tente novamente.`,
           },

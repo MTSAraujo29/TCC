@@ -47,9 +47,24 @@ app.use(helmet());
 
 // Middleware de logging para todas as requisições
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
-  console.log("Headers:", req.headers);
-  console.log("Body:", req.body);
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  console.log(
+    `[${new Date().toISOString()}] Headers:`,
+    JSON.stringify(req.headers, null, 2)
+  );
+  console.log(
+    `[${new Date().toISOString()}] Body:`,
+    JSON.stringify(req.body, null, 2)
+  );
+  console.log(
+    `[${new Date().toISOString()}] Query:`,
+    JSON.stringify(req.query, null, 2)
+  );
+  console.log(
+    `[${new Date().toISOString()}] User:`,
+    req.user ? req.user.userId : "Não autenticado"
+  );
+  console.log(`[${new Date().toISOString()}] ---`);
   next();
 });
 

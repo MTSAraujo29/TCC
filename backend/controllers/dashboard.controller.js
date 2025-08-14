@@ -1028,6 +1028,8 @@ async function getMonthlyEnergyData(req, res) {
 // Retorna previsão de consumo futuro baseada em análise de tendências dos dados históricos
 async function getConsumptionForecast(req, res) {
   const userId = req.user.userId;
+  console.log(`[FORECAST] Iniciando previsão para usuário: ${userId}`);
+
   try {
     // Buscar dispositivos do usuário
     const devices = await prisma.device.findMany({
@@ -1036,7 +1038,15 @@ async function getConsumptionForecast(req, res) {
     });
     const deviceIds = devices.map((d) => d.id);
 
+    console.log(
+      `[FORECAST] Dispositivos encontrados: ${deviceIds.length}`,
+      deviceIds
+    );
+
     if (deviceIds.length === 0) {
+      console.log(
+        `[FORECAST] Nenhum dispositivo encontrado para usuário: ${userId}`
+      );
       return res.json({
         message: "Nenhum dispositivo encontrado para análise.",
         forecast: null,
@@ -1046,6 +1056,10 @@ async function getConsumptionForecast(req, res) {
     // Buscar dados históricos dos últimos 3 meses para análise
     const threeMonthsAgo = new Date();
     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+    console.log(
+      `[FORECAST] Buscando dados desde: ${threeMonthsAgo.toISOString()}`
+    );
 
     const historicalReadings = await prisma.energyReading.findMany({
       where: {
@@ -1066,7 +1080,12 @@ async function getConsumptionForecast(req, res) {
       orderBy: { timestamp: "asc" },
     });
 
+    console.log(
+      `[FORECAST] Leituras históricas encontradas: ${historicalReadings.length}`
+    );
+
     if (historicalReadings.length === 0) {
+      console.log(`[FORECAST] Dados insuficientes para análise`);
       return res.json({
         message:
           "Dados insuficientes para análise. Necessário pelo menos 1 mês de dados.",
@@ -1075,16 +1094,20 @@ async function getConsumptionForecast(req, res) {
     }
 
     // Análise de tendências e padrões
+    console.log(`[FORECAST] Iniciando análise de padrões...`);
     const analysis = analyzeConsumptionPatterns(historicalReadings);
+    console.log(`[FORECAST] Análise concluída:`, analysis);
 
     // Calcular previsão para o próximo mês
+    console.log(`[FORECAST] Calculando previsão do próximo mês...`);
     const nextMonthForecast = calculateNextMonthForecast(analysis);
+    console.log(`[FORECAST] Previsão calculada:`, nextMonthForecast);
 
     // Tarifas de Goiânia-Goiás (ENEL)
     const goianiaTariff = 0.7; // R$/kWh (aproximado - pode ser ajustado)
     const forecastValue = nextMonthForecast.consumption * goianiaTariff;
 
-    return res.json({
+    const response = {
       message: "Previsão calculada com sucesso!",
       forecast: {
         nextMonth: nextMonthForecast.month,
@@ -1102,9 +1125,15 @@ async function getConsumptionForecast(req, res) {
           dataPoints: analysis.dataPoints,
         },
       },
-    });
+    };
+
+    console.log(
+      `[FORECAST] Resposta final:`,
+      JSON.stringify(response, null, 2)
+    );
+    return res.json(response);
   } catch (err) {
-    console.error("Erro em getConsumptionForecast:", err);
+    console.error("[FORECAST] Erro em getConsumptionForecast:", err);
     return res
       .status(500)
       .json({ message: "Erro ao calcular previsão de consumo." });
