@@ -71,24 +71,10 @@ app.use(helmet());
 
 // Middleware de logging para todas as requisições
 app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
-  console.log(
-    `[${new Date().toISOString()}] Headers:`,
-    JSON.stringify(req.headers, null, 2)
-  );
-  console.log(
-    `[${new Date().toISOString()}] Body:`,
-    JSON.stringify(req.body, null, 2)
-  );
-  console.log(
-    `[${new Date().toISOString()}] Query:`,
-    JSON.stringify(req.query, null, 2)
-  );
-  console.log(
-    `[${new Date().toISOString()}] User:`,
-    req.user ? req.user.userId : "Não autenticado"
-  );
-  console.log(`[${new Date().toISOString()}] ---`);
+  // Log apenas para requisições que não são health check
+  if (req.path !== "/health") {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  }
   next();
 });
 
@@ -105,17 +91,15 @@ app.use(
     origin: function (origin, callback) {
       // Permitir requisições sem origem (como apps mobile ou Postman)
       if (!origin) {
-        console.log("[CORS] Requisição sem origem permitida");
         return callback(null, true);
       }
 
       // Permitir a origem configurada
       if (origin === ALLOWED_ORIGIN) {
-        console.log(`[CORS] Origem permitida: ${origin}`);
         return callback(null, true);
       }
 
-      // Log para debug
+      // Log apenas para origens bloqueadas
       console.log(`[CORS] Origem bloqueada: ${origin}`);
       return callback(new Error("Não permitido pelo CORS"));
     },

@@ -785,7 +785,7 @@ function DashboardPage() {
   const [chatMessages, setChatMessages] = useState([
     {
       sender: "EcoBot",
-      text: "🤖 **Olá! Eu sou o EcoBot, seu assistente de energia!**\n\nPosso te explicar sobre:\n\n⚡ **Conceitos elétricos:** Tensão, corrente, potências, fator de potência\n💰 **Economia:** O que influencia sua conta de energia\n🔌 **Diferenças:** 110V vs 220V no Brasil\n\nPergunte sobre qualquer tema relacionado à energia elétrica! Ou pergunte sobre previsão de consumo futuro de energia!",
+      text: "🤖 **Olá! Eu sou o EcoBot, seu assistente de energia!**\n\nPosso te explicar sobre:\n\n⚡ **Conceitos elétricos:** Tensão, corrente, potências, fator de potência\n💰 **Economia:** O que influencia sua conta de energia\n🔌 **Diferenças:** 110V vs 220V no Brasil\n\nPergunte sobre qualquer tema relacionado à energia elétrica!",
     },
   ]);
   const [chatInput, setChatInput] = useState("");
@@ -815,69 +815,12 @@ function DashboardPage() {
         ...prev,
         { sender: "EcoBot", text: botResponse },
       ]);
-
-      // Se for um comando de previsão, executar em background
-      if (botResponse.includes("Calculando previsão")) {
-        console.log("Executando previsão de consumo...");
-        executeConsumptionForecast();
-      }
     }, 800);
   };
 
   // [NOVO] Função para gerar respostas inteligentes do EcoBot
   const generateEcoBotResponse = (userMessage) => {
     const message = userMessage.toLowerCase();
-
-    // Perguntas sobre previsões futuras
-    if (
-      message.includes("previsão") ||
-      message.includes("previsao") ||
-      message.includes("próximo mês") ||
-      message.includes("proximo mes") ||
-      message.includes("estimativa") ||
-      message.includes("futuro") ||
-      message.includes("gasto estimado") ||
-      message.includes("quanto vou pagar")
-    ) {
-      return `�� **Previsão de Consumo Futuro**
-
-Posso calcular uma estimativa para o próximo mês baseada nos seus dados históricos!
-
-**Para obter a previsão:**
-• Digite: "Calcular previsão do próximo mês"
-• Ou: "Quanto vou gastar no próximo mês?"
-• Ou: "Previsão de consumo futuro"
-
-**O que analiso:**
-• Tendências dos últimos 3 meses
-• Padrões sazonais (verão vs inverno)
-• Consumo médio diário
-• Projeção em kWh e reais (tarifa Goiânia-Goiás)
-
-**Nível de confiança:** Baseado na quantidade de dados disponíveis
-
-Quer que eu calcule agora?`;
-    }
-
-    // Comando para executar previsão
-    if (
-      message.includes("calcular previsão") ||
-      message.includes("calcular previsao") ||
-      message.includes("quanto vou gastar") ||
-      message.includes("previsão do próximo mês") ||
-      message.includes("previsao do proximo mes")
-    ) {
-      // Retornar mensagem de processamento (a execução será feita em handleSendMessage)
-      return `🔮 **Calculando previsão...**
-
-Analisando seus dados históricos para calcular:
-• Consumo estimado do próximo mês
-• Valor em reais (tarifa Goiânia-Goiás)
-• Tendências identificadas
-• Nível de confiança
-
-Aguarde um momento...`;
-    }
 
     // Perguntas sobre Tensão
     if (
@@ -911,12 +854,12 @@ A tensão NÃO afeta o valor da sua conta de energia. O que importa é o **consu
 **Tensão (Voltagem)** é a "força" que empurra os elétrons através dos fios elétricos. É medida em **Volts (V)**.
 
 **Como funciona:**
-• É como a pressão da água em um cano
-• Quanto maior a tensão, mais "força" para mover os elétrons
-• No Brasil: 110V ou 220V (dependendo da região)
+• **110V**: Menor força, mais segura para contato acidental
+• **220V**: Maior força, mais eficiente para equipamentos de alta potência
 
-**Exemplo prático:**
-Uma lâmpada de 60W funciona tanto em 110V quanto em 220V, mas consome a mesma quantidade de energia (60W).`;
+**Exemplos práticos:**
+• **110V**: Lâmpadas, TV, computador, carregadores
+• **220V**: Ar condicionado, máquina de lavar, chuveiro elétrico`;
       }
     }
 
@@ -924,338 +867,139 @@ Uma lâmpada de 60W funciona tanto em 110V quanto em 220V, mas consome a mesma q
     if (
       message.includes("corrente") ||
       message.includes("amperes") ||
-      message.includes("ampère")
+      message.includes("amp")
     ) {
-      return `🔋 **O que é Corrente Elétrica?**
+      return `⚡ **O que é Corrente Elétrica?**
 
-**Corrente** é o fluxo de elétrons que passa pelos fios elétricos. É medida em **Ampères (A)**.
+**Corrente** é o fluxo de elétrons através de um condutor. É medida em **Amperes (A)**.
 
-**Como funciona:**
-• É como a quantidade de água que passa por um cano
-• Quanto maior a corrente, mais elétrons estão se movendo
-• Depende da tensão e da resistência do equipamento
+**Analogia simples:**
+Imagine um rio:
+• **Tensão (V)** = Altura da queda d'água
+• **Corrente (A)** = Quantidade de água que passa por segundo
+• **Potência (W)** = Força total da água
 
-**Fórmula: Corrente = Potência ÷ Tensão**
-Exemplo: Um chuveiro de 4400W em 220V consome 20A de corrente.`;
+**Exemplos práticos:**
+• **1A**: Lâmpada LED pequena
+• **5A**: TV ou computador
+• **10A**: Ar condicionado pequeno
+• **20A+**: Chuveiro elétrico, máquina de lavar`;
     }
 
-    // Perguntas sobre Potência Ativa
+    // Perguntas sobre Potência
     if (
-      message.includes("potência ativa") ||
-      message.includes("potencia ativa") ||
+      message.includes("potência") ||
       message.includes("watts") ||
       message.includes("watt")
     ) {
-      return `⚡ **O que é Potência Ativa?**
+      return `⚡ **O que é Potência Elétrica?**
 
-**Potência Ativa** é a energia que realmente é convertida em trabalho útil (luz, movimento, calor). É medida em **Watts (W)**.
+**Potência** é a quantidade de energia consumida por segundo. É medida em **Watts (W)**.
 
-**Como funciona:**
-• É a potência que efetivamente "faz algo" no seu equipamento
-• É o que aparece na etiqueta dos aparelhos (ex: TV 100W)
-• É o que determina o consumo de energia
+**Fórmula fundamental:**
+**Potência (W) = Tensão (V) × Corrente (A)**
 
-**Impacto na conta:**
-**É o principal fator que determina o valor da sua conta!** Quanto mais Watts um aparelho consome, mais kWh ele gera e mais você paga.`;
+**Exemplos práticos:**
+• **Lâmpada LED**: 9W
+• **TV**: 100-200W
+• **Computador**: 200-500W
+• **Ar condicionado**: 1000-3000W
+• **Chuveiro elétrico**: 4000-6000W
+
+**Dica importante:**
+Quanto maior a potência, maior o consumo de energia e maior o impacto na sua conta!`;
     }
 
-    // Perguntas sobre Potência Aparente
+    // Perguntas sobre kWh
     if (
-      message.includes("potência aparente") ||
-      message.includes("potencia aparente") ||
-      message.includes("va") ||
-      message.includes("volt-ampère")
+      message.includes("kwh") ||
+      message.includes("quilowatt") ||
+      message.includes("energia")
     ) {
-      return `📊 **O que é Potência Aparente?**
+      return `⚡ **O que é kWh (Quilowatt-hora)?**
 
-**Potência Aparente** é a potência total que o sistema elétrico precisa fornecer. É medida em **Volt-Ampères (VA)**.
+**kWh** é a unidade de medida da **energia elétrica consumida**.
 
-**Como funciona:**
-• É a combinação da potência ativa + potência reativa
-• Sempre maior ou igual à potência ativa
-• Representa a "carga total" no sistema elétrico
+**Como calcular:**
+**Energia (kWh) = Potência (W) × Tempo (h) ÷ 1000**
 
-**Exemplo prático:**
-Um motor pode ter:
-• Potência Ativa: 1000W (trabalho útil)
-• Potência Aparente: 1250VA (carga total no sistema)
-• Diferença: 250VA de potência reativa`;
-    }
+**Exemplos práticos:**
+• **Lâmpada 9W ligada por 1 hora** = 0,009 kWh
+• **TV 100W ligada por 2 horas** = 0,2 kWh
+• **Ar condicionado 2000W por 1 hora** = 2 kWh
 
-    // Perguntas sobre Potência Reativa
-    if (
-      message.includes("potência reativa") ||
-      message.includes("potencia reativa") ||
-      message.includes("var")
-    ) {
-      return `🔄 **O que é Potência Reativa?**
-
-**Potência Reativa** é a energia que vai e volta no sistema elétrico sem fazer trabalho útil. É medida em **Volt-Ampères Reativos (var)**.
-
-**Como funciona:**
-• É necessária para o funcionamento de motores, transformadores
-• Não gera trabalho útil, mas ocupa capacidade do sistema
-• Pode causar perdas e reduzir a eficiência
-
-**Impacto na conta:**
-Em residências, geralmente não afeta o valor. Mas em indústrias, pode gerar multas por baixo fator de potência.`;
+**Na sua conta:**
+A concessionária cobra por cada kWh consumido. Quanto mais tempo você deixar os aparelhos ligados, maior será o consumo!`;
     }
 
     // Perguntas sobre Fator de Potência
     if (
       message.includes("fator de potência") ||
-      message.includes("fator potencia") ||
-      message.includes("cos φ")
+      message.includes("fator") ||
+      message.includes("potência aparente")
     ) {
-      return `📈 **O que é Fator de Potência?**
+      return `⚡ **O que é Fator de Potência?**
 
-**Fator de Potência** é a relação entre potência ativa e aparente. Varia de 0 a 1 (ou 0% a 100%).
+**Fator de Potência** é a relação entre potência ativa (real) e potência aparente. Varia de 0 a 1.
 
-**Como funciona:**
-• **Fator = 1 (100%)**: Potência ativa = Potência aparente (ideal)
-• **Fator < 1**: Há potência reativa no sistema
-• Quanto mais próximo de 1, mais eficiente o sistema
+**Tipos de Potência:**
+• **Potência Ativa (W)**: Energia realmente consumida
+• **Potência Aparente (VA)**: Energia total fornecida
+• **Potência Reativa (var)**: Energia que "vai e volta"
 
-**Impacto na conta:**
-Em residências: geralmente não afeta o valor
-Em indústrias: fator baixo pode gerar multas
+**Fator de Potência = Potência Ativa ÷ Potência Aparente**
 
-**Exemplo:**
-Fator = 0.8 significa que 80% da potência é útil, 20% é reativa.`;
+**Exemplos:**
+• **Resistivo (lâmpada, chuveiro)**: Fator = 1,0 (ideal)
+• **Indutivo (motor, transformador)**: Fator < 1,0
+• **Capacitivo (capacitor)**: Fator < 1,0
+
+**Importância:**
+Fatores baixos podem gerar multas na conta de energia!`;
     }
 
-    // Perguntas sobre kWh mensal
+    // Perguntas sobre Economia
     if (
-      message.includes("quilowatt") ||
-      message.includes("kwh") ||
-      message.includes("consumo mensal") ||
-      message.includes("mês atual")
+      message.includes("economia") ||
+      message.includes("economizar") ||
+      message.includes("conta") ||
+      message.includes("gasto")
     ) {
-      return `📊 **O que é Quilowatt-hora (kWh)?**
+      return `💰 **Como Economizar Energia Elétrica?**
 
-**kWh** é a unidade de medida da **energia consumida** ao longo do tempo.
+**Dicas práticas:**
+• **Desligue aparelhos em standby** (TV, computador, carregadores)
+• **Use lâmpadas LED** (consomem até 80% menos)
+• **Ajuste a temperatura do ar condicionado** (cada grau = 7% de economia)
+• **Acumule roupas** para usar a máquina de lavar cheia
+• **Prefira o chuveiro elétrico** no modo verão
 
-**Como funciona:**
-• **1 kWh** = 1000 Watts funcionando por 1 hora
-• **Exemplo**: Uma lâmpada de 100W ligada por 10 horas = 1 kWh
+**Hábitos que fazem diferença:**
+• **Desligar luzes** ao sair dos cômodos
+• **Usar a luz natural** quando possível
+• **Manter geladeira** longe de fontes de calor
+• **Limpar filtros** do ar condicionado regularmente
 
-**Impacto na conta:**
-**É exatamente o que determina o valor da sua conta de energia!**
-
-**Cálculo da conta:**
-Valor = Consumo em kWh × Tarifa da concessionária
-
-**Dicas para economizar:**
-• Desligue aparelhos em standby
-• Use lâmpadas LED
-• Aproveite a luz natural
-• Evite usar chuveiro elétrico em horários de pico`;
+**Lembre-se:** Pequenas mudanças geram grandes economias ao longo do tempo!`;
     }
 
-    // Perguntas sobre o que influencia o valor da conta
-    if (
-      (message.includes("valor") && message.includes("conta")) ||
-      message.includes("preço") ||
-      message.includes("pagar") ||
-      message.includes("gasta") ||
-      message.includes("economizar")
-    ) {
-      return `💰 **O que determina o valor da sua conta de energia?**
+    // Resposta padrão para perguntas não reconhecidas
+    return `🤖 **Olá! Eu sou o EcoBot, seu assistente de energia!**
 
-**Fatores principais:**
+Posso te explicar sobre:
 
-1️⃣ **Consumo em kWh** (mais importante!)
-   • Quanto mais energia você consome, mais paga
-   • Aparelhos de alta potência = maior consumo
+⚡ **Conceitos elétricos:** Tensão, corrente, potências, fator de potência
+💰 **Economia:** O que influencia sua conta de energia
+🔌 **Diferenças:** 110V vs 220V no Brasil
 
-2️⃣ **Tarifa da concessionária**
-   • Varia por região e tipo de consumidor
-   • Pode ter bandeiras (verde, amarela, vermelha)
+**Pergunte sobre qualquer tema relacionado à energia elétrica!**
 
-3️⃣ **Horário de uso**
-   • Algumas tarifas são mais caras em horários de pico
-   • Evite usar chuveiro elétrico das 18h às 21h
-
-**Dicas para economizar:**
-• Monitore o consumo dos seus dispositivos
-• Use aparelhos de baixa potência
-• Desligue equipamentos em standby
-• Aproveite a luz natural durante o dia`;
-    }
-
-    // Resposta padrão para outras perguntas
-    return `🤖 **EcoBot - Assistente de Energia**
-
-Olá! Posso te ajudar com perguntas sobre:
-
-⚡ **Conceitos básicos:**
-• Tensão (110V vs 220V)
-• Corrente elétrica
-• Potência ativa, aparente e reativa
-• Fator de potência
-• Consumo em kWh
-
-💰 **Economia:**
-• O que influencia o valor da conta
-• Como economizar energia
-• Dicas de eficiência energética
-
-🔮 **Previsões:**
-• Consumo estimado do próximo mês
-• Valor em reais (tarifa Goiânia-Goiás)
-• Análise de tendências
-
-Pergunte sobre qualquer um desses temas!`;
-  };
-
-  // [NOVO] Função para executar previsão de consumo
-  const executeConsumptionForecast = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("Token não encontrado para executar previsão");
-      return;
-    }
-
-    console.log("Iniciando execução da previsão de consumo...");
-    console.log("URL da API:", API_ENDPOINTS.DASHBOARD_FORECAST_CONSUMPTION);
-
-    try {
-      console.log("Fazendo requisição para a API...");
-      const response = await fetch(
-        API_ENDPOINTS.DASHBOARD_FORECAST_CONSUMPTION,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      console.log(
-        "Resposta da API recebida:",
-        response.status,
-        response.statusText
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Dados da previsão recebidos:", data);
-
-        if (data.forecast) {
-          // Adicionar resultado da previsão ao chat
-          setTimeout(() => {
-            setChatMessages((msgs) => [
-              ...msgs,
-              {
-                sender: "EcoBot",
-                text: `🔮 **Previsão Calculada com Sucesso!**
-
-**Próximo Mês:** ${data.forecast.nextMonth}
-
-⚡ **Consumo Estimado:** ${data.forecast.estimatedConsumption} kWh
-💰 **Valor Estimado:** R$ ${data.forecast.estimatedValue}
-
-📊 **Análise Detalhada:**
-• **Consumo médio diário:** ${
-                  data.forecast.analysis.averageDailyConsumption
-                } kWh
-• **Tendência:** ${data.forecast.analysis.trendDirection}
-• **Fator sazonal:** ${data.forecast.analysis.seasonalFactor > 1 ? "+" : ""}${(
-                  (data.forecast.analysis.seasonalFactor - 1) *
-                  100
-                ).toFixed(0)}%
-• **Confiança:** ${data.forecast.confidence}
-• **Tarifa:** R$ ${data.forecast.tariff}/kWh (Goiânia-Goiás)
-
-💡 **Dicas baseadas na análise:**
-${
-  data.forecast.analysis.trendDirection === "crescendo"
-    ? "• Seu consumo está aumentando. Considere revisar hábitos de uso."
-    : ""
-}
-${
-  data.forecast.analysis.trendDirection === "diminuindo"
-    ? "• Parabéns! Seu consumo está diminuindo. Continue assim!"
-    : ""
-}
-${
-  data.forecast.analysis.seasonalFactor > 1
-    ? "• Consumo sazonal: Verão tende a aumentar o uso de ar condicionado."
-    : ""
-}
-
-*Previsão baseada em ${
-                  data.forecast.analysis.dataPoints
-                } pontos de dados históricos*`,
-              },
-            ]);
-          }, 2000); // Delay para simular "processamento"
-        } else {
-          console.warn("Resposta da API não contém dados de previsão:", data);
-          // Adicionar mensagem de erro
-          setTimeout(() => {
-            setChatMessages((msgs) => [
-              ...msgs,
-              {
-                sender: "EcoBot",
-                text: `❌ **Erro ao calcular previsão**
-
-Resposta da API: ${data.message || "Dados insuficientes"}
-
-Possíveis causas:
-• Dados insuficientes (mínimo 1 mês)
-• Problema temporário no sistema
-• Dispositivos não configurados
-
-Tente novamente em alguns minutos ou verifique se seus dispositivos estão funcionando.`,
-              },
-            ]);
-          }, 2000);
-        }
-      } else {
-        console.error(
-          "Erro na resposta da API:",
-          response.status,
-          response.statusText
-        );
-        // Adicionar mensagem de erro
-        setTimeout(() => {
-          setChatMessages((msgs) => [
-            ...msgs,
-            {
-              sender: "EcoBot",
-              text: `❌ **Erro ao calcular previsão**
-
-Status da API: ${response.status} ${response.statusText}
-
-Não foi possível calcular a previsão no momento. Possíveis causas:
-• Dados insuficientes (mínimo 1 mês)
-• Problema temporário no sistema
-• Dispositivos não configurados
-
-Tente novamente em alguns minutos ou verifique se seus dispositivos estão funcionando.`,
-            },
-          ]);
-        }, 2000);
-      }
-    } catch (error) {
-      console.error("Erro ao executar previsão:", error);
-      // Adicionar mensagem de erro
-      setTimeout(() => {
-        setChatMessages((msgs) => [
-          ...msgs,
-          {
-            sender: "EcoBot",
-            text: `❌ **Erro de conexão**
-
-Erro: ${error.message}
-
-Não foi possível conectar ao servidor para calcular a previsão. Verifique sua conexão com a internet e tente novamente.`,
-          },
-        ]);
-      }, 2000);
-    }
+**Exemplos de perguntas:**
+• "O que é tensão elétrica?"
+• "Diferença entre 110V e 220V no Brasil"
+• "Como economizar energia?"
+• "O que é kWh?"
+• "Fator de potência"`;
   };
 
   // ========== ESTADOS PARA AGENDAMENTO DE DESLIGAMENTO ==========

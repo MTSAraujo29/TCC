@@ -1268,5 +1268,4 @@ module.exports = {
   getDailyEnergyYesterday,
   getWeeklyEnergyYesterday,
   getMonthlyEnergyData,
-  getConsumptionForecast,
 };
