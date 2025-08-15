@@ -1461,7 +1461,7 @@ Posso te explicar sobre:
           onClick={() => setActiveSection("inicio")}
         >
           {" "}
-          🏠Home{" "}
+          Home{" "}
         </div>
         <div
           className={`menu-item ${
@@ -1470,7 +1470,7 @@ Posso te explicar sobre:
           onClick={() => setActiveSection("controle")}
         >
           {" "}
-          🔌Controle de Energia{" "}
+          Controle de Energia{" "}
         </div>
         <div
           className={`menu-item ${
@@ -1479,22 +1479,13 @@ Posso te explicar sobre:
           onClick={() => setActiveSection("relatorios")}
         >
           {" "}
-          📊Relatórios{" "}
+          Relatórios{" "}
         </div>
         <div
           className={`menu-item ${activeSection === "ecobot" ? "active" : ""}`}
           onClick={() => setActiveSection("ecobot")}
         >
-          <img
-            src={process.env.PUBLIC_URL + "/ST.png"}
-            alt="EcoBot"
-            style={{
-              width: 24,
-              height: 24,
-              marginRight: 8,
-              verticalAlign: "middle",
-            }}
-          />
+
           EcoBot{" "}
         </div>
         <div
@@ -1504,7 +1495,7 @@ Posso te explicar sobre:
           onClick={() => setActiveSection("configuracoes")}
         >
           {" "}
-          ⚙️Configurações{" "}
+          Configurações{" "}
         </div>
         <div className="sidebar-bottom">
           <button onClick={handleLogout} className="logout-button-sidebar">
