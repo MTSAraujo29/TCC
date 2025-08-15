@@ -1499,7 +1499,7 @@ Posso te explicar sobre:
         </div>
         <div className="sidebar-bottom">
           <button onClick={handleLogout} className="logout-button-sidebar">
-            <span style={{ fontSize: "1rem" }}>🔒</span>
+            <span style={{ fontSize: "1rem" }}></span>
             Sair
           </button>
         </div>
