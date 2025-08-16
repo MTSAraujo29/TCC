@@ -1511,70 +1511,76 @@ Posso te explicar sobre:
         </div>
       )}
       {window.innerWidth <= 700 && isMobileMenuOpen && (
-        <div className="mobile-menu-box">
+        <>
           <div
-            className="menu-item"
-            onClick={() => {
-              setActiveSection("inicio");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            {" "}
-            Home{" "}
+            className="mobile-menu-overlay"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          <div className="mobile-menu-box">
+            <div
+              className="menu-item"
+              onClick={() => {
+                setActiveSection("inicio");
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              {" "}
+              Home{" "}
+            </div>
+            <div
+              className="menu-item"
+              onClick={() => {
+                setActiveSection("controle");
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              {" "}
+              Controle de Energia{" "}
+            </div>
+            <div
+              className="menu-item"
+              onClick={() => {
+                setActiveSection("relatorios");
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              {" "}
+              Relatórios{" "}
+            </div>
+            <div
+              className={`menu-item ${
+                activeSection === "ecobot" ? "active" : ""
+              }`}
+              onClick={() => {
+                setActiveSection("ecobot");
+                setIsMobileMenuOpen(false);
+              }}
+              style={{ alignItems: "center" }}
+            >
+              <img src={process.env.PUBLIC_URL + "/ST.png"} alt="EcoBot" />
+              EcoBot{" "}
+            </div>
+            <div
+              className="menu-item"
+              onClick={() => {
+                setActiveSection("configuracoes");
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              Configurações
+            </div>
+            <div
+              className="menu-item logout-button-mobile"
+              onClick={() => {
+                handleLogout();
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              <span style={{ fontSize: "1.1rem" }}></span>
+              Sair da Conta
+            </div>
           </div>
-          <div
-            className="menu-item"
-            onClick={() => {
-              setActiveSection("controle");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            {" "}
-            Controle de Energia{" "}
-          </div>
-          <div
-            className="menu-item"
-            onClick={() => {
-              setActiveSection("relatorios");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            {" "}
-            Relatórios{" "}
-          </div>
-          <div
-            className={`menu-item ${
-              activeSection === "ecobot" ? "active" : ""
-            }`}
-            onClick={() => {
-              setActiveSection("ecobot");
-              setIsMobileMenuOpen(false);
-            }}
-            style={{ alignItems: "center" }}
-          >
-            <img src={process.env.PUBLIC_URL + "/ST.png"} alt="EcoBot" />
-            EcoBot{" "}
-          </div>
-          <div
-            className="menu-item"
-            onClick={() => {
-              setActiveSection("configuracoes");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Configurações
-          </div>
-          <div
-            className="menu-item logout-button-mobile"
-            onClick={() => {
-              handleLogout();
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            <span style={{ fontSize: "1.1rem" }}></span>
-            Sair da Conta
-          </div>
-        </div>
+        </>
       )}
       {/* ==================== MAIN CONTENT ==================== */}{" "}
       <div className="main-content">
