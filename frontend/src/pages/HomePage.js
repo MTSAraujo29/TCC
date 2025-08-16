@@ -76,7 +76,7 @@ function HomePage() {
           <div className="feature-card">
             <div className="feature-card-icon">🔒</div>
             <h3>Segurança Avançada</h3>
-            <p>Autenticação JWT e criptografia para proteger seus dados</p>
+            <p>Autenticação JWT e criptografia com Bcrypt para proteção dos seus dados</p>
           </div>
           <div className="feature-card">
             <div className="feature-card-icon">📈</div>
@@ -99,6 +99,7 @@ function HomePage() {
             Energia.
           </p>
           <p>TCC - Trabalho de Conclusão de Curso</p>
+          <p>By: <a href="https://github.com/MTSAraujo29" target="_blank" rel="noopener noreferrer">Matheus Araújo</a></p>
         </div>
       </div>
     </div>
