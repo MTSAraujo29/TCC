@@ -1833,7 +1833,7 @@ Posso te explicar sobre:
         {/* ========== ENERGY CONTROL SECTION ========== */}
         {activeSection === "controle" && (
           <>
-            <h2>Controle de Dispositivos</h2>
+            <h1>Controle de Dispositivos</h1>
             <div className="energy-control-section">
               {deviceMessage && (
                 <p className="device-feedback-message">{deviceMessage}</p>
