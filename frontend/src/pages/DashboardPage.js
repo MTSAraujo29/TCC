@@ -1630,7 +1630,7 @@ Posso te explicar sobre:
         {/* ========== HOME SECTION ========== */}{" "}
         {activeSection === "inicio" && (
           <>
-            <h2> Olá, {userName}! </h2>
+            <h1> Olá, {userName}! </h1>
             {/* Metrics Grid */}
             <div className="metrics-grid">
               <div className="metric-card">
@@ -2827,7 +2827,7 @@ Posso te explicar sobre:
         {activeSection === "configuracoes" && (
           <>
             <div className="settings-section">
-              <h2> Configurações da Conta </h2>
+              <h1> Configurações da Conta </h1>
               <div className="user-settings-card">
                 <h3> Informações do Usuário </h3>{" "}
                 <p>
