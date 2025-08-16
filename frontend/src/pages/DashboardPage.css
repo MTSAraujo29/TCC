@@ -940,32 +940,17 @@
   z-index: 2;
 }
 
-.ecobot-title {
-  color: white;
-  margin-bottom: 8px;
+.ecobot-header {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  font-size: 1.5rem;
-  font-weight: 600;
+  align-items: center;
+  margin-bottom: 2rem;
 }
 
-.ecobot-subtitle {
-  color: #e0e0e0;
-  margin-bottom: 24px;
-  text-align: center;
-  font-size: 1rem;
-  font-weight: 400;
-}
-
-.ecobot-h1-img {
-  height: 2.2em;
-  max-width: 38vw;
-  width: auto;
+.ecobot-header-img {
+  width: 120px;
+  height: 120px;
   object-fit: contain;
-  margin-left: 8px;
 }
 
 /* ===== ECOBOT CHAT ===== */
@@ -1078,6 +1063,14 @@
   -webkit-user-select: text;
   -moz-user-select: text;
   -ms-user-select: text;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.ecobot-input:focus {
+  border-color: var(--accent-400);
+  box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.2);
+  background: var(--neutral-600);
 }
 
 .ecobot-input:focus {

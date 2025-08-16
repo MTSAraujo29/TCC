@@ -803,7 +803,7 @@ function DashboardPage() {
   const [chatMessages, setChatMessages] = useState([
     {
       sender: "EcoBot",
-      text: "🤖 **Olá! Eu sou o EcoBot, seu assistente de energia!**\n\nPosso te explicar sobre:\n\n⚡ **Conceitos elétricos:** Tensão, corrente, potências, fator de potência\n💰 **Economia:** O que influencia sua conta de energia\n🔌 **Diferenças:** 110V vs 220V no Brasil\n\nPergunte sobre qualquer tema relacionado à energia elétrica!",
+      text: `🤖 **Olá ${userName}! Eu sou o EcoBot, seu assistente de energia!**\n\nPosso te explicar sobre:\n\n⚡ **Conceitos elétricos:** Tensão, corrente, potências, fator de potência\n💰 **Economia:** O que influencia sua conta de energia\n🔌 **Diferenças:** 110V vs 220V no Brasil\n\nPergunte sobre qualquer tema relacionado à energia elétrica!`,
     },
   ]);
   const [chatInput, setChatInput] = useState("");
@@ -2761,20 +2761,13 @@ Posso te explicar sobre:
         {activeSection === "ecobot" && (
           <div className="main-content2">
             <div className="ecobot-container">
-              <h1 className="ecobot-title">
-                Olá, eu sou
+              <div className="ecobot-header">
                 <img
                   src={process.env.PUBLIC_URL + "/EcoBotSF.png"}
                   alt="EcoBot"
-                  className="ecobot-h1-img"
+                  className="ecobot-header-img"
                 />
-              </h1>
-              <h4 className="ecobot-subtitle">
-                Aqui {userName}, você pode me perguntar sobre conceitos de
-                energia elétrica, entender o que influencia sua conta de luz e
-                receber dicas para um uso mais eficiente dos seus
-                eletrodomésticos. Fique à vontade!
-              </h4>
+              </div>
             </div>
             <div className="ecobot-chat-container">
               <div className="ecobot-messages">
