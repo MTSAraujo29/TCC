@@ -151,34 +151,7 @@ function DashboardPage() {
     return () => window.removeEventListener("resize", handleResize);
   }, [isMobileMenuOpen]);
 
-  // [3] Função para detectar cliques fora do menu mobile
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        isMobileMenuOpen &&
-        !event.target.closest(".mobile-menu-box") &&
-        !event.target.closest(".hamburger-btn")
-      ) {
-        setIsMobileMenuOpen(false);
-      }
-    };
-
-    if (isMobileMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("touchstart", handleClickOutside);
-      document.body.classList.add("menu-open");
-    } else {
-      document.body.classList.remove("menu-open");
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
-      document.body.classList.remove("menu-open");
-    };
-  }, [isMobileMenuOpen]);
-
-  // [4] Função para fechar menu ao pressionar ESC
+  // [3] Função para fechar menu ao pressionar ESC
   useEffect(() => {
     const handleEscape = (event) => {
       if (event.key === "Escape" && isMobileMenuOpen) {
@@ -1563,27 +1536,11 @@ Posso te explicar sobre:
         </div>
       )}
       {/* Mobile Menu Overlay */}
+      {/* Mobile Dropdown Menu */}
       {window.innerWidth <= 700 && isMobileMenuOpen && (
-        <div
-          className="mobile-menu-overlay"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
-      {/* Mobile Menu */}
-      {window.innerWidth <= 700 && (
-        <div className={`mobile-menu-box ${isMobileMenuOpen ? "open" : ""}`}>
-          <div className="mobile-menu-header">
-            <span className="mobile-menu-title">Menu</span>
-            <button
-              className="mobile-menu-close-btn"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              ✕
-            </button>
-          </div>
-
+        <div className="mobile-dropdown-menu">
           <div
-            className="mobile-menu-item"
+            className="mobile-dropdown-item"
             onClick={() => {
               setActiveSection("inicio");
               setIsMobileMenuOpen(false);
@@ -1593,7 +1550,7 @@ Posso te explicar sobre:
           </div>
 
           <div
-            className="mobile-menu-item"
+            className="mobile-dropdown-item"
             onClick={() => {
               setActiveSection("controle");
               setIsMobileMenuOpen(false);
@@ -1603,7 +1560,7 @@ Posso te explicar sobre:
           </div>
 
           <div
-            className="mobile-menu-item"
+            className="mobile-dropdown-item"
             onClick={() => {
               setActiveSection("relatorios");
               setIsMobileMenuOpen(false);
@@ -1613,7 +1570,7 @@ Posso te explicar sobre:
           </div>
 
           <div
-            className="mobile-menu-item"
+            className="mobile-dropdown-item"
             onClick={() => {
               setActiveSection("ecobot");
               setIsMobileMenuOpen(false);
@@ -1628,7 +1585,7 @@ Posso te explicar sobre:
           </div>
 
           <div
-            className="mobile-menu-item"
+            className="mobile-dropdown-item"
             onClick={() => {
               setActiveSection("configuracoes");
               setIsMobileMenuOpen(false);
@@ -1638,7 +1595,7 @@ Posso te explicar sobre:
           </div>
 
           <div
-            className="mobile-menu-item mobile-logout-btn"
+            className="mobile-dropdown-item mobile-dropdown-logout"
             onClick={() => {
               handleLogout();
               setIsMobileMenuOpen(false);
