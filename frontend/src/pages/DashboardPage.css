@@ -113,11 +113,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2rem;
-  background: linear-gradient(
-    135deg,
-    var(--primary-700) 0%,
-    var(--primary-800) 100%
-  );
+  background: #0369a1;
   color: white;
   position: fixed;
   top: 0;
@@ -279,8 +275,8 @@
     left: 0;
     right: 0;
     z-index: 998;
-    background: var(--neutral-300);
-    border-bottom: 1px solid var(--neutral-200);
+    background: #0369a1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 }
 
