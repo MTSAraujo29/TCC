@@ -984,6 +984,8 @@
   flex: 1;
   overflow: hidden;
   border: 1px solid var(--neutral-700);
+  position: relative;
+  z-index: 1;
 }
 
 .ecobot-messages {
@@ -1057,6 +1059,8 @@
   display: flex;
   gap: 0.75rem;
   margin-top: auto;
+  position: relative;
+  z-index: 5;
 }
 
 .ecobot-input {
@@ -1067,6 +1071,13 @@
   background: var(--neutral-700);
   color: white;
   font-size: 0.9rem;
+  position: relative;
+  z-index: 10;
+  cursor: text;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
 }
 
 .ecobot-input:focus {

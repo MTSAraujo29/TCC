@@ -811,6 +811,8 @@ function DashboardPage() {
   // [NOVO] Função inteligente para responder perguntas sobre energia
   const handleSendMessage = (e) => {
     e.preventDefault();
+    console.log("Enviando mensagem:", chatInput); // Debug
+
     if (!chatInput.trim()) return;
 
     const userMessage = chatInput.trim();
@@ -2809,9 +2811,13 @@ Posso te explicar sobre:
                 <input
                   type="text"
                   value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
+                  onChange={(e) => {
+                    console.log("Input alterado:", e.target.value); // Debug
+                    setChatInput(e.target.value);
+                  }}
                   placeholder="Digite sua mensagem..."
                   className="ecobot-input"
+                  autoComplete="off"
                 />
                 <button type="submit" className="ecobot-send-button">
                   Enviar
