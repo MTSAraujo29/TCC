@@ -241,7 +241,7 @@
 }
 
 .metric-card {
-  background: white;
+  background: var(--neutral-300);
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -300,7 +300,7 @@
 }
 
 .chart-card-main {
-  background: white;
+  background: var(--neutral-300);
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -386,7 +386,7 @@
 }
 
 .bottom-card {
-  background: white;
+  background: var(--neutral-300);
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -491,7 +491,7 @@
 
 /* ===== ENERGY CONTROL SECTION ===== */
 .energy-control-section {
-  background: white;
+  background: var(--neutral-300);
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -693,7 +693,7 @@
 
 /* ===== REPORTS SECTION ===== */
 .reports-section {
-  background: white;
+  background: var(--neutral-300);
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -720,7 +720,7 @@
 }
 
 .overall-report-message {
-  background: white;
+  background: var(--neutral-300);
   padding: 1rem;
   border-radius: 8px;
   border-left: 4px solid var(--info-400);
@@ -1015,7 +1015,7 @@
 
 /* ===== SETTINGS SECTION ===== */
 .settings-section {
-  background: white;
+  background: var(--neutral-300);
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -1186,7 +1186,7 @@
 }
 
 .modal-card {
-  background: white;
+  background: var(--neutral-300);
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
