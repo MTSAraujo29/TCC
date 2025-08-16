@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Line } from "react-chartjs-2";
 import "../App.css";
+import "./FullScreenChartPage.css";
 import { API_ENDPOINTS } from "../config/api";
 import {
   Chart as ChartJS,
@@ -100,27 +101,38 @@ const getChartOptions = (viewMode) => ({
           : "Mensal"
       }`,
       color: "#FFF",
-      font: { size: 22 },
+      font: { size: 22, weight: "600" },
+      padding: 20,
     },
     tooltip: {
-      backgroundColor: "rgba(0,0,0,0.8)",
+      backgroundColor: "rgba(0,0,0,0.9)",
       titleColor: "#FFF",
       bodyColor: "#FFF",
-      borderColor: "#FFF",
-      borderWidth: 1,
+      borderColor: "#00bcd4",
+      borderWidth: 2,
+      cornerRadius: 8,
+      displayColors: false,
+      titleFont: { size: 14, weight: "600" },
+      bodyFont: { size: 13 },
+      padding: 12,
     },
   },
   scales: {
     x: {
-      ticks: { color: "#BBB" },
+      ticks: {
+        color: "#BBB",
+        font: { size: 12, weight: "500" },
+      },
       grid: {
         color: "rgba(255,255,255,0.1)",
         borderColor: "#444",
+        lineWidth: 1,
       },
     },
     y: {
       ticks: {
         color: "#BBB",
+        font: { size: 12, weight: "500" },
         callback: function (value) {
           return Number(value).toFixed(2) + " kWh";
         },
@@ -128,76 +140,21 @@ const getChartOptions = (viewMode) => ({
       grid: {
         color: "rgba(255,255,255,0.1)",
         borderColor: "#444",
+        lineWidth: 1,
       },
     },
   },
-});
-
-const useStyles = (isMobile) => ({
-  container: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100vw",
-    height: "100vh",
-    background: "#222",
-    zIndex: 9999,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  backButton: {
-    position: "absolute",
-    top: isMobile ? 10 : 30,
-    left: isMobile ? 10 : 30,
-    padding: isMobile ? "10px 16px" : "12px 28px",
-    background: "#1976d2",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    fontSize: isMobile ? "1em" : "1.2em",
-    fontWeight: "bold",
-    cursor: "pointer",
-    zIndex: 10000,
-    minWidth: isMobile ? 90 : 120,
-    minHeight: isMobile ? 38 : 48,
-    boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
-  },
-  chartContainer: {
-    width: isMobile ? "98vw" : "90vw",
-    height: isMobile ? "65vh" : "80vh",
-    maxWidth: 1200,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  viewButton: (active) => ({
-    margin: isMobile ? "0 2vw 8px 0" : "0 8px",
-    padding: isMobile ? "10px 0" : "10px 24px",
-    width: isMobile ? "30vw" : "auto",
-    minWidth: isMobile ? 80 : 100,
-    background: active ? "#1976d2" : "#444",
-    color: "#fff",
-    border: "none",
-    borderRadius: "6px",
-    fontSize: isMobile ? "1em" : "1.1em",
-    cursor: "pointer",
-    fontWeight: "bold",
-    boxShadow: active ? "0 2px 8px rgba(0,0,0,0.12)" : "none",
-    outline: active ? "2px solid #1976d2" : "none",
-    transition: "background 0.2s, outline 0.2s",
-    display: "inline-block",
-  }),
-  viewButtonGroup: {
-    marginBottom: 24,
-    textAlign: "center",
-    width: isMobile ? "100%" : "auto",
-    display: isMobile ? "flex" : "block",
-    flexDirection: isMobile ? "row" : "unset",
-    justifyContent: isMobile ? "space-between" : "unset",
-    gap: isMobile ? 0 : 8,
+  elements: {
+    point: {
+      radius: 6,
+      hoverRadius: 8,
+      backgroundColor: "#00bcd4",
+      borderColor: "#fff",
+      borderWidth: 2,
+    },
+    line: {
+      borderWidth: 3,
+    },
   },
 });
 
@@ -209,7 +166,6 @@ export default function FullScreenChartPage() {
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState(CHART_MODES.DAY);
   const isMobile = window.innerWidth <= 600;
-  const styles = useStyles(isMobile);
   const [realDailyChart, setRealDailyChart] = useState(null);
   const [realWeeklyChart, setRealWeeklyChart] = useState(null);
   const [realMonthlyChart, setRealMonthlyChart] = useState(null);
@@ -310,38 +266,67 @@ export default function FullScreenChartPage() {
   );
 
   return (
-    <div style={styles.container}>
-      <div style={styles.chartContainer}>
-        <div style={styles.viewButtonGroup}>
-          {Object.entries(CHART_MODES).map(([key, value]) => (
-            <button
-              key={value}
-              style={styles.viewButton(viewMode === value)}
-              onClick={() => setViewMode(value)}
-            >
-              {value}
-            </button>
-          ))}
-        </div>
-
-        <Line data={chartData} options={getChartOptions(viewMode)} />
+    <div className="fullscreen-chart-container">
+      <div className="fullscreen-chart-background">
+        <div className="fullscreen-chart-pattern"></div>
       </div>
 
-      <button
-        onClick={() => navigate("/dashboard")}
-        style={{
-          ...styles.backButton,
-          position: "static",
-          margin: isMobile ? "16px auto 8px" : "32px auto 0",
-          display: "block",
-          left: "unset",
-          top: "unset",
-          width: isMobile ? "90vw" : 220,
-          maxWidth: 400,
-        }}
-      >
-        Voltar
-      </button>
+      <div className="fullscreen-chart-header">
+        <div className="header-content">
+          <div className="header-logo">
+            <img src="/icon.png" alt="Smart Energy" />
+            <h1>Smart Energy</h1>
+          </div>
+          <h2>Análise Detalhada de Consumo</h2>
+          <p>Visualize seus dados de energia em tela cheia</p>
+        </div>
+      </div>
+
+      <div className="fullscreen-chart-content">
+        <div className="chart-controls">
+          <div className="view-mode-buttons">
+            {Object.entries(CHART_MODES).map(([key, value]) => (
+              <button
+                key={value}
+                className={`view-mode-button ${
+                  viewMode === value ? "active" : ""
+                }`}
+                onClick={() => setViewMode(value)}
+              >
+                <span className="button-icon">
+                  {value === CHART_MODES.DAY && "📅"}
+                  {value === CHART_MODES.WEEK && "📊"}
+                  {value === CHART_MODES.MONTH && "📈"}
+                </span>
+                {value}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="chart-wrapper">
+          <div className="chart-container">
+            <Line data={chartData} options={getChartOptions(viewMode)} />
+          </div>
+        </div>
+
+        <div className="chart-footer">
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="back-button"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Voltar ao Dashboard
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

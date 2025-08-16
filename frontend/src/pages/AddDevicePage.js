@@ -110,83 +110,229 @@ function AddDevicePage() {
   // Render
   return (
     <div className="add-device-page-container">
-      <div className="add-device-card">
-        <h2>Adicionar Novo Dispositivo Tasmota</h2>
+      <div className="add-device-background">
+        <div className="add-device-background-pattern"></div>
+      </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="name">Nome do Dispositivo:</label>
-            <input
-              type="text"
-              id="name"
-              value={deviceData.name}
-              onChange={handleInputChange}
-              required
-            />
+      <div className="add-device-content">
+        <div className="add-device-header">
+          <div className="add-device-logo">
+            <img src="/icon.png" alt="Smart Energy" />
+            <h1>Smart Energy</h1>
+          </div>
+          <h2>Adicionar Novo Dispositivo</h2>
+          <p>
+            Configure um novo dispositivo Tasmota para monitoramento de energia
+          </p>
+        </div>
+
+        <div className="add-device-card">
+          <div className="card-header">
+            <div className="card-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+              </svg>
+            </div>
+            <h3>Configuração do Dispositivo</h3>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="tasmotaTopic">Tópico Tasmota (MQTT Topic):</label>
-            <input
-              type="text"
-              id="tasmotaTopic"
-              value={deviceData.tasmotaTopic}
-              onChange={handleInputChange}
-              placeholder="Ex: tasmota_power_monitor"
-              required
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="device-form">
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="name">
+                  <span className="label-icon">📱</span>
+                  Nome do Dispositivo
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  value={deviceData.name}
+                  onChange={handleInputChange}
+                  placeholder="Ex: Sonoff Sala"
+                  required
+                />
+              </div>
 
-          <div className="form-group">
-            <label htmlFor="macAddress">Endereço MAC (Opcional):</label>
-            <input
-              type="text"
-              id="macAddress"
-              value={deviceData.macAddress}
-              onChange={handleInputChange}
-              placeholder="Ex: 12:34:56:78:90:AB"
-            />
-          </div>
+              <div className="form-group">
+                <label htmlFor="tasmotaTopic">
+                  <span className="label-icon">📡</span>
+                  Tópico MQTT
+                </label>
+                <input
+                  type="text"
+                  id="tasmotaTopic"
+                  value={deviceData.tasmotaTopic}
+                  onChange={handleInputChange}
+                  placeholder="Ex: tasmota_power_monitor"
+                  required
+                />
+              </div>
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="model">Modelo (Opcional):</label>
-            <input
-              type="text"
-              id="model"
-              value={deviceData.model}
-              onChange={handleInputChange}
-              placeholder="Ex: Sonoff POWR316D"
-            />
-          </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="macAddress">
+                  <span className="label-icon">🔗</span>
+                  Endereço MAC
+                  <span className="optional">(Opcional)</span>
+                </label>
+                <input
+                  type="text"
+                  id="macAddress"
+                  value={deviceData.macAddress}
+                  onChange={handleInputChange}
+                  placeholder="Ex: 12:34:56:78:90:AB"
+                />
+              </div>
 
-          <div className="form-group">
-            <label htmlFor="broker">Broker:</label>
-            <select
-              id="broker"
-              value={deviceData.broker}
-              onChange={handleInputChange}
-              required
-            >
-              <option value="broker1">Broker 1</option>
-              <option value="broker2">Broker 2</option>
-            </select>
-          </div>
+              <div className="form-group">
+                <label htmlFor="model">
+                  <span className="label-icon">🏷️</span>
+                  Modelo
+                  <span className="optional">(Opcional)</span>
+                </label>
+                <input
+                  type="text"
+                  id="model"
+                  value={deviceData.model}
+                  onChange={handleInputChange}
+                  placeholder="Ex: Sonoff POWR316D"
+                />
+              </div>
+            </div>
 
-          {error && <p className="error-message">{error}</p>}
+            <div className="form-group">
+              <label htmlFor="broker">
+                <span className="label-icon">🌐</span>
+                Broker MQTT
+              </label>
+              <select
+                id="broker"
+                value={deviceData.broker}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="broker1">Broker 1 - Principal</option>
+                <option value="broker2">Broker 2 - Secundário</option>
+              </select>
+            </div>
 
-          <div className="button-group">
-            <button type="submit" disabled={loading}>
-              {loading ? "Adicionando..." : "Adicionar Dispositivo"}
-            </button>
-            <button
-              type="button"
-              className="cancel-button"
-              onClick={handleCancel}
-            >
-              Cancelar
-            </button>
+            {error && (
+              <div className="error-message">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="15" y1="9" x2="9" y2="15" />
+                  <line x1="9" y1="9" x2="15" y2="15" />
+                </svg>
+                {error}
+              </div>
+            )}
+
+            <div className="button-group">
+              <button
+                type="submit"
+                className="submit-button"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <svg className="loading-spinner" viewBox="0 0 24 24">
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        fill="none"
+                        strokeDasharray="31.416"
+                        strokeDashoffset="31.416"
+                      >
+                        <animate
+                          attributeName="stroke-dasharray"
+                          dur="2s"
+                          values="0 31.416;15.708 15.708;0 31.416"
+                          repeatCount="indefinite"
+                        />
+                        <animate
+                          attributeName="stroke-dashoffset"
+                          dur="2s"
+                          values="0;-15.708;-31.416"
+                          repeatCount="indefinite"
+                        />
+                      </circle>
+                    </svg>
+                    Adicionando...
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    Adicionar Dispositivo
+                  </>
+                )}
+              </button>
+              <button
+                type="button"
+                className="cancel-button"
+                onClick={handleCancel}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div className="add-device-info">
+          <div className="info-card">
+            <div className="info-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 16v-4M12 8h.01" />
+              </svg>
+            </div>
+            <h4>Dicas de Configuração</h4>
+            <ul>
+              <li>
+                Certifique-se de que o dispositivo Tasmota está conectado à rede
+              </li>
+              <li>O tópico MQTT deve ser único para cada dispositivo</li>
+              <li>
+                O endereço MAC ajuda na identificação única do dispositivo
+              </li>
+              <li>Após adicionar, o dispositivo aparecerá no dashboard</li>
+            </ul>
           </div>
-        </form>
+        </div>
       </div>
 
       <CustomAlert

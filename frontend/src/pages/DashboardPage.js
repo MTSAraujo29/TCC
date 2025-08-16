@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import "../App.css"; // Certifique-se de que este caminho está correto
+import "../App.css";
+import "./DashboardPage.css";
 import { API_ENDPOINTS } from "../config/api";
 import CustomAlert from "../components/CustomAlert";
 import useCustomAlert from "../hooks/useCustomAlert";
@@ -1442,19 +1443,11 @@ Posso te explicar sobre:
   }
 
   return (
-    <div className="container dashboard-container">
-      {" "}
-      {/* ==================== SIDEBAR ==================== */}{" "}
-      <div
-        className="sidebar"
-        style={{ display: window.innerWidth <= 700 ? "none" : "flex" }}
-      >
+    <div className="dashboard-container">
+      {/* ==================== SIDEBAR ==================== */}
+      <div className="sidebar">
         <div className="logo-icon-sidebar">
-          <img
-            src="/icon.png"
-            alt="Ícone"
-            style={{ width: 32, height: 32, marginBottom: 4 }}
-          />{" "}
+          <img src="/icon.png" alt="Smart Energy" />
         </div>
         <div
           className={`menu-item ${activeSection === "inicio" ? "active" : ""}`}
@@ -1485,10 +1478,7 @@ Posso te explicar sobre:
           className={`menu-item ${activeSection === "ecobot" ? "active" : ""}`}
           onClick={() => setActiveSection("ecobot")}
         >
-          <img
-            src={process.env.PUBLIC_URL + "/ST.png"}
-            alt="EcoBot"
-          />
+          <img src={process.env.PUBLIC_URL + "/ST.png"} alt="EcoBot" />
           EcoBot{" "}
         </div>
         <div
@@ -1562,10 +1552,7 @@ Posso te explicar sobre:
             }}
             style={{ alignItems: "center" }}
           >
-            <img
-              src={process.env.PUBLIC_URL + "/ST.png"}
-              alt="EcoBot"
-            />
+            <img src={process.env.PUBLIC_URL + "/ST.png"} alt="EcoBot" />
             EcoBot{" "}
           </div>
           <div
@@ -1600,12 +1587,11 @@ Posso te explicar sobre:
         {activeSection === "inicio" && (
           <>
             <h2> Olá, {userName}! </h2>
-            {/* Metrics Grid */}{" "}
+            {/* Metrics Grid */}
             <div className="metrics-grid">
               <div className="metric-card">
-                <h3> Consumo de Watts atual </h3>{" "}
+                <h3>Consumo Atual (Watts)</h3>
                 <p>
-                  {" "}
                   {devices.length > 0
                     ? devices
                         .reduce(
@@ -1619,23 +1605,19 @@ Posso te explicar sobre:
                           0
                         )
                         .toFixed(2) + " W"
-                    : "0.00 W"}{" "}
-                </p>{" "}
+                    : "0.00 W"}
+                </p>
               </div>
               <div className="metric-card">
-                <h3> Consumo de quilowatt - hora do mês atual </h3>{" "}
-                <p> {currentMonthConsumption} </p>{" "}
+                <h3>Consumo Mensal (kWh)</h3>
+                <p>{currentMonthConsumption}</p>
               </div>
               <div className="metric-card">
-                <h3> Consumo quilowatt - hora total </h3>{" "}
-                <p>
-                  {" "}
-                  {liveTotalEnergySum.toFixed(2)}
-                  kWh{" "}
-                </p>{" "}
+                <h3>Consumo Total (kWh)</h3>
+                <p>{liveTotalEnergySum.toFixed(2)} kWh</p>
               </div>
               <div className="metric-card">
-                <h3> Fatura Estimada </h3>{" "}
+                <h3>Fatura Estimada</h3>
                 <p>
                   R${" "}
                   {(devices.length > 0
@@ -1650,13 +1632,12 @@ Posso te explicar sobre:
                         0
                       ) * 0.75
                     : 0
-                  ).toFixed(2)}{" "}
-                </p>{" "}
+                  ).toFixed(2)}
+                </p>
               </div>
               <div className="metric-card">
-                <h3> Consumo de Amperes atual </h3>{" "}
+                <h3>Corrente Atual (A)</h3>
                 <p>
-                  {" "}
                   {devices
                     .filter(
                       (d) =>
@@ -1666,12 +1647,13 @@ Posso te explicar sobre:
                     )
                     .reduce((sum, d) => sum + d.latestReading.current, 0)
                     .toFixed(2)}
-                  A{" "}
-                </p>{" "}
+                  A
+                </p>
               </div>
               <div className="metric-card">
-                <h3> Gasto reduzido </h3> <p> R$ 12, 50 </p>{" "}
-              </div>{" "}
+                <h3>Economia Mensal</h3>
+                <p>R$ 12,50</p>
+              </div>
             </div>
             {/* Main Chart Area */}{" "}
             <div className="chart-area-main">
@@ -1792,62 +1774,50 @@ Posso te explicar sobre:
             </div>{" "}
           </>
         )}
-        {/* ========== ENERGY CONTROL SECTION ========== */}{" "}
+        {/* ========== ENERGY CONTROL SECTION ========== */}
         {activeSection === "controle" && (
           <>
-            <h2> Controle de Dispositivos </h2>
-            <div
-              className="energy-control-section"
-              style={{ overflowX: "hidden", maxWidth: "100%", width: "100%" }}
-            >
-              {" "}
+            <h2>Controle de Dispositivos</h2>
+            <div className="energy-control-section">
               {deviceMessage && (
-                <p className="device-feedback-message"> {deviceMessage} </p>
+                <p className="device-feedback-message">{deviceMessage}</p>
               )}
-              <h3> Meus Dispositivos de Energia </h3>
+              <h3>Meus Dispositivos de Energia</h3>
               {devices.length > 0 ? (
-                <div
-                  className="device-control-list"
-                  style={{
-                    overflowX: "hidden",
-                    maxWidth: "100%",
-                    width: "100%",
-                  }}
-                >
+                <div className="device-control-list">
                   {devices.map((device) => (
                     <div key={device.id} className="device-control-item">
-                      <span className="device-control-name">
-                        {" "}
-                        {device.name}{" "}
-                      </span>{" "}
-                      <button
-                        onClick={() =>
-                          toggleDevicePower(
-                            device.id,
-                            device.powerState,
-                            device.name
-                          )
-                        }
-                        className="device-toggle-button power-on"
-                        type="button"
-                        disabled={device.powerState}
-                      >
-                        Ligar
-                      </button>{" "}
-                      <button
-                        onClick={() =>
-                          toggleDevicePower(
-                            device.id,
-                            device.powerState,
-                            device.name
-                          )
-                        }
-                        className="device-toggle-button power-off"
-                        type="button"
-                        disabled={!device.powerState}
-                      >
-                        Desligar
-                      </button>{" "}
+                      <span className="device-control-name">{device.name}</span>
+                      <div className="device-control-buttons">
+                        <button
+                          onClick={() =>
+                            toggleDevicePower(
+                              device.id,
+                              device.powerState,
+                              device.name
+                            )
+                          }
+                          className="device-toggle-button power-on"
+                          type="button"
+                          disabled={device.powerState}
+                        >
+                          Ligar
+                        </button>
+                        <button
+                          onClick={() =>
+                            toggleDevicePower(
+                              device.id,
+                              device.powerState,
+                              device.name
+                            )
+                          }
+                          className="device-toggle-button power-off"
+                          type="button"
+                          disabled={!device.powerState}
+                        >
+                          Desligar
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -2473,28 +2443,27 @@ Posso te explicar sobre:
             </div>
           </>
         )}
-        {/* ========== REPORTS SECTION ========== */}{" "}
+        {/* ========== REPORTS SECTION ========== */}
         {activeSection === "relatorios" && (
           <div className="reports-section">
-            <h2> Relatórios de Consumo </h2>{" "}
+            <h2>Relatórios de Consumo</h2>
             <div className="report-summary-card">
-              <h3> Resumo Geral </h3>{" "}
+              <h3>Resumo Geral</h3>
               <p>
                 Total de Dispositivos:{" "}
-                <strong> {report.summary.totalDevices} </strong>{" "}
-              </p>{" "}
+                <strong>{report.summary.totalDevices}</strong>
+              </p>
               <p>
-                Com uso Inteligente(estimado):{" "}
-                <strong> {report.summary.smartUsageDevices} </strong>{" "}
-              </p>{" "}
+                Com uso Inteligente (estimado):{" "}
+                <strong>{report.summary.smartUsageDevices}</strong>
+              </p>
               <p>
-                Dispositivos com Otimização Pendente(estimado):{" "}
-                <strong> {report.summary.nonSmartUsageDevices} </strong>{" "}
-              </p>{" "}
+                Dispositivos com Otimização Pendente (estimado):{" "}
+                <strong>{report.summary.nonSmartUsageDevices}</strong>
+              </p>
               <p className="overall-report-message">
-                {" "}
-                {report.summary.overallMessage}{" "}
-              </p>{" "}
+                {report.summary.overallMessage}
+              </p>
             </div>
             {isRealData && devices.length > 0 && devices[0].latestReading && (
               <div className="energy-realtime-card">
@@ -2760,49 +2729,22 @@ Posso te explicar sobre:
             </div>{" "}
           </div>
         )}
-        {/* ========== ECOBOT SECTION ========== */}{" "}
+        {/* ========== ECOBOT SECTION ========== */}
         {activeSection === "ecobot" && (
           <div className="main-content2">
-            <div
-              style={{
-                width: "100%",
-                maxWidth: 600,
-                minWidth: 340,
-                position: "sticky",
-                top: 0,
-                background: "transparent",
-                zIndex: 2,
-              }}
-            >
-              <h1
-                style={{
-                  color: "white",
-                  marginBottom: 8,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                  flexWrap: "wrap",
-                }}
-              >
+            <div className="ecobot-container">
+              <h1 className="ecobot-title">
                 Olá, eu sou
                 <img
                   src={process.env.PUBLIC_URL + "/EcoBotSF.png"}
                   alt="EcoBot"
                   className="ecobot-h1-img"
-                  style={{
-                    height: "2.2em",
-                    maxWidth: "38vw",
-                    width: "auto",
-                    objectFit: "contain",
-                    marginLeft: 8,
-                  }}
                 />
               </h1>
-              <h4 style={{ color: "#e0e0e0", marginBottom: 24 }}>
-                Aqui {userName}, você pode me perguntar sobre conceitos de
-                energia elétrica, entender o que influencia sua conta de luz e
-                receber dicas para um uso mais eficiente dos seus
+              <h4 className="ecobot-subtitle">
+                om: 24 }}> Aqui {userName}, você pode me perguntar sobre
+                conceitos de energia elétrica, entender o que influencia sua
+                conta de luz e receber dicas para um uso mais eficiente dos seus
                 eletrodomésticos. Fique à vontade!
               </h4>
             </div>
