@@ -698,7 +698,7 @@
 
 /* ===== SCHEDULE SHUTDOWN CARD ===== */
 .schedule-shutdown-card {
-  background: #d2d3d3;
+  background: var(--neutral-300);
   color: white;
   padding: 2rem;
   border-radius: 16px;
@@ -717,9 +717,9 @@
 
 .schedule-shutdown-card h2 {
   text-align: center;
-  background-color: #000000;
+  background-color: hsl(0, 0%, 4%);
   margin-bottom: 1.5rem;
-  color: black;
+  color: hsl(0, 0%, 4%);
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -732,7 +732,7 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: black;
+  color: #f5f3f3;
   font-size: 1rem;
 }
 
@@ -741,16 +741,17 @@
   padding: 0.75rem 1rem;
   border: 2px solid var(--primary-600);
   border-radius: 8px;
-  background: var(--primary-800);
-  color: black;
+  background: rgb(35, 36, 58);
+  color: #e9e2e4;
   font-size: 1rem;
   transition: all 0.3s ease;
 }
 
 .form-group input[type="time"]:focus {
   outline: none;
-  border-color: black;
+  border-color: rgb(35, 36, 58);
   box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
+  background-color: rgb(35, 36, 58);;
 }
 
 .form-group input[type="checkbox"] {
@@ -764,7 +765,7 @@
   width: 100%;
   padding: 1rem;
   background: #0369a1;
-  color: black;
+  color: #131212;
   border: none;
   border-radius: 12px;
   font-weight: 600;
@@ -1515,4 +1516,24 @@ color: black;
     height: 140px;
     object-fit: contain;
   }
+}
+
+@media (max-width: 500px) {
+  .ecobot-header {
+    padding: 1rem;
+  }
+
+  .ecobot-send-button {
+    margin: 0.25rem -0.5rem;
+  }
+
+  .ecobot-message-text {
+    line-height: 1.2;
+    font-size: 0.7rem;
+  }
+  
+  .ecobot-header-img{
+    margin-right: 120px;
+  }
+
 }
