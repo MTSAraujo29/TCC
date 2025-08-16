@@ -1461,7 +1461,7 @@ Posso te explicar sobre:
           onClick={() => setActiveSection("inicio")}
         >
           {" "}
-          🏠Home{" "}
+          Home{" "}
         </div>
         <div
           className={`menu-item ${
@@ -1470,7 +1470,7 @@ Posso te explicar sobre:
           onClick={() => setActiveSection("controle")}
         >
           {" "}
-          🔌Controle de Energia{" "}
+          Controle de Energia{" "}
         </div>
         <div
           className={`menu-item ${
@@ -1479,7 +1479,7 @@ Posso te explicar sobre:
           onClick={() => setActiveSection("relatorios")}
         >
           {" "}
-          📊Relatórios{" "}
+          Relatórios{" "}
         </div>
         <div
           className={`menu-item ${activeSection === "ecobot" ? "active" : ""}`}
@@ -1488,12 +1488,6 @@ Posso te explicar sobre:
           <img
             src={process.env.PUBLIC_URL + "/ST.png"}
             alt="EcoBot"
-            style={{
-              width: 24,
-              height: 24,
-              marginRight: 8,
-              verticalAlign: "middle",
-            }}
           />
           EcoBot{" "}
         </div>
@@ -1504,11 +1498,11 @@ Posso te explicar sobre:
           onClick={() => setActiveSection("configuracoes")}
         >
           {" "}
-          ⚙️Configurações{" "}
+          Configurações{" "}
         </div>
         <div className="sidebar-bottom">
           <button onClick={handleLogout} className="logout-button-sidebar">
-            <span style={{ fontSize: "1rem" }}>🔒</span>
+            <span style={{ fontSize: "1rem" }}></span>
             Sair
           </button>
         </div>
@@ -1536,7 +1530,7 @@ Posso te explicar sobre:
             }}
           >
             {" "}
-            🏠Home{" "}
+            Home{" "}
           </div>
           <div
             className="menu-item"
@@ -1546,7 +1540,7 @@ Posso te explicar sobre:
             }}
           >
             {" "}
-            🔌Controle de Energia{" "}
+            Controle de Energia{" "}
           </div>
           <div
             className="menu-item"
@@ -1556,7 +1550,7 @@ Posso te explicar sobre:
             }}
           >
             {" "}
-            📊Relatórios{" "}
+            Relatórios{" "}
           </div>
           <div
             className={`menu-item ${
@@ -1571,12 +1565,6 @@ Posso te explicar sobre:
             <img
               src={process.env.PUBLIC_URL + "/ST.png"}
               alt="EcoBot"
-              style={{
-                width: 20,
-                height: 20,
-                marginRight: 8,
-                verticalAlign: "middle",
-              }}
             />
             EcoBot{" "}
           </div>
@@ -1587,7 +1575,7 @@ Posso te explicar sobre:
               setIsMobileMenuOpen(false);
             }}
           >
-            ⚙️Configurações
+            Configurações
           </div>
           <div
             className="menu-item logout-button-mobile"
@@ -1596,7 +1584,7 @@ Posso te explicar sobre:
               setIsMobileMenuOpen(false);
             }}
           >
-            <span style={{ fontSize: "1.1rem" }}>🔒</span>
+            <span style={{ fontSize: "1.1rem" }}></span>
             Sair da Conta
           </div>
         </div>

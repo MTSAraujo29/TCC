@@ -1,225 +1,130 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../App.css";
-import { API_ENDPOINTS } from "../config/api";
-import CustomAlert from "../components/CustomAlert";
-import useCustomAlert from "../hooks/useCustomAlert";
-
-// Constants
-const EyeOpen = (
-  <svg
-    width="22"
-    height="22"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#888"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <ellipse cx="12" cy="12" rx="8" ry="5" />
-    <circle cx="12" cy="12" r="2.5" />
-  </svg>
-);
-
-const EyeClosed = (
-  <svg
-    width="22"
-    height="22"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#888"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M1 1l22 22" />
-    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-5.05 0-9.29-3.14-10.74-7.5a10.97 10.97 0 0 1 1.66-3.13" />
-    <path d="M9.53 9.53A3.5 3.5 0 0 0 12 15.5c1.38 0 2.63-.83 3.16-2.03" />
-  </svg>
-);
+import "./LoginPage.css";
 
 function LoginPage() {
-  // Hooks
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { alertState, showSuccess, showError, hideAlert } = useCustomAlert();
-
-  // State management
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const [uiState, setUiState] = useState({
-    error: "",
-    loading: false,
-    showPassword: false,
-  });
-
-  // Derived values
-  const passwordToggleIcon = uiState.showPassword ? EyeClosed : EyeOpen;
-  const passwordToggleTitle = uiState.showPassword
-    ? "Ocultar senha"
-    : "Mostrar senha";
-
-  // Event handlers
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setUiState((prev) => ({ ...prev, error: "", loading: true }));
+    setError("");
+    setIsLoading(true);
 
     try {
-      const response = await fetch(API_ENDPOINTS.LOGIN, {
+      const response = await fetch("https://tcc-ft7k.onrender.com/api/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
-      setUiState((prev) => ({ ...prev, loading: false }));
 
-      response.ok ? handleSuccessfulLogin(data) : handleLoginError(data);
-    } catch (err) {
-      setUiState((prev) => ({ ...prev, loading: false }));
-      handleNetworkError(err);
-    }
-  };
+      if (response.ok) {
+        // Salvar token e informações do usuário
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userName", data.user.name);
+        localStorage.setItem("userEmail", data.user.email);
 
-  const togglePasswordVisibility = () => {
-    setUiState((prev) => ({ ...prev, showPassword: !prev.showPassword }));
-  };
+        // Calcular expiração do token (1 hora)
+        const tokenExp = Math.floor(Date.now() / 1000) + 3600;
+        localStorage.setItem("token_exp", tokenExp.toString());
 
-  // Helper functions
-  const handleSuccessfulLogin = (data) => {
-    console.log("Login successful:", data);
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("userEmail", data.user.email);
-    localStorage.setItem("userName", data.user.name);
-
-    try {
-      const payload = JSON.parse(atob(data.token.split(".")[1]));
-      if (payload.exp) {
-        localStorage.setItem("token_exp", payload.exp);
+        // Redirecionar para o dashboard
+        navigate("/dashboard");
+      } else {
+        setError(data.message || "Erro ao fazer login");
       }
-    } catch (e) {
-      console.error("Error decoding token:", e);
+    } catch (err) {
+      setError("Erro de conexão. Verifique sua internet.");
+    } finally {
+      setIsLoading(false);
     }
-
-    showSuccess("Login realizado com sucesso! Redirecionando...", "Bem-vindo!");
-    setTimeout(() => {
-      navigate("/dashboard");
-    }, 1500);
   };
 
-  const handleLoginError = (data) => {
-    console.error("Login failed:", data.message || "Unknown error");
-    const errorMessage = data.message || "Email ou senha inválidos.";
-    setUiState((prev) => ({
-      ...prev,
-      error: errorMessage,
-    }));
-    showError(errorMessage, "Erro no Login");
-  };
-
-  const handleNetworkError = (err) => {
-    console.error("Network error during login:", err);
-    const errorMessage =
-      "Não foi possível conectar ao servidor. Verifique sua conexão ou tente mais tarde.";
-    setUiState((prev) => ({
-      ...prev,
-      error: errorMessage,
-    }));
-    showError(errorMessage, "Erro de Conexão");
-  };
-
-  // Render
   return (
-    <div className="container">
-      <div className="card">
-        <div className="logo-icon">
-          <img
-            src="/icon.png"
-            alt="Ícone"
-            style={{ width: 40, height: 40, marginBottom: 8 }}
-          />
+    <div className="login-container">
+      <div className="login-background">
+        <div className="login-background-pattern"></div>
+      </div>
+
+      <div className="login-card">
+        <div className="login-header">
+          <div className="login-logo">
+            <img
+              src="/icon.png"
+              alt="Smart Energy Logo"
+              className="login-logo-img"
+            />
+            <h1 className="login-title">Smart Energy</h1>
+            <p className="login-subtitle">
+              Faça login para acessar seu dashboard
+            </p>
+          </div>
         </div>
 
-        <h2>Login</h2>
-
-        <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            required
-            value={formData.email}
-            onChange={handleInputChange}
-          />
-
-          <div style={{ position: "relative" }}>
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="form-group">
+            <label htmlFor="email" className="form-label">
+              Email
+            </label>
             <input
-              type={uiState.showPassword ? "text" : "password"}
-              name="password"
-              placeholder="Senha"
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="form-input"
+              placeholder="seu@email.com"
               required
-              value={formData.password}
-              onChange={handleInputChange}
-              style={{ paddingRight: 40 }}
             />
-            <span
-              onClick={togglePasswordVisibility}
-              style={{
-                position: "absolute",
-                right: 10,
-                top: "50%",
-                transform: "translateY(-50%)",
-                cursor: "pointer",
-                color: "#888",
-                fontSize: 18,
-              }}
-              title={passwordToggleTitle}
-            >
-              {passwordToggleIcon}
-            </span>
           </div>
 
-          {uiState.error && (
-            <p style={{ color: "red", fontSize: "0.9em" }}>{uiState.error}</p>
-          )}
+          <div className="form-group">
+            <label htmlFor="password" className="form-label">
+              Senha
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="form-input"
+              placeholder="••••••••"
+              required
+            />
+          </div>
 
-          <button type="submit" disabled={uiState.loading}>
-            {uiState.loading ? "Entrando" : "Entrar"}
-            {uiState.loading && <span className="loading-dots">...</span>}
+          {error && <div className="error-message">{error}</div>}
+
+          <button type="submit" className="login-button" disabled={isLoading}>
+            {isLoading ? (
+              <span className="loading-spinner">
+                <div className="spinner"></div>
+                Entrando...
+              </span>
+            ) : (
+              "Entrar"
+            )}
           </button>
         </form>
 
-        <Link to="/create-account" className="link-button">
-          Criar uma conta
-        </Link>
-
-        <button
-          type="button"
-          className="link-button"
-          style={{ marginTop: 16 }}
-          onClick={() => navigate("/")}
-        >
-          Voltar
-        </button>
+        <div className="login-footer">
+          <p className="login-footer-text">
+            Não tem uma conta?{" "}
+            <Link to="/create-account" className="login-footer-link">
+              Criar conta
+            </Link>
+          </p>
+          <Link to="/" className="login-back-link">
+            ← Voltar para o início
+          </Link>
+        </div>
       </div>
-
-      <CustomAlert
-        isOpen={alertState.isOpen}
-        onClose={hideAlert}
-        type={alertState.type}
-        title={alertState.title}
-        message={alertState.message}
-        autoClose={alertState.autoClose}
-        autoCloseTime={alertState.autoCloseTime}
-      />
     </div>
   );
 }

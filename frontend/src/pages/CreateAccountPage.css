@@ -1,0 +1,283 @@
+/* ========================================
+   CREATE ACCOUNT PAGE - SMART ENERGY DESIGN SYSTEM
+   ======================================== */
+
+.create-account-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--neutral-50) 0%,
+    var(--neutral-100) 100%
+  );
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.create-account-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+.create-account-background-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(241, 115, 12, 0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+  opacity: 0.6;
+}
+
+.create-account-card {
+  background: white;
+  padding: 3rem;
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--neutral-200);
+  width: 100%;
+  max-width: 480px;
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+}
+
+.create-account-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.create-account-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.create-account-logo-img {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.create-account-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--neutral-900);
+  margin: 0;
+  background: linear-gradient(
+    135deg,
+    var(--energy-500) 0%,
+    var(--primary-600) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.create-account-subtitle {
+  color: var(--neutral-600);
+  font-size: 1rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+.create-account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-weight: 600;
+  color: var(--neutral-700);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-input {
+  padding: 1rem 1.25rem;
+  border: 2px solid var(--neutral-200);
+  border-radius: var(--radius-lg);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+  color: var(--neutral-800);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--energy-500);
+  box-shadow: 0 0 0 3px rgba(241, 115, 12, 0.1);
+  transform: translateY(-1px);
+}
+
+.form-input::placeholder {
+  color: var(--neutral-400);
+}
+
+.error-message {
+  background: var(--error-50);
+  color: var(--error-600);
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--error-200);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.create-account-button {
+  background: linear-gradient(
+    135deg,
+    var(--energy-500) 0%,
+    var(--energy-600) 100%
+  );
+  color: white;
+  border: none;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-lg);
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.create-account-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.create-account-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.create-account-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.create-account-footer {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.create-account-footer-text {
+  color: var(--neutral-600);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.create-account-footer-link {
+  color: var(--energy-600);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.create-account-footer-link:hover {
+  color: var(--energy-700);
+  text-decoration: underline;
+}
+
+.create-account-back-link {
+  color: var(--neutral-500);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.create-account-back-link:hover {
+  color: var(--neutral-700);
+}
+
+/* ===== MEDIA QUERIES ===== */
+@media (max-width: 480px) {
+  .create-account-container {
+    padding: 1rem;
+  }
+
+  .create-account-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .create-account-title {
+    font-size: 2rem;
+  }
+
+  .create-account-subtitle {
+    font-size: 0.875rem;
+  }
+
+  .form-input {
+    padding: 0.875rem 1rem;
+  }
+
+  .create-account-button {
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .create-account-card {
+    padding: 1.5rem 1rem;
+  }
+
+  .create-account-title {
+    font-size: 1.75rem;
+  }
+
+  .create-account-logo-img {
+    width: 56px;
+    height: 56px;
+  }
+}
