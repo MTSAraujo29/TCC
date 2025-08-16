@@ -327,9 +327,22 @@
 /* ===== METRICS GRID ===== */
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, 1fr); /* Sempre 3 colunas */
   gap: 1.5rem;
   margin-bottom: 2rem;
+}
+
+/* Responsividade (opcional) */
+@media (max-width: 900px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas no tablet */
+  }
+}
+
+@media (max-width: 600px) {
+  .metrics-grid {
+    grid-template-columns: 1fr; /* 1 coluna no celular */
+  }
 }
 
 .metric-card {
@@ -363,7 +376,7 @@
 }
 
 .metric-card h3 {
-  color: var(--neutral-700);
+  color: black;
   font-size: 0.9rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -377,6 +390,7 @@
   font-weight: 700;
   margin: 0;
 }
+
 
 /* ===== CHART AREA ===== */
 .chart-area-main {
@@ -437,11 +451,7 @@
 .expand-chart-button {
   margin-top: 1rem;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(
-    135deg,
-    var(--accent-500) 0%,
-    var(--accent-600) 100%
-  );
+  background: white;
   color: black;
   border: none;
   border-radius: 12px;
@@ -537,7 +547,7 @@
 
 /* ===== SUGGESTED DEVICES ===== */
 .suggestions-description {
-  color: var(--neutral-600);
+  color: #404040;
   margin-bottom: 1.5rem;
   font-size: 0.9rem;
 }
@@ -693,7 +703,6 @@
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 8px 30px #d3d3d3;
-  border: 1px solid var(--neutral-600);
   max-width: 500px;
   margin: 2rem auto 0 auto;
 }
@@ -725,7 +734,6 @@
   font-weight: 600;
   color: black;
   font-size: 1rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.966);
 }
 
 .form-group input[type="time"] {
@@ -734,14 +742,14 @@
   border: 2px solid var(--primary-600);
   border-radius: 8px;
   background: var(--primary-800);
-  color: white;
+  color: black;
   font-size: 1rem;
   transition: all 0.3s ease;
 }
 
 .form-group input[type="time"]:focus {
   outline: none;
-  border-color: var(--accent-400);
+  border-color: black;
   box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
 }
 
@@ -755,11 +763,7 @@
 .schedule-button {
   width: 100%;
   padding: 1rem;
-  background: linear-gradient(
-    135deg,
-    var(--accent-500) 0%,
-    var(--accent-600) 100%
-  );
+  background: #0369a1;
   color: black;
   border: none;
   border-radius: 12px;
@@ -785,7 +789,7 @@
 }
 
 .report-summary-card {
-  background: linear-gradient(135deg, var(--info-50) 0%, var(--info-100) 100%);
+  background: white;
   padding: 2rem;
   border-radius: 12px;
   border: 1px solid var(--info-200);
@@ -798,9 +802,14 @@
 }
 
 .report-summary-card p {
+  background-color: white;
   color: var(--info-800);
   margin-bottom: 0.5rem;
   font-size: 0.95rem;
+}
+
+.reports-section h3{
+color: black;  
 }
 
 .overall-report-message {
@@ -829,6 +838,7 @@
 
 .energy-realtime-table {
   width: 100%;
+  text-align: center;
   border-collapse: collapse;
 }
 
@@ -945,6 +955,7 @@
 }
 
 .ecobot-header-img {
+  margin-left: 140px;
   width: 120px;
   height: 120px;
   object-fit: contain;
@@ -1457,5 +1468,51 @@
 
   .bottom-card {
     padding: 1.5rem;
+  }
+}
+
+
+@media screen and (max-width: 950px) {
+  .ecobot-header-img {
+    margin-left: 2px; /* ajuste se quiser diferente */
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+  }
+}
+
+@media screen and (max-width: 800px)  {
+  .ecobot-header-img {
+    margin-left: 40px; /* ajuste conforme necessidade */
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+  }
+}
+
+@media screen and (max-width: 850px) {
+  .ecobot-header-img {
+    margin-left: 100px; /* ajuste conforme necessidade */
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .ecobot-header-img {
+    margin-right: 160px; /* ajuste conforme necessidade */
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .ecobot-header-img {
+    margin-right: 160px; /* ajuste conforme necessidade */
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
   }
 }

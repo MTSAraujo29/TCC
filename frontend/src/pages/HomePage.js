@@ -95,7 +95,7 @@ function HomePage() {
       <div className="footer-section">
         <div className="footer-content">
           <p>
-            &copy; 2024 Smart Energy. Sistema de Gerenciamento Inteligente de
+            &copy; 2025 Smart Energy. Sistema de Gerenciamento Inteligente de
             Energia.
           </p>
           <p>TCC - Trabalho de Conclusão de Curso</p>

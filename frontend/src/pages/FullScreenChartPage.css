@@ -201,12 +201,8 @@
   align-items: center;
   gap: 0.75rem;
   padding: 1rem 2rem;
-  background: linear-gradient(
-    135deg,
-    var(--neutral-600) 0%,
-    var(--neutral-700) 100%
-  );
-  color: white;
+  background: #f0eaea;
+  color: black;
   border: none;
   border-radius: 12px;
   font-weight: 600;
@@ -219,11 +215,7 @@
 }
 
 .back-button:hover {
-  background: linear-gradient(
-    135deg,
-    var(--neutral-700) 0%,
-    var(--neutral-800) 100%
-  );
+  background: #7dd3fc;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }

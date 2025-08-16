@@ -1497,7 +1497,6 @@ Posso te explicar sobre:
           className={`menu-item ${activeSection === "ecobot" ? "active" : ""}`}
           onClick={() => setActiveSection("ecobot")}
         >
-          <img src={process.env.PUBLIC_URL + "/ST.png"} alt="EcoBot" />
           EcoBot{" "}
         </div>
         <div
@@ -1596,11 +1595,6 @@ Posso te explicar sobre:
                 setIsMobileMenuOpen(false);
               }}
             >
-              <img
-                src={process.env.PUBLIC_URL + "/ST.png"}
-                alt="EcoBot"
-                style={{ width: "20px", height: "20px", marginRight: "10px" }}
-              />
               EcoBot
             </div>
 
@@ -1766,10 +1760,20 @@ Posso te explicar sobre:
                           ...consumptionByTypeOptions.plugins,
                           legend: { display: false },
                           datalabels: { display: false },
+                          title: {
+                            display: true,
+                            text: "Consumo por Tipo de Dispositivo",
+                            color: "black", // <<< COR DO TÍTULO
+                            font: {
+                              size: 14,
+                              weight: "bold",
+                            },
+                          },
                         },
                       }}
                     />
                   </div>
+
                   <div className="legend-list">
                     {(() => {
                       const data = getConsumptionByTypeData();
@@ -1917,7 +1921,7 @@ Posso te explicar sobre:
                           }
                           style={{
                             width: "100%",
-                            background: "#23243a",
+                            background: "#0369a1",
                             color: scheduleDevice ? "#fff" : "#bbb",
                             border: "2px solid #0369a1",
                             borderRadius: 10,
@@ -2474,7 +2478,7 @@ Posso te explicar sobre:
         {/* ========== REPORTS SECTION ========== */}
         {activeSection === "relatorios" && (
           <div className="reports-section">
-            <h2>Relatórios de Consumo</h2>
+            <h1>Relatórios de Consumo</h1>
             <div className="report-summary-card">
               <h3>Resumo Geral</h3>
               <p>
