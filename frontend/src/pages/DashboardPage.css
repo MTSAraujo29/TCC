@@ -725,7 +725,7 @@
   font-weight: 600;
   color: black;
   font-size: 1rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.966);
 }
 
 .form-group input[type="time"] {
@@ -1140,11 +1140,7 @@
 }
 
 .edit-profile-button {
-  background: linear-gradient(
-    135deg,
-    var(--accent-500) 0%,
-    var(--accent-600) 100%
-  );
+  background: #0ea5e9;
   color: white !important;
   border: none;
   border-radius: 8px;

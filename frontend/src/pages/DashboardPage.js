@@ -2452,7 +2452,7 @@ Posso te explicar sobre:
                     fontSize: "1rem",
                   }}
                 >
-                  Agendar Desligamento
+                  Agendar
                 </button>
 
                 {scheduleMessage && (
