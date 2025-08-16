@@ -160,7 +160,7 @@
 .mobile-menu-box {
   position: fixed;
   top: 0;
-  left: 0;
+  left: -300px;
   width: 280px;
   height: 100vh;
   background: linear-gradient(
@@ -171,34 +171,68 @@
   color: white;
   z-index: 9999;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  padding: 2rem 1.5rem;
-  animation: slideInLeft 0.3s ease-out;
+  padding: 0;
+  transition: left 0.3s ease-out;
   overflow-y: auto;
 }
 
-.mobile-menu-box .menu-item {
-  padding: 1rem 2rem;
+.mobile-menu-box.open {
+  left: 0;
+}
+
+.mobile-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.logout-button-mobile {
+.mobile-menu-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+}
+
+.mobile-menu-close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.mobile-menu-close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-menu-item {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-logout-btn {
   background: linear-gradient(
     135deg,
     var(--error-500) 0%,
     var(--error-600) 100%
-  ) !important;
-  margin: 1rem 2rem;
-  border-radius: 12px;
+  );
+  margin: 1rem;
+  border-radius: 8px;
   text-align: center;
-}
-
-@keyframes slideInLeft {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+  justify-content: center;
+  font-weight: 600;
 }
 
 /* ===== MAIN CONTENT ===== */
@@ -216,6 +250,8 @@
     padding: 1rem;
     position: relative;
     z-index: 1;
+    width: 100%;
+    overflow-x: hidden;
   }
 
   .mobile-menu-bar {
@@ -225,6 +261,8 @@
     left: 0;
     right: 0;
     z-index: 998;
+    background: var(--neutral-300);
+    border-bottom: 1px solid var(--neutral-200);
   }
 
   /* Previne scroll quando menu está aberto */

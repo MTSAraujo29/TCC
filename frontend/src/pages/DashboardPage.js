@@ -178,6 +178,23 @@ function DashboardPage() {
     };
   }, [isMobileMenuOpen]);
 
+  // [4] Função para fechar menu ao pressionar ESC
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === "Escape" && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener("keydown", handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isMobileMenuOpen]);
+
   // Adicionar estado para mensagem de sessão expirada
   const [sessionExpired, setSessionExpired] = useState(false);
 
@@ -1545,77 +1562,91 @@ Posso te explicar sobre:
           </button>
         </div>
       )}
+      {/* Mobile Menu Overlay */}
       {window.innerWidth <= 700 && isMobileMenuOpen && (
-        <>
-          <div
-            className="mobile-menu-overlay"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-          <div className="mobile-menu-box">
-            <div
-              className="menu-item"
-              onClick={() => {
-                setActiveSection("inicio");
-                setIsMobileMenuOpen(false);
-              }}
+        <div
+          className="mobile-menu-overlay"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+      {/* Mobile Menu */}
+      {window.innerWidth <= 700 && (
+        <div className={`mobile-menu-box ${isMobileMenuOpen ? "open" : ""}`}>
+          <div className="mobile-menu-header">
+            <span className="mobile-menu-title">Menu</span>
+            <button
+              className="mobile-menu-close-btn"
+              onClick={() => setIsMobileMenuOpen(false)}
             >
-              {" "}
-              Home{" "}
-            </div>
-            <div
-              className="menu-item"
-              onClick={() => {
-                setActiveSection("controle");
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              {" "}
-              Controle de Energia{" "}
-            </div>
-            <div
-              className="menu-item"
-              onClick={() => {
-                setActiveSection("relatorios");
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              {" "}
-              Relatórios{" "}
-            </div>
-            <div
-              className={`menu-item ${
-                activeSection === "ecobot" ? "active" : ""
-              }`}
-              onClick={() => {
-                setActiveSection("ecobot");
-                setIsMobileMenuOpen(false);
-              }}
-              style={{ alignItems: "center" }}
-            >
-              <img src={process.env.PUBLIC_URL + "/ST.png"} alt="EcoBot" />
-              EcoBot{" "}
-            </div>
-            <div
-              className="menu-item"
-              onClick={() => {
-                setActiveSection("configuracoes");
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              Configurações
-            </div>
-            <div
-              className="menu-item logout-button-mobile"
-              onClick={() => {
-                handleLogout();
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              <span style={{ fontSize: "1.1rem" }}></span>
-              Sair da Conta
-            </div>
+              ✕
+            </button>
           </div>
-        </>
+
+          <div
+            className="mobile-menu-item"
+            onClick={() => {
+              setActiveSection("inicio");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Home
+          </div>
+
+          <div
+            className="mobile-menu-item"
+            onClick={() => {
+              setActiveSection("controle");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Controle de Energia
+          </div>
+
+          <div
+            className="mobile-menu-item"
+            onClick={() => {
+              setActiveSection("relatorios");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Relatórios
+          </div>
+
+          <div
+            className="mobile-menu-item"
+            onClick={() => {
+              setActiveSection("ecobot");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            <img
+              src={process.env.PUBLIC_URL + "/ST.png"}
+              alt="EcoBot"
+              style={{ width: "20px", height: "20px", marginRight: "10px" }}
+            />
+            EcoBot
+          </div>
+
+          <div
+            className="mobile-menu-item"
+            onClick={() => {
+              setActiveSection("configuracoes");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Configurações
+          </div>
+
+          <div
+            className="mobile-menu-item mobile-logout-btn"
+            onClick={() => {
+              handleLogout();
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Sair da Conta
+          </div>
+        </div>
       )}
       {/* ==================== MAIN CONTENT ==================== */}{" "}
       <div className="main-content">
