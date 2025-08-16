@@ -73,8 +73,8 @@ function DashboardPage() {
       {
         label: "Consumo Diário (kWh)",
         data: [3.2, 3.5, 2.9, 4.1, 3.8, 4.5, 3.9],
-        borderColor: "#00bcd4",
-        backgroundColor: "rgba(0, 188, 212, 0.4)",
+        borderColor: "#0369a1",
+        backgroundColor: "rgba(3, 105, 161, 0.1)",
         tension: 0.4,
         fill: true,
       },
@@ -88,7 +88,7 @@ function DashboardPage() {
         label: "Consumo Semanal (kWh)",
         data: [22.5, 24.1, 21.8, 25.3],
         borderColor: "#ff9800",
-        backgroundColor: "rgba(255, 152, 0, 0.4)",
+        backgroundColor: "rgba(255, 152, 0, 0.1)",
         tension: 0.4,
         fill: true,
       },
@@ -118,7 +118,7 @@ function DashboardPage() {
           108.0,
         ],
         borderColor: "#e91e63",
-        backgroundColor: "rgba(233, 30, 99, 0.4)",
+        backgroundColor: "rgba(233, 30, 99, 0.1)",
         tension: 0.4,
         fill: true,
       },
@@ -292,7 +292,7 @@ function DashboardPage() {
             ? "Semanal"
             : "Mensal"
         }`,
-        color: "#FFF",
+        color: "black",
         font: { size: 18 },
       },
       tooltip: {
@@ -305,17 +305,17 @@ function DashboardPage() {
     },
     scales: {
       x: {
-        ticks: { color: "#BBB" },
-        grid: { color: "rgba(255,255,255,0.1)", borderColor: "#444" },
+        ticks: { color: "black" },
+        grid: { color: "rgba(0,0,0,0.1)", borderColor: "black" },
       },
       y: {
         ticks: {
-          color: "#BBB",
+          color: "black",
           callback: function (value) {
             return Number(value).toFixed(2) + " kWh";
           },
         },
-        grid: { color: "rgba(255,255,255,0.1)", borderColor: "#444" },
+        grid: { color: "rgba(0,0,0,0.1)", borderColor: "black" },
       },
     },
   };

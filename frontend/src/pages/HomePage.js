@@ -39,10 +39,6 @@ function HomePage() {
               <span className="feature-icon">📊</span>
               <span>Análise Avançada de Consumo</span>
             </div>
-            <div className="feature-item">
-              <span className="feature-icon">🤖</span>
-              <span>Assistente IA para Economia</span>
-            </div>
           </div>
         </div>
       </div>
@@ -52,7 +48,7 @@ function HomePage() {
         <div className="cta-content">
           <h2>Comece a Economizar Energia Hoje</h2>
           <p>
-            Junte-se a milhares de usuários que já estão economizando com Smart
+            Junte-se aos usuários que já estão economizando com Smart
             Energy
           </p>
           <div className="cta-buttons">

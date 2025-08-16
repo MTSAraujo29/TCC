@@ -412,7 +412,7 @@
   background: transparent;
   border: none;
   border-radius: 8px;
-  color: var(--neutral-600);
+  color: black;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -420,7 +420,7 @@
 
 .view-button:hover {
   background: var(--neutral-200);
-  color: var(--neutral-800);
+  color: black;
 }
 
 .active-view-button {
@@ -429,7 +429,7 @@
     var(--primary-500) 0%,
     var(--accent-500) 100%
   );
-  color: white !important;
+  color: black !important;
   box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
   font-weight: 600;
 }
