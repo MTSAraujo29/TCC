@@ -33,6 +33,12 @@
   border-right: 1px solid var(--primary-700);
 }
 
+/* Container principal com sidebar */
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+}
+
 .logo-icon-sidebar {
   text-align: center;
   margin-bottom: 2rem;
@@ -256,15 +262,14 @@
   overflow-y: auto;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 949px) {
+  .sidebar {
+    display: none;
+  }
+
   .main-content {
     margin-left: 0;
-    margin-top: 70px;
-    padding: 1rem;
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    overflow-x: hidden;
+    padding: 2rem;
   }
 
   .mobile-menu-bar {
@@ -276,6 +281,17 @@
     z-index: 998;
     background: var(--neutral-300);
     border-bottom: 1px solid var(--neutral-200);
+  }
+}
+
+@media (max-width: 700px) {
+  .main-content {
+    margin-top: 70px;
+    padding: 1rem;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    overflow-x: hidden;
   }
 }
 

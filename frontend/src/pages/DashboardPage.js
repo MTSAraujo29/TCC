@@ -144,7 +144,7 @@ function DashboardPage() {
   // [2] Função para detectar largura da tela
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth > 700 && isMobileMenuOpen)
+      if (window.innerWidth > 949 && isMobileMenuOpen)
         setIsMobileMenuOpen(false);
     };
     window.addEventListener("resize", handleResize);
@@ -1515,7 +1515,7 @@ Posso te explicar sobre:
         </div>
       </div>
       {/* ==================== MOBILE MENU ==================== */}{" "}
-      {window.innerWidth <= 700 && (
+      {window.innerWidth <= 949 && (
         <div className="mobile-menu-bar">
           <img src="/icon.png" alt="Ícone" className="mobile-menu-icon" />
           <span className="mobile-menu-title">Smart Energy</span>
@@ -1537,14 +1537,14 @@ Posso te explicar sobre:
       )}
       {/* Mobile Menu Overlay */}
       {/* Mobile Sidebar Overlay */}
-      {window.innerWidth <= 700 && isMobileMenuOpen && (
+      {window.innerWidth <= 949 && isMobileMenuOpen && (
         <div
           className="mobile-sidebar-overlay"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
       {/* Mobile Sidebar Menu */}
-      {window.innerWidth <= 700 && (
+      {window.innerWidth <= 949 && (
         <div className={`mobile-sidebar ${isMobileMenuOpen ? "open" : ""}`}>
           <div className="mobile-sidebar-header">
             <span className="mobile-sidebar-title">Smart Energy</span>
