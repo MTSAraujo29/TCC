@@ -151,6 +151,33 @@ function DashboardPage() {
     return () => window.removeEventListener("resize", handleResize);
   }, [isMobileMenuOpen]);
 
+  // [3] Função para detectar cliques fora do menu mobile
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        isMobileMenuOpen &&
+        !event.target.closest(".mobile-menu-box") &&
+        !event.target.closest(".hamburger-btn")
+      ) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+      document.body.classList.add("menu-open");
+    } else {
+      document.body.classList.remove("menu-open");
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+      document.body.classList.remove("menu-open");
+    };
+  }, [isMobileMenuOpen]);
+
   // Adicionar estado para mensagem de sessão expirada
   const [sessionExpired, setSessionExpired] = useState(false);
 
@@ -1504,9 +1531,17 @@ Posso te explicar sobre:
           <span className="mobile-menu-title">Smart Energy</span>
           <button
             className="hamburger-btn"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            onClick={() => {
+              if (isMobileMenuOpen) {
+                setIsMobileMenuOpen(false);
+              } else {
+                setIsMobileMenuOpen(true);
+              }
+            }}
           >
-            <span className="hamburger-icon">☰</span>
+            <span className="hamburger-icon">
+              {isMobileMenuOpen ? "✕" : "☰"}
+            </span>
           </button>
         </div>
       )}
