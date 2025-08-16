@@ -1536,72 +1536,91 @@ Posso te explicar sobre:
         </div>
       )}
       {/* Mobile Menu Overlay */}
-      {/* Mobile Dropdown Menu */}
+      {/* Mobile Sidebar Overlay */}
       {window.innerWidth <= 700 && isMobileMenuOpen && (
-        <div className="mobile-dropdown-menu">
-          <div
-            className="mobile-dropdown-item"
-            onClick={() => {
-              setActiveSection("inicio");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Home
+        <div
+          className="mobile-sidebar-overlay"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+      {/* Mobile Sidebar Menu */}
+      {window.innerWidth <= 700 && (
+        <div className={`mobile-sidebar ${isMobileMenuOpen ? "open" : ""}`}>
+          <div className="mobile-sidebar-header">
+            <span className="mobile-sidebar-title">Smart Energy</span>
+            <button
+              className="mobile-sidebar-close-btn"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              ✕
+            </button>
           </div>
 
-          <div
-            className="mobile-dropdown-item"
-            onClick={() => {
-              setActiveSection("controle");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Controle de Energia
-          </div>
+          <div className="mobile-sidebar-content">
+            <div
+              className="mobile-sidebar-item"
+              onClick={() => {
+                setActiveSection("inicio");
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              Home
+            </div>
 
-          <div
-            className="mobile-dropdown-item"
-            onClick={() => {
-              setActiveSection("relatorios");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Relatórios
-          </div>
+            <div
+              className="mobile-sidebar-item"
+              onClick={() => {
+                setActiveSection("controle");
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              Controle de Energia
+            </div>
 
-          <div
-            className="mobile-dropdown-item"
-            onClick={() => {
-              setActiveSection("ecobot");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            <img
-              src={process.env.PUBLIC_URL + "/ST.png"}
-              alt="EcoBot"
-              style={{ width: "20px", height: "20px", marginRight: "10px" }}
-            />
-            EcoBot
-          </div>
+            <div
+              className="mobile-sidebar-item"
+              onClick={() => {
+                setActiveSection("relatorios");
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              Relatórios
+            </div>
 
-          <div
-            className="mobile-dropdown-item"
-            onClick={() => {
-              setActiveSection("configuracoes");
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Configurações
-          </div>
+            <div
+              className="mobile-sidebar-item"
+              onClick={() => {
+                setActiveSection("ecobot");
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              <img
+                src={process.env.PUBLIC_URL + "/ST.png"}
+                alt="EcoBot"
+                style={{ width: "20px", height: "20px", marginRight: "10px" }}
+              />
+              EcoBot
+            </div>
 
-          <div
-            className="mobile-dropdown-item mobile-dropdown-logout"
-            onClick={() => {
-              handleLogout();
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Sair da Conta
+            <div
+              className="mobile-sidebar-item"
+              onClick={() => {
+                setActiveSection("configuracoes");
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              Configurações
+            </div>
+
+            <div
+              className="mobile-sidebar-item mobile-sidebar-logout"
+              onClick={() => {
+                handleLogout();
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              Sair da Conta
+            </div>
           </div>
         </div>
       )}
