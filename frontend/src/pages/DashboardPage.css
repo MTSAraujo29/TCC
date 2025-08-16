@@ -442,7 +442,7 @@
     var(--accent-500) 0%,
     var(--accent-600) 100%
   );
-  color: white;
+  color: black;
   border: none;
   border-radius: 12px;
   font-weight: 600;
@@ -696,7 +696,7 @@
   color: white;
   padding: 2rem;
   border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 30px #d3d3d3;
   border: 1px solid var(--neutral-600);
   max-width: 500px;
   margin: 2rem auto 0 auto;
@@ -713,7 +713,7 @@
 .schedule-shutdown-card h2 {
   text-align: center;
   margin-bottom: 1.5rem;
-  color: white;
+  color: black;
   font-size: 1.5rem;
   font-weight: 600;
 }
