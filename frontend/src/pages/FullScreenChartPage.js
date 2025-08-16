@@ -275,9 +275,9 @@ export default function FullScreenChartPage() {
         <div className="header-content">
           <div className="header-logo">
             <img src="/icon.png" alt="Smart Energy" />
-            <h1>Smart Energy</h1>
+            <h2>Smart Energy</h2>
           </div>
-          <h2>Análise Detalhada de Consumo</h2>
+          <h3>Análise Detalhada de Consumo</h3>
           <p>Visualize seus dados de energia em tela cheia</p>
         </div>
       </div>
