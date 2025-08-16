@@ -1655,7 +1655,7 @@ Posso te explicar sobre:
                 <p>R$ 12,50</p>
               </div>
             </div>
-            {/* Main Chart Area */}{" "}
+            {/* Main Chart Area */}
             <div className="chart-area-main">
               <div className="chart-card-main">
                 <div className="view-mode-buttons">
@@ -1665,16 +1665,16 @@ Posso te explicar sobre:
                       viewMode === "day" ? "active-view-button" : "view-button"
                     }
                   >
-                    Dia{" "}
-                  </button>{" "}
+                    Dia
+                  </button>
                   <button
                     onClick={() => setViewMode("week")}
                     className={
                       viewMode === "week" ? "active-view-button" : "view-button"
                     }
                   >
-                    Semana{" "}
-                  </button>{" "}
+                    Semana
+                  </button>
                   <button
                     onClick={() => setViewMode("month")}
                     className={
@@ -1683,23 +1683,25 @@ Posso te explicar sobre:
                         : "view-button"
                     }
                   >
-                    Mês{" "}
-                  </button>{" "}
+                    Mês
+                  </button>
                 </div>
-                {getChartData().labels.length > 0 ? (
-                  <Line data={getChartData()} options={chartOptions} />
-                ) : (
-                  <p className="chart-loading-message">
-                    Carregando dados do gráfico...{" "}
-                  </p>
-                )}
+                <div className="chart-container-wrapper">
+                  {getChartData().labels.length > 0 ? (
+                    <Line data={getChartData()} options={chartOptions} />
+                  ) : (
+                    <p className="chart-loading-message">
+                      Carregando dados do gráfico...
+                    </p>
+                  )}
+                </div>
                 <button
                   className="expand-chart-button"
                   onClick={() => navigate("/grafico-cheio")}
                 >
-                  Expandir Gráfico{" "}
-                </button>{" "}
-              </div>{" "}
+                  Expandir Gráfico
+                </button>
+              </div>
             </div>
             {/* Bottom Sections */}{" "}
             <div className="bottom-sections-grid">
@@ -1828,32 +1830,8 @@ Posso te explicar sobre:
               )}
             </div>
             {/* Card: Agendar Desligamento */}
-            <div
-              className="schedule-shutdown-card"
-              style={{
-                background: "#3a3a5e",
-                borderRadius: 12,
-                border: "2px solid #4a4a7e",
-                boxShadow: "0 2px 12px rgba(0, 0, 0, 0.13)",
-                padding: 12,
-                margin: "16px auto 0 auto",
-                maxWidth: 380,
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 0,
-              }}
-            >
-              <h2
-                style={{
-                  fontSize: "1.4rem",
-                  margin: "10px 0 8px 0",
-                  letterSpacing: 0.5,
-                }}
-              >
-                Agendar ON/OFF
-              </h2>
+            <div className="schedule-shutdown-card">
+              <h2 className="schedule-card-title">Agendar ON/OFF</h2>
               <form
                 onSubmit={handleScheduleShutdown}
                 style={{
@@ -2742,42 +2720,20 @@ Posso te explicar sobre:
                 />
               </h1>
               <h4 className="ecobot-subtitle">
-                om: 24 }}> Aqui {userName}, você pode me perguntar sobre
-                conceitos de energia elétrica, entender o que influencia sua
-                conta de luz e receber dicas para um uso mais eficiente dos seus
+                Aqui {userName}, você pode me perguntar sobre conceitos de
+                energia elétrica, entender o que influencia sua conta de luz e
+                receber dicas para um uso mais eficiente dos seus
                 eletrodomésticos. Fique à vontade!
               </h4>
             </div>
-            <div
-              style={{
-                background: "#23234a",
-                borderRadius: 12,
-                padding: 24,
-                maxWidth: 600,
-                width: "100%",
-                minWidth: 320,
-                margin: "0 auto",
-                minHeight: 320,
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-                flex: 1,
-                overflow: "auto",
-              }}
-            >
-              <div style={{ flex: 1, overflowY: "auto", marginBottom: 16 }}>
-                {" "}
+            <div className="ecobot-chat-container">
+              <div className="ecobot-messages">
                 {chatMessages.map((msg, idx) => (
                   <div
                     key={idx}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent:
-                        msg.sender === "EcoBot" ? "flex-start" : "flex-end",
-                      margin: "8px 0",
-                      gap: 8,
-                    }}
+                    className={`ecobot-message ${
+                      msg.sender === "EcoBot" ? "ecobot" : "user"
+                    }`}
                   >
                     {msg.sender === "EcoBot" ? (
                       <>
@@ -2786,9 +2742,7 @@ Posso te explicar sobre:
                           alt="EcoBot"
                           className="ecobot-chat-avatar"
                         />
-                        <span style={{ color: "#00e676", textAlign: "left" }}>
-                          {msg.text}
-                        </span>
+                        <span className="ecobot-message-text">{msg.text}</span>
                       </>
                     ) : (
                       <>
@@ -2797,45 +2751,25 @@ Posso te explicar sobre:
                             ? userName[0].toUpperCase()
                             : "U"}
                         </span>
-                        <span style={{ color: "#fff", textAlign: "right" }}>
-                          {msg.text}
-                        </span>
+                        <span className="user-message-text">{msg.text}</span>
                       </>
                     )}
                   </div>
-                ))}{" "}
-              </div>{" "}
-              <form
-                onSubmit={handleSendMessage}
-                style={{ display: "flex", gap: 8 }}
-              >
+                ))}
+              </div>
+              <form onSubmit={handleSendMessage} className="ecobot-input-form">
                 <input
                   type="text"
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
                   placeholder="Digite sua mensagem..."
-                  style={{
-                    flex: 1,
-                    borderRadius: 8,
-                    border: "none",
-                    padding: 10,
-                  }}
-                />{" "}
-                <button
-                  type="submit"
-                  style={{
-                    background: "#00e676",
-                    color: "#222",
-                    border: "none",
-                    borderRadius: 8,
-                    padding: "0 18px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  Enviar{" "}
-                </button>{" "}
-              </form>{" "}
-            </div>{" "}
+                  className="ecobot-input"
+                />
+                <button type="submit" className="ecobot-send-button">
+                  Enviar
+                </button>
+              </form>
+            </div>
           </div>
         )}
         {/* ========== SETTINGS SECTION ========== */}{" "}
@@ -2977,18 +2911,9 @@ Posso te explicar sobre:
                 )}{" "}
               </div>{" "}
             </div>
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-                marginTop: 32,
-                padding: "24px 0",
-                borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-              }}
-            >
-              <button onClick={handleLogout} className="logout-button-modern">
-                <span style={{ fontSize: "1.2rem" }}>🔒</span>
+            <div className="settings-logout-section">
+              <button onClick={handleLogout} className="settings-logout-button">
+                <span className="logout-icon">🔒</span>
                 Sair da Conta
               </button>
             </div>

@@ -307,6 +307,12 @@
   border: 1px solid var(--neutral-200);
 }
 
+.chart-container-wrapper {
+  height: 400px;
+  margin: 1.5rem 0;
+  position: relative;
+}
+
 .view-mode-buttons {
   display: flex;
   gap: 0.5rem;
@@ -599,16 +605,24 @@
 .schedule-shutdown-card {
   background: linear-gradient(
     135deg,
-    var(--primary-700) 0%,
-    var(--primary-800) 100%
+    var(--neutral-700) 0%,
+    var(--neutral-800) 100%
   );
   color: white;
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-  border: 1px solid var(--primary-600);
+  border: 1px solid var(--neutral-600);
   max-width: 500px;
-  margin: 0 auto;
+  margin: 2rem auto 0 auto;
+}
+
+.schedule-card-title {
+  font-size: 1.4rem;
+  margin: 0 0 1.5rem 0;
+  letter-spacing: 0.5px;
+  text-align: center;
+  font-weight: 600;
 }
 
 .schedule-shutdown-card h2 {
@@ -865,6 +879,441 @@
   width: auto;
   object-fit: contain;
   margin-left: 8px;
+}
+
+/* ===== ECOBOT CHAT ===== */
+.ecobot-chat-container {
+  background: var(--neutral-800);
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 600px;
+  width: 100%;
+  min-width: 320px;
+  margin: 0 auto;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+  overflow: hidden;
+  border: 1px solid var(--neutral-700);
+}
+
+.ecobot-messages {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ecobot-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  max-width: 80%;
+}
+
+.ecobot-message.ecobot {
+  align-self: flex-start;
+  background: rgba(0, 188, 212, 0.1);
+  border: 1px solid rgba(0, 188, 212, 0.2);
+}
+
+.ecobot-message.user {
+  align-self: flex-end;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  flex-direction: row-reverse;
+}
+
+.ecobot-chat-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.user-chat-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-500);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.ecobot-message-text {
+  color: var(--accent-400);
+  text-align: left;
+  line-height: 1.5;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+}
+
+.user-message-text {
+  color: white;
+  text-align: right;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.ecobot-input-form {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.ecobot-input {
+  flex: 1;
+  border-radius: 8px;
+  border: 1px solid var(--neutral-600);
+  padding: 0.75rem 1rem;
+  background: var(--neutral-700);
+  color: white;
+  font-size: 0.9rem;
+}
+
+.ecobot-input:focus {
+  outline: none;
+  border-color: var(--accent-400);
+  box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.2);
+}
+
+.ecobot-input::placeholder {
+  color: var(--neutral-400);
+}
+
+.ecobot-send-button {
+  background: linear-gradient(
+    135deg,
+    var(--accent-500) 0%,
+    var(--accent-600) 100%
+  );
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.ecobot-send-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+}
+
+/* ===== SETTINGS SECTION ===== */
+.settings-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--neutral-200);
+  margin-bottom: 2rem;
+}
+
+.settings-section h2 {
+  color: var(--neutral-900);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.user-settings-card {
+  background: var(--neutral-50);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--neutral-200);
+  margin-bottom: 2rem;
+}
+
+.user-settings-card h3 {
+  color: var(--neutral-900);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.user-settings-card p {
+  color: var(--neutral-700);
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.edit-profile-button {
+  background: linear-gradient(
+    135deg,
+    var(--accent-500) 0%,
+    var(--accent-600) 100%
+  );
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.edit-profile-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+}
+
+.settings-note {
+  color: var(--neutral-500);
+  font-size: 0.85rem;
+  font-style: italic;
+  margin-top: 1rem;
+}
+
+.tasmota-settings-card {
+  background: var(--neutral-50);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--neutral-200);
+}
+
+.tasmota-settings-card h3 {
+  color: var(--neutral-900);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.device-management-description {
+  color: var(--neutral-600);
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.add-device-btn,
+.refresh-devices-btn {
+  background: linear-gradient(
+    135deg,
+    var(--primary-500) 0%,
+    var(--primary-600) 100%
+  );
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.add-device-btn:hover,
+.refresh-devices-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+}
+
+.admin-only-message {
+  color: var(--neutral-500);
+  font-style: italic;
+  text-align: center;
+  padding: 1rem;
+  background: var(--neutral-100);
+  border-radius: 8px;
+  border: 1px solid var(--neutral-300);
+}
+
+.settings-logout-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--neutral-200);
+}
+
+.settings-logout-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(
+    135deg,
+    var(--error-500) 0%,
+    var(--error-600) 100%
+  );
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.settings-logout-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+.logout-icon {
+  font-size: 1.2rem;
+}
+
+/* ===== MODAL STYLES ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 90%;
+}
+
+.modal-card h3 {
+  color: var(--neutral-900);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.modal-card p {
+  color: var(--neutral-700);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.modal-card input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--neutral-200);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.modal-card input:focus {
+  outline: none;
+  border-color: var(--accent-400);
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
+}
+
+.modal-card label {
+  display: block;
+  color: var(--neutral-700);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.button-group.small-buttons {
+  flex-direction: column;
+}
+
+.submit-button,
+.cancel-button,
+.delete-button {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-button {
+  background: linear-gradient(
+    135deg,
+    var(--accent-500) 0%,
+    var(--accent-600) 100%
+  );
+  color: white;
+}
+
+.submit-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+}
+
+.cancel-button {
+  background: linear-gradient(
+    135deg,
+    var(--neutral-200) 0%,
+    var(--neutral-300) 100%
+  );
+  color: var(--neutral-700);
+}
+
+.cancel-button:hover {
+  background: linear-gradient(
+    135deg,
+    var(--neutral-300) 0%,
+    var(--neutral-400) 100%
+  );
+  transform: translateY(-1px);
+}
+
+.delete-button {
+  background: linear-gradient(
+    135deg,
+    var(--error-500) 0%,
+    var(--error-600) 100%
+  );
+  color: white;
+}
+
+.delete-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.delete-account-button {
+  background: linear-gradient(
+    135deg,
+    var(--warning-500) 0%,
+    var(--warning-600) 100%
+  );
+  color: white;
+}
+
+.delete-account-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.small-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
