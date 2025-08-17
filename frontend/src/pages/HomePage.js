@@ -48,8 +48,7 @@ function HomePage() {
         <div className="cta-content">
           <h2>Comece a Economizar Energia Hoje</h2>
           <p>
-            Junte-se aos usuários que já estão economizando com Smart
-            Energy
+            Junte-se aos usuários que já estão economizando com Smart Energy
           </p>
           <div className="cta-buttons">
             <Link to="/login" className="cta-button primary">
@@ -76,7 +75,10 @@ function HomePage() {
           <div className="feature-card">
             <div className="feature-card-icon">🔒</div>
             <h3>Segurança Avançada</h3>
-            <p>Autenticação JWT e criptografia com Bcrypt para proteção dos seus dados</p>
+            <p>
+              Autenticação JWT e criptografia com Bcrypt para proteção dos seus
+              dados
+            </p>
           </div>
           <div className="feature-card">
             <div className="feature-card-icon">📈</div>
@@ -99,7 +101,23 @@ function HomePage() {
             Energia.
           </p>
           <p>TCC - Trabalho de Conclusão de Curso</p>
-          <p>By: <a href="https://github.com/MTSAraujo29" target="_blank" rel="noopener noreferrer">Matheus Araújo</a></p>
+          <p style="font-family: Arial, sans-serif; font-size: 14px; color: #333; display: flex; align-items: center; gap: 6px;">
+            <span>By:</span>
+            <a
+              href="https://github.com/MTSAraujo29"
+              target="_blank"
+              rel="noopener noreferrer"
+              style="text-decoration: none; color: #0366d6; display: flex; align-items: center; gap: 6px;"
+            >
+              <img
+                src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
+                alt="GitHub"
+                width="20"
+                height="20"
+              />
+              <strong>Matheus Araújo</strong>
+            </a>
+          </p>
         </div>
       </div>
     </div>
