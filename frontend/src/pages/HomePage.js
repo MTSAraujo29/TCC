@@ -48,8 +48,7 @@ function HomePage() {
         <div className="cta-content">
           <h2>Comece a Economizar Energia Hoje</h2>
           <p>
-            Junte-se aos usuários que já estão economizando com Smart
-            Energy
+            Junte-se aos usuários que já estão economizando com Smart Energy
           </p>
           <div className="cta-buttons">
             <Link to="/login" className="cta-button primary">
@@ -76,7 +75,10 @@ function HomePage() {
           <div className="feature-card">
             <div className="feature-card-icon">🔒</div>
             <h3>Segurança Avançada</h3>
-            <p>Autenticação JWT e criptografia com Bcrypt para proteção dos seus dados</p>
+            <p>
+              Autenticação JWT e criptografia com Bcrypt para proteção dos seus
+              dados
+            </p>
           </div>
           <div className="feature-card">
             <div className="feature-card-icon">📈</div>
@@ -99,7 +101,51 @@ function HomePage() {
             Energia.
           </p>
           <p>TCC - Trabalho de Conclusão de Curso</p>
-          <p>By: <a href="https://github.com/MTSAraujo29" target="_blank" rel="noopener noreferrer">Matheus Araújo</a></p>
+          <footer
+            style={{
+              color: "#fff",
+              textAlign: "center",
+              padding: "1px",
+            }}
+          >
+            {/* Créditos autor */}
+            <p
+              style={{
+                fontFamily: "Arial, sans-serif",
+                fontSize: "14px",
+                color: "#ccc",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "8px",
+                marginTop: "10px",
+              }}
+            >
+              <span>By:</span>
+              <strong>Matheus Araújo</strong>
+              <a
+                href="https://github.com/MTSAraujo29"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  textDecoration: "none",
+                  color: "#58a6ff",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                {/* Ícone GitHub branco */}
+                <img
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
+                  alt="GitHub"
+                  width="20"
+                  height="20"
+                  style={{ filter: "invert(1)" }} // deixa o ícone branco
+                />
+              </a>
+            </p>
+          </footer>
         </div>
       </div>
     </div>

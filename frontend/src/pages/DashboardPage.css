@@ -391,7 +391,6 @@
   margin: 0;
 }
 
-
 /* ===== CHART AREA ===== */
 .chart-area-main {
   margin-bottom: 2rem;
@@ -602,8 +601,8 @@
 }
 
 .device-feedback-message {
-  background: linear-gradient(135deg, var(--info-500) 0%, var(--info-600) 100%);
-  color: white;
+  background: hsla(0, 0%, 55%, 0.965);
+  color: greenyellow;
   padding: 1rem 1.5rem;
   border-radius: 12px;
   margin-bottom: 1.5rem;
@@ -751,7 +750,7 @@
   outline: none;
   border-color: rgb(35, 36, 58);
   box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
-  background-color: rgb(35, 36, 58);;
+  background-color: rgb(35, 36, 58);
 }
 
 .form-group input[type="checkbox"] {
@@ -809,8 +808,8 @@
   font-size: 0.95rem;
 }
 
-.reports-section h3{
-color: black;  
+.reports-section h3 {
+  color: black;
 }
 
 .overall-report-message {
@@ -1472,7 +1471,6 @@ color: black;
   }
 }
 
-
 @media screen and (max-width: 950px) {
   .ecobot-header-img {
     margin-left: 2px; /* ajuste se quiser diferente */
@@ -1482,7 +1480,7 @@ color: black;
   }
 }
 
-@media screen and (max-width: 800px)  {
+@media screen and (max-width: 800px) {
   .ecobot-header-img {
     margin-left: 40px; /* ajuste conforme necessidade */
     width: 140px;
@@ -1531,9 +1529,108 @@ color: black;
     line-height: 1.2;
     font-size: 0.7rem;
   }
-  
-  .ecobot-header-img{
+
+  .ecobot-header-img {
     margin-right: 120px;
   }
+}
 
+@media (max-width: 320px) {
+  .main-content2 {
+    padding: 0rem;
+  }
+
+  .ecobot-header {
+    padding: 1rem;
+    padding-right: 90px;
+  }
+
+  .ecobot-send-button {
+    margin: -14px;
+  }
+}
+
+@media (max-width: 360px) {
+  .main-content2 {
+    padding: 0rem;
+  }
+
+  .ecobot-header {
+    padding: 1rem;
+    padding-right: 90px;
+  }
+
+  .ecobot-send-button {
+    margin: -14px;
+  }
+}
+
+@media (max-width: 375px) {
+  .main-content2 {
+    padding: 0rem;
+  }
+
+  .ecobot-header {
+    padding: 1rem;
+    padding-right: 0px;
+  }
+
+  .ecobot-send-button {
+    margin: -14px;
+  }
+}
+
+@media (max-width: 390px) {
+  .main-content2 {
+    padding: 0rem;
+  }
+
+  .ecobot-header {
+    padding: 1rem;
+    padding-right: 0px;
+  }
+
+  .ecobot-send-button {
+    margin: -14px;
+  }
+}
+
+@media (max-width: 414px) {
+  .main-content2 {
+    padding: 0rem;
+  }
+
+  .ecobot-header {
+    padding: 1rem;
+    padding-left: 45px;
+  }
+
+  .ecobot-send-button {
+    margin: -14px;
+  }
+}
+
+@media (max-width: 414px) {
+  .main-content2 {
+    padding: 0rem;
+  }
+
+  .ecobot-header {
+    padding: 1rem;
+    padding-left: 45px;
+  }
+
+  .ecobot-send-button {
+    margin: -14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ecobot-header {
+    padding-right: 50px;
+  }
+
+  .main-content {
+    padding-top: 120px;
+  }
 }

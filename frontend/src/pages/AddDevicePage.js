@@ -118,9 +118,9 @@ function AddDevicePage() {
         <div className="add-device-header">
           <div className="add-device-logo">
             <img src="/icon.png" alt="Smart Energy" />
-            <h1>Smart Energy</h1>
+            <h2>Smart Energy</h2>
           </div>
-          <h2>Adicionar Novo Dispositivo</h2>
+          <h3>Adicionar Novo Dispositivo</h3>
           <p>
             Configure um novo dispositivo Tasmota para monitoramento de energia
           </p>

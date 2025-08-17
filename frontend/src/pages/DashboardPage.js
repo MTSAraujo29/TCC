@@ -2476,7 +2476,7 @@ Posso te explicar sobre:
           </>
         )}
         {/* ========== REPORTS SECTION ========== */}
-        {activeSection === "relatorios" && (
+        {activeSection === "relatorios" && (  
           <div className="reports-section">
             <h1>Relatórios de Consumo</h1>
             <div className="report-summary-card">
@@ -2964,8 +2964,7 @@ Posso te explicar sobre:
             </div>
             <div className="settings-logout-section">
               <button onClick={handleLogout} className="settings-logout-button">
-                <span className="logout-icon"></span>
-                Sair da Conta
+              📤Sair da Conta
               </button>
             </div>
           </>

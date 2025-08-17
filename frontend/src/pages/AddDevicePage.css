@@ -275,18 +275,14 @@
 }
 
 .submit-button {
-  background: linear-gradient(
-    135deg,
-    var(--accent-500) 0%,
-    var(--accent-600) 100%
-  );
+  background: #2cd4eb;
   color: white;
   box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
 }
 
 .submit-button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 188, 212, 0.4);
+  box-shadow: 0 6px 20px hsl(187, 100%, 49%);
 }
 
 .submit-button:disabled {
@@ -296,21 +292,13 @@
 }
 
 .cancel-button {
-  background: linear-gradient(
-    135deg,
-    var(--neutral-200) 0%,
-    var(--neutral-300) 100%
-  );
+  background: #f53f3f;
   color: var(--neutral-700);
   border: 1px solid var(--neutral-300);
 }
 
 .cancel-button:hover {
-  background: linear-gradient(
-    135deg,
-    var(--neutral-300) 0%,
-    var(--neutral-400) 100%
-  );
+  background: hwb(0 18% 5%);
   color: var(--neutral-800);
   transform: translateY(-1px);
 }
