@@ -2964,7 +2964,7 @@ Posso te explicar sobre:
             </div>
             <div className="settings-logout-section">
               <button onClick={handleLogout} className="settings-logout-button">
-                <span className="logout-icon">🔒</span>
+                <span className="logout-icon"></span>
                 Sair da Conta
               </button>
             </div>
