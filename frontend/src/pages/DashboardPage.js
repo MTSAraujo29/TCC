@@ -1653,6 +1653,29 @@ Posso te explicar sobre:
                 </p>
               </div>
               <div className="metric-card">
+                <h3>Corrente Atual (A)</h3>
+                <p>
+                  {devices
+                    .filter(
+                      (d) =>
+                        d.powerState &&
+                        d.latestReading &&
+                        typeof d.latestReading.current === "number"
+                    )
+                    .reduce((sum, d) => sum + d.latestReading.current, 0)
+                    .toFixed(2)}
+                  A
+                </p>
+              </div>  
+              <div className="metric-card">
+                <h3>Consumo Total (kWh)</h3>
+                <p>{liveTotalEnergySum.toFixed(2)} kWh</p>
+              </div>
+              <div className="metric-card">
+                <h3>Fatura Estimada</h3>
+                <p>R$ 22,99</p>
+              </div>
+              <div className="metric-card">
                 <h3>Consumo Mensal (kWh)</h3>
                 <p>
                   {(() => {
@@ -1723,44 +1746,6 @@ Posso te explicar sobre:
                     // Se não encontramos os dispositivos específicos, usar o valor armazenado ou o valor atual
                     return storedEnergyValue ? parseFloat(storedEnergyValue).toFixed(2) + " kWh" : totalEnergySum.toFixed(2) + " kWh";
                   })()}
-                </p>
-              </div>
-              <div className="metric-card">
-                <h3>Consumo Total (kWh)</h3>
-                <p>{liveTotalEnergySum.toFixed(2)} kWh</p>
-              </div>
-              <div className="metric-card">
-                <h3>Fatura Estimada</h3>
-                <p>
-                  R${" "}
-                  {(devices.length > 0
-                    ? devices.reduce(
-                        (sum, d) =>
-                          sum +
-                          (d.latestReading &&
-                          d.powerState &&
-                          typeof d.latestReading.totalEnergy === "number"
-                            ? d.latestReading.totalEnergy
-                            : 0),
-                        0
-                      ) * 0.75
-                    : 0
-                  ).toFixed(2)}
-                </p>
-              </div>
-              <div className="metric-card">
-                <h3>Corrente Atual (A)</h3>
-                <p>
-                  {devices
-                    .filter(
-                      (d) =>
-                        d.powerState &&
-                        d.latestReading &&
-                        typeof d.latestReading.current === "number"
-                    )
-                    .reduce((sum, d) => sum + d.latestReading.current, 0)
-                    .toFixed(2)}
-                  A
                 </p>
               </div>
               <div className="metric-card">
@@ -2545,7 +2530,7 @@ Posso te explicar sobre:
           </>
         )}
         {/* ========== REPORTS SECTION ========== */}
-        {activeSection === "relatorios" && (  
+        {activeSection === "relatorios" && (
           <div className="reports-section">
             <h1>Relatórios de Consumo</h1>
             <div className="report-summary-card">
@@ -3033,7 +3018,7 @@ Posso te explicar sobre:
             </div>
             <div className="settings-logout-section">
               <button onClick={handleLogout} className="settings-logout-button">
-              📤Sair da Conta
+                📤Sair da Conta
               </button>
             </div>
           </>
