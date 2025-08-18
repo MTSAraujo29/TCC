@@ -98,6 +98,7 @@ function processDataForTraining(readings) {
   // Agrupar dados por dia
   const dailyConsumption = new Map();
   const monthlyConsumption = new Map();
+  const dailyUsageDuration = new Map(); // Novo mapa para rastrear tempo de uso diário
   
   for (const reading of readings) {
     const date = new Date(reading.timestamp);
@@ -107,6 +108,27 @@ function processDataForTraining(readings) {
     // Processar dados diários
     if (!dailyConsumption.has(dayKey)) {
       dailyConsumption.set(dayKey, []);
+    }
+    
+    // Processar tempo de uso diário
+    if (!dailyUsageDuration.has(dayKey)) {
+      dailyUsageDuration.set(dayKey, {
+        broker1: 0,
+        broker2: 0,
+        totalDuration: 0
+      });
+    }
+    
+    // Registrar tempo de uso se disponível
+    if (reading.activeDuration > 0) {
+      const usageData = dailyUsageDuration.get(dayKey);
+      if (reading.brokerLabel === 'broker1') {
+        usageData.broker1 += reading.activeDuration;
+      } else if (reading.brokerLabel === 'broker2') {
+        usageData.broker2 += reading.activeDuration;
+      }
+      usageData.totalDuration = usageData.broker1 + usageData.broker2;
+      console.log(`[AI] Tempo de uso registrado para ${dayKey}: ${usageData.totalDuration.toFixed(2)} horas`);
     }
     
     // Usar EnergyYesterday se disponível, senão totalEnergy
@@ -124,7 +146,8 @@ function processDataForTraining(readings) {
         totalConsumption: 0,
         daysWithData: new Set(),
         broker1: 0,
-        broker2: 0
+        broker2: 0,
+        totalUsageDuration: 0 // Novo campo para tempo de uso total
       });
     }
     
@@ -141,14 +164,21 @@ function processDataForTraining(readings) {
       
       monthData.totalConsumption += value;
     }
+    
+    // Adicionar tempo de uso ao total mensal
+    if (reading.activeDuration > 0) {
+      const monthData = monthlyConsumption.get(monthKey);
+      monthData.totalUsageDuration += reading.activeDuration;
+    }
   }
   
   // Calcular características para o modelo
-  const features = extractFeatures(dailyConsumption, monthlyConsumption);
+  const features = extractFeatures(dailyConsumption, monthlyConsumption, dailyUsageDuration);
   
   return {
     dailyData: Array.from(dailyConsumption.entries()),
     monthlyData: Array.from(monthlyConsumption.entries()),
+    dailyUsageData: Array.from(dailyUsageDuration.entries()),
     features
   };
 }
@@ -157,23 +187,35 @@ function processDataForTraining(readings) {
  * Extrai características dos dados para treinamento do modelo
  * @param {Map} dailyConsumption - Mapa de consumo diário
  * @param {Map} monthlyConsumption - Mapa de consumo mensal
+ * @param {Map} dailyUsageDuration - Mapa de tempo de uso diário
  * @returns {Object} Características extraídas
  */
-function extractFeatures(dailyConsumption, monthlyConsumption) {
+function extractFeatures(dailyConsumption, monthlyConsumption, dailyUsageDuration) {
   // Calcular consumo médio diário
   let totalDailyConsumption = 0;
   let validDays = 0;
   
-  for (const [, values] of dailyConsumption.entries()) {
+  // Calcular tempo médio de uso diário
+  let totalUsageDuration = 0;
+  let daysWithUsageData = 0;
+  
+  for (const [day, values] of dailyConsumption.entries()) {
     if (values.length > 0) {
       // Somar todos os valores do dia (pode ter broker1 e broker2)
       const dayTotal = values.reduce((sum, item) => sum + item.value, 0);
       totalDailyConsumption += dayTotal;
       validDays++;
     }
+    
+    // Verificar se há dados de tempo de uso para este dia
+    if (dailyUsageDuration.has(day) && dailyUsageDuration.get(day).totalDuration > 0) {
+      totalUsageDuration += dailyUsageDuration.get(day).totalDuration;
+      daysWithUsageData++;
+    }
   }
   
   const averageDailyConsumption = validDays > 0 ? totalDailyConsumption / validDays : 0;
+  const averageDailyUsageDuration = daysWithUsageData > 0 ? totalUsageDuration / daysWithUsageData : 0;
   
   // Calcular tendência (últimos 30 dias vs anteriores)
   const sortedDays = Array.from(dailyConsumption.keys()).sort();
@@ -210,15 +252,26 @@ function extractFeatures(dailyConsumption, monthlyConsumption) {
     broker2Percentage = (broker2Percentage / totalConsumption) * 100;
   }
   
+  // Calcular tempo total de uso mensal
+  let totalMonthlyUsageDuration = 0;
+  for (const [, data] of monthlyConsumption.entries()) {
+    if (data.totalUsageDuration) {
+      totalMonthlyUsageDuration += data.totalUsageDuration;
+    }
+  }
+  
   return {
     averageDailyConsumption,
+    averageDailyUsageDuration,
     trendPercentage,
     seasonalFactor,
     recentAvg,
     olderAvg,
     validDays,
+    daysWithUsageData,
     broker1Percentage,
-    broker2Percentage
+    broker2Percentage,
+    totalMonthlyUsageDuration
   };
 }
 
@@ -284,24 +337,48 @@ function trainMachineLearningModel(processedData) {
  * @returns {Object} Previsão de consumo
  */
 function predictConsumption(features, targetMonth) {
-  // Consumo base mensal (média diária × dias no mês)
   const daysInMonth = new Date(targetMonth.getFullYear(), targetMonth.getMonth() + 1, 0).getDate();
-  let baseConsumption = features.averageDailyConsumption * daysInMonth;
+  let baseConsumption;
   
-  // Aplicar fator sazonal
-  const targetMonthIndex = targetMonth.getMonth();
-  const isSummer = targetMonthIndex >= 11 || targetMonthIndex <= 2; // Dez-Mar
-  const seasonalFactor = isSummer ? 1.15 : 1.0; // 15% mais no verão
-  baseConsumption *= seasonalFactor;
-  
-  // Aplicar tendência
-  const trendFactor = 1 + (features.trendPercentage / 100);
-  baseConsumption *= trendFactor;
+  // NOVA LÓGICA: Usar tempo de uso para calcular consumo se disponível
+  if (features.daysWithUsageData > 0 && features.averageDailyUsageDuration > 0) {
+    console.log(`[AI] Usando nova lógica baseada em tempo de uso para previsão`);
+    
+    // Calcular consumo baseado no tempo de uso total mensal
+    const estimatedMonthlyUsage = features.averageDailyUsageDuration * daysInMonth;
+    
+    // Multiplicar o tempo total de uso por 0.75 para obter kWh conforme solicitado
+    baseConsumption = estimatedMonthlyUsage * 0.75;
+    
+    console.log(`[AI] Tempo médio de uso diário: ${features.averageDailyUsageDuration.toFixed(2)} horas`);
+    console.log(`[AI] Tempo estimado de uso mensal: ${estimatedMonthlyUsage.toFixed(2)} horas`);
+    console.log(`[AI] Consumo estimado baseado no tempo: ${baseConsumption.toFixed(2)} kWh`);
+  } else {
+    // Lógica original: Consumo base mensal (média diária × dias no mês)
+    baseConsumption = features.averageDailyConsumption * daysInMonth;
+    
+    // Aplicar fator sazonal
+    const targetMonthIndex = targetMonth.getMonth();
+    const isSummer = targetMonthIndex >= 11 || targetMonthIndex <= 2; // Dez-Mar
+    const seasonalFactor = isSummer ? 1.15 : 1.0; // 15% mais no verão
+    baseConsumption *= seasonalFactor;
+    
+    // Aplicar tendência
+    const trendFactor = 1 + (features.trendPercentage / 100);
+    baseConsumption *= trendFactor;
+    
+    console.log(`[AI] Usando lógica original para previsão: ${baseConsumption.toFixed(2)} kWh`);
+  }
   
   // Calcular nível de confiança baseado na quantidade de dados
   let confidence = 'baixa';
-  if (features.validDays >= 90) confidence = 'alta';
-  else if (features.validDays >= 60) confidence = 'média';
+  if (features.daysWithUsageData >= 15) {
+    confidence = 'alta'; // Alta confiança se tivermos pelo menos 15 dias com dados de tempo de uso
+  } else if (features.validDays >= 90) {
+    confidence = 'alta';
+  } else if (features.validDays >= 60) {
+    confidence = 'média';
+  }
   
   // Calcular custo estimado
   const estimatedCost = baseConsumption * GOIANIA_TARIFF;
@@ -312,7 +389,8 @@ function predictConsumption(features, targetMonth) {
     estimatedCost: parseFloat(estimatedCost.toFixed(2)),
     confidence,
     broker1Contribution: parseFloat((baseConsumption * (features.broker1Percentage / 100)).toFixed(2)),
-    broker2Contribution: parseFloat((baseConsumption * (features.broker2Percentage / 100)).toFixed(2))
+    broker2Contribution: parseFloat((baseConsumption * (features.broker2Percentage / 100)).toFixed(2)),
+    usedUsageDurationMethod: features.daysWithUsageData > 0 && features.averageDailyUsageDuration > 0
   };
 }
 
@@ -376,7 +454,9 @@ async function generatePrediction(userId) {
         monthlySavings: savedPrediction.monthlySavings,
         confidence: savedPrediction.confidence,
         broker1Contribution: prediction.broker1Contribution,
-        broker2Contribution: prediction.broker2Contribution
+        broker2Contribution: prediction.broker2Contribution,
+        usedUsageDurationMethod: prediction.usedUsageDurationMethod || false,
+        calculationMethod: prediction.usedUsageDurationMethod ? 'tempo_de_uso' : 'consumo_historico'
       }
     };
     
@@ -402,6 +482,9 @@ async function getLatestPrediction(userId) {
       return { success: false, message: 'Nenhuma previsão encontrada.' };
     }
     
+    // Verificar se há um campo para o método de cálculo
+    const usedUsageDurationMethod = prediction.calculationMethod === 'tempo_de_uso';
+    
     return {
       success: true,
       prediction: {
@@ -411,7 +494,9 @@ async function getLatestPrediction(userId) {
         estimatedCost: prediction.estimatedCost,
         monthlySavings: prediction.monthlySavings,
         confidence: prediction.confidence,
-        predictionDate: prediction.predictionDate
+        predictionDate: prediction.predictionDate,
+        usedUsageDurationMethod: usedUsageDurationMethod,
+        calculationMethod: prediction.calculationMethod || 'consumo_historico'
       }
     };
     

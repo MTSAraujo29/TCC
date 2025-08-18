@@ -59,6 +59,10 @@ model EnergyReading {
   ReactivePower   Float? // Potência reativa (var)
   PowerFactor     Float? // Fator de potência
   brokerLabel     String? // Identificador do broker (broker1 ou broker2)
+  activeHours     Int? // Horas que o dispositivo ficou ligado no dia
+  activeMinutes   Int? // Minutos que o dispositivo ficou ligado no dia
+  activeSeconds   Int? // Segundos que o dispositivo ficou ligado no dia
+  activeDuration  Float? // Duração total em horas que o dispositivo ficou ligado no dia
 
   @@map("energyReadings")
 }
@@ -75,6 +79,7 @@ model ConsumptionPrediction {
   previousMonthCost    Float?   // Custo do mês anterior (para cálculo de economia)
   monthlySavings       Float?   // Economia mensal estimada em R$
   confidence           String   // Nível de confiança da previsão (baixa, média, alta)
+  calculationMethod    String?  @default("consumo_historico") // Método de cálculo usado (tempo_de_uso ou consumo_historico)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 
