@@ -187,6 +187,7 @@ const generateMockConsumptionByType = () => {
 
 // === Função Principal do Controlador do Dashboard ===
 async function getDashboardData(req, res) {
+  console.log("getDashboardData foi chamada");
   const userId = req.user.userId;
   const userEmail = req.user.email;
   const isAdmin = req.user.isAdmin; // 'isAdmin' já vem do middleware authenticateToken
@@ -497,7 +498,8 @@ async function getDashboardData(req, res) {
           // Para o mês atual, fixamos o valor em 31.76 kWh conforme solicitado
           // A partir do próximo mês, será calculado somando os valores de totalEnergy dos brokers 1 e 2
           // Forçando o valor fixo para garantir que seja exibido corretamente
-          currentMonthConsumption: 31.76,
+          // Enviando como número para que o frontend possa usar toFixed()
+          currentMonthConsumption: 31.76, // Valor fixo conforme solicitado
           dailyConsumption: parseFloat(dailyConsumptionLastDay.toFixed(2)), // Consumo do último dia
           totalConsumption: parseFloat(totalConsumptionAccumulated.toFixed(2)), // Total acumulado de todos
           currentPower: parseFloat(currentRealPower.toFixed(2)), // Potência instantânea total em Watts
@@ -637,6 +639,7 @@ async function getDashboardData(req, res) {
     }
 
     // console.log('Dados enviados para o frontend:', JSON.stringify(dashboardData, null, 2));
+    console.log("Enviando dashboardData para o frontend com currentMonthConsumption:", dashboardData.metrics.currentMonthConsumption);
     res.json(dashboardData);
   } catch (error) {
     console.error("Erro ao carregar dados do dashboard:", error);
