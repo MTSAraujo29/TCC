@@ -1262,82 +1262,10 @@ function calculateNextMonthForecast(analysis) {
   };
 }
 
-// Retorna a fatura estimada baseada nos últimos 1000 registros de cada broker
-async function getEstimatedBill(req, res) {
-  const userId = req.user.userId;
-  try {
-    // Buscar dispositivos do usuário
-    const devices = await prisma.device.findMany({
-      where: { userId },
-      select: { id: true, broker: true, tasmotaTopic: true },
-    });
-    
-    if (devices.length === 0) {
-      return res.json({
-        estimatedBill: 0,
-        totalConsumption: 0,
-        currency: "BRL",
-        tariff: 0.7,
-        message: "Nenhum dispositivo encontrado"
-      });
-    }
-    
-    // Agrupar dispositivos por broker
-    const brokerDevices = {};
-    devices.forEach(device => {
-      const broker = device.broker || "default";
-      if (!brokerDevices[broker]) brokerDevices[broker] = [];
-      brokerDevices[broker].push(device.id);
-    });
-    
-    let totalConsumption = 0;
-    
-    // Para cada broker, buscar os últimos 1000 registros
-    for (const broker in brokerDevices) {
-      const deviceIds = brokerDevices[broker];
-      
-      // Buscar a última leitura de cada dispositivo
-      const latestReadings = await prisma.energyReading.findMany({
-        where: { deviceId: { in: deviceIds } },
-        orderBy: { timestamp: "desc" },
-        take: 1000,
-        select: { totalEnergy: true, EnergyToday: true, EnergyYesterday: true }
-      });
-      
-      // Somar o consumo total
-      latestReadings.forEach(reading => {
-        // Priorizar EnergyToday, depois EnergyYesterday, por fim totalEnergy
-        if (reading.EnergyToday) {
-          totalConsumption += reading.EnergyToday;
-        } else if (reading.EnergyYesterday) {
-          totalConsumption += reading.EnergyYesterday;
-        } else if (reading.totalEnergy) {
-          totalConsumption += reading.totalEnergy;
-        }
-      });
-    }
-    
-    // Tarifa de Goiânia-GO (ENEL)
-    const tariff = 0.7; // R$/kWh (aproximado)
-    const estimatedBill = totalConsumption * tariff;
-    
-    return res.json({
-      estimatedBill: parseFloat(estimatedBill.toFixed(2)),
-      totalConsumption: parseFloat(totalConsumption.toFixed(2)),
-      currency: "BRL",
-      tariff: tariff,
-      message: "Fatura estimada calculada com sucesso"
-    });
-  } catch (err) {
-    console.error("Erro em getEstimatedBill:", err);
-    return res.status(500).json({ message: "Erro ao calcular fatura estimada." });
-  }
-}
-
 module.exports = {
   getDashboardData,
+  updateWhatsappNumber,
   getDailyEnergyYesterday,
   getWeeklyEnergyYesterday,
   getMonthlyEnergyData,
-  getEstimatedBill
 };
