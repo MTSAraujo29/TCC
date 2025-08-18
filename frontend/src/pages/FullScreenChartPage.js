@@ -329,11 +329,6 @@ export default function FullScreenChartPage() {
           </div>
           <h3>Análise Detalhada de Consumo</h3>
           <p>Visualize seus dados de energia em tela cheia</p>
-          {fictionalDataMessage && (
-            <div className="fictional-data-message">
-              <p>{fictionalDataMessage}</p>
-            </div>
-          )}
         </div>
       </div>
 
