@@ -480,7 +480,8 @@ function DashboardPage() {
           (sum, val) => sum + val,
           0
         );
-        setCurrentMonthConsumption(`${totalConsumptionKwh.toFixed(2)} kWh`);
+        // Usar o valor de currentMonthConsumption enviado pelo backend em vez de calcular
+        setCurrentMonthConsumption(`${data.metrics.currentMonthConsumption.toFixed(2)} kWh`);
         setTotalConsumption(`${totalConsumptionKwh.toFixed(2)} kWh`);
         if (chartDataArray.length > 0) {
           setDailyConsumption(

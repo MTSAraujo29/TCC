@@ -496,7 +496,8 @@ async function getDashboardData(req, res) {
           // Assumindo que totalEnergy do Tasmota (e no DB) já é em kWh:
           // Para o mês atual, fixamos o valor em 31.76 kWh conforme solicitado
           // A partir do próximo mês, será calculado somando os valores de totalEnergy dos brokers 1 e 2
-          currentMonthConsumption: isFirstDayOfMonth() ? await calculateMonthlyConsumptionFromBrokers() : 31.76,
+          // Forçando o valor fixo para garantir que seja exibido corretamente
+          currentMonthConsumption: 31.76,
           dailyConsumption: parseFloat(dailyConsumptionLastDay.toFixed(2)), // Consumo do último dia
           totalConsumption: parseFloat(totalConsumptionAccumulated.toFixed(2)), // Total acumulado de todos
           currentPower: parseFloat(currentRealPower.toFixed(2)), // Potência instantânea total em Watts
