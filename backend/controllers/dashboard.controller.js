@@ -1308,10 +1308,68 @@ function calculateNextMonthForecast(analysis) {
   };
 }
 
+// Importar o serviço de IA para previsão de consumo
+const aiPredictionService = require('../services/aiPrediction.service');
+
+/**
+ * Gera uma nova previsão de consumo para o próximo mês
+ * @param {Object} req - Requisição Express
+ * @param {Object} res - Resposta Express
+ */
+async function generateConsumptionPrediction(req, res) {
+  const userId = req.user.userId;
+  console.log(`[AI-PREDICTION] Gerando previsão para usuário: ${userId}`);
+  
+  try {
+    const result = await aiPredictionService.generatePrediction(userId);
+    
+    if (!result.success) {
+      return res.status(400).json({ message: result.message });
+    }
+    
+    return res.json({
+      message: result.message,
+      prediction: result.prediction
+    });
+    
+  } catch (error) {
+    console.error('[AI-PREDICTION] Erro ao gerar previsão:', error);
+    return res.status(500).json({ message: 'Erro ao gerar previsão de consumo.' });
+  }
+}
+
+/**
+ * Obtém a previsão mais recente para o usuário
+ * @param {Object} req - Requisição Express
+ * @param {Object} res - Resposta Express
+ */
+async function getLatestPrediction(req, res) {
+  const userId = req.user.userId;
+  
+  try {
+    const result = await aiPredictionService.getLatestPrediction(userId);
+    
+    if (!result.success) {
+      return res.status(404).json({ message: result.message });
+    }
+    
+    return res.json({
+      prediction: result.prediction
+    });
+    
+  } catch (error) {
+    console.error('[AI-PREDICTION] Erro ao buscar previsão:', error);
+    return res.status(500).json({ message: 'Erro ao buscar previsão de consumo.' });
+  }
+}
+
 module.exports = {
   getDashboardData,
   updateWhatsappNumber,
   getDailyEnergyYesterday,
   getWeeklyEnergyYesterday,
   getMonthlyEnergyData,
+  getConsumptionForecast,
+  generateConsumptionPrediction,
+  getLatestPrediction
 };

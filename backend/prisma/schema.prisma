@@ -18,6 +18,7 @@ model User {
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
   devices        Device[] // Relacionamento com os dispositivos do usuário
+  predictions    ConsumptionPrediction[] // Relacionamento com as previsões de consumo
   @@map("users")
 }
 
@@ -60,4 +61,22 @@ model EnergyReading {
   brokerLabel     String? // Identificador do broker (broker1 ou broker2)
 
   @@map("energyReadings")
+}
+
+// Modelo para armazenar previsões de consumo de energia geradas pela IA
+model ConsumptionPrediction {
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId               String   @db.ObjectId // ID do usuário dono da previsão
+  user                 User     @relation(fields: [userId], references: [id])
+  predictionDate       DateTime @default(now()) // Data em que a previsão foi gerada
+  targetMonth          DateTime // Mês para o qual a previsão foi feita
+  estimatedConsumption Float    // Consumo estimado em kWh
+  estimatedCost        Float    // Custo estimado em R$
+  previousMonthCost    Float?   // Custo do mês anterior (para cálculo de economia)
+  monthlySavings       Float?   // Economia mensal estimada em R$
+  confidence           String   // Nível de confiança da previsão (baixa, média, alta)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@map("consumptionPredictions")
 }

@@ -368,10 +368,14 @@ app.delete("/api/account", authenticateToken, async (req, res) => {
 });
 
 // =========================================================================
-// Inicialização do Cliente MQTT
+// Inicialização dos Serviços
 // =========================================================================
-// Esta função será chamada uma vez quando o processo Node.js for iniciado no Render.
+// Inicializa o cliente MQTT quando o processo Node.js for iniciado no Render.
 tasmotaService.initializeMqttClients();
+
+// Inicializa o serviço de tarefas agendadas para treinamento e previsão de IA
+const scheduledTasksService = require('../services/scheduledTasks');
+scheduledTasksService.initialize();
 
 // Middleware global de tratamento de erros
 app.use((err, req, res, next) => {
