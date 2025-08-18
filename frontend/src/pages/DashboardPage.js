@@ -639,7 +639,47 @@ function DashboardPage() {
     setUserEmail(storedUserEmail || "");
 
     fetchDashboardData(); // Chama a função para buscar os dados
-    fetchLatestPrediction(); // Busca a previsão mais recente
+    
+    // Busca a previsão mais recente e gera uma nova se não existir
+    const fetchOrGeneratePrediction = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const response = await fetch(`${API_ENDPOINTS.DASHBOARD}/prediction/latest`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Dados de previsão recebidos:", data);
+          
+          if (data.prediction) {
+            setPredictionData({
+              estimatedCost: data.prediction.estimatedCost,
+              monthlySavings: data.prediction.monthlySavings,
+              confidence: data.prediction.confidence
+            });
+          } else {
+            // Se não encontrou previsão, gera uma nova
+            console.log("Nenhuma previsão encontrada, gerando nova previsão...");
+            await generateNewPrediction();
+          }
+        } else {
+          // Se houve erro na busca, gera uma nova previsão
+          console.log("Erro ao buscar previsão, gerando nova previsão...");
+          await generateNewPrediction();
+        }
+      } catch (error) {
+        console.error("Erro ao buscar/gerar previsão:", error);
+      }
+    };
+    
+    fetchOrGeneratePrediction();
 
     // Atualização automática a cada 10 segundos (aumentado de 5 para 10)
     const interval = setInterval(() => {
@@ -648,7 +688,7 @@ function DashboardPage() {
 
     // Limpa o intervalo ao sair do componente
     return () => clearInterval(interval);
-  }, [navigate, fetchDashboardData, fetchLatestPrediction]); // Adicionada dependência 'fetchLatestPrediction'
+  }, [navigate, fetchDashboardData, generateNewPrediction]); // Atualizada dependência para generateNewPrediction
 
   // Função para logout (usada em vários lugares)
   const handleLogout = useCallback(() => {
@@ -1768,13 +1808,6 @@ Posso te explicar sobre:
               <div className="metric-card">
                 <h3>Economia Mensal</h3>
                 <p>R$ {predictionData.monthlySavings.toFixed(2)}</p>
-                <button 
-                  className="refresh-prediction-btn" 
-                  onClick={() => generateNewPrediction()}
-                  title="Atualizar previsão"
-                >
-                  <i className="fas fa-sync-alt"></i>
-                </button>
               </div>
             </div>
             {/* Main Chart Area */}

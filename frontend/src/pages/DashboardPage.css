@@ -399,25 +399,7 @@
   text-transform: capitalize;
 }
 
-.refresh-prediction-btn {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
-  font-size: 12px;
-  margin-top: 5px;
-  transition: background-color 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.refresh-prediction-btn:hover {
-  background-color: #388e3c;
-}
+/* Botão de atualização de previsão removido */
 
 /* ===== CHART AREA ===== */
 .chart-area-main {
