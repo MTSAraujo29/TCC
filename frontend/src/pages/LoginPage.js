@@ -30,6 +30,7 @@ function LoginPage() {
         localStorage.setItem("token", data.token);
         localStorage.setItem("userName", data.user.name);
         localStorage.setItem("userEmail", data.user.email);
+        localStorage.setItem("userRole", data.user.isAdmin ? "admin" : "user"); // Armazenar o papel do usuário
 
         // Calcular expiração do token (1 hora)
         const tokenExp = Math.floor(Date.now() / 1000) + 3600;

@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
   DASHBOARD_CHART_DAILY_YESTERDAY: `${API_BASE_URL}/api/dashboard/chart/daily-energy-yesterday`,
   DASHBOARD_CHART_WEEKLY_YESTERDAY: `${API_BASE_URL}/api/dashboard/chart/weekly-energy-yesterday`,
   DASHBOARD_CHART_MONTHLY_ENERGY_DATA: `${API_BASE_URL}/api/dashboard/chart/monthly-energy-data`,
+  ESTIMATED_BILL: `${API_BASE_URL}/api/dashboard/estimated-bill`,
 };
 
 export default API_BASE_URL;

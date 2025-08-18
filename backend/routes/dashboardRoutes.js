@@ -25,4 +25,11 @@ router.get(
   dashboardController.getMonthlyEnergyData
 );
 
+// Nova rota para obter a fatura estimada baseada nos últimos 1000 registros de cada broker
+router.get(
+  "/estimated-bill",
+  authenticateToken,
+  dashboardController.getEstimatedBill
+);
+
 module.exports = router;
