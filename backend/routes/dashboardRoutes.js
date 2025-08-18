@@ -25,21 +25,4 @@ router.get(
   dashboardController.getMonthlyEnergyData
 );
 
-// Rotas para previsão de consumo de energia com IA
-router.get(
-  "/forecast",
-  authenticateToken,
-  dashboardController.getConsumptionForecast
-);
-router.post(
-  "/prediction/generate",
-  authenticateToken,
-  dashboardController.generateConsumptionPrediction
-);
-router.get(
-  "/prediction/latest",
-  authenticateToken,
-  dashboardController.getLatestPrediction
-);
-
 module.exports = router;

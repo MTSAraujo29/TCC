@@ -391,16 +391,6 @@
   margin: 0;
 }
 
-.metric-card small {
-  display: block;
-  font-size: 12px;
-  color: #666;
-  margin-top: 5px;
-  text-transform: capitalize;
-}
-
-/* Botão de atualização de previsão removido */
-
 /* ===== CHART AREA ===== */
 .chart-area-main {
   margin-bottom: 2rem;

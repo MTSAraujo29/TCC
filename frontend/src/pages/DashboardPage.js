@@ -425,80 +425,6 @@ function DashboardPage() {
     );
   };
 
-  // Estado para armazenar os dados de previsão de IA
-  const [predictionData, setPredictionData] = useState({
-    estimatedCost: 0,
-    monthlySavings: 0,
-    confidence: "baixa"
-  });
-
-  // Função para buscar a previsão mais recente
-  const fetchLatestPrediction = useCallback(async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    try {
-      const response = await fetch(`${API_ENDPOINTS.DASHBOARD}/prediction/latest`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Dados de previsão recebidos:", data);
-        
-        if (data.prediction) {
-          setPredictionData({
-            estimatedCost: data.prediction.estimatedCost,
-            monthlySavings: data.prediction.monthlySavings,
-            confidence: data.prediction.confidence
-          });
-        }
-      } else {
-        console.log("Nenhuma previsão encontrada ou erro ao buscar previsão");
-      }
-    } catch (error) {
-      console.error("Erro ao buscar previsão:", error);
-    }
-  }, []);
-
-  // Função para gerar uma nova previsão
-  const generateNewPrediction = useCallback(async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    try {
-      const response = await fetch(`${API_ENDPOINTS.DASHBOARD}/prediction/generate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Nova previsão gerada:", data);
-        
-        if (data.prediction) {
-          setPredictionData({
-            estimatedCost: data.prediction.estimatedCost,
-            monthlySavings: data.prediction.monthlySavings,
-            confidence: data.prediction.confidence
-          });
-          return true;
-        }
-      }
-      return false;
-    } catch (error) {
-      console.error("Erro ao gerar nova previsão:", error);
-      return false;
-    }
-  }, []);
-
   // Função centralizada para buscar os dados do dashboard
   const fetchDashboardData = useCallback(async () => {
     const token = localStorage.getItem("token");
@@ -571,9 +497,6 @@ function DashboardPage() {
 
         // NOVO: Salvar o gráfico pizza fictício do backend
         setConsumptionByTypeChartData(data.consumptionByTypeChartData || null);
-        
-        // Buscar dados de previsão após carregar os dados do dashboard
-        fetchLatestPrediction();
       } else if (response.status === 401 || response.status === 403) {
         setSessionExpired(true);
         localStorage.removeItem("token");
@@ -639,47 +562,6 @@ function DashboardPage() {
     setUserEmail(storedUserEmail || "");
 
     fetchDashboardData(); // Chama a função para buscar os dados
-    
-    // Busca a previsão mais recente e gera uma nova se não existir
-    const fetchOrGeneratePrediction = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-
-        const response = await fetch(`${API_ENDPOINTS.DASHBOARD}/prediction/latest`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Dados de previsão recebidos:", data);
-          
-          if (data.prediction) {
-            setPredictionData({
-              estimatedCost: data.prediction.estimatedCost,
-              monthlySavings: data.prediction.monthlySavings,
-              confidence: data.prediction.confidence
-            });
-          } else {
-            // Se não encontrou previsão, gera uma nova
-            console.log("Nenhuma previsão encontrada, gerando nova previsão...");
-            await generateNewPrediction();
-          }
-        } else {
-          // Se houve erro na busca, gera uma nova previsão
-          console.log("Erro ao buscar previsão, gerando nova previsão...");
-          await generateNewPrediction();
-        }
-      } catch (error) {
-        console.error("Erro ao buscar/gerar previsão:", error);
-      }
-    };
-    
-    fetchOrGeneratePrediction();
 
     // Atualização automática a cada 10 segundos (aumentado de 5 para 10)
     const interval = setInterval(() => {
@@ -688,7 +570,7 @@ function DashboardPage() {
 
     // Limpa o intervalo ao sair do componente
     return () => clearInterval(interval);
-  }, [navigate, fetchDashboardData, generateNewPrediction]); // Atualizada dependência para generateNewPrediction
+  }, [navigate, fetchDashboardData]); // Dependência adicionada 'fetchDashboardData'
 
   // Função para logout (usada em vários lugares)
   const handleLogout = useCallback(() => {
@@ -1796,8 +1678,7 @@ Posso te explicar sobre:
               </div>
               <div className="metric-card">
                 <h3>Fatura Estimada</h3>
-                <p>R$ {predictionData.estimatedCost.toFixed(2)}</p>
-                <small>Confiança: {predictionData.confidence}</small>
+                <p>R$ 22,99</p>
               </div>
               <div className="metric-card">
                 <h3>Consumo Mensal (kWh)</h3>
@@ -1807,7 +1688,7 @@ Posso te explicar sobre:
               </div>
               <div className="metric-card">
                 <h3>Economia Mensal</h3>
-                <p>R$ {predictionData.monthlySavings.toFixed(2)}</p>
+                <p>R$ 12,50</p>
               </div>
             </div>
             {/* Main Chart Area */}

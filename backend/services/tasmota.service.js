@@ -83,9 +83,6 @@ const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutos
 // Cache em memória para o valor mais recente de energia total de cada dispositivo
 const lastTotalEnergyCache = {};
 
-// Cache para rastrear o tempo de uso dos dispositivos
-const deviceUsageTracker = {};
-
 function updateTotalEnergyCache(deviceId, valor) {
     lastTotalEnergyCache[deviceId] = valor;
 }
@@ -93,144 +90,6 @@ function updateTotalEnergyCache(deviceId, valor) {
 function getTotalEnergyFromCache(deviceId) {
     return lastTotalEnergyCache[deviceId] || null;
 }
-
-// Função para iniciar o rastreamento de tempo de uso quando o dispositivo é ligado
-function startDeviceUsageTracking(deviceId, broker) {
-    const today = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
-    
-    if (!deviceUsageTracker[deviceId]) {
-        deviceUsageTracker[deviceId] = {};
-    }
-    
-    if (!deviceUsageTracker[deviceId][today]) {
-        deviceUsageTracker[deviceId][today] = {
-            totalSeconds: 0,
-            lastStartTime: null,
-            broker: broker
-        };
-    }
-    
-    // Registra o momento em que o dispositivo foi ligado
-    deviceUsageTracker[deviceId][today].lastStartTime = new Date();
-    console.log(`[${broker}] Iniciando rastreamento de tempo de uso para dispositivo ${deviceId} em ${today}`);
-}
-
-// Função para parar o rastreamento e calcular o tempo de uso quando o dispositivo é desligado
-async function stopDeviceUsageTracking(deviceId, broker) {
-    const today = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
-    
-    if (!deviceUsageTracker[deviceId] || !deviceUsageTracker[deviceId][today] || !deviceUsageTracker[deviceId][today].lastStartTime) {
-        console.log(`[${broker}] Nenhum rastreamento ativo para dispositivo ${deviceId} em ${today}`);
-        return;
-    }
-    
-    const startTime = deviceUsageTracker[deviceId][today].lastStartTime;
-    const endTime = new Date();
-    const usageSeconds = Math.floor((endTime - startTime) / 1000);
-    
-    // Adiciona o tempo de uso ao total do dia
-    deviceUsageTracker[deviceId][today].totalSeconds += usageSeconds;
-    deviceUsageTracker[deviceId][today].lastStartTime = null;
-    
-    // Calcula horas, minutos e segundos
-    const hours = Math.floor(deviceUsageTracker[deviceId][today].totalSeconds / 3600);
-    const minutes = Math.floor((deviceUsageTracker[deviceId][today].totalSeconds % 3600) / 60);
-    const seconds = deviceUsageTracker[deviceId][today].totalSeconds % 60;
-    const durationHours = deviceUsageTracker[deviceId][today].totalSeconds / 3600; // Duração em horas (decimal)
-    
-    console.log(`[${broker}] Dispositivo ${deviceId} ficou ligado por ${hours}h ${minutes}m ${seconds}s hoje (total: ${durationHours.toFixed(2)} horas)`);
-    
-    // Salva o tempo de uso no banco de dados
-    try {
-        // Busca a leitura mais recente do dia para este dispositivo
-        const latestReading = await prisma.energyReading.findFirst({
-            where: {
-                deviceId: deviceId,
-                timestamp: {
-                    gte: new Date(today),
-                    lt: new Date(new Date(today).setDate(new Date(today).getDate() + 1))
-                }
-            },
-            orderBy: {
-                timestamp: 'desc'
-            }
-        });
-        
-        if (latestReading) {
-            // Atualiza a leitura com o tempo de uso
-            await prisma.energyReading.update({
-                where: { id: latestReading.id },
-                data: {
-                    activeHours: hours,
-                    activeMinutes: minutes,
-                    activeSeconds: seconds,
-                    activeDuration: parseFloat(durationHours.toFixed(2))
-                }
-            });
-            console.log(`[${broker}] Tempo de uso atualizado no banco de dados para dispositivo ${deviceId}`);
-        } else {
-            console.log(`[${broker}] Nenhuma leitura encontrada hoje para dispositivo ${deviceId}`);
-        }
-    } catch (error) {
-        console.error(`[${broker}] Erro ao salvar tempo de uso para dispositivo ${deviceId}:`, error);
-    }
-}
-
-// Função para atualizar o tempo de uso periodicamente para dispositivos que estão ligados
-async function updateActiveDevicesUsage() {
-    const now = new Date();
-    const today = now.toISOString().split('T')[0];
-    
-    for (const deviceId in deviceUsageTracker) {
-        if (deviceUsageTracker[deviceId][today] && deviceUsageTracker[deviceId][today].lastStartTime) {
-            const startTime = deviceUsageTracker[deviceId][today].lastStartTime;
-            const usageSeconds = Math.floor((now - startTime) / 1000);
-            const totalSeconds = deviceUsageTracker[deviceId][today].totalSeconds + usageSeconds;
-            
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
-            const durationHours = totalSeconds / 3600;
-            
-            const broker = deviceUsageTracker[deviceId][today].broker;
-            
-            try {
-                // Busca a leitura mais recente do dia para este dispositivo
-                const latestReading = await prisma.energyReading.findFirst({
-                    where: {
-                        deviceId: deviceId,
-                        timestamp: {
-                            gte: new Date(today),
-                            lt: new Date(new Date(today).setDate(new Date(today).getDate() + 1))
-                        }
-                    },
-                    orderBy: {
-                        timestamp: 'desc'
-                    }
-                });
-                
-                if (latestReading) {
-                    // Atualiza a leitura com o tempo de uso atual
-                    await prisma.energyReading.update({
-                        where: { id: latestReading.id },
-                        data: {
-                            activeHours: hours,
-                            activeMinutes: minutes,
-                            activeSeconds: seconds,
-                            activeDuration: parseFloat(durationHours.toFixed(2))
-                        }
-                    });
-                    console.log(`[${broker}] Tempo de uso atualizado periodicamente para dispositivo ${deviceId}: ${hours}h ${minutes}m ${seconds}s`);
-                }
-            } catch (error) {
-                console.error(`[${broker}] Erro ao atualizar tempo de uso para dispositivo ${deviceId}:`, error);
-            }
-        }
-    }
-}
-
-// Atualiza o tempo de uso a cada 5 minutos para dispositivos ativos
-setInterval(updateActiveDevicesUsage, 5 * 60 * 1000);
 
 function resetMqttClientInactivityTimer(client, clientName) {
     if (clientName === 'mqttClient') {
@@ -390,13 +249,6 @@ async function handleMqttMessage(topic, message, broker) {
                     data: { powerState: isOn }
                 });
                 // console.log(`Status de powerState atualizado para ${isOn} no device ${tasmotaTopic}`);
-                
-                // Inicia ou para o rastreamento de tempo de uso com base no estado de energia
-                if (isOn) {
-                    startDeviceUsageTracking(device.id, broker);
-                } else {
-                    await stopDeviceUsageTracking(device.id, broker);
-                }
             }
         }
 
@@ -452,13 +304,6 @@ async function handleMqttMessage(topic, message, broker) {
                     data: { powerState: isOn }
                 });
                 // console.log(`Status de powerState (STATE) atualizado para ${isOn} no device ${tasmotaTopic}`);
-                
-                // Inicia ou para o rastreamento de tempo de uso com base no estado de energia
-                if (isOn) {
-                    startDeviceUsageTracking(device.id, broker);
-                } else {
-                    await stopDeviceUsageTracking(device.id, broker);
-                }
             }
         }
 
@@ -477,13 +322,6 @@ async function handleMqttMessage(topic, message, broker) {
                 data: { powerState: isOn }
             });
             // console.log(`Status de powerState (POWER) atualizado para ${isOn} no device ${tasmotaTopic}`);
-            
-            // Inicia ou para o rastreamento de tempo de uso com base no estado de energia
-            if (isOn) {
-                startDeviceUsageTracking(device.id, broker);
-            } else {
-                await stopDeviceUsageTracking(device.id, broker);
-            }
         }
     } catch (error) {
         console.error(`[${broker}] Erro ao processar ou salvar mensagem MQTT:`, error);
