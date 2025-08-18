@@ -1654,7 +1654,18 @@ Posso te explicar sobre:
               </div>
               <div className="metric-card">
                 <h3>Consumo Mensal (kWh)</h3>
-                <p>{currentMonthConsumption}</p>
+                <p>
+                  {devices.length > 0
+                    ? devices.reduce(
+                        (total, device) =>
+                          total +
+                          (device.latestReading && typeof device.latestReading.totalEnergy === "number"
+                            ? device.latestReading.totalEnergy
+                            : 0),
+                        0
+                      ).toFixed(2) + " kWh"
+                    : "0.00 kWh"}
+                </p>
               </div>
               <div className="metric-card">
                 <h3>Consumo Total (kWh)</h3>

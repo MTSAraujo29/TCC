@@ -170,10 +170,46 @@ export default function FullScreenChartPage() {
   const [realWeeklyChart, setRealWeeklyChart] = useState(null);
   const [realMonthlyChart, setRealMonthlyChart] = useState(null);
 
+  // Estado para controlar se os dados são reais ou fictícios
+  const [isRealData, setIsRealData] = useState(true);
+  const [fictionalDataMessage, setFictionalDataMessage] = useState("");
+
   // Buscar dados reais quando possível (token presente). Fallback para MOCK_DATA
   React.useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
+    
+    // Verificar se o usuário é admin (tem acesso a dados reais)
+    const checkUserRole = async () => {
+      try {
+        const response = await fetch(`${API_ENDPOINTS.DASHBOARD}/data`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setIsRealData(data.isRealData);
+          
+          if (!data.isRealData) {
+            setFictionalDataMessage("Os dados exibidos são fictícios. Conta não Admin!");
+            // Para usuários não-admin, usamos os dados fictícios definidos em MOCK_DATA
+            return;
+          } else {
+            setFictionalDataMessage("");
+          }
+        }
+      } catch (error) {
+        console.error("Erro ao verificar tipo de usuário:", error);
+      }
+    };
+
+    checkUserRole();
+
+    // Só busca dados reais se o usuário for admin
     const fetchDaily = async () => {
       const res = await fetch(API_ENDPOINTS.DASHBOARD_CHART_DAILY_YESTERDAY, {
         headers: { Authorization: `Bearer ${token}` },
@@ -240,12 +276,26 @@ export default function FullScreenChartPage() {
         });
       }
     };
-    fetchDaily();
-    fetchWeekly();
-    fetchMonthly();
-  }, []);
+    
+    // Só busca dados reais se o usuário for admin
+    if (isRealData) {
+      fetchDaily();
+      fetchWeekly();
+      fetchMonthly();
+    }
+  }, [isRealData]);
 
   const chartData = (() => {
+    // Se não for dados reais (usuário não-admin), sempre use os dados fictícios
+    if (!isRealData) {
+      if (viewMode === CHART_MODES.DAY)
+        return MOCK_DATA[CHART_MODES.DAY];
+      if (viewMode === CHART_MODES.WEEK)
+        return MOCK_DATA[CHART_MODES.WEEK];
+      return MOCK_DATA[CHART_MODES.MONTH];
+    }
+    
+    // Se for dados reais (usuário admin), use os dados reais quando disponíveis
     if (viewMode === CHART_MODES.DAY)
       return realDailyChart || MOCK_DATA[CHART_MODES.DAY];
     if (viewMode === CHART_MODES.WEEK)
@@ -279,6 +329,11 @@ export default function FullScreenChartPage() {
           </div>
           <h3>Análise Detalhada de Consumo</h3>
           <p>Visualize seus dados de energia em tela cheia</p>
+          {fictionalDataMessage && (
+            <div className="fictional-data-message">
+              <p>{fictionalDataMessage}</p>
+            </div>
+          )}
         </div>
       </div>
 
