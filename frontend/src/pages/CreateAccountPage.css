@@ -139,28 +139,33 @@
 
 .password-input-container .form-input {
   width: 100%;
-  padding-right: 6rem;
+  padding-right: 3rem;
 }
 
 .password-toggle-btn {
   position: absolute;
-  right: 0.5rem;
+  right: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
-  background: var(--neutral-300);
-  border: 1px solid var(--neutral-400);
-  border-radius: var(--radius-md);
-  padding: 0.5rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--neutral-700);
+  background: transparent;
+  border: none;
+  padding: 0.5rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.password-toggle-btn:hover {
-  background: var(--neutral-400);
-  color: var(--neutral-800);
+.password-toggle-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.password-toggle-btn:hover .password-toggle-icon {
+  opacity: 1;
 }
 
 .error-message {

@@ -142,8 +142,13 @@ function CreateAccountPage() {
                 type="button" 
                 className="password-toggle-btn" 
                 onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
               >
-                {showPassword ? "Ocultar" : "Mostrar"}
+                <img 
+                  src="/os.png" 
+                  alt={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  className="password-toggle-icon"
+                />
               </button>
             </div>
           </div>
@@ -167,8 +172,13 @@ function CreateAccountPage() {
                 type="button" 
                 className="password-toggle-btn" 
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                aria-label={showConfirmPassword ? "Ocultar senha" : "Mostrar senha"}
               >
-                {showConfirmPassword ? "Ocultar" : "Mostrar"}
+                <img 
+                  src="/os.png" 
+                  alt={showConfirmPassword ? "Ocultar senha" : "Mostrar senha"}
+                  className="password-toggle-icon"
+                />
               </button>
             </div>
           </div>
