@@ -83,21 +83,44 @@ async function processEnergyData(energyData, deviceId, tasmotaTopic) {
     energyData.timestamp
   );
 
-  // Só salva totalEnergy no último minuto do último dia do mês
-  if (isLastMinuteOfMonth()) {
-    const lastMonthTotal = device.lastSavedTotalEnergy || 0;
-    const monthlyConsumption = calculateMonthlyConsumption(
-      energyData.totalEnergy,
-      lastMonthTotal
-    );
-    dataToSave.totalEnergy = monthlyConsumption;
-    await prisma.device.update({
-      where: { id: deviceId },
-      data: { lastSavedTotalEnergy: energyData.totalEnergy },
+  // Verifica se é o último dia do mês e se o dispositivo ainda não salvou o totalEnergy hoje
+  if (isLastDayOfMonth()) {
+    // Verifica se já salvamos o totalEnergy hoje para este dispositivo
+    const today = new Date();
+    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+    
+    const alreadySavedToday = await prisma.energyReading.findFirst({
+      where: {
+        deviceId,
+        totalEnergy: { not: null },
+        timestamp: {
+          gte: startOfDay,
+          lte: endOfDay
+        }
+      }
     });
-    console.log(
-      `[${tasmotaTopic}] Último minuto do mês - Consumo mensal calculado: ${monthlyConsumption} kWh (Total acumulado: ${energyData.totalEnergy} kWh)`
-    );
+    
+    // Só salva se ainda não salvou hoje
+    if (!alreadySavedToday) {
+      const lastMonthTotal = device.lastSavedTotalEnergy || 0;
+      const monthlyConsumption = calculateMonthlyConsumption(
+        energyData.totalEnergy,
+        lastMonthTotal
+      );
+      dataToSave.totalEnergy = monthlyConsumption;
+      await prisma.device.update({
+        where: { id: deviceId },
+        data: { lastSavedTotalEnergy: energyData.totalEnergy },
+      });
+      console.log(
+        `[${tasmotaTopic}] Último dia do mês - Consumo mensal calculado: ${monthlyConsumption} kWh (Total acumulado: ${energyData.totalEnergy} kWh)`
+      );
+    } else {
+      dataToSave.totalEnergy = null;
+      console.log(`[${tasmotaTopic}] Já salvou totalEnergy hoje, ignorando.`);
+    }
+  // Não precisa de else aqui, já foi tratado acima
   } else {
     dataToSave.totalEnergy = null;
   }
