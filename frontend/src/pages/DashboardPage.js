@@ -209,42 +209,99 @@ function DashboardPage() {
   // Função para buscar o valor ao vivo de energia total de cada dispositivo individualmente
   const fetchLiveTotalEnergyIndividual = useCallback(async () => {
     const token = localStorage.getItem("token");
+    console.log("VERIFICAÇÃO DE COMUNICAÇÃO COM BROKERS");
+    
+    // Identificar dispositivos por broker
+    const broker1Device = devices.find(d => d.broker === "broker1" || d.name.toLowerCase().includes("sala"));
+    const broker2Device = devices.find(d => d.broker === "broker2" || d.name.toLowerCase().includes("câmera"));
+    
     // Broker1 (Sonoff Sala)
-    if (devices[0] && devices[0].powerState) {
+    if (broker1Device && broker1Device.powerState) {
+      console.log(`Dispositivo Broker1 encontrado: ${broker1Device.name} (ID: ${broker1Device.id}), Estado: Ligado`);
       try {
-        const res = await fetch(
-          API_ENDPOINTS.TASMOTA + `/devices/${devices[0].id}/total-energy-live`,
-          {
-            headers: { Authorization: "Bearer " + token },
-          }
-        );
+        const url = API_ENDPOINTS.TASMOTA + `/devices/${broker1Device.id}/total-energy-live`;
+        console.log(`Fazendo requisição para: ${url}`);
+        
+        const res = await fetch(url, {
+          headers: { Authorization: "Bearer " + token },
+        });
         const data = await res.json();
-        setLiveTotalEnergyBroker1(
-          typeof data.totalEnergy === "number" ? data.totalEnergy : 0
-        );
-      } catch {
+        console.log(`Dados recebidos do Broker1: `, data);
+        
+        if (typeof data.totalEnergy === "number") {
+          // Usar o valor exato recebido do backend sem modificações
+          setLiveTotalEnergyBroker1(data.totalEnergy);
+          
+          // Atualizar o valor no estado devices para garantir consistência
+          setDevices(prevDevices => {
+            return prevDevices.map(device => {
+              if (device.id === broker1Device.id && device.latestReading) {
+                return {
+                  ...device,
+                  latestReading: {
+                    ...device.latestReading,
+                    totalEnergy: data.totalEnergy
+                  }
+                };
+              }
+              return device;
+            });
+          });
+        } else {
+          console.log("Valor de energia não é um número válido para Broker1");
+          setLiveTotalEnergyBroker1(0);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar dados do Broker1:", error);
         setLiveTotalEnergyBroker1(0);
       }
     } else {
+      console.log("Dispositivo Broker1 não encontrado ou desligado");
       setLiveTotalEnergyBroker1(0);
     }
+    
     // Broker2 (Sonoff Câmera)
-    if (devices[1] && devices[1].powerState) {
+    if (broker2Device && broker2Device.powerState) {
+      console.log(`Dispositivo Broker2 encontrado: ${broker2Device.name} (ID: ${broker2Device.id}), Estado: Ligado`);
       try {
-        const res = await fetch(
-          API_ENDPOINTS.TASMOTA + `/devices/${devices[1].id}/total-energy-live`,
-          {
-            headers: { Authorization: "Bearer " + token },
-          }
-        );
+        const url = API_ENDPOINTS.TASMOTA + `/devices/${broker2Device.id}/total-energy-live`;
+        console.log(`Fazendo requisição para: ${url}`);
+        
+        const res = await fetch(url, {
+          headers: { Authorization: "Bearer " + token },
+        });
         const data = await res.json();
-        setLiveTotalEnergyBroker2(
-          typeof data.totalEnergy === "number" ? data.totalEnergy : 0
-        );
-      } catch {
+        console.log(`Dados recebidos do Broker2: `, data);
+        
+        if (typeof data.totalEnergy === "number") {
+          // Usar o valor exato recebido do backend sem modificações
+          setLiveTotalEnergyBroker2(data.totalEnergy);
+          
+          // Atualizar o valor no estado devices para garantir consistência
+          setDevices(prevDevices => {
+            return prevDevices.map(device => {
+              if (device.id === broker2Device.id && device.latestReading) {
+                return {
+                  ...device,
+                  latestReading: {
+                    ...device.latestReading,
+                    totalEnergy: data.totalEnergy
+                  }
+                };
+              }
+              return device;
+            });
+          });
+        } else {
+          console.log("Valor de energia não é um número válido para Broker2");
+          setLiveTotalEnergyBroker2(0);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar dados do Broker2:", error);
         setLiveTotalEnergyBroker2(0);
       }
     } else {
+      console.log("Dispositivo Broker2 não encontrado ou desligado");
       setLiveTotalEnergyBroker2(0);
     }
   }, [devices]);
