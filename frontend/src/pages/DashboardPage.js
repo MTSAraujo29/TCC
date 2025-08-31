@@ -1656,6 +1656,8 @@ Posso te explicar sobre:
                         .toFixed(2) + " W"
                     : "0.00 W"}
                 </p>
+                {!isRealData && <span className="data-source-indicator">Dados simulados</span>}
+                {isRealData && <span className="data-source-indicator real">Dados reais</span>}
               </div>
               <div className="metric-card">
                 <h3>Corrente Atual (A)</h3>
@@ -1671,10 +1673,14 @@ Posso te explicar sobre:
                     .toFixed(2)}
                   A
                 </p>
+                {!isRealData && <span className="data-source-indicator">Dados simulados</span>}
+                {isRealData && <span className="data-source-indicator real">Dados reais</span>}
               </div>  
               <div className="metric-card">
                 <h3>Consumo Total (kWh)</h3>
                 <p>{liveTotalEnergySum.toFixed(2)} kWh</p>
+                {!isRealData && <span className="data-source-indicator">Dados simulados</span>}
+                {isRealData && <span className="data-source-indicator real">Dados reais</span>}
               </div>
               <div className="metric-card">
                 <h3>Fatura Estimada Mês Atual</h3>

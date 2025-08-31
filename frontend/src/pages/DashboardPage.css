@@ -375,6 +375,22 @@
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
+.data-source-indicator {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  font-size: 10px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background-color: #ffcc00;
+  color: #333;
+}
+
+.data-source-indicator.real {
+  background-color: #4caf50;
+  color: white;
+}
+
 .metric-card h3 {
   color: black;
   font-size: 0.9rem;
