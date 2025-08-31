@@ -51,6 +51,7 @@ model EnergyReading {
   power           Float // Potência instantânea em Watts (W)
   voltage         Float // Voltagem em Volts (V)
   current         Float // Corrente em Amperes (A)
+  totalEnergy     Float? // Energia total acumulada em kWh (AGORA OPCIONAL - só salvo no último dia do mês)
   EnergyToday     Float? // Energia consumida hoje (kWh)
   EnergyYesterday Float? // Energia consumida ontem (kWh)
   ApparentPower   Float? // Potência aparente (VA)
@@ -59,29 +60,4 @@ model EnergyReading {
   brokerLabel     String? // Identificador do broker (broker1 ou broker2)
 
   @@map("energyReadings")
-}
-
-// Novo modelo para armazenar as leituras de energia total dos brokers no último dia do mês
-model EnergyTotalBrokers {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  deviceId    String   @db.ObjectId // ID do dispositivo Tasmota
-  broker      String   // Identificador do broker (broker1 ou broker2)
-  totalEnergy Float    // Energia total acumulada em kWh
-  timestamp   DateTime @default(now()) // Data e hora da leitura
-  month       Int      // Mês da leitura (1-12)
-  year        Int      // Ano da leitura
-
-  @@map("energyTotalBrokers")
-}
-
-// Novo modelo para armazenar os valores de economia mensal
-model MonthlySavings {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  month          Int      // Mês (1-12)
-  year           Int      // Ano
-  billAmount     Float    // Valor estimado da fatura em R$
-  totalConsumption Float   // Consumo total em kWh
-  timestamp      DateTime @default(now()) // Data de registro
-
-  @@map("monthlySavings")
 }

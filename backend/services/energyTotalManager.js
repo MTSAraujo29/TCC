@@ -18,15 +18,6 @@ function isLastDayOfMonth() {
 }
 
 /**
- * Verifica se hoje é o primeiro dia do mês
- * @returns {boolean}
- */
-function isFirstDayOfMonth() {
-  const today = new Date();
-  return today.getDate() === 1;
-}
-
-/**
  * Verifica se hoje é o penúltimo dia do mês
  * @returns {boolean}
  */
@@ -73,31 +64,6 @@ function calculateMonthlyConsumption(currentTotalEnergy, lastSavedTotalEnergy) {
   return monthlyConsumption;
 }
 
-/**
- * Verifica se já salvamos a leitura de energia total para este dispositivo e broker hoje
- * @param {string} deviceId - ID do dispositivo
- * @param {string} broker - Identificador do broker
- * @returns {Promise<boolean>} - True se já salvou hoje, False caso contrário
- */
-async function hasAlreadySavedEnergyTotalToday(deviceId, broker) {
-  const today = new Date();
-  const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
-  
-  const alreadySaved = await prisma.energyTotalBrokers.findFirst({
-    where: {
-      deviceId,
-      broker,
-      timestamp: {
-        gte: startOfDay,
-        lte: endOfDay
-      }
-    }
-  });
-  
-  return !!alreadySaved;
-}
-
 // ==============================================
 // Core Processing Functions
 // ==============================================
@@ -107,49 +73,56 @@ async function hasAlreadySavedEnergyTotalToday(deviceId, broker) {
  * @param {Object} energyData - Dados de energia do Tasmota
  * @param {string} deviceId - ID do dispositivo
  * @param {string} tasmotaTopic - Tópico do dispositivo
- * @param {string} brokerLabel - Identificador do broker (broker1 ou broker2)
  * @returns {Object} Dados processados para salvar no banco
  */
-async function processEnergyData(energyData, deviceId, tasmotaTopic, brokerLabel) {
+async function processEnergyData(energyData, deviceId, tasmotaTopic) {
   const device = await getDevice(deviceId);
   const dataToSave = prepareBaseData(
     energyData,
     deviceId,
     energyData.timestamp
   );
-  
-  // Adiciona o brokerLabel aos dados a serem salvos
-  dataToSave.brokerLabel = brokerLabel;
 
-  // Adiciona explicitamente os campos de energia para evitar valores undefined
-  // Não salvamos totalEnergy no modelo EnergyReading, apenas no EnergyTotalBrokers no último dia do mês
-  dataToSave.EnergyToday = energyData.EnergyToday || 0;
-  dataToSave.EnergyYesterday = energyData.EnergyYesterday || 0;
-
-  // Verifica se é o último dia do mês
+  // Verifica se é o último dia do mês e se o dispositivo ainda não salvou o totalEnergy hoje
   if (isLastDayOfMonth()) {
-    // Verifica se já salvamos o totalEnergy hoje para este dispositivo e broker no novo modelo EnergyTotalBrokers
-    const alreadySavedToday = await hasAlreadySavedEnergyTotalToday(deviceId, brokerLabel);
+    // Verifica se já salvamos o totalEnergy hoje para este dispositivo
+    const today = new Date();
+    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
     
-    // Só salva se ainda não salvou hoje no novo modelo
-    if (!alreadySavedToday && energyData.totalEnergy) {
-      const today = new Date();
-      
-      // Salva no novo modelo EnergyTotalBrokers
-      await prisma.energyTotalBrokers.create({
-        data: {
-          deviceId,
-          broker: brokerLabel,
-          totalEnergy: energyData.totalEnergy,
-          month: today.getMonth() + 1, // Mês (1-12)
-          year: today.getFullYear()
+    const alreadySavedToday = await prisma.energyReading.findFirst({
+      where: {
+        deviceId,
+        totalEnergy: { not: null },
+        timestamp: {
+          gte: startOfDay,
+          lte: endOfDay
         }
-      });
-      
-      console.log(
-        `[${tasmotaTopic}] Último dia do mês - Energia total do broker ${brokerLabel} salva: ${energyData.totalEnergy} kWh`
+      }
+    });
+    
+    // Só salva se ainda não salvou hoje
+    if (!alreadySavedToday) {
+      const lastMonthTotal = device.lastSavedTotalEnergy || 0;
+      const monthlyConsumption = calculateMonthlyConsumption(
+        energyData.totalEnergy,
+        lastMonthTotal
       );
+      dataToSave.totalEnergy = monthlyConsumption;
+      await prisma.device.update({
+        where: { id: deviceId },
+        data: { lastSavedTotalEnergy: energyData.totalEnergy },
+      });
+      console.log(
+        `[${tasmotaTopic}] Último dia do mês - Consumo mensal calculado: ${monthlyConsumption} kWh (Total acumulado: ${energyData.totalEnergy} kWh)`
+      );
+    } else {
+      dataToSave.totalEnergy = null;
+      console.log(`[${tasmotaTopic}] Já salvou totalEnergy hoje, ignorando.`);
     }
+  // Não precisa de else aqui, já foi tratado acima
+  } else {
+    dataToSave.totalEnergy = null;
   }
 
   // Sempre retorna o objeto completo para ser salvo no banco
@@ -187,19 +160,17 @@ function prepareBaseData(energyData, deviceId, timestamp) {
       new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
     );
   }
-  
-  // Garante que todos os valores numéricos sejam definidos (não undefined)
   return {
     deviceId,
     timestamp: dateBrasilia,
-    power: energyData.power || 0,
-    voltage: energyData.voltage || 0,
-    current: energyData.current || 0,
-    EnergyToday: energyData.EnergyToday || 0,
-    EnergyYesterday: energyData.EnergyYesterday || 0,
-    ApparentPower: energyData.ApparentPower || 0,
-    ReactivePower: energyData.ReactivePower || 0,
-    PowerFactor: energyData.PowerFactor || 0,
+    power: energyData.power,
+    voltage: energyData.voltage,
+    current: energyData.current,
+    EnergyToday: energyData.EnergyToday,
+    EnergyYesterday: energyData.EnergyYesterday,
+    ApparentPower: energyData.ApparentPower,
+    ReactivePower: energyData.ReactivePower,
+    PowerFactor: energyData.PowerFactor,
   };
 }
 
@@ -214,20 +185,18 @@ function prepareBaseData(energyData, deviceId, timestamp) {
  */
 async function getCurrentTotalEnergyForDisplay(deviceId) {
   try {
-    // Buscar o último registro de energia total do dispositivo no modelo EnergyTotalBrokers
-    const lastTotalEnergyRecords = await prisma.energyTotalBrokers.findMany({
+    const lastReadingWithTotal = await prisma.energyReading.findFirst({
       where: {
         deviceId,
+        totalEnergy: { not: null },
       },
       orderBy: { timestamp: "desc" },
-      take: 1,
     });
 
-    if (lastTotalEnergyRecords && lastTotalEnergyRecords.length > 0) {
-      return lastTotalEnergyRecords[0].totalEnergy;
+    if (lastReadingWithTotal) {
+      return lastReadingWithTotal.totalEnergy;
     }
 
-    // Se não encontrar no EnergyTotalBrokers, busca no dispositivo
     const device = await prisma.device.findUnique({
       where: { id: deviceId },
     });
@@ -246,20 +215,6 @@ async function getCurrentTotalEnergyForDisplay(deviceId) {
  */
 async function getAccumulatedTotalEnergy(deviceId) {
   try {
-    // Buscar o último registro de energia total do dispositivo no modelo EnergyTotalBrokers
-    const lastTotalEnergyRecords = await prisma.energyTotalBrokers.findMany({
-      where: {
-        deviceId,
-      },
-      orderBy: { timestamp: "desc" },
-      take: 1,
-    });
-
-    if (lastTotalEnergyRecords && lastTotalEnergyRecords.length > 0) {
-      return lastTotalEnergyRecords[0].totalEnergy;
-    }
-
-    // Se não encontrar no EnergyTotalBrokers, busca no dispositivo
     const device = await prisma.device.findUnique({
       where: { id: deviceId },
     });
@@ -277,12 +232,10 @@ async function getAccumulatedTotalEnergy(deviceId) {
 
 module.exports = {
   isLastDayOfMonth,
-  isFirstDayOfMonth,
   isPenultimateDayOfMonth,
   isLastMinuteOfMonth,
   calculateMonthlyConsumption,
   processEnergyData,
   getCurrentTotalEnergyForDisplay,
   getAccumulatedTotalEnergy,
-  hasAlreadySavedEnergyTotalToday,
 };
