@@ -297,6 +297,7 @@ async function getDashboardData(req, res) {
           macAddress: device.macAddress,
           model: device.model,
           powerState: device.powerState, // PowerState vem do modelo Device
+          broker: device.broker, // Adiciona o campo broker ao objeto
           totalEnergy: totalEnergyFromBroker || 0, // Adiciona totalEnergy ao objeto principal
           latestReading: latestReading
             ? {

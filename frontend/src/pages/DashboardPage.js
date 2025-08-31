@@ -473,7 +473,28 @@ function DashboardPage() {
         }
 
         // ATUALIZADO: `setDevices` agora usa `data.userDevices`
-        setDevices(data.userDevices || []);
+        const userDevices = data.userDevices || [];
+        
+        // DEBUG: Verificar se os dispositivos têm o campo broker
+        console.log("=== VERIFICAÇÃO DE BROKERS NO FRONTEND ===");
+        console.log("Dispositivos recebidos do backend:", userDevices);
+        
+        if (userDevices.length === 0) {
+          console.log("❌ Nenhum dispositivo encontrado!");
+        } else {
+          const devicesWithoutBroker = userDevices.filter(d => !d.broker);
+          
+          if (devicesWithoutBroker.length > 0) {
+            console.log("❌ PROBLEMA: Dispositivos sem broker definido:");
+            devicesWithoutBroker.forEach(device => {
+              console.log(`- ${device.name} (ID: ${device.id})`);
+            });
+          } else {
+            console.log("✅ Todos os dispositivos têm o campo broker definido.");
+          }
+        }
+        
+        setDevices(userDevices);
 
         const chartDataArray =
           data.mainChartData &&
@@ -802,12 +823,24 @@ function DashboardPage() {
 
   // Função utilitária para pegar energia total por broker
   function getTotalEnergyByBroker(devices, brokerLabel) {
-    const device = devices.find((d) => d.broker === brokerLabel);
-    return device &&
+    console.log(`Buscando dispositivo com broker=${brokerLabel}`);
+    console.log('Dispositivos disponíveis:', devices);
+    
+    const device = devices.find((d) => {
+      console.log(`Verificando dispositivo: ${d.name}, broker=${d.broker}`);
+      return d.broker === brokerLabel;
+    });
+    
+    console.log('Dispositivo encontrado:', device);
+    
+    const result = device &&
       device.latestReading &&
       typeof device.latestReading.totalEnergy === "number"
       ? device.latestReading.totalEnergy
       : 0;
+      
+    console.log(`Energia total para ${brokerLabel}: ${result}`);
+    return result;
   }
 
   // [NOVO] Estado para controlar a seção EcoBot
