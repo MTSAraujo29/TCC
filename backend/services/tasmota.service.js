@@ -7,70 +7,37 @@
 const mqtt = require('mqtt');
 const { PrismaClient } = require('@prisma/client'); // Importa o PrismaClient
 const energyTotalManager = require('./energyTotalManager'); // Importa o novo serviço
+const mqttConfig = require('../config/mqtt.config'); // Importa configurações MQTT centralizadas
 
 // Instancia o PrismaClient uma única vez
 const prisma = new PrismaClient();
 
-// --- Configurações do MQTT (Broker HiveMQ Cloud) ---
-// Lendo do .env
-const MQTT_HOST = process.env.MQTT_HOST;
-const MQTT_PORT = process.env.MQTT_PORT || 8883;
-const MQTT_USERNAME = process.env.MQTT_USERNAME;
-const MQTT_PASSWORD = process.env.MQTT_PASSWORD;
-const MQTT_PROTOCOL = process.env.MQTT_PROTOCOL || 'mqtts';
-const MQTT_URL = process.env.MQTT_URL;
-const MQTT_WS_URL = process.env.MQTT_WS_URL;
-
-// --- Configurações do MQTT Broker 2 ---
-const MQTT_HOST2 = process.env.MQTT_HOST2;
-const MQTT_PORT2 = process.env.MQTT_PORT2 || 8883;
-const MQTT_USERNAME2 = process.env.MQTT_USERNAME2;
-const MQTT_PASSWORD2 = process.env.MQTT_PASSWORD2;
-const MQTT_PROTOCOL2 = process.env.MQTT_PROTOCOL2 || 'mqtts';
-const MQTT_URL2 = process.env.MQTT_TLS_URL2;
-const MQTT_WS_URL2 = process.env.MQTT_TLS_WS_URL2;
-
-// Tópicos dos seus Sonoffs (ajuste conforme os Client IDs que você definiu no Tasmota)
-// Ex: Se o Client ID do seu Sonoff no Tasmota for 'sonoff_tv_sala', o tópico será 'tele/sonoff_tv_sala/STATE'
-const SONOFF_TOPICS = [
-    'stat/tasmota_C2BE64/STATUS10',
-    'stat/tasmota_C2BE64/STATUS11',
-    'stat/tasmota_C2BE64/POWER',
-    'tele/tasmota_C2BE64/SENSOR',
-    'tele/tasmota_C2BE64/STATE',
-    'stat/tasmota_C3B7EC/STATUS10',
-    'stat/tasmota_C3B7EC/STATUS11',
-    'stat/tasmota_C3B7EC/POWER',
-    'tele/tasmota_C3B7EC/SENSOR',
-    'tele/tasmota_C3B7EC/STATE'
-];
-
 // Client ID único para este backend MQTT
 const CLIENT_ID = `backend_tcc_monitor_${Math.random().toString(16).substr(2, 8)}`;
 
+// Configurações para o Broker 1
 const MQTT_OPTIONS = {
-    port: MQTT_PORT,
-    username: MQTT_USERNAME,
-    password: MQTT_PASSWORD,
+    host: mqttConfig.broker1.host,
+    port: mqttConfig.broker1.port,
+    username: mqttConfig.broker1.username,
+    password: mqttConfig.broker1.password,
     clientId: CLIENT_ID,
-    clean: true,
-    keepalive: 60,
-    reconnectPeriod: 1000,
-    protocol: MQTT_PROTOCOL,
-    rejectUnauthorized: false // Em produção, para certificados de CA confiável, pode ser true. Para desenvolvimento, false pode ser útil.
+    ...mqttConfig.broker1.options
 };
 
+// Configurações para o Broker 2
 const MQTT_OPTIONS2 = {
-    port: MQTT_PORT2,
-    username: MQTT_USERNAME2,
-    password: MQTT_PASSWORD2,
-    clientId: CLIENT_ID,
-    clean: true,
-    keepalive: 60,
-    reconnectPeriod: 1000,
-    protocol: MQTT_PROTOCOL2,
-    rejectUnauthorized: false
+    host: mqttConfig.broker2.host,
+    port: mqttConfig.broker2.port,
+    username: mqttConfig.broker2.username,
+    password: mqttConfig.broker2.password,
+    clientId: CLIENT_ID + '_broker2', // Adicionando sufixo para evitar conflito de clientId
+    ...mqttConfig.broker2.options
 };
+
+// Tópicos para cada broker
+const BROKER1_TOPICS = mqttConfig.topics.broker1;
+const BROKER2_TOPICS = mqttConfig.topics.broker2;
 
 let mqttClient = null;
 let mqttClient2 = null;
@@ -78,7 +45,7 @@ let mqttClientInitCount = 0;
 let mqttClient2InitCount = 0;
 let mqttClientInactivityTimer = null;
 let mqttClient2InactivityTimer = null;
-const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutos
+const INACTIVITY_TIMEOUT_MS = mqttConfig.inactivityTimeout; // Definido no arquivo de configuração
 
 // Cache em memória para o valor mais recente de energia total de cada dispositivo
 const lastTotalEnergyCache = {};
@@ -118,11 +85,14 @@ async function initializeMqttClients() {
     if (!mqttClient) {
         mqttClientInitCount++;
         console.log(`[MQTT] Inicializando conexão MQTT 1 (vezes inicializado: ${mqttClientInitCount})`);
-        console.log(`Tentando conectar ao broker MQTT 1: ${MQTT_PROTOCOL}://${MQTT_HOST}:${MQTT_PORT}`);
-        mqttClient = mqtt.connect(`${MQTT_PROTOCOL}://${MQTT_HOST}:${MQTT_PORT}`, MQTT_OPTIONS);
+        console.log(`Tentando conectar ao broker MQTT 1: ${mqttConfig.broker1.protocol}://${mqttConfig.broker1.host}:${mqttConfig.broker1.port}`);
+        console.log('Opções de conexão MQTT 1:', JSON.stringify(MQTT_OPTIONS, null, 2));
+        
+        try {
+            mqttClient = mqtt.connect(`${mqttConfig.broker1.protocol}://${mqttConfig.broker1.host}:${mqttConfig.broker1.port}`, MQTT_OPTIONS);
         mqttClient.on('connect', () => {
             console.log('Conectado ao broker MQTT 1!');
-            SONOFF_TOPICS.filter(t => t.includes('C2BE64')).forEach(topic => {
+            BROKER1_TOPICS.forEach(topic => {
                 mqttClient.subscribe(topic, (err) => {
                     if (!err) {
                         console.log(`[Broker1] Inscrito no tópico: ${topic}`);
@@ -146,6 +116,15 @@ async function initializeMqttClients() {
         mqttClient.on('error', (err) => {
             console.error('[MQTT] Erro na conexão MQTT 1:', err);
         });
+        
+        // Adiciona um handler para o evento 'offline'
+        mqttClient.on('offline', () => {
+            console.warn('[MQTT] Conexão MQTT 1 está offline');
+        });
+        
+        } catch (error) {
+            console.error('[MQTT] Erro ao criar conexão MQTT 1:', error);
+        }
     } else {
         console.log('[MQTT] mqttClient já inicializado, reutilizando conexão existente.');
     }
@@ -153,11 +132,14 @@ async function initializeMqttClients() {
     if (!mqttClient2) {
         mqttClient2InitCount++;
         console.log(`[MQTT] Inicializando conexão MQTT 2 (vezes inicializado: ${mqttClient2InitCount})`);
-        console.log(`Tentando conectar ao broker MQTT 2: ${MQTT_PROTOCOL2}://${MQTT_HOST2}:${MQTT_PORT2}`);
-        mqttClient2 = mqtt.connect(`${MQTT_PROTOCOL2}://${MQTT_HOST2}:${MQTT_PORT2}`, MQTT_OPTIONS2);
+        console.log(`Tentando conectar ao broker MQTT 2: ${mqttConfig.broker2.protocol}://${mqttConfig.broker2.host}:${mqttConfig.broker2.port}`);
+        console.log('Opções de conexão MQTT 2:', JSON.stringify(MQTT_OPTIONS2, null, 2));
+        
+        try {
+            mqttClient2 = mqtt.connect(`${mqttConfig.broker2.protocol}://${mqttConfig.broker2.host}:${mqttConfig.broker2.port}`, MQTT_OPTIONS2);
         mqttClient2.on('connect', () => {
             console.log('Conectado ao broker MQTT 2!');
-            SONOFF_TOPICS.filter(t => t.includes('C3B7EC')).forEach(topic => {
+            BROKER2_TOPICS.forEach(topic => {
                 mqttClient2.subscribe(topic, (err) => {
                     if (!err) {
                         console.log(`[Broker2] Inscrito no tópico: ${topic}`);
@@ -181,6 +163,15 @@ async function initializeMqttClients() {
         mqttClient2.on('error', (err) => {
             console.error('[MQTT] Erro na conexão MQTT 2:', err);
         });
+        
+        // Adiciona um handler para o evento 'offline'
+        mqttClient2.on('offline', () => {
+            console.warn('[MQTT] Conexão MQTT 2 está offline');
+        });
+        
+        } catch (error) {
+            console.error('[MQTT] Erro ao criar conexão MQTT 2:', error);
+        }
     } else {
         console.log('[MQTT] mqttClient2 já inicializado, reutilizando conexão existente.');
     }

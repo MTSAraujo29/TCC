@@ -121,6 +121,11 @@ async function processEnergyData(energyData, deviceId, tasmotaTopic, brokerLabel
   // Adiciona o brokerLabel aos dados a serem salvos
   dataToSave.brokerLabel = brokerLabel;
 
+  // Adiciona explicitamente os campos de energia para evitar valores undefined
+  // Não salvamos totalEnergy no modelo EnergyReading, apenas no EnergyTotalBrokers no último dia do mês
+  dataToSave.EnergyToday = energyData.EnergyToday || 0;
+  dataToSave.EnergyYesterday = energyData.EnergyYesterday || 0;
+
   // Verifica se é o último dia do mês
   if (isLastDayOfMonth()) {
     // Verifica se já salvamos o totalEnergy hoje para este dispositivo e broker no novo modelo EnergyTotalBrokers
@@ -182,17 +187,19 @@ function prepareBaseData(energyData, deviceId, timestamp) {
       new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
     );
   }
+  
+  // Garante que todos os valores numéricos sejam definidos (não undefined)
   return {
     deviceId,
     timestamp: dateBrasilia,
-    power: energyData.power,
-    voltage: energyData.voltage,
-    current: energyData.current,
-    EnergyToday: energyData.EnergyToday,
-    EnergyYesterday: energyData.EnergyYesterday,
-    ApparentPower: energyData.ApparentPower,
-    ReactivePower: energyData.ReactivePower,
-    PowerFactor: energyData.PowerFactor,
+    power: energyData.power || 0,
+    voltage: energyData.voltage || 0,
+    current: energyData.current || 0,
+    EnergyToday: energyData.EnergyToday || 0,
+    EnergyYesterday: energyData.EnergyYesterday || 0,
+    ApparentPower: energyData.ApparentPower || 0,
+    ReactivePower: energyData.ReactivePower || 0,
+    PowerFactor: energyData.PowerFactor || 0,
   };
 }
 
