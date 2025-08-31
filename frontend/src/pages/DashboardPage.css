@@ -330,6 +330,23 @@
   grid-template-columns: repeat(3, 1fr); /* Sempre 3 colunas */
   gap: 1.5rem;
   margin-bottom: 2rem;
+  position: relative;
+}
+
+/* Indicador de última atualização */
+.last-update-indicator {
+  position: absolute;
+  top: -30px;
+  right: 0;
+  background-color: var(--primary-700);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* Responsividade (opcional) */
