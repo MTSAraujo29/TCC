@@ -60,6 +60,8 @@ function DashboardPage() {
   const [isRealData, setIsRealData] = useState(false);
   // NOVO: Estado para a mensagem de dados fictícios
   const [fictionalDataMessage, setFictionalDataMessage] = useState("");
+  // Estado para armazenar todos os dados do dashboard
+  const [dashboardData, setDashboardData] = useState(null);
 
   // Cache para evitar logs repetitivos no frontend
   const [lastLoggedData, setLastLoggedData] = useState(null);
@@ -457,6 +459,9 @@ function DashboardPage() {
           setLastLogTime(currentTime);
         }
 
+        // Armazena todos os dados do dashboard
+        setDashboardData(data);
+        
         // NOVO: Define se os dados são reais ou fictícios
         setIsRealData(data.isRealData);
         if (!data.isRealData) {
@@ -791,6 +796,7 @@ function DashboardPage() {
     setCurrentMonthConsumption("0.00 kWh");
     setDailyConsumption("0.00 kWh");
     setTotalConsumption("0.00 kWh");
+    setDashboardData(null);
     fetchDashboardData();
   }, [localStorage.getItem("token")]);
 
@@ -1677,18 +1683,20 @@ Posso te explicar sobre:
                 <p>{liveTotalEnergySum.toFixed(2)} kWh</p>
               </div>
               <div className="metric-card">
-                <h3>Fatura Estimada Mês Atual</h3>
-                <p>R$ 33,00</p>
+                <h3>Fatura Estimada Mês Passado</h3>
+                <p>R$ {dashboardData?.metrics?.lastMonthBill?.toFixed(2) || "0.00"}</p>
               </div>
               <div className="metric-card">
                 <h3>Consumo Mensal Anterior (kWh)</h3>
                 <p>
-                  20,74 kWh
+                  {dashboardData?.metrics?.lastMonthConsumption?.toFixed(2) || "0.00"} kWh
                 </p>
               </div>
               <div className="metric-card">
                 <h3>Economia Mensal Referente Mês Anterior</h3>
-                <p>R$ 26,00</p>
+                <p style={{ color: dashboardData?.metrics?.isPositiveSavings ? 'green' : 'red' }}>
+                  {dashboardData?.metrics?.isPositiveSavings ? '↑' : '↓'} R$ {dashboardData?.metrics?.monthlySavings?.toFixed(2) || "0.00"}
+                </p>
               </div>
             </div>
             {/* Main Chart Area */}

@@ -9,6 +9,7 @@ const prisma = new PrismaClient(); // Instância do Prisma
 // Se elas não estão e você vai implementá-las aqui, você não precisaria do import.
 // Pela estrutura atual do seu código, parece que você quer que tasmotaService contenha essas funções.
 const tasmotaService = require("../services/tasmota.service"); // Serviço para interagir com dados Tasmota
+const billEstimationService = require("../services/billEstimationService"); // Serviço para cálculo de economia mensal
 
 // Cache para evitar logs repetitivos
 const lastLoggedData = new Map();
@@ -286,6 +287,9 @@ async function getDashboardData(req, res) {
           }
         }
 
+        // Buscar o totalEnergy do EnergyTotalBrokers para este dispositivo
+        const totalEnergyFromBroker = await energyTotalManager.getCurrentTotalEnergyForDisplay(device.id);
+        
         realDevicesData.push({
           id: device.id,
           name: device.name,
@@ -293,12 +297,13 @@ async function getDashboardData(req, res) {
           macAddress: device.macAddress,
           model: device.model,
           powerState: device.powerState, // PowerState vem do modelo Device
+          totalEnergy: totalEnergyFromBroker || 0, // Adiciona totalEnergy ao objeto principal
           latestReading: latestReading
             ? {
                 power: latestReading.power, // W
                 voltage: latestReading.voltage, // V
                 current: latestReading.current, // A
-                totalEnergy: latestReading.totalEnergy, // kWh
+                totalEnergy: totalEnergyFromBroker, // kWh
                 EnergyToday: latestReading.EnergyToday,
                 EnergyYesterday: latestReading.EnergyYesterday,
                 ApparentPower: latestReading.ApparentPower,
@@ -311,14 +316,16 @@ async function getDashboardData(req, res) {
 
         if (latestReading) {
           currentRealPower += latestReading.power; // Soma a potência instantânea
-          totalConsumptionAccumulated += latestReading.totalEnergy; // Soma o total acumulado do medidor
-
-          // Acumular consumo para o gráfico de pizza (por tipo de dispositivo/nome)
-          if (latestReading.totalEnergy > 0) {
+          
+          // Usar o totalEnergyFromBroker que já foi buscado anteriormente
+          if (totalEnergyFromBroker) {
+            totalConsumptionAccumulated += totalEnergyFromBroker; // Soma o total acumulado do medidor
+            
+            // Acumular consumo para o gráfico de pizza (por tipo de dispositivo/nome)
             const deviceTypeName = device.model || "Outros"; // Usa o modelo do dispositivo para tipagem
             energyConsumptionByDeviceType[deviceTypeName] =
               (energyConsumptionByDeviceType[deviceTypeName] || 0) +
-              latestReading.totalEnergy;
+              totalEnergyFromBroker;
           }
         }
 
@@ -343,20 +350,14 @@ async function getDashboardData(req, res) {
           orderBy: { timestamp: "asc" }, // Ordena para calcular o diff
         });
 
-        // Calcula o consumo mensal para este dispositivo (diferença do totalEnergy)
-        if (monthReadings.length > 1) {
-          const firstReadingMonth = monthReadings[0].totalEnergy;
-          const lastReadingMonth =
-            monthReadings[monthReadings.length - 1].totalEnergy;
-          currentMonthConsumption += lastReadingMonth - firstReadingMonth;
-        } else if (monthReadings.length === 1 && monthReadings[0].totalEnergy) {
-          // Se só tiver uma leitura no mês, considera o valor como consumo
-          // Ou, se o Tasmota reiniciar, o totalEnergy pode ser menor que o anterior.
-          // Uma abordagem robusta seria salvar a diferença ou o consumo por intervalo.
-          // Para TCC, vamos somar o totalEnergy se for a única leitura,
-          // ou a diferença se houver mais de uma.
-          currentMonthConsumption += monthReadings[0].totalEnergy;
+        // Calcula o consumo mensal para este dispositivo usando EnergyYesterday acumulado
+        let monthlySum = 0;
+        for (const reading of monthReadings) {
+          if (reading.EnergyYesterday) {
+            monthlySum += reading.EnergyYesterday;
+          }
         }
+        currentMonthConsumption += monthlySum;
 
         // Calcula o consumo do último dia para este dispositivo
         // Simplificado: Soma de 'power' ou 'totalEnergy' dentro do último dia.
@@ -372,17 +373,14 @@ async function getDashboardData(req, res) {
           orderBy: { timestamp: "asc" },
         });
 
-        if (lastDayReadings.length > 1) {
-          const firstReadingLastDay = lastDayReadings[0].totalEnergy;
-          const lastReadingLastDay =
-            lastDayReadings[lastDayReadings.length - 1].totalEnergy;
-          dailyConsumptionLastDay += lastReadingLastDay - firstReadingLastDay;
-        } else if (
-          lastDayReadings.length === 1 &&
-          lastDayReadings[0].totalEnergy
-        ) {
-          dailyConsumptionLastDay += lastDayReadings[0].totalEnergy;
+        // Calcula o consumo do último dia usando EnergyYesterday
+        let dailySum = 0;
+        for (const reading of lastDayReadings) {
+          if (reading.EnergyYesterday) {
+            dailySum += reading.EnergyYesterday;
+          }
         }
+        dailyConsumptionLastDay += dailySum;
 
         // Processar dados históricos para o gráfico principal (consumo diário dos últimos 7 dias)
         // É mais eficiente fazer uma única query por dispositivo para os últimos 7 dias.
@@ -399,30 +397,17 @@ async function getDashboardData(req, res) {
           },
         });
 
-        // Agregação de consumo diário para o gráfico:
-        // Esta lógica precisa calcular a diferença de 'totalEnergy' por dia.
+        // Agregação de consumo diário para o gráfico usando EnergyYesterday
         const dailyAggregatedConsumption = {};
         if (recentReadings.length > 0) {
-          let prevReading = recentReadings[0];
-          for (let i = 1; i < recentReadings.length; i++) {
-            const currentReading = recentReadings[i];
-            const prevDate = new Date(prevReading.timestamp);
-            prevDate.setHours(0, 0, 0, 0);
-            const currentDate = new Date(currentReading.timestamp);
-            currentDate.setHours(0, 0, 0, 0);
-
-            // Se a data mudou (novo dia) ou é a primeira leitura do dia, calcula a diferença
-            if (currentDate.getTime() !== prevDate.getTime() || i === 1) {
-              const consumptionDiff =
-                currentReading.totalEnergy - prevReading.totalEnergy;
-              if (consumptionDiff > 0) {
-                // Garante que a diferença é positiva
-                const dateKey = currentDate.toISOString().split("T")[0]; // 'YYYY-MM-DD'
-                dailyAggregatedConsumption[dateKey] =
-                  (dailyAggregatedConsumption[dateKey] || 0) + consumptionDiff;
-              }
+          for (const reading of recentReadings) {
+            if (reading.EnergyYesterday) {
+              const currentDate = new Date(reading.timestamp);
+              currentDate.setHours(0, 0, 0, 0);
+              const dateKey = currentDate.toISOString().split("T")[0]; // 'YYYY-MM-DD'
+              dailyAggregatedConsumption[dateKey] = 
+                (dailyAggregatedConsumption[dateKey] || 0) + reading.EnergyYesterday;
             }
-            prevReading = currentReading;
           }
         }
 
@@ -455,17 +440,21 @@ async function getDashboardData(req, res) {
           let broker1TotalEnergy = 0;
           let broker2TotalEnergy = 0;
           
-          broker1Devices.forEach(device => {
-            if (device.latestReading && device.latestReading.totalEnergy) {
-              broker1TotalEnergy += device.latestReading.totalEnergy;
+          // Obter totalEnergy para dispositivos do broker1
+          for (const device of broker1Devices) {
+            const totalEnergy = await energyTotalManager.getCurrentTotalEnergyForDisplay(device.id);
+            if (totalEnergy) {
+              broker1TotalEnergy += totalEnergy;
             }
-          });
+          }
           
-          broker2Devices.forEach(device => {
-            if (device.latestReading && device.latestReading.totalEnergy) {
-              broker2TotalEnergy += device.latestReading.totalEnergy;
+          // Obter totalEnergy para dispositivos do broker2
+          for (const device of broker2Devices) {
+            const totalEnergy = await energyTotalManager.getCurrentTotalEnergyForDisplay(device.id);
+            if (totalEnergy) {
+              broker2TotalEnergy += totalEnergy;
             }
-          });
+          }
           
           // Soma os valores de totalEnergy dos dois brokers
           const totalMonthlyConsumption = broker1TotalEnergy + broker2TotalEnergy;
@@ -481,10 +470,13 @@ async function getDashboardData(req, res) {
 
       // Finaliza as métricas globais
       // Se o totalEnergy no Tasmota for acumulativo e não reiniciar, o totalConsumptionAccumulated
-      // pode ser apenas a soma do latestReading.totalEnergy de todos os dispositivos.
+      // pode ser obtido através do energyTotalManager.getCurrentTotalEnergyForDisplay para cada dispositivo.
       // A "fatura estimada" no frontend usa currentMonthConsumption.
       // dailyConsumption é o consumo do último dia.
 
+      // Obter dados de fatura e economia mensal do serviço de cálculo
+      const billData = await billEstimationService.getBillDataForDashboard();
+      
       dashboardData = {
         isRealData: true,
         userEmail: userEmail,
@@ -495,16 +487,16 @@ async function getDashboardData(req, res) {
           // Então, vamos manter kWh, se o Tasmota manda kWh.
           // Se o Tasmota manda Wh, ajuste no schema para Wh ou converta aqui.
           // Assumindo que totalEnergy do Tasmota (e no DB) já é em kWh:
-          // Para o mês atual, fixamos o valor em 31.76 kWh conforme solicitado
-          // A partir do próximo mês, será calculado somando os valores de totalEnergy dos brokers 1 e 2
-          // Forçando o valor fixo para garantir que seja exibido corretamente
-          // Enviando como número para que o frontend possa usar toFixed()
-          currentMonthConsumption: 31.76, // Valor fixo conforme solicitado
+          currentMonthConsumption: parseFloat(currentMonthConsumption.toFixed(2)), // Consumo do mês atual
           dailyConsumption: parseFloat(dailyConsumptionLastDay.toFixed(2)), // Consumo do último dia
           totalConsumption: parseFloat(totalConsumptionAccumulated.toFixed(2)), // Total acumulado de todos
           currentPower: parseFloat(currentRealPower.toFixed(2)), // Potência instantânea total em Watts
           devicesOnline: devicesActuallyOnline,
-          energySaved: 0, // Lógica complexa, por enquanto 0
+          // Dados de fatura e economia mensal
+          lastMonthBill: billData.lastMonthBill, // Fatura estimada do mês passado
+          lastMonthConsumption: billData.lastMonthConsumption, // Consumo do mês passado
+          monthlySavings: billData.monthlySavings, // Economia mensal
+          isPositiveSavings: billData.isPositiveSavings, // Se a economia é positiva
         },
         // O frontend espera 'labels' e 'datasets' para o gráfico principal
         mainChartData: {
@@ -551,7 +543,7 @@ async function getDashboardData(req, res) {
             name: d.name,
             status: d.powerState ? "LIGADO" : "DESLIGADO",
             lastReport: d.latestReading
-              ? `Potência: ${d.latestReading.power}W, Total Acumulado: ${d.latestReading.totalEnergy} kWh`
+              ? `Potência: ${d.latestReading.power}W, Total Acumulado: ${d.totalEnergy || 0} kWh`
               : "Sem dados",
             impact:
               d.latestReading && d.latestReading.power > 100
@@ -598,6 +590,11 @@ async function getDashboardData(req, res) {
           dailyConsumption: parseFloat((Math.random() * 5 + 1).toFixed(2)), // kWh do último dia
           totalConsumption: parseFloat((Math.random() * 1500 + 500).toFixed(2)), // kWh acumulado
           currentPower: parseFloat((Math.random() * 500 + 50).toFixed(2)), // Watts
+          // Dados fictícios de fatura e economia mensal
+          lastMonthBill: parseFloat((Math.random() * 100 + 50).toFixed(2)), // Fatura estimada fictícia (R$)
+          lastMonthConsumption: parseFloat((Math.random() * 150 + 30).toFixed(2)), // Consumo fictício do mês passado (kWh)
+          monthlySavings: parseFloat((Math.random() * 30 + 5).toFixed(2)), // Economia mensal fictícia (R$)
+          isPositiveSavings: Math.random() > 0.3, // 70% de chance de ser positiva
           devicesOnline: mockDevices.filter((d) => d.powerState).length,
           energySaved: parseFloat((Math.random() * 10 + 1).toFixed(2)),
         },
@@ -891,17 +888,16 @@ async function getMonthlyEnergyData(req, res) {
       orderBy: { timestamp: "asc" },
     });
 
-    // Buscar leituras com totalEnergy não nulo (para julho+)
-    const readingsWithTotalEnergy = await prisma.energyReading.findMany({
+    // Buscar leituras com totalEnergy do modelo EnergyTotalBrokers (para julho+)
+    const readingsWithTotalEnergy = await prisma.energyTotalBrokers.findMany({
       where: {
         deviceId: { in: deviceIds },
-        totalEnergy: { not: null },
       },
       select: {
         deviceId: true,
         timestamp: true,
         totalEnergy: true,
-        brokerLabel: true,
+        broker: true,
       },
       orderBy: { timestamp: "asc" },
     });
@@ -975,9 +971,9 @@ async function getMonthlyEnergyData(req, res) {
         perMonthPerBrokerLatestTotalEnergy.set(monthKey, new Map());
       }
       const brokerMap = perMonthPerBrokerLatestTotalEnergy.get(monthKey);
-      const prev = brokerMap.get(r.brokerLabel);
+      const prev = brokerMap.get(r.broker);
       if (!prev || new Date(r.timestamp) > new Date(prev.timestamp)) {
-        brokerMap.set(r.brokerLabel, r);
+        brokerMap.set(r.broker, r);
       }
     }
 
@@ -1107,24 +1103,49 @@ async function getConsumptionForecast(req, res) {
       `[FORECAST] Buscando dados desde: ${threeMonthsAgo.toISOString()}`
     );
 
-    const historicalReadings = await prisma.energyReading.findMany({
+    // Buscar dados históricos de EnergyYesterday do modelo EnergyReading
+    const historicalReadingsEnergyYesterday = await prisma.energyReading.findMany({
       where: {
         deviceId: { in: deviceIds },
         timestamp: { gte: threeMonthsAgo },
-        OR: [
-          { EnergyYesterday: { not: null } },
-          { totalEnergy: { not: null } },
-        ],
+        EnergyYesterday: { not: null },
       },
       select: {
         deviceId: true,
         timestamp: true,
         EnergyYesterday: true,
-        totalEnergy: true,
         brokerLabel: true,
       },
       orderBy: { timestamp: "asc" },
     });
+    
+    // Buscar dados históricos de totalEnergy do modelo EnergyTotalBrokers
+    const historicalReadingsTotalEnergy = await prisma.energyTotalBrokers.findMany({
+      where: {
+        deviceId: { in: deviceIds },
+        timestamp: { gte: threeMonthsAgo },
+      },
+      select: {
+        deviceId: true,
+        timestamp: true,
+        totalEnergy: true,
+        broker: true,
+      },
+      orderBy: { timestamp: "asc" },
+    });
+    
+    // Combinar os resultados
+    const historicalReadings = [
+      ...historicalReadingsEnergyYesterday.map(reading => ({
+        ...reading,
+        totalEnergy: null
+      })),
+      ...historicalReadingsTotalEnergy.map(reading => ({
+        ...reading,
+        EnergyYesterday: null,
+        brokerLabel: reading.broker
+      }))
+    ].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
     console.log(
       `[FORECAST] Leituras históricas encontradas: ${historicalReadings.length}`
