@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
   DASHBOARD: `${API_BASE_URL}/api/dashboard`,
   HEALTH: `${API_BASE_URL}/health`,
   ACCOUNT: `${API_BASE_URL}/api/account`,
+  LIVE_TOTAL_ENERGY: `${API_BASE_URL}/api/tasmota/devices`,  // Endpoint base para dispositivos
   TOTAL_ENERGY_LIVE: `${API_BASE_URL}/api/tasmota/devices/DEVICE_ID/total-energy-live`,
   DASHBOARD_CHART_DAILY_YESTERDAY: `${API_BASE_URL}/api/dashboard/chart/daily-energy-yesterday`,
   DASHBOARD_CHART_WEEKLY_YESTERDAY: `${API_BASE_URL}/api/dashboard/chart/weekly-energy-yesterday`,

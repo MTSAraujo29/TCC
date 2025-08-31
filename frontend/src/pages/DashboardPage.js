@@ -5,6 +5,9 @@ import "./DashboardPage.css";
 import { API_ENDPOINTS } from "../config/api";
 import CustomAlert from "../components/CustomAlert";
 import useCustomAlert from "../hooks/useCustomAlert";
+// Importar os scripts de depuração e correção
+import debugBrokerCommunication from "../scripts/debug-broker-communication";
+import fixBrokerCommunication from "../scripts/fix-broker-communication";
 
 // Importações do Chart.js
 import {
@@ -211,42 +214,129 @@ function DashboardPage() {
   // Função para buscar o valor ao vivo de energia total de cada dispositivo individualmente
   const fetchLiveTotalEnergyIndividual = useCallback(async () => {
     const token = localStorage.getItem("token");
+    
+    console.log('🔍 VERIFICAÇÃO DE COMUNICAÇÃO COM BROKERS');
+    console.log('📊 Dispositivos disponíveis:', devices);
+    
+    // Encontrar dispositivos por broker
+    const broker1Device = devices.find(d => d.broker === 'broker1') || 
+                         devices.find(d => d.name.toLowerCase().includes('sala'));
+    const broker2Device = devices.find(d => d.broker === 'broker2') || 
+                         devices.find(d => d.name.toLowerCase().includes('câmera') || 
+                                           d.name.toLowerCase().includes('camera'));
+    
+    console.log('🔌 Dispositivo Broker1 encontrado:', broker1Device);
+    console.log('🔌 Dispositivo Broker2 encontrado:', broker2Device);
+    
     // Broker1 (Sonoff Sala)
-    if (devices[0] && devices[0].powerState) {
-      try {
-        const res = await fetch(
-          API_ENDPOINTS.TASMOTA + `/devices/${devices[0].id}/total-energy-live`,
-          {
+    if (broker1Device) {
+      console.log(`🔄 Status do dispositivo ${broker1Device.name}: ${broker1Device.powerState ? 'LIGADO' : 'DESLIGADO'}`);
+      if (broker1Device.powerState) {
+        try {
+          console.log(`🔄 Buscando energia em tempo real para ${broker1Device.name} (broker1)`);
+          const url = API_ENDPOINTS.TASMOTA + `/devices/${broker1Device.id}/total-energy-live`;
+          console.log(`🌐 URL da requisição: ${url}`);
+          
+          const res = await fetch(url, {
             headers: { Authorization: "Bearer " + token },
+          });
+          
+          if (!res.ok) {
+            throw new Error(`Erro HTTP: ${res.status}`);
           }
-        );
-        const data = await res.json();
-        setLiveTotalEnergyBroker1(
-          typeof data.totalEnergy === "number" ? data.totalEnergy : 0
-        );
-      } catch {
+          
+          const data = await res.json();
+          console.log('✅ Dados recebidos para broker1:', data);
+          
+          if (data && typeof data.totalEnergy === "number") {
+            console.log(`📈 Energia total para ${broker1Device.name}: ${data.totalEnergy} kWh`);
+            setLiveTotalEnergyBroker1(data.totalEnergy);
+            
+            // Atualizar o dispositivo com o novo valor de energia
+            setDevices(prevDevices => {
+              return prevDevices.map(device => {
+                if (device.id === broker1Device.id) {
+                  return { 
+                    ...device, 
+                    latestReading: { 
+                      ...device.latestReading, 
+                      totalEnergy: data.totalEnergy 
+                    } 
+                  };
+                }
+                return device;
+              });
+            });
+          } else {
+            console.warn('⚠️ Dados inválidos recebidos para broker1:', data);
+            setLiveTotalEnergyBroker1(0);
+          }
+        } catch (error) {
+          console.error('❌ Erro ao buscar energia para broker1:', error);
+          setLiveTotalEnergyBroker1(0);
+        }
+      } else {
+        console.log('💤 Dispositivo broker1 está desligado');
         setLiveTotalEnergyBroker1(0);
       }
     } else {
+      console.warn('⚠️ Dispositivo broker1 não encontrado');
       setLiveTotalEnergyBroker1(0);
     }
+    
     // Broker2 (Sonoff Câmera)
-    if (devices[1] && devices[1].powerState) {
-      try {
-        const res = await fetch(
-          API_ENDPOINTS.TASMOTA + `/devices/${devices[1].id}/total-energy-live`,
-          {
+    if (broker2Device) {
+      console.log(`🔄 Status do dispositivo ${broker2Device.name}: ${broker2Device.powerState ? 'LIGADO' : 'DESLIGADO'}`);
+      if (broker2Device.powerState) {
+        try {
+          console.log(`🔄 Buscando energia em tempo real para ${broker2Device.name} (broker2)`);
+          const url = API_ENDPOINTS.TASMOTA + `/devices/${broker2Device.id}/total-energy-live`;
+          console.log(`🌐 URL da requisição: ${url}`);
+          
+          const res = await fetch(url, {
             headers: { Authorization: "Bearer " + token },
+          });
+          
+          if (!res.ok) {
+            throw new Error(`Erro HTTP: ${res.status}`);
           }
-        );
-        const data = await res.json();
-        setLiveTotalEnergyBroker2(
-          typeof data.totalEnergy === "number" ? data.totalEnergy : 0
-        );
-      } catch {
+          
+          const data = await res.json();
+          console.log('✅ Dados recebidos para broker2:', data);
+          
+          if (data && typeof data.totalEnergy === "number") {
+            console.log(`📈 Energia total para ${broker2Device.name}: ${data.totalEnergy} kWh`);
+            setLiveTotalEnergyBroker2(data.totalEnergy);
+            
+            // Atualizar o dispositivo com o novo valor de energia
+            setDevices(prevDevices => {
+              return prevDevices.map(device => {
+                if (device.id === broker2Device.id) {
+                  return { 
+                    ...device, 
+                    latestReading: { 
+                      ...device.latestReading, 
+                      totalEnergy: data.totalEnergy 
+                    } 
+                  };
+                }
+                return device;
+              });
+            });
+          } else {
+            console.warn('⚠️ Dados inválidos recebidos para broker2:', data);
+            setLiveTotalEnergyBroker2(0);
+          }
+        } catch (error) {
+          console.error('❌ Erro ao buscar energia para broker2:', error);
+          setLiveTotalEnergyBroker2(0);
+        }
+      } else {
+        console.log('💤 Dispositivo broker2 está desligado');
         setLiveTotalEnergyBroker2(0);
       }
     } else {
+      console.warn('⚠️ Dispositivo broker2 não encontrado');
       setLiveTotalEnergyBroker2(0);
     }
   }, [devices]);
@@ -473,7 +563,7 @@ function DashboardPage() {
         }
 
         // ATUALIZADO: `setDevices` agora usa `data.userDevices`
-        const userDevices = data.userDevices || [];
+        let userDevices = data.userDevices || [];
         
         // DEBUG: Verificar se os dispositivos têm o campo broker
         console.log("=== VERIFICAÇÃO DE BROKERS NO FRONTEND ===");
@@ -489,6 +579,28 @@ function DashboardPage() {
             devicesWithoutBroker.forEach(device => {
               console.log(`- ${device.name} (ID: ${device.id})`);
             });
+            
+            // Corrigir dispositivos sem broker
+            console.log("🔧 Corrigindo dispositivos sem broker definido...");
+            userDevices = userDevices.map(device => {
+              if (!device.broker) {
+                // Atribuir broker com base no nome do dispositivo
+                if (device.name.toLowerCase().includes('sala')) {
+                  device.broker = 'broker1';
+                } else if (device.name.toLowerCase().includes('câmera') || 
+                          device.name.toLowerCase().includes('camera')) {
+                  device.broker = 'broker2';
+                } else {
+                  // Padrão para outros dispositivos
+                  device.broker = 'broker1';
+                }
+                console.log(`✅ Broker atribuído para ${device.name}: ${device.broker}`);
+              }
+              return device;
+            });
+            
+            // Salvar dispositivos corrigidos no localStorage para uso futuro
+            localStorage.setItem('correctedDevices', JSON.stringify(userDevices));
           } else {
             console.log("✅ Todos os dispositivos têm o campo broker definido.");
           }
@@ -588,6 +700,12 @@ function DashboardPage() {
     setUserEmail(storedUserEmail || "");
 
     fetchDashboardData(); // Chama a função para buscar os dados
+    
+    // Executar o script de depuração para verificar a comunicação com os brokers
+    debugBrokerCommunication();
+    
+    // Executar o script de correção para resolver problemas de comunicação com os brokers
+    fixBrokerCommunication();
 
     // Atualização automática a cada 10 segundos (aumentado de 5 para 10)
     const interval = setInterval(() => {
@@ -826,10 +944,43 @@ function DashboardPage() {
     console.log(`Buscando dispositivo com broker=${brokerLabel}`);
     console.log('Dispositivos disponíveis:', devices);
     
+    // Primeiro tenta encontrar o dispositivo normalmente
     const device = devices.find((d) => {
       console.log(`Verificando dispositivo: ${d.name}, broker=${d.broker}`);
       return d.broker === brokerLabel;
     });
+    
+    // Se não encontrou o dispositivo, tenta usar a versão corrigida
+    if (!device) {
+      console.log(`Dispositivo com broker=${brokerLabel} não encontrado, tentando usar versão corrigida`);
+      
+      // Verifica se a função corrigida está disponível (foi definida pelo script fix-broker-communication.js)
+      if (window.getTotalEnergyByBrokerFixed) {
+        console.log('Usando função corrigida getTotalEnergyByBrokerFixed');
+        return window.getTotalEnergyByBrokerFixed(devices, brokerLabel);
+      }
+      
+      // Se não encontrou e não tem a função corrigida, tenta atribuir broker com base no nome
+      const deviceByName = devices.find(d => {
+        if (brokerLabel === 'broker1' && d.name.toLowerCase().includes('sala')) {
+          return true;
+        }
+        if (brokerLabel === 'broker2' && (d.name.toLowerCase().includes('câmera') || d.name.toLowerCase().includes('camera'))) {
+          return true;
+        }
+        return false;
+      });
+      
+      if (deviceByName) {
+        console.log(`Encontrado dispositivo pelo nome: ${deviceByName.name}`);
+        const result = deviceByName.latestReading && 
+          typeof deviceByName.latestReading.totalEnergy === "number" 
+          ? deviceByName.latestReading.totalEnergy 
+          : 0;
+        console.log(`Energia total para ${brokerLabel} (pelo nome): ${result}`);
+        return result;
+      }
+    }
     
     console.log('Dispositivo encontrado:', device);
     
