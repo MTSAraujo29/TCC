@@ -64,7 +64,6 @@ function DashboardPage() {
   // Cache para evitar logs repetitivos no frontend
   const [lastLoggedData, setLastLoggedData] = useState(null);
   const [lastLogTime, setLastLogTime] = useState(0);
-  const [lastUpdateTime, setLastUpdateTime] = useState(new Date());
 
   // Dados fictícios para os modos de visualização do gráfico principal.
   // Estes serão usados quando isRealData for false.
@@ -182,57 +181,24 @@ function DashboardPage() {
   // Função para buscar o valor ao vivo de energia total dos dispositivos ligados
   const fetchLiveTotalEnergySum = useCallback(async () => {
     const token = localStorage.getItem("token");
-    const deviceResults = [];
-    
     const promises = devices
       .filter((d) => d.powerState)
       .map(async (d) => {
         try {
-          console.log(`Buscando energia total para dispositivo ${d.id} (${d.name})`);
           const res = await fetch(
             API_ENDPOINTS.TASMOTA + `/devices/${d.id}/total-energy-live`,
             {
               headers: { Authorization: "Bearer " + token },
             }
           );
-          if (!res.ok) {
-            console.error(`Erro ao buscar energia total para dispositivo ${d.id}: ${res.status}`);
-            return 0;
-          }
           const data = await res.json();
-          console.log(`Energia total recebida para dispositivo ${d.id} (${d.name}):`, data);
-          
-          // Armazenar informações detalhadas do dispositivo
-          deviceResults.push({
-            id: d.id,
-            name: d.name,
-            totalEnergy: typeof data.totalEnergy === "number" ? data.totalEnergy : 0,
-            timestamp: data.timestamp || new Date().toISOString(),
-            tasmotaTopic: data.tasmotaTopic || d.tasmotaTopic
-          });
-          
           return typeof data.totalEnergy === "number" ? data.totalEnergy : 0;
-        } catch (error) {
-          console.error(`Erro ao buscar energia total para dispositivo ${d.id} (${d.name}):`, error);
+        } catch {
           return 0;
         }
       });
-      
     const values = await Promise.all(promises);
-    const totalSum = values.reduce((sum, val) => sum + val, 0);
-    
-    console.log("Detalhes dos dispositivos:", deviceResults);
-    console.log("Valores de energia total recebidos:", values, "Soma total:", totalSum);
-    
-    // Atualizar o estado com a soma total
-    setLiveTotalEnergySum(totalSum);
-    
-    // Se houver dados disponíveis, atualizar também o último horário de atualização
-    if (deviceResults.length > 0) {
-      setLastUpdateTime(new Date().toLocaleTimeString());
-    }
-    
-    return deviceResults;
+    setLiveTotalEnergySum(values.reduce((sum, val) => sum + val, 0));
   }, [devices]);
 
   // Atualiza sempre que a lista de dispositivos mudar
@@ -243,56 +209,44 @@ function DashboardPage() {
   // Função para buscar o valor ao vivo de energia total de cada dispositivo individualmente
   const fetchLiveTotalEnergyIndividual = useCallback(async () => {
     const token = localStorage.getItem("token");
-    
-    // Função auxiliar para buscar energia total de um dispositivo
-    const fetchDeviceEnergy = async (device, index) => {
-      if (!device || !device.powerState) {
-        console.log(`Dispositivo ${index} não encontrado ou desligado`);
-        return 0;
-      }
-      
+    // Broker1 (Sonoff Sala)
+    if (devices[0] && devices[0].powerState) {
       try {
-        console.log(`Buscando energia total para dispositivo ${device.id} (${device.name})`);
         const res = await fetch(
-          API_ENDPOINTS.TASMOTA + `/devices/${device.id}/total-energy-live`,
+          API_ENDPOINTS.TASMOTA + `/devices/${devices[0].id}/total-energy-live`,
           {
             headers: { Authorization: "Bearer " + token },
           }
         );
-        
-        if (!res.ok) {
-          console.error(`Erro ao buscar energia total para dispositivo ${index} (${device.name}): ${res.status}`);
-          return 0;
-        }
-        
         const data = await res.json();
-        console.log(`Energia total recebida para dispositivo ${index} (${device.name}):`, data);
-        
-        return typeof data.totalEnergy === "number" ? data.totalEnergy : 0;
-      } catch (error) {
-        console.error(`Erro ao buscar energia total para dispositivo ${index} (${device.name}):`, error);
-        return 0;
+        setLiveTotalEnergyBroker1(
+          typeof data.totalEnergy === "number" ? data.totalEnergy : 0
+        );
+      } catch {
+        setLiveTotalEnergyBroker1(0);
       }
-    };
-    
-    // Broker1 (Sonoff Sala)
-    if (devices[0]) {
-      const energyBroker1 = await fetchDeviceEnergy(devices[0], 1);
-      setLiveTotalEnergyBroker1(energyBroker1);
     } else {
       setLiveTotalEnergyBroker1(0);
     }
-    
     // Broker2 (Sonoff Câmera)
-    if (devices[1]) {
-      const energyBroker2 = await fetchDeviceEnergy(devices[1], 2);
-      setLiveTotalEnergyBroker2(energyBroker2);
+    if (devices[1] && devices[1].powerState) {
+      try {
+        const res = await fetch(
+          API_ENDPOINTS.TASMOTA + `/devices/${devices[1].id}/total-energy-live`,
+          {
+            headers: { Authorization: "Bearer " + token },
+          }
+        );
+        const data = await res.json();
+        setLiveTotalEnergyBroker2(
+          typeof data.totalEnergy === "number" ? data.totalEnergy : 0
+        );
+      } catch {
+        setLiveTotalEnergyBroker2(0);
+      }
     } else {
       setLiveTotalEnergyBroker2(0);
     }
-    
-    // Atualizar o horário da última atualização
-    setLastUpdateTime(new Date().toLocaleTimeString());
   }, [devices]);
 
   useEffect(() => {
@@ -487,9 +441,6 @@ function DashboardPage() {
           Authorization: `Bearer ${token}`,
         },
       });
-      
-      // Atualiza o horário da última atualização
-      setLastUpdateTime(new Date());
 
       if (response.ok) {
         const data = await response.json();
@@ -587,10 +538,8 @@ function DashboardPage() {
   useEffect(() => {
     let intervalId;
     if (devices.length > 0 && devices[0].id) {
-      console.log("Buscando energia total para o dispositivo principal...");
       fetchLiveTotalEnergy(devices[0].id);
       intervalId = setInterval(() => {
-        console.log("Atualizando energia total para o dispositivo principal (intervalo de 5min)...");
         fetchLiveTotalEnergy(devices[0].id);
       }, 5 * 60 * 1000); // 5 minutos
     }
@@ -598,25 +547,6 @@ function DashboardPage() {
       if (intervalId) clearInterval(intervalId);
     };
   }, [devices, fetchLiveTotalEnergy]);
-  
-  // Buscar o valor em tempo real para todos os dispositivos
-  useEffect(() => {
-    let intervalId;
-    if (devices.length > 0) {
-      console.log("Buscando energia total para todos os dispositivos...");
-      fetchLiveTotalEnergySum();
-      fetchLiveTotalEnergyIndividual();
-      
-      intervalId = setInterval(() => {
-        console.log("Atualizando energia total para todos os dispositivos (intervalo de 2min)...");
-        fetchLiveTotalEnergySum();
-        fetchLiveTotalEnergyIndividual();
-      }, 2 * 60 * 1000); // 2 minutos
-    }
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [devices, fetchLiveTotalEnergySum, fetchLiveTotalEnergyIndividual]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -1708,15 +1638,6 @@ Posso te explicar sobre:
             <h1> Olá, {userName}! </h1>
             {/* Metrics Grid */}
             <div className="metrics-grid">
-              {/* Indicador de última atualização */}
-              <div className="last-update-indicator">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
-                  <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
-                </svg>
-                Última atualização: {lastUpdateTime.toLocaleTimeString()}
-              </div>
-              
               <div className="metric-card">
                 <h3>Consumo Atual (Watts)</h3>
                 <p>
@@ -1735,8 +1656,6 @@ Posso te explicar sobre:
                         .toFixed(2) + " W"
                     : "0.00 W"}
                 </p>
-                {!isRealData && <span className="data-source-indicator">Dados simulados</span>}
-                {isRealData && <span className="data-source-indicator real">Dados reais</span>}
               </div>
               <div className="metric-card">
                 <h3>Corrente Atual (A)</h3>
@@ -1752,28 +1671,24 @@ Posso te explicar sobre:
                     .toFixed(2)}
                   A
                 </p>
-                {!isRealData && <span className="data-source-indicator">Dados simulados</span>}
-                {isRealData && <span className="data-source-indicator real">Dados reais</span>}
               </div>  
               <div className="metric-card">
                 <h3>Consumo Total (kWh)</h3>
                 <p>{liveTotalEnergySum.toFixed(2)} kWh</p>
-                {!isRealData && <span className="data-source-indicator">Dados simulados</span>}
-                {isRealData && <span className="data-source-indicator real">Dados reais</span>}
               </div>
               <div className="metric-card">
-                <h3>Fatura Estimada Mês Atual</h3>
-                <p>R$ 33,00</p>
+                <h3>Fatura Estimada</h3>
+                <p>R$ 22,99</p>
               </div>
               <div className="metric-card">
-                <h3>Consumo Mensal Anterior (kWh)</h3>
+                <h3>Consumo Mensal (kWh)</h3>
                 <p>
-                  20,74 kWh
+                  {currentMonthConsumption}
                 </p>
               </div>
               <div className="metric-card">
-                <h3>Economia Mensal Referente Mês Anterior</h3>
-                <p>R$ 26,00</p>
+                <h3>Economia Mensal</h3>
+                <p>R$ 12,50</p>
               </div>
             </div>
             {/* Main Chart Area */}

@@ -330,23 +330,6 @@
   grid-template-columns: repeat(3, 1fr); /* Sempre 3 colunas */
   gap: 1.5rem;
   margin-bottom: 2rem;
-  position: relative;
-}
-
-/* Indicador de última atualização */
-.last-update-indicator {
-  position: absolute;
-  top: -30px;
-  right: 0;
-  background-color: var(--primary-700);
-  color: white;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
 /* Responsividade (opcional) */
@@ -390,22 +373,6 @@
 .metric-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-}
-
-.data-source-indicator {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  font-size: 10px;
-  padding: 2px 5px;
-  border-radius: 3px;
-  background-color: #ffcc00;
-  color: #333;
-}
-
-.data-source-indicator.real {
-  background-color: #4caf50;
-  color: white;
 }
 
 .metric-card h3 {

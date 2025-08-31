@@ -123,15 +123,10 @@ async function getUserDevices(req, res) {
         if (latestReading) {
           latestReading = {
             ...latestReading,
-            power: parseFloat(latestReading.power) || 0,
-            voltage: parseFloat(latestReading.voltage) || 0,
-            current: parseFloat(latestReading.current) || 0,
-            totalEnergy: parseFloat(liveTotalEnergy) || 0,
-            EnergyToday: parseFloat(latestReading.EnergyToday) || 0,
-            EnergyYesterday: parseFloat(latestReading.EnergyYesterday) || 0,
-            ApparentPower: parseFloat(latestReading.ApparentPower) || 0,
-            ReactivePower: parseFloat(latestReading.ReactivePower) || 0,
-            PowerFactor: parseFloat(latestReading.PowerFactor) || 0,
+            totalEnergy:
+              typeof liveTotalEnergy === "number"
+                ? liveTotalEnergy
+                : currentTotalEnergyForDisplay,
           };
         }
 
@@ -192,15 +187,10 @@ async function getDeviceDetails(req, res) {
     if (latestReading) {
       latestReading = {
         ...latestReading,
-        power: parseFloat(latestReading.power) || 0,
-        voltage: parseFloat(latestReading.voltage) || 0,
-        current: parseFloat(latestReading.current) || 0,
-        totalEnergy: parseFloat(liveTotalEnergy || currentTotalEnergyForDisplay) || 0,
-        EnergyToday: parseFloat(latestReading.EnergyToday) || 0,
-        EnergyYesterday: parseFloat(latestReading.EnergyYesterday) || 0,
-        ApparentPower: parseFloat(latestReading.ApparentPower) || 0,
-        ReactivePower: parseFloat(latestReading.ReactivePower) || 0,
-        PowerFactor: parseFloat(latestReading.PowerFactor) || 0,
+        totalEnergy:
+          typeof liveTotalEnergy === "number"
+            ? liveTotalEnergy
+            : currentTotalEnergyForDisplay,
       };
     }
 
@@ -245,22 +235,11 @@ async function getLatestEnergyReading(req, res) {
     // NOVO: Obter o valor atual de energia total para exibição
     const currentTotalEnergyForDisplay =
       await energyTotalManager.getAccumulatedTotalEnergy(device.id);
-      
-    // Obter o valor em tempo real do cache
-    const liveTotalEnergy = tasmotaService.getTotalEnergyFromCache(device.id);
 
-    // NOVO: Retornar a leitura com o totalEnergy atualizado e todos os valores parseados
+    // NOVO: Retornar a leitura com o totalEnergy atualizado
     const updatedReading = {
       ...reading,
-      power: parseFloat(reading.power) || 0,
-      voltage: parseFloat(reading.voltage) || 0,
-      current: parseFloat(reading.current) || 0,
-      totalEnergy: parseFloat(liveTotalEnergy || currentTotalEnergyForDisplay) || 0,
-      EnergyToday: parseFloat(reading.EnergyToday) || 0,
-      EnergyYesterday: parseFloat(reading.EnergyYesterday) || 0,
-      ApparentPower: parseFloat(reading.ApparentPower) || 0,
-      ReactivePower: parseFloat(reading.ReactivePower) || 0,
-      PowerFactor: parseFloat(reading.PowerFactor) || 0,
+      totalEnergy: currentTotalEnergyForDisplay, // Usar o valor acumulado atual
     };
 
     res.json(updatedReading);
@@ -360,43 +339,20 @@ async function getLiveTotalEnergyFromTasmota(req, res) {
   const { deviceId } = req.params;
   const userId = req.user.userId;
   try {
-    console.log(`[getLiveTotalEnergyFromTasmota] Buscando energia total para dispositivo ${deviceId} do usuário ${userId}`);
-    
     const device = await prisma.device.findUnique({
       where: { id: deviceId, userId: userId },
     });
-    
     if (!device) {
-      console.warn(`[getLiveTotalEnergyFromTasmota] Dispositivo ${deviceId} não encontrado para usuário ${userId}`);
       return res.status(404).json({ message: "Dispositivo não encontrado." });
     }
-    
-    console.log(`[getLiveTotalEnergyFromTasmota] Dispositivo encontrado: ${device.name} (${device.tasmotaTopic})`);
-    
     // Buscar do cache em memória do serviço Tasmota
-    const tasmotaService = require("../services/tasmota.service");
-    const totalEnergy = tasmotaService.getTotalEnergyFromCache(deviceId);
-    
-    console.log(`[getLiveTotalEnergyFromTasmota] Valor obtido do cache: ${totalEnergy !== null ? totalEnergy : 'null'}`);
-    
-    // Garantir que o valor seja um número válido
-    const totalEnergyValue = totalEnergy !== null ? parseFloat(totalEnergy) : 0;
-    
-    if (isNaN(totalEnergyValue)) {
-      console.warn(`[getLiveTotalEnergyFromTasmota] Valor inválido no cache para dispositivo ${deviceId}: ${totalEnergy}`);
-      return res.json({ totalEnergy: 0 });
-    }
-    
-    console.log(`[getLiveTotalEnergyFromTasmota] Retornando valor: ${totalEnergyValue}`);
-    
+    const totalEnergy =
+      require("../services/tasmota.service").getTotalEnergyFromCache(deviceId);
     res.json({
-      totalEnergy: totalEnergyValue,
-      deviceName: device.name,
-      tasmotaTopic: device.tasmotaTopic,
-      timestamp: new Date().toISOString()
+      totalEnergy: typeof totalEnergy === "number" ? totalEnergy : 0,
     });
   } catch (error) {
-    console.error("[getLiveTotalEnergyFromTasmota] Erro ao buscar Energia Total do Tasmota:", error);
+    console.error("Erro ao buscar Energia Total do Tasmota:", error);
     res.status(500).json({ message: "Erro interno ao buscar Energia Total." });
   }
 }

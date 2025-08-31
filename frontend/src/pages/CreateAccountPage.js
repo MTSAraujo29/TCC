@@ -11,8 +11,6 @@ function CreateAccountPage() {
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -127,60 +125,32 @@ function CreateAccountPage() {
             <label htmlFor="password" className="form-label">
               Senha
             </label>
-            <div className="password-input-container">
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                className="form-input"
-                placeholder="••••••••"
-                required
-              />
-              <button 
-                type="button" 
-                className="password-toggle-btn" 
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-              >
-                <img 
-                  src="/os.png" 
-                  alt={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                  className="password-toggle-icon"
-                />
-              </button>
-            </div>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="••••••••"
+              required
+            />
           </div>
 
           <div className="form-group">
             <label htmlFor="confirmPassword" className="form-label">
               Confirmar Senha
             </label>
-            <div className="password-input-container">
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                className="form-input"
-                placeholder="••••••••"
-                required
-              />
-              <button 
-                type="button" 
-                className="password-toggle-btn" 
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                aria-label={showConfirmPassword ? "Ocultar senha" : "Mostrar senha"}
-              >
-                <img 
-                  src="/os.png" 
-                  alt={showConfirmPassword ? "Ocultar senha" : "Mostrar senha"}
-                  className="password-toggle-icon"
-                />
-              </button>
-            </div>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="••••••••"
+              required
+            />
           </div>
 
           {error && <div className="error-message">{error}</div>}

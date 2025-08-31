@@ -84,25 +84,11 @@ const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutos
 const lastTotalEnergyCache = {};
 
 function updateTotalEnergyCache(deviceId, valor) {
-    if (typeof valor !== 'number' && typeof valor !== 'string') {
-        console.error(`[updateTotalEnergyCache] Valor inválido para energia total: ${valor}`);
-        return;
-    }
-    
-    const valorNumerico = parseFloat(valor);
-    if (isNaN(valorNumerico)) {
-        console.error(`[updateTotalEnergyCache] Valor não numérico para energia total: ${valor}`);
-        return;
-    }
-    
-    console.log(`[updateTotalEnergyCache] Atualizando cache para dispositivo ${deviceId}: ${valorNumerico} kWh`);
-    lastTotalEnergyCache[deviceId] = valorNumerico;
+    lastTotalEnergyCache[deviceId] = valor;
 }
 
 function getTotalEnergyFromCache(deviceId) {
-    const valor = lastTotalEnergyCache[deviceId];
-    console.log(`[getTotalEnergyFromCache] Valor para dispositivo ${deviceId}: ${valor !== undefined ? valor : 'não encontrado'}`);
-    return valor !== undefined ? valor : null;
+    return lastTotalEnergyCache[deviceId] || null;
 }
 
 function resetMqttClientInactivityTimer(client, clientName) {
@@ -222,15 +208,15 @@ async function handleMqttMessage(topic, message, broker) {
                 console.log(`[${broker}] Payload STATUS10 recebido do Tasmota:`, JSON.stringify(energy, null, 2));
                 updateTotalEnergyCache(device.id, energy.Total);
                 const processedData = await energyTotalManager.processEnergyData({
-                    power: parseFloat(energy.Power) || 0,
-                    voltage: parseFloat(energy.Voltage) || 0,
-                    current: parseFloat(energy.Current) || 0,
-                    totalEnergy: parseFloat(energy.Total) || 0,
-                    EnergyToday: parseFloat(energy.Today) || 0,
-                    EnergyYesterday: parseFloat(energy.Yesterday) || 0,
-                    ApparentPower: parseFloat(energy.ApparentPower) || 0,
-                    ReactivePower: parseFloat(energy.ReactivePower) || 0,
-                    PowerFactor: parseFloat(energy.Factor) || 0,
+                    power: energy.Power,
+                    voltage: energy.Voltage,
+                    current: energy.Current,
+                    totalEnergy: energy.Total,
+                    EnergyToday: energy.Today,
+                    EnergyYesterday: energy.Yesterday,
+                    ApparentPower: energy.ApparentPower,
+                    ReactivePower: energy.ReactivePower,
+                    PowerFactor: energy.Factor,
                     timestamp: new Date()
                 }, device.id, tasmotaTopic);
                 console.log(`[${broker}] Dados processados para salvar (STATUS10):`, JSON.stringify(processedData, null, 2));
@@ -280,15 +266,15 @@ async function handleMqttMessage(topic, message, broker) {
                 console.log(`[${broker}] Payload SENSOR recebido do Tasmota:`, JSON.stringify(data.ENERGY, null, 2));
                 updateTotalEnergyCache(device.id, data.ENERGY.Total);
                 const processedData = await energyTotalManager.processEnergyData({
-                    power: parseFloat(data.ENERGY.Power) || 0,
-                    voltage: parseFloat(data.ENERGY.Voltage) || 0,
-                    current: parseFloat(data.ENERGY.Current) || 0,
-                    totalEnergy: parseFloat(data.ENERGY.Total) || 0,
-                    EnergyToday: parseFloat(data.ENERGY.Today) || 0,
-                    EnergyYesterday: parseFloat(data.ENERGY.Yesterday) || 0,
-                    ApparentPower: parseFloat(data.ENERGY.ApparentPower) || 0,
-                    ReactivePower: parseFloat(data.ENERGY.ReactivePower) || 0,
-                    PowerFactor: parseFloat(data.ENERGY.Factor) || 0,
+                    power: data.ENERGY.Power,
+                    voltage: data.ENERGY.Voltage,
+                    current: data.ENERGY.Current,
+                    totalEnergy: data.ENERGY.Total,
+                    EnergyToday: data.ENERGY.Today,
+                    EnergyYesterday: data.ENERGY.Yesterday,
+                    ApparentPower: data.ENERGY.ApparentPower,
+                    ReactivePower: data.ENERGY.ReactivePower,
+                    PowerFactor: data.ENERGY.Factor,
                     timestamp: new Date()
                 }, device.id, tasmotaTopic);
                 console.log(`[${broker}] Dados processados para salvar (SENSOR):`, JSON.stringify(processedData, null, 2));

@@ -7,7 +7,6 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -89,29 +88,15 @@ function LoginPage() {
             <label htmlFor="password" className="form-label">
               Senha
             </label>
-            <div className="password-input-container">
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="form-input"
-                placeholder="••••••••"
-                required
-              />
-              <button 
-                type="button" 
-                className="password-toggle-btn" 
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-              >
-                <img 
-                  src="/os.png" 
-                  alt={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                  className="password-toggle-icon"
-                />
-              </button>
-            </div>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="form-input"
+              placeholder="••••••••"
+              required
+            />
           </div>
 
           {error && <div className="error-message">{error}</div>}
