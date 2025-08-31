@@ -84,11 +84,25 @@ const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutos
 const lastTotalEnergyCache = {};
 
 function updateTotalEnergyCache(deviceId, valor) {
-    lastTotalEnergyCache[deviceId] = valor;
+    if (typeof valor !== 'number' && typeof valor !== 'string') {
+        console.error(`[updateTotalEnergyCache] Valor inválido para energia total: ${valor}`);
+        return;
+    }
+    
+    const valorNumerico = parseFloat(valor);
+    if (isNaN(valorNumerico)) {
+        console.error(`[updateTotalEnergyCache] Valor não numérico para energia total: ${valor}`);
+        return;
+    }
+    
+    console.log(`[updateTotalEnergyCache] Atualizando cache para dispositivo ${deviceId}: ${valorNumerico} kWh`);
+    lastTotalEnergyCache[deviceId] = valorNumerico;
 }
 
 function getTotalEnergyFromCache(deviceId) {
-    return lastTotalEnergyCache[deviceId] || null;
+    const valor = lastTotalEnergyCache[deviceId];
+    console.log(`[getTotalEnergyFromCache] Valor para dispositivo ${deviceId}: ${valor !== undefined ? valor : 'não encontrado'}`);
+    return valor !== undefined ? valor : null;
 }
 
 function resetMqttClientInactivityTimer(client, clientName) {

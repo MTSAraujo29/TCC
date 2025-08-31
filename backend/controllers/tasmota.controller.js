@@ -360,20 +360,43 @@ async function getLiveTotalEnergyFromTasmota(req, res) {
   const { deviceId } = req.params;
   const userId = req.user.userId;
   try {
+    console.log(`[getLiveTotalEnergyFromTasmota] Buscando energia total para dispositivo ${deviceId} do usuário ${userId}`);
+    
     const device = await prisma.device.findUnique({
       where: { id: deviceId, userId: userId },
     });
+    
     if (!device) {
+      console.warn(`[getLiveTotalEnergyFromTasmota] Dispositivo ${deviceId} não encontrado para usuário ${userId}`);
       return res.status(404).json({ message: "Dispositivo não encontrado." });
     }
+    
+    console.log(`[getLiveTotalEnergyFromTasmota] Dispositivo encontrado: ${device.name} (${device.tasmotaTopic})`);
+    
     // Buscar do cache em memória do serviço Tasmota
-    const totalEnergy =
-      require("../services/tasmota.service").getTotalEnergyFromCache(deviceId);
+    const tasmotaService = require("../services/tasmota.service");
+    const totalEnergy = tasmotaService.getTotalEnergyFromCache(deviceId);
+    
+    console.log(`[getLiveTotalEnergyFromTasmota] Valor obtido do cache: ${totalEnergy !== null ? totalEnergy : 'null'}`);
+    
+    // Garantir que o valor seja um número válido
+    const totalEnergyValue = totalEnergy !== null ? parseFloat(totalEnergy) : 0;
+    
+    if (isNaN(totalEnergyValue)) {
+      console.warn(`[getLiveTotalEnergyFromTasmota] Valor inválido no cache para dispositivo ${deviceId}: ${totalEnergy}`);
+      return res.json({ totalEnergy: 0 });
+    }
+    
+    console.log(`[getLiveTotalEnergyFromTasmota] Retornando valor: ${totalEnergyValue}`);
+    
     res.json({
-      totalEnergy: parseFloat(totalEnergy) || 0,
+      totalEnergy: totalEnergyValue,
+      deviceName: device.name,
+      tasmotaTopic: device.tasmotaTopic,
+      timestamp: new Date().toISOString()
     });
   } catch (error) {
-    console.error("Erro ao buscar Energia Total do Tasmota:", error);
+    console.error("[getLiveTotalEnergyFromTasmota] Erro ao buscar Energia Total do Tasmota:", error);
     res.status(500).json({ message: "Erro interno ao buscar Energia Total." });
   }
 }
