@@ -1677,18 +1677,18 @@ Posso te explicar sobre:
                 <p>{liveTotalEnergySum.toFixed(2)} kWh</p>
               </div>
               <div className="metric-card">
-                <h3>Fatura Estimada</h3>
-                <p>R$ 22,99</p>
+                <h3>Fatura Estimada Mês Atual</h3>
+                <p>R$ 33,00</p>
               </div>
               <div className="metric-card">
-                <h3>Consumo Mensal (kWh)</h3>
+                <h3>Consumo Mensal Anterior (kWh)</h3>
                 <p>
-                  {currentMonthConsumption}
+                  20,74 kWh
                 </p>
               </div>
               <div className="metric-card">
-                <h3>Economia Mensal</h3>
-                <p>R$ 12,50</p>
+                <h3>Economia Mensal Referente Mês Anterior</h3>
+                <p>R$ 26,00</p>
               </div>
             </div>
             {/* Main Chart Area */}
