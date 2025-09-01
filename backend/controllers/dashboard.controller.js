@@ -1037,8 +1037,8 @@ async function getMonthlyEnergyData(req, res) {
           }
         }
       } else if (currentYear === 2025 && currentMonth === 7) {
-        // AGOSTO 2025: Zera (ainda não finalizou)
-        monthSum = 0;
+        // AGOSTO 2025: Valor fixo conforme solicitado
+        monthSum = 21.527;
       } else {
         // SETEMBRO 2025+: Nova lógica com totalEnergy do último dia
         const brokerMap =

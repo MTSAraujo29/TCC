@@ -1681,8 +1681,8 @@ Posso te explicar sobre:
                 <p>{isRealData ? liveTotalEnergySum.toFixed(2) : "42.85"} kWh</p>
               </div>
               <div className="metric-card">
-                <h3>Fatura Estimada</h3>
-                <p>R$ 22,99</p>
+                <h3>Fatura Estimada Referente Mês Anterior</h3>
+                <p>R$ 38,51</p>
               </div>
               <div className="metric-card">
                 <h3>Consumo Mensal (kWh)</h3>
@@ -1691,8 +1691,8 @@ Posso te explicar sobre:
                 </p>
               </div>
               <div className="metric-card">
-                <h3>Economia Mensal</h3>
-                <p>R$ 12,50</p>
+                <h3>Economia Mensal Referente Mês Anterior</h3>
+                <p>R$ 8,50</p>
               </div>
             </div>
             {/* Main Chart Area */}
