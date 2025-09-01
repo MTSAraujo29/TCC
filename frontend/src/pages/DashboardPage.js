@@ -1751,7 +1751,7 @@ Posso te explicar sobre:
                     fontSize: "0.7rem",
                     fontWeight: "500"
                   }}>
-                    Dado referente mes anterior
+                    Dado referente mês anterior
                   </div>
                 )}
               </div>
@@ -1772,7 +1772,7 @@ Posso te explicar sobre:
                     fontSize: "0.7rem",
                     fontWeight: "500"
                   }}>
-                    Dado referente mes anterior
+                    Dado referente mês anterior
                   </div>
                 )}
               </div>
@@ -1791,7 +1791,7 @@ Posso te explicar sobre:
                     fontSize: "0.7rem",
                     fontWeight: "500"
                   }}>
-                    Dado referente mes anterior
+                    Dado referente mês anterior
                   </div>
                 )}
               </div>
