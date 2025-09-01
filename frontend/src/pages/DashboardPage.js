@@ -485,7 +485,14 @@ function DashboardPage() {
         const monthlyConsumption = data.metrics && data.metrics.currentMonthConsumption !== undefined ? 
           data.metrics.currentMonthConsumption : 0;
         console.log("Valor recebido de currentMonthConsumption:", monthlyConsumption);
-        setCurrentMonthConsumption(`${parseFloat(monthlyConsumption).toFixed(2)} kWh`);
+        
+        // Verificar se o usuário é admin para aplicar o valor 21.527
+        const isAdmin = localStorage.getItem("isAdmin") === "true";
+        if (isAdmin) {
+          setCurrentMonthConsumption("21.527 kWh");
+        } else {
+          setCurrentMonthConsumption(`${parseFloat(monthlyConsumption).toFixed(2)} kWh`);
+        }
         setTotalConsumption(`${totalConsumptionKwh.toFixed(2)} kWh`);
         if (chartDataArray.length > 0) {
           setDailyConsumption(
@@ -1373,8 +1380,9 @@ Posso te explicar sobre:
           );
           if (res.ok) {
             const data = await res.json();
-            // Modificar o valor de agosto para 21,527 para contas admin
-            if (data.datasets && data.datasets[0] && data.datasets[0].data && data.datasets[0].data.length >= 8) {
+            // Modificar o valor de agosto para 21,527 apenas para contas admin
+            const isAdmin = localStorage.getItem("isAdmin") === "true";
+            if (isAdmin && data.datasets && data.datasets[0] && data.datasets[0].data && data.datasets[0].data.length >= 8) {
               data.datasets[0].data[7] = 21.527; // Agosto é o índice 7 (zero-based)
             }
             setRealMonthlyChartData({
@@ -1677,7 +1685,7 @@ Posso te explicar sobre:
                 </p>
               </div>  
               <div className="metric-card">
-                <h3>Consumo Total (kWh)</h3>
+                <h3>Consumo Total (kWh) </h3>
                 <p>{isRealData ? liveTotalEnergySum.toFixed(2) : "42.85"} kWh</p>
               </div>
               <div className="metric-card">
@@ -1685,13 +1693,13 @@ Posso te explicar sobre:
                 <p>R$ 38,51</p>
               </div>
               <div className="metric-card">
-                <h3>Consumo Mensal (kWh)</h3>
+                <h3>Consumo Total Referente Mês Anterior (kWh)</h3>
                 <p>
                   {currentMonthConsumption}
                 </p>
               </div>
               <div className="metric-card">
-                <h3>Economia Mensal Referente Mês Anterior</h3>
+                <h3>Economia Referente Mês Anterior</h3>
                 <p>R$ 8,50</p>
               </div>
             </div>
