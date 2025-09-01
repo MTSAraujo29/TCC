@@ -1654,7 +1654,7 @@ Posso te explicar sobre:
             {/* Metrics Grid */}
             <div className="metrics-grid">
               <div className="metric-card">
-                <h3>Consumo Atual (Watts)</h3>
+                <h3>Consumo em Watts</h3>
                 <p>
                   {devices.length > 0
                     ? devices
@@ -1688,7 +1688,7 @@ Posso te explicar sobre:
                 )}
               </div>
               <div className="metric-card">
-                <h3>Corrente Atual (A)</h3>
+                <h3>Consumo em Amperes</h3>
                 <p>
                   {isRealData ? devices
                     .filter(
@@ -1718,7 +1718,7 @@ Posso te explicar sobre:
                 )}
               </div>  
               <div className="metric-card">
-                <h3>Consumo Total (kWh) </h3>
+                <h3>Consumo Total em Quilowatt-hora</h3>
                 <p>{isRealData ? liveTotalEnergySum.toFixed(2) : "42.85"} kWh</p>
                 {localStorage.getItem("isAdmin") === "true" && (
                   <div style={{
