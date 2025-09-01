@@ -72,7 +72,7 @@ function DashboardPage() {
     datasets: [
       {
         label: "Consumo Diário (kWh)",
-        data: [3.2, 3.5, 2.9, 4.1, 3.8, 4.5, 3.9],
+        data: [2.8, 3.2, 3.7, 2.5, 4.2, 3.9, 3.1],
         borderColor: "#0369a1",
         backgroundColor: "rgba(3, 105, 161, 0.1)",
         tension: 0.4,
@@ -86,7 +86,7 @@ function DashboardPage() {
     datasets: [
       {
         label: "Consumo Semanal (kWh)",
-        data: [22.5, 24.1, 21.8, 25.3],
+        data: [18.7, 23.4, 19.8, 22.6],
         borderColor: "#ff9800",
         backgroundColor: "rgba(255, 152, 0, 0.1)",
         tension: 0.4,
@@ -114,7 +114,7 @@ function DashboardPage() {
       {
         label: "Consumo Mensal (kWh)",
         data: [
-          90.2, 95.8, 88.5, 102.1, 99.7, 105.3, 98.0, 101.5, 93.0, 100.1, 97.5,
+          90.2, 95.8, 88.5, 102.1, 99.7, 105.3, 98.0, 21.527, 93.0, 100.1, 97.5,
           108.0,
         ],
         borderColor: "#e91e63",
@@ -1660,7 +1660,7 @@ Posso te explicar sobre:
               <div className="metric-card">
                 <h3>Corrente Atual (A)</h3>
                 <p>
-                  {devices
+                  {isRealData ? devices
                     .filter(
                       (d) =>
                         d.powerState &&
@@ -1668,13 +1668,13 @@ Posso te explicar sobre:
                         typeof d.latestReading.current === "number"
                     )
                     .reduce((sum, d) => sum + d.latestReading.current, 0)
-                    .toFixed(2)}
+                    .toFixed(2) : "3.75"}
                   A
                 </p>
               </div>  
               <div className="metric-card">
                 <h3>Consumo Total (kWh)</h3>
-                <p>{liveTotalEnergySum.toFixed(2)} kWh</p>
+                <p>{isRealData ? liveTotalEnergySum.toFixed(2) : "42.85"} kWh</p>
               </div>
               <div className="metric-card">
                 <h3>Fatura Estimada</h3>
