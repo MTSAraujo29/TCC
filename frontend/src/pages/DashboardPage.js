@@ -114,7 +114,7 @@ function DashboardPage() {
       {
         label: "Consumo Mensal (kWh)",
         data: [
-          90.2, 95.8, 88.5, 102.1, 99.7, 105.3, 98.0, 21.527, 93.0, 100.1, 97.5,
+          90.2, 95.8, 88.5, 102.1, 99.7, 105.3, 98.0, 101.5, 93.0, 100.1, 97.5,
           108.0,
         ],
         borderColor: "#e91e63",
@@ -1373,6 +1373,10 @@ Posso te explicar sobre:
           );
           if (res.ok) {
             const data = await res.json();
+            // Modificar o valor de agosto para 21,527 para contas admin
+            if (data.datasets && data.datasets[0] && data.datasets[0].data && data.datasets[0].data.length >= 8) {
+              data.datasets[0].data[7] = 21.527; // Agosto é o índice 7 (zero-based)
+            }
             setRealMonthlyChartData({
               labels: data.labels,
               datasets: [
