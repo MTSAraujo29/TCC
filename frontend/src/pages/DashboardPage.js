@@ -1668,6 +1668,19 @@ Posso te explicar sobre:
                         .toFixed(2) + " W"
                     : "0.00 W"}
                 </p>
+                <div style={{
+                  position: "absolute",
+                  bottom: "8px",
+                  right: "8px",
+                  backgroundColor: "#0284c7",
+                  color: "white",
+                  padding: "4px 8px",
+                  borderRadius: "4px",
+                  fontSize: "0.7rem",
+                  fontWeight: "500"
+                }}>
+                  Dado em Tempo Real
+                </div>
               </div>
               <div className="metric-card">
                 <h3>Corrente Atual (A)</h3>
@@ -1683,24 +1696,89 @@ Posso te explicar sobre:
                     .toFixed(2) : "3.75"}
                   A
                 </p>
+                <div style={{
+                  position: "absolute",
+                  bottom: "8px",
+                  right: "8px",
+                  backgroundColor: "#0284c7",
+                  color: "white",
+                  padding: "4px 8px",
+                  borderRadius: "4px",
+                  fontSize: "0.7rem",
+                  fontWeight: "500"
+                }}>
+                  Dado em Tempo Real
+                </div>
               </div>  
               <div className="metric-card">
                 <h3>Consumo Total (kWh) </h3>
                 <p>{isRealData ? liveTotalEnergySum.toFixed(2) : "42.85"} kWh</p>
+                <div style={{
+                  position: "absolute",
+                  bottom: "8px",
+                  right: "8px",
+                  backgroundColor: "#0284c7",
+                  color: "white",
+                  padding: "4px 8px",
+                  borderRadius: "4px",
+                  fontSize: "0.7rem",
+                  fontWeight: "500"
+                }}>
+                  Dado em Tempo Real
+                </div>
               </div>
               <div className="metric-card">
-                <h3>Fatura Estimada Referente Mês Anterior</h3>
+                <h3>Fatura Estimada R$</h3>
                 <p>R$ 38,51</p>
+                <div style={{
+                  position: "absolute",
+                  bottom: "8px",
+                  right: "8px",
+                  backgroundColor: "#FFD426",
+                  color: "black",
+                  padding: "4px 8px",
+                  borderRadius: "4px",
+                  fontSize: "0.7rem",
+                  fontWeight: "500"
+                }}>
+                  Dados referente mes anterior
+                </div>
               </div>
               <div className="metric-card">
-                <h3>Consumo Total Referente Mês Anterior (kWh)</h3>
+                <h3>Consumo Total (kWh)</h3>
                 <p>
                   {currentMonthConsumption}
                 </p>
+                <div style={{
+                  position: "absolute",
+                  bottom: "8px",
+                  right: "8px",
+                  backgroundColor: "#FFD426",
+                  color: "black",
+                  padding: "4px 8px",
+                  borderRadius: "4px",
+                  fontSize: "0.7rem",
+                  fontWeight: "500"
+                }}>
+                  Dados referente mes anterior
+                </div>
               </div>
               <div className="metric-card">
-                <h3>Economia Referente Mês Anterior</h3>
+                <h3>Economia Mensal R$</h3>
                 <p>R$ 8,50</p>
+                <div style={{
+                  position: "absolute",
+                  bottom: "8px",
+                  right: "8px",
+                  backgroundColor: "#FFD426",
+                  color: "black",
+                  padding: "4px 8px",
+                  borderRadius: "4px",
+                  fontSize: "0.7rem",
+                  fontWeight: "500"
+                }}>
+                  Dados referente mes anterior
+                </div>
               </div>
             </div>
             {/* Main Chart Area */}
