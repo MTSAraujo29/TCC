@@ -61,6 +61,10 @@ function LoginPage() {
               src="/icon.png"
               alt="Smart Energy Logo"
               className="login-logo-img"
+              width="64"
+              height="64"
+              loading="eager"
+              fetchpriority="high"
             />
             <h1 className="login-title">Smart Energy</h1>
             <p className="login-subtitle">

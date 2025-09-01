@@ -1157,13 +1157,15 @@ Posso te explicar sobre:
         typeof camera.latestReading.EnergyYesterday === "number"
           ? camera.latestReading.EnergyYesterday
           : 0;
+      // Verificar se é admin para aplicar a cor #FFD426 para o broker 2 (câmera)
+      const isAdmin = localStorage.getItem("isAdmin") === "true";
       return {
         labels: ["Sala", "Câmera"],
         datasets: [
           {
             data: [salaYesterday, cameraYesterday],
-            backgroundColor: ["#00bcd4", "#ff9800"],
-            borderColor: ["#00838f", "#f57c00"],
+            backgroundColor: ["#00bcd4", isAdmin ? "#FFD426" : "#ff9800"],
+            borderColor: ["#00838f", isAdmin ? "#D4B01F" : "#f57c00"],
             borderWidth: 1,
           },
         ],
@@ -1440,9 +1442,10 @@ Posso te explicar sobre:
           <img
             src="/icon.png"
             alt="Ícone"
+            width="64"
+            height="64"
+            loading="eager"
             style={{
-              width: 64,
-              height: 64,
               marginBottom: 16,
               marginTop: -48,
             }}
@@ -1483,7 +1486,7 @@ Posso te explicar sobre:
       {/* ==================== SIDEBAR ==================== */}
       <div className="sidebar">
         <div className="logo-icon-sidebar">
-          <img src="/icon.png" alt="Smart Energy" />
+          <img src="/icon.png" alt="Smart Energy" width="40" height="40" loading="eager" />
         </div>
         <div
           className={`menu-item ${activeSection === "inicio" ? "active" : ""}`}
@@ -1668,19 +1671,21 @@ Posso te explicar sobre:
                         .toFixed(2) + " W"
                     : "0.00 W"}
                 </p>
-                <div style={{
-                  position: "absolute",
-                  bottom: "8px",
-                  right: "8px",
-                  backgroundColor: "#0284c7",
-                  color: "white",
-                  padding: "4px 8px",
-                  borderRadius: "4px",
-                  fontSize: "0.7rem",
-                  fontWeight: "500"
-                }}>
-                  Dado em Tempo Real
-                </div>
+                {localStorage.getItem("isAdmin") === "true" && (
+                  <div style={{
+                    position: "absolute",
+                    bottom: "8px",
+                    right: "8px",
+                    backgroundColor: "#0284c7",
+                    color: "white",
+                    padding: "4px 8px",
+                    borderRadius: "4px",
+                    fontSize: "0.7rem",
+                    fontWeight: "500"
+                  }}>
+                    Dado em Tempo Real
+                  </div>
+                )}
               </div>
               <div className="metric-card">
                 <h3>Corrente Atual (A)</h3>
@@ -1696,89 +1701,99 @@ Posso te explicar sobre:
                     .toFixed(2) : "3.75"}
                   A
                 </p>
-                <div style={{
-                  position: "absolute",
-                  bottom: "8px",
-                  right: "8px",
-                  backgroundColor: "#0284c7",
-                  color: "white",
-                  padding: "4px 8px",
-                  borderRadius: "4px",
-                  fontSize: "0.7rem",
-                  fontWeight: "500"
-                }}>
-                  Dado em Tempo Real
-                </div>
+                {localStorage.getItem("isAdmin") === "true" && (
+                  <div style={{
+                    position: "absolute",
+                    bottom: "8px",
+                    right: "8px",
+                    backgroundColor: "#0284c7",
+                    color: "white",
+                    padding: "4px 8px",
+                    borderRadius: "4px",
+                    fontSize: "0.7rem",
+                    fontWeight: "500"
+                  }}>
+                    Dado em Tempo Real
+                  </div>
+                )}
               </div>  
               <div className="metric-card">
                 <h3>Consumo Total (kWh) </h3>
                 <p>{isRealData ? liveTotalEnergySum.toFixed(2) : "42.85"} kWh</p>
-                <div style={{
-                  position: "absolute",
-                  bottom: "8px",
-                  right: "8px",
-                  backgroundColor: "#0284c7",
-                  color: "white",
-                  padding: "4px 8px",
-                  borderRadius: "4px",
-                  fontSize: "0.7rem",
-                  fontWeight: "500"
-                }}>
-                  Dado em Tempo Real
-                </div>
+                {localStorage.getItem("isAdmin") === "true" && (
+                  <div style={{
+                    position: "absolute",
+                    bottom: "8px",
+                    right: "8px",
+                    backgroundColor: "#0284c7",
+                    color: "white",
+                    padding: "4px 8px",
+                    borderRadius: "4px",
+                    fontSize: "0.7rem",
+                    fontWeight: "500"
+                  }}>
+                    Dado em Tempo Real
+                  </div>
+                )}
               </div>
               <div className="metric-card">
                 <h3>Fatura Estimada R$</h3>
                 <p>R$ 38,51</p>
-                <div style={{
-                  position: "absolute",
-                  bottom: "8px",
-                  right: "8px",
-                  backgroundColor: "#FFD426",
-                  color: "black",
-                  padding: "4px 8px",
-                  borderRadius: "4px",
-                  fontSize: "0.7rem",
-                  fontWeight: "500"
-                }}>
-                  Dados referente mes anterior
-                </div>
+                {localStorage.getItem("isAdmin") === "true" && (
+                  <div style={{
+                    position: "absolute",
+                    bottom: "8px",
+                    right: "8px",
+                    backgroundColor: "#FFD426",
+                    color: "black",
+                    padding: "4px 8px",
+                    borderRadius: "4px",
+                    fontSize: "0.7rem",
+                    fontWeight: "500"
+                  }}>
+                    Dado referente mes anterior
+                  </div>
+                )}
               </div>
               <div className="metric-card">
                 <h3>Consumo Total (kWh)</h3>
                 <p>
                   {currentMonthConsumption}
                 </p>
-                <div style={{
-                  position: "absolute",
-                  bottom: "8px",
-                  right: "8px",
-                  backgroundColor: "#FFD426",
-                  color: "black",
-                  padding: "4px 8px",
-                  borderRadius: "4px",
-                  fontSize: "0.7rem",
-                  fontWeight: "500"
-                }}>
-                  Dados referente mes anterior
-                </div>
+                {localStorage.getItem("isAdmin") === "true" && (
+                  <div style={{
+                    position: "absolute",
+                    bottom: "8px",
+                    right: "8px",
+                    backgroundColor: "#FFD426",
+                    color: "black",
+                    padding: "4px 8px",
+                    borderRadius: "4px",
+                    fontSize: "0.7rem",
+                    fontWeight: "500"
+                  }}>
+                    Dado referente mes anterior
+                  </div>
+                )}
               </div>
               <div className="metric-card">
                 <h3>Economia Mensal R$</h3>
                 <p>R$ 8,50</p>
-                <div style={{
-                  position: "absolute",
-                  bottom: "8px",
-                  right: "8px",
-                  backgroundColor: "#FFD426",
-                  color: "black",
-                  padding: "4px 8px",
-                  borderRadius: "4px",
-                  fontSize: "0.7rem",
-                  fontWeight: "500"
-                }}>
-                  Dados referente mes anterior
-                </div>
+                {localStorage.getItem("isAdmin") === "true" && (
+                  <div style={{
+                    position: "absolute",
+                    bottom: "8px",
+                    right: "8px",
+                    backgroundColor: "#FFD426",
+                    color: "black",
+                    padding: "4px 8px",
+                    borderRadius: "4px",
+                    fontSize: "0.7rem",
+                    fontWeight: "500"
+                  }}>
+                    Dado referente mes anterior
+                  </div>
+                )}
               </div>
             </div>
             {/* Main Chart Area */}
@@ -2849,10 +2864,13 @@ Posso te explicar sobre:
             <div className="ecobot-container">
               <div className="ecobot-header">
                 <img
-                  src={process.env.PUBLIC_URL + "/EcoBotSF.png"}
-                  alt="EcoBot"
-                  className="ecobot-header-img"
-                />
+                          src={process.env.PUBLIC_URL + "/EcoBotSF.png"}
+                          alt="EcoBot"
+                          className="ecobot-header-img"
+                          width="48"
+                          height="48"
+                          loading="lazy"
+                        />
               </div>
             </div>
             <div className="ecobot-chat-container">
@@ -2870,6 +2888,9 @@ Posso te explicar sobre:
                           src={process.env.PUBLIC_URL + "/ST.png"}
                           alt="EcoBot"
                           className="ecobot-chat-avatar"
+                          width="32"
+                          height="32"
+                          loading="lazy"
                         />
                         <span className="ecobot-message-text">{msg.text}</span>
                       </>

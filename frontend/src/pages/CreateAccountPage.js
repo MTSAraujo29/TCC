@@ -80,6 +80,10 @@ function CreateAccountPage() {
               src="/icon.png"
               alt="Smart Energy Logo"
               className="create-account-logo-img"
+              width="64"
+              height="64"
+              loading="eager"
+              fetchpriority="high"
             />
             <h1 className="create-account-title">Smart Energy</h1>
             <p className="create-account-subtitle">
