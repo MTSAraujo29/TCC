@@ -1756,7 +1756,7 @@ Posso te explicar sobre:
                 )}
               </div>
               <div className="metric-card">
-                <h3>Consumo Total (kWh)</h3>
+                <h3>Consumo Total Quilowatt-hora</h3>
                 <p>
                   {currentMonthConsumption}
                 </p>
