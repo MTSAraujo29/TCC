@@ -1699,7 +1699,7 @@ Posso te explicar sobre:
                     )
                     .reduce((sum, d) => sum + d.latestReading.current, 0)
                     .toFixed(2) : "3.75"}
-                  A
+                      A
                 </p>
                 {localStorage.getItem("isAdmin") === "true" && (
                   <div style={{
@@ -2664,7 +2664,7 @@ Posso te explicar sobre:
                         typeof devices[0].latestReading.PowerFactor === "number"
                           ? devices[0].latestReading.PowerFactor.toFixed(2)
                           : "0.00"}
-                      </td>  FP{" "}
+                      </td>{" "}
                     </tr>{" "}
                     <tr>
                       <td> Energia Hoje </td>{" "}
@@ -2774,7 +2774,7 @@ Posso te explicar sobre:
                         typeof devices[1].latestReading.PowerFactor === "number"
                           ? devices[1].latestReading.PowerFactor.toFixed(2)
                           : "0.00"}
-                      </td> FP{" "}
+                      </td>{" "}
                     </tr>{" "}
                     <tr>
                       <td> Energia Hoje </td>{" "}
