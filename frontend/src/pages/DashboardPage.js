@@ -2607,7 +2607,7 @@ Posso te explicar sobre:
                         typeof devices[0].latestReading.voltage === "number"
                           ? devices[0].latestReading.voltage.toFixed(2)
                           : "0.00"}
-                        V{" "}
+                          V{" "}
                       </td>{" "}
                     </tr>{" "}
                     <tr>
@@ -2618,7 +2618,7 @@ Posso te explicar sobre:
                         typeof devices[0].latestReading.current === "number"
                           ? devices[0].latestReading.current.toFixed(2)
                           : "0.00"}
-                        A{" "}
+                          A{" "}
                       </td>{" "}
                     </tr>{" "}
                     <tr>
@@ -2629,7 +2629,7 @@ Posso te explicar sobre:
                         typeof devices[0].latestReading.power === "number"
                           ? devices[0].latestReading.power.toFixed(2)
                           : "0.00"}
-                        W{" "}
+                          W{" "}
                       </td>{" "}
                     </tr>{" "}
                     <tr>
@@ -2641,7 +2641,7 @@ Posso te explicar sobre:
                           "number"
                           ? devices[0].latestReading.ApparentPower.toFixed(2)
                           : "0.00"}
-                        VA{" "}
+                          VA{" "}
                       </td>{" "}
                     </tr>{" "}
                     <tr>
@@ -2653,7 +2653,7 @@ Posso te explicar sobre:
                           "number"
                           ? devices[0].latestReading.ReactivePower.toFixed(2)
                           : "0.00"}
-                        var{" "}
+                          VAR{" "}
                       </td>{" "}
                     </tr>{" "}
                     <tr>
@@ -2664,7 +2664,7 @@ Posso te explicar sobre:
                         typeof devices[0].latestReading.PowerFactor === "number"
                           ? devices[0].latestReading.PowerFactor.toFixed(2)
                           : "0.00"}
-                      </td>{" "}
+                      </td>  FP{" "}
                     </tr>{" "}
                     <tr>
                       <td> Energia Hoje </td>{" "}
@@ -2674,7 +2674,7 @@ Posso te explicar sobre:
                         "number"
                           ? devices[0].latestReading.EnergyToday.toFixed(2)
                           : "--"}
-                        kWh{" "}
+                          kWh{" "}
                       </td>{" "}
                     </tr>{" "}
                     <tr>
@@ -2685,7 +2685,7 @@ Posso te explicar sobre:
                         "number"
                           ? devices[0].latestReading.EnergyYesterday.toFixed(2)
                           : "--"}
-                        kWh{" "}
+                          kWh{" "}
                       </td>{" "}
                     </tr>{" "}
                     <tr>
@@ -2717,7 +2717,7 @@ Posso te explicar sobre:
                         typeof devices[1].latestReading.voltage === "number"
                           ? devices[1].latestReading.voltage.toFixed(2)
                           : "0.00"}
-                        V{" "}
+                          V{" "}
                       </td>{" "}
                     </tr>{" "}
                     <tr>
@@ -2728,7 +2728,7 @@ Posso te explicar sobre:
                         typeof devices[1].latestReading.current === "number"
                           ? devices[1].latestReading.current.toFixed(2)
                           : "0.00"}
-                        A{" "}
+                          A{" "}
                       </td>{" "}
                     </tr>{" "}
                     <tr>
@@ -2739,7 +2739,7 @@ Posso te explicar sobre:
                         typeof devices[1].latestReading.power === "number"
                           ? devices[1].latestReading.power.toFixed(2)
                           : "0.00"}
-                        W{" "}
+                          W{" "}
                       </td>{" "}
                     </tr>{" "}
                     <tr>
@@ -2751,7 +2751,7 @@ Posso te explicar sobre:
                           "number"
                           ? devices[1].latestReading.ApparentPower.toFixed(2)
                           : "0.00"}
-                        VA{" "}
+                          VA{" "}
                       </td>{" "}
                     </tr>{" "}
                     <tr>
@@ -2763,7 +2763,7 @@ Posso te explicar sobre:
                           "number"
                           ? devices[1].latestReading.ReactivePower.toFixed(2)
                           : "0.00"}
-                        var{" "}
+                          VAR{" "}
                       </td>{" "}
                     </tr>{" "}
                     <tr>
@@ -2774,7 +2774,7 @@ Posso te explicar sobre:
                         typeof devices[1].latestReading.PowerFactor === "number"
                           ? devices[1].latestReading.PowerFactor.toFixed(2)
                           : "0.00"}
-                      </td>{" "}
+                      </td> FP{" "}
                     </tr>{" "}
                     <tr>
                       <td> Energia Hoje </td>{" "}
@@ -2784,7 +2784,7 @@ Posso te explicar sobre:
                         "number"
                           ? devices[1].latestReading.EnergyToday.toFixed(2)
                           : "--"}
-                        kWh{" "}
+                          kWh{" "}
                       </td>{" "}
                     </tr>{" "}
                     <tr>
@@ -2795,7 +2795,7 @@ Posso te explicar sobre:
                         "number"
                           ? devices[1].latestReading.EnergyYesterday.toFixed(2)
                           : "--"}
-                        kWh{" "}
+                          kWh{" "}
                       </td>{" "}
                     </tr>{" "}
                     <tr>
