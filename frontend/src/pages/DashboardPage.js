@@ -1382,10 +1382,29 @@ Posso te explicar sobre:
           );
           if (res.ok) {
             const data = await res.json();
-            // Modificar o valor de agosto para 21,527 apenas para contas admin
+            // Modificar o valor de agosto e setembro para contas admin
             const isAdmin = localStorage.getItem("isAdmin") === "true";
-            if (isAdmin && data.datasets && data.datasets[0] && data.datasets[0].data && data.datasets[0].data.length >= 8) {
+            if (isAdmin && data.datasets && data.datasets[0] && data.datasets[0].data) {
+              // Garantir que temos pelo menos 9 meses no array (até setembro)
+              if (data.datasets[0].data.length < 9) {
+                // Preencher o array até o índice 8 (setembro)
+                while (data.datasets[0].data.length < 9) {
+                  data.datasets[0].data.push(0);
+                }
+              }
+              
+              // Definir valores específicos para agosto e setembro
               data.datasets[0].data[7] = 21.527; // Agosto é o índice 7 (zero-based)
+              data.datasets[0].data[8] = 18.462; // Setembro é o índice 8 (zero-based)
+              
+              // Garantir que os labels também incluem setembro
+              if (data.labels && data.labels.length < 9) {
+                // Adicionar labels faltantes se necessário
+                const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+                while (data.labels.length < 9) {
+                  data.labels.push(meses[data.labels.length]);
+                }
+              }
             }
             setRealMonthlyChartData({
               labels: data.labels,
