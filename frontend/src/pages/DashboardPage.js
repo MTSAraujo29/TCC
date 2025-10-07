@@ -114,7 +114,7 @@ function DashboardPage() {
       {
         label: "Consumo Mensal (kWh)",
         data: [
-          90.2, 95.8, 88.5, 102.1, 99.7, 105.3, 98.0, 101.5, 93.0, 100.1, 97.5,
+          90.2, 95.8, 88.5, 102.1, 99.7, 105.3, 98.0, 101.5, 94.8, 100.1, 97.5,
           108.0,
         ],
         borderColor: "#e91e63",
@@ -266,6 +266,17 @@ function DashboardPage() {
   // Por enquanto, `daily_consumption_kwh` é mockado no backend para ambos, então esta parte não muda muito.
   // Mas no futuro, esta função precisaria buscar dados históricos REAIS.
   const getChartData = () => {
+    // Se for o modo mensal e dados reais (admin), modificar o valor de setembro
+    if (viewMode === "month" && isRealData && realMonthlyChartData) {
+      // Criar uma cópia profunda dos dados para não modificar o estado original
+      const modifiedData = JSON.parse(JSON.stringify(realMonthlyChartData));
+      // Setembro é o índice 8 (zero-based)
+      if (modifiedData.datasets && modifiedData.datasets[0] && modifiedData.datasets[0].data) {
+        modifiedData.datasets[0].data[8] = 18.462; // Setembro com valor específico para admin
+      }
+      return modifiedData;
+    }
+    
     switch (viewMode) {
       case "day":
         return realDailyChartData || mockDailyData;
