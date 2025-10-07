@@ -71,7 +71,7 @@ const MOCK_DATA = {
       {
         label: "Consumo Mensal (kWh)",
         data: [
-          90.2, 95.8, 88.5, 102.1, 99.7, 105.3, 98.0, 101.5, 94.8, 100.1, 97.5,
+          90.2, 95.8, 88.5, 102.1, 99.7, 105.3, 98.0, 101.5, 93.0, 100.1, 97.5,
           108.0,
         ],
         borderColor: "#e91e63",
@@ -297,44 +297,6 @@ export default function FullScreenChartPage() {
       if (viewMode === CHART_MODES.WEEK)
         return MOCK_DATA[CHART_MODES.WEEK];
       return MOCK_DATA[CHART_MODES.MONTH];
-    }
-
-    // Para usuários admin, usar dados reais com modificação para setembro
-    if (viewMode === CHART_MODES.MONTH && realMonthlyChart) {
-      // Criar uma cópia profunda dos dados para não modificar o estado original
-      const modifiedData = JSON.parse(JSON.stringify(realMonthlyChart));
-      
-      // Garantir que temos todos os meses no array de labels
-      if (!modifiedData.labels || modifiedData.labels.length < 12) {
-        modifiedData.labels = [
-          "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", 
-          "Jul", "Ago", "Set", "Out", "Nov", "Dez"
-        ];
-      }
-      
-      // Garantir que temos um array de dados completo
-      if (!modifiedData.datasets || !modifiedData.datasets[0]) {
-        modifiedData.datasets = [{
-          label: "Consumo Mensal (kWh)",
-          data: Array(12).fill(0),
-          borderColor: "#e91e63",
-          backgroundColor: "rgba(233, 30, 99, 0.4)",
-          tension: 0.4,
-          fill: true,
-        }];
-      }
-      
-      // Se o array de dados não tem 12 elementos, preencher com zeros
-      if (modifiedData.datasets[0].data.length < 12) {
-        modifiedData.datasets[0].data = Array(12).fill(0).map((zero, index) => 
-          index < modifiedData.datasets[0].data.length ? modifiedData.datasets[0].data[index] : zero
-        );
-      }
-      
-      // Setembro é o índice 8 (zero-based)
-      modifiedData.datasets[0].data[8] = 18.462; // Setembro com valor específico para admin
-      
-      return modifiedData;
     }
     
     // Se for dados reais (usuário admin), use os dados reais quando disponíveis
