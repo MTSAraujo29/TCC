@@ -1,9 +1,3 @@
-Excelente ideia\! O arquivo `README.md` é a vitrine do seu projeto e a primeira coisa que avaliadores e futuros desenvolvedores verão.
-
-Com base em toda a arquitetura e no código do seu TCC, criei um conteúdo detalhado e profissional, usando os termos técnicos corretos:
-
------
-
 # ⚡ Smart Energy: Sistema Inteligente de Gerenciamento de Energia IoT
 
 ## 🚀 Objetivo do Projeto
