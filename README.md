@@ -79,7 +79,7 @@ O Backend expõe uma API RESTful para comunicação com o Frontend:
 
 ### 1\. Configuração do Backend
 
-1.  Clone o repositório: `git clone [URL_DO_SEU_REPOSITÓRIO]`
+1.  Clone o repositório: `git clone [https://github.com/MTSAraujo29/TCC]`
 2.  Navegue até a pasta `backend`: `cd backend`
 3.  Instale as dependências: `npm install`
 4.  Crie o arquivo **`.env`** e configure:
