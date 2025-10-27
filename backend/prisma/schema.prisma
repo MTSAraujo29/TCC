@@ -68,7 +68,5 @@ model KWHMonthly {
   totalEnergyAccumulated Float
   month                  Int
   year                   Int
-  timestamp              DateTime @default(now()) // Timestamp da gravação
-
   @@map("kwhMonthly")
 }
