@@ -9,7 +9,6 @@ const prisma = new PrismaClient(); // Instância do Prisma
 // Se elas não estão e você vai implementá-las aqui, você não precisaria do import.
 // Pela estrutura atual do seu código, parece que você quer que tasmotaService contenha essas funções.
 const tasmotaService = require("../services/tasmota.service"); // Serviço para interagir com dados Tasmota
-const energyTotalManager = require("../services/energyTotalManager"); // Serviço para dados mensais
 
 // Cache para evitar logs repetitivos
 const lastLoggedData = new Map();
@@ -449,66 +448,36 @@ async function getDashboardData(req, res) {
       async function calculateMonthlyConsumptionFromBrokers() {
         try {
           // Filtra dispositivos por broker
-          const broker1Devices = realDevicesData.filter(
-            (d) => d.broker === "broker1"
-          );
-          const broker2Devices = realDevicesData.filter(
-            (d) => d.broker === "broker2"
-          );
-
+          const broker1Devices = realDevicesData.filter(d => d.broker === "broker1");
+          const broker2Devices = realDevicesData.filter(d => d.broker === "broker2");
+          
           // Calcula a soma de totalEnergy para cada broker
           let broker1TotalEnergy = 0;
           let broker2TotalEnergy = 0;
-
-          broker1Devices.forEach((device) => {
+          
+          broker1Devices.forEach(device => {
             if (device.latestReading && device.latestReading.totalEnergy) {
               broker1TotalEnergy += device.latestReading.totalEnergy;
             }
           });
-
-          broker2Devices.forEach((device) => {
+          
+          broker2Devices.forEach(device => {
             if (device.latestReading && device.latestReading.totalEnergy) {
               broker2TotalEnergy += device.latestReading.totalEnergy;
             }
           });
-
+          
           // Soma os valores de totalEnergy dos dois brokers
-          const totalMonthlyConsumption =
-            broker1TotalEnergy + broker2TotalEnergy;
-
-          console.log(
-            `Consumo mensal calculado: Broker 1 (${broker1TotalEnergy.toFixed(
-              2
-            )} kWh) + Broker 2 (${broker2TotalEnergy.toFixed(
-              2
-            )} kWh) = ${totalMonthlyConsumption.toFixed(2)} kWh`
-          );
-
+          const totalMonthlyConsumption = broker1TotalEnergy + broker2TotalEnergy;
+          
+          console.log(`Consumo mensal calculado: Broker 1 (${broker1TotalEnergy.toFixed(2)} kWh) + Broker 2 (${broker2TotalEnergy.toFixed(2)} kWh) = ${totalMonthlyConsumption.toFixed(2)} kWh`);
+          
           return parseFloat(totalMonthlyConsumption.toFixed(2));
         } catch (error) {
           console.error("Erro ao calcular consumo mensal dos brokers:", error);
           return 0;
         }
       }
-
-      // NOVO: Obter consumo mensal real do KWHMonthly
-      const realMonthlyConsumption =
-        await energyTotalManager.getTotalMonthlyConsumption(userId);
-
-      // NOVO: Obter dados para gráfico mensal
-      const monthlyChartData = await energyTotalManager.getMonthlyChartData(
-        userId
-      );
-
-      // NOVO: Obter fatura estimada baseada na tarifa da Equatorial Goiás
-      const estimatedBillData = await energyTotalManager.getEstimatedBill(
-        userId
-      );
-
-      // NOVO: Obter economia mensal e redução de CO2
-      const monthlySavingsData = await energyTotalManager.getMonthlySavings(
-        userId
-      );
 
       // Finaliza as métricas globais
       // Se o totalEnergy no Tasmota for acumulativo e não reiniciar, o totalConsumptionAccumulated
@@ -521,41 +490,21 @@ async function getDashboardData(req, res) {
         userEmail: userEmail,
         userDevices: realDevicesData, // O frontend espera 'userDevices'
         metrics: {
-          // NOVO: Usar dados reais do KWHMonthly
-          currentMonthConsumption:
-            realMonthlyConsumption > 0 ? realMonthlyConsumption : 31.76, // Usa dados reais ou fallback
+          // Convertendo Wh para kWh para exibição no frontend (dividir por 1000)
+          // Mas o seu schema.prisma tem Float, e Energy.Total do Tasmota é kWh.
+          // Então, vamos manter kWh, se o Tasmota manda kWh.
+          // Se o Tasmota manda Wh, ajuste no schema para Wh ou converta aqui.
+          // Assumindo que totalEnergy do Tasmota (e no DB) já é em kWh:
+          // Para o mês atual, fixamos o valor em 31.76 kWh conforme solicitado
+          // A partir do próximo mês, será calculado somando os valores de totalEnergy dos brokers 1 e 2
+          // Forçando o valor fixo para garantir que seja exibido corretamente
+          // Enviando como número para que o frontend possa usar toFixed()
+          currentMonthConsumption: 31.76, // Valor fixo conforme solicitado
           dailyConsumption: parseFloat(dailyConsumptionLastDay.toFixed(2)), // Consumo do último dia
           totalConsumption: parseFloat(totalConsumptionAccumulated.toFixed(2)), // Total acumulado de todos
           currentPower: parseFloat(currentRealPower.toFixed(2)), // Potência instantânea total em Watts
           devicesOnline: devicesActuallyOnline,
-          // NOVO: Economia mensal e redução de CO2 (substitui energySaved)
-          co2Reduction: monthlySavingsData.co2Reduction || 0,
-          co2ReductionGrams: monthlySavingsData.co2ReductionGrams || 0,
-          energySaved: monthlySavingsData.energySaved || 0,
-          monthlySavingsDetails: monthlySavingsData.hasData
-            ? {
-                energySaved: monthlySavingsData.energySaved,
-                co2Reduction: monthlySavingsData.co2Reduction,
-                co2ReductionGrams: monthlySavingsData.co2ReductionGrams,
-                currentMonth: monthlySavingsData.currentMonth,
-                currentYear: monthlySavingsData.currentYear,
-                previousMonth: monthlySavingsData.previousMonth,
-                previousYear: monthlySavingsData.previousYear,
-                currentConsumption: monthlySavingsData.currentConsumption,
-                previousConsumption: monthlySavingsData.previousConsumption,
-                calculation: monthlySavingsData.calculation,
-              }
-            : null,
-          // NOVO: Fatura estimada baseada na tarifa da Equatorial Goiás
-          estimatedBill: estimatedBillData.estimatedBill || 0,
-          estimatedBillDetails: estimatedBillData.hasData
-            ? {
-                consumption: estimatedBillData.consumption,
-                month: estimatedBillData.month,
-                year: estimatedBillData.year,
-                calculation: estimatedBillData.calculation,
-              }
-            : null,
+          energySaved: 0, // Lógica complexa, por enquanto 0
         },
         // O frontend espera 'labels' e 'datasets' para o gráfico principal
         mainChartData: {
@@ -589,20 +538,6 @@ async function getDashboardData(req, res) {
                 .slice(0, Object.keys(energyConsumptionByDeviceType).length)
                 .map((color) => color.replace("0.7", "1")), // Torna a borda mais opaca
               borderWidth: 1,
-            },
-          ],
-        },
-        // NOVO: Dados do gráfico mensal baseado no KWHMonthly
-        monthlyChartData: {
-          labels: monthlyChartData.labels,
-          datasets: [
-            {
-              label: "Consumo Mensal (kWh)",
-              data: monthlyChartData.data,
-              borderColor: "#00bcd4",
-              backgroundColor: "rgba(0, 188, 212, 0.4)",
-              tension: 0.4,
-              fill: true,
             },
           ],
         },
@@ -704,10 +639,7 @@ async function getDashboardData(req, res) {
     }
 
     // console.log('Dados enviados para o frontend:', JSON.stringify(dashboardData, null, 2));
-    console.log(
-      "Enviando dashboardData para o frontend com currentMonthConsumption:",
-      dashboardData.metrics.currentMonthConsumption
-    );
+    console.log("Enviando dashboardData para o frontend com currentMonthConsumption:", dashboardData.metrics.currentMonthConsumption);
     res.json(dashboardData);
   } catch (error) {
     console.error("Erro ao carregar dados do dashboard:", error);

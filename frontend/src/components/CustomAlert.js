@@ -24,15 +24,15 @@ const CustomAlert = ({
   const getIcon = () => {
     switch (type) {
       case "success":
-        return <i className="fas fa-check-circle"></i>;
+        return "✅";
       case "error":
-        return <i className="fas fa-exclamation-circle"></i>;
+        return "❌";
       case "warning":
-        return <i className="fas fa-exclamation-triangle"></i>;
+        return "⚠️";
       case "info":
-        return <i className="fas fa-info-circle"></i>;
+        return "ℹ️";
       default:
-        return <i className="fas fa-info-circle"></i>;
+        return "ℹ️";
     }
   };
 
@@ -63,7 +63,7 @@ const CustomAlert = ({
             onClick={onClose}
             aria-label="Fechar alerta"
           >
-            <i className="fas fa-times"></i>
+            ×
           </button>
         </div>
         <div className="custom-alert-content">
@@ -74,7 +74,7 @@ const CustomAlert = ({
             className="custom-alert-button custom-alert-button-primary"
             onClick={onClose}
           >
-            Entendi
+            OK
           </button>
         </div>
       </div>

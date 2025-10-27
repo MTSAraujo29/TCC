@@ -18,7 +18,6 @@ model User {
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
   devices        Device[] // Relacionamento com os dispositivos do usuário
-  kwhMonthly     KWHMonthly[] // Relacionamento com os dados mensais
   @@map("users")
 }
 
@@ -39,7 +38,6 @@ model Device {
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
   readings             EnergyReading[]
-  kwhMonthly           KWHMonthly[]
 
   @@map("devices")
 }
@@ -62,24 +60,4 @@ model EnergyReading {
   brokerLabel     String? // Identificador do broker (broker1 ou broker2)
 
   @@map("energyReadings")
-}
-
-// Novo modelo para armazenar o consumo mensal calculado (diferença entre valores)
-model KWHMonthly {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  deviceId        String   @db.ObjectId // ID do dispositivo
-  device          Device   @relation(fields: [deviceId], references: [id])
-  userId          String   @db.ObjectId // ID do usuário (para facilitar consultas)
-  user            User     @relation(fields: [userId], references: [id])
-  month           Int      // Mês (1-12)
-  year            Int      // Ano
-  brokerLabel     String   // broker1 ou broker2
-  totalEnergyAccumulated Float // Valor acumulado do Tasmota no último dia do mês
-  monthlyConsumption Float // Consumo mensal calculado (diferença)
-  timestamp       DateTime @default(now()) // Quando foi salvo
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  @@unique([deviceId, month, year, brokerLabel]) // Evita duplicatas
-  @@map("kwhMonthly")
 }
