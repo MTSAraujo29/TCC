@@ -472,7 +472,7 @@ function testBillCalculation(testConsumption = 102) {
 }
 
 /**
- * Calcula a fatura estimada baseada no último totalEnergyAccumulated
+ * Calcula a fatura estimada baseada no consumo atual dos dispositivos
  * Usa as tarifas da Equatorial Goiás para Goiânia-Goiás
  * @returns {Promise<Object>} Objeto com detalhes do cálculo da fatura
  */
@@ -480,27 +480,64 @@ async function calculateEstimatedBill() {
   try {
     console.log("[BILL_CALC] Iniciando cálculo da fatura estimada...");
 
-    // 1. Obter o último valor de totalEnergyAccumulated
-    const lastMonthlyRecord = await prisma.kWHMonthly.findFirst({
-      orderBy: { timestamp: "desc" },
+    // 1. Buscar todos os dispositivos dos dois brokers para obter consumo atual
+    const broker1Devices = await prisma.device.findMany({
+      where: { broker: "broker1" },
+      select: { id: true, name: true, lastSavedTotalEnergy: true },
     });
 
-    if (!lastMonthlyRecord) {
-      console.log("[BILL_CALC] Nenhum registro mensal encontrado");
+    const broker2Devices = await prisma.device.findMany({
+      where: { broker: "broker2" },
+      select: { id: true, name: true, lastSavedTotalEnergy: true },
+    });
+
+    console.log(`[BILL_CALC] Broker 1: ${broker1Devices.length} dispositivos`);
+    console.log(`[BILL_CALC] Broker 2: ${broker2Devices.length} dispositivos`);
+
+    // 2. Somar os valores de totalEnergy dos dois brokers
+    let broker1Total = 0;
+    let broker2Total = 0;
+
+    broker1Devices.forEach((device) => {
+      if (device.lastSavedTotalEnergy && device.lastSavedTotalEnergy > 0) {
+        broker1Total += device.lastSavedTotalEnergy;
+        console.log(
+          `[BILL_CALC] Broker 1 - ${device.name}: ${device.lastSavedTotalEnergy} kWh`
+        );
+      }
+    });
+
+    broker2Devices.forEach((device) => {
+      if (device.lastSavedTotalEnergy && device.lastSavedTotalEnergy > 0) {
+        broker2Total += device.lastSavedTotalEnergy;
+        console.log(
+          `[BILL_CALC] Broker 2 - ${device.name}: ${device.lastSavedTotalEnergy} kWh`
+        );
+      }
+    });
+
+    const totalEnergyAccumulated = broker1Total + broker2Total;
+    console.log(
+      `[BILL_CALC] Consumo total atual: ${broker1Total} + ${broker2Total} = ${totalEnergyAccumulated} kWh`
+    );
+
+    // Se não há consumo, retornar zero
+    if (totalEnergyAccumulated === 0) {
+      console.log("[BILL_CALC] Nenhum consumo detectado nos dispositivos");
       return {
-        success: false,
-        message: "Nenhum registro de consumo mensal encontrado",
+        success: true,
+        message: "Nenhum consumo detectado nos dispositivos",
         estimatedBill: 0,
-        details: null,
+        details: {
+          consumption: 0,
+          calculations: {
+            totalBill: 0,
+          },
+        },
       };
     }
 
-    const totalEnergyAccumulated = lastMonthlyRecord.totalEnergyAccumulated;
-    console.log(
-      `[BILL_CALC] Último totalEnergyAccumulated: ${totalEnergyAccumulated} kWh`
-    );
-
-    // 2. Tarifas da Equatorial Goiás (Outubro 2025)
+    // 3. Tarifas da Equatorial Goiás (Outubro 2025)
     const TARIFFS = {
       // Tarifa base de energia
       energyTariff: 0.89181, // R$/kWh - Tarifa Residencial Convencional B1
@@ -513,7 +550,7 @@ async function calculateEstimatedBill() {
       pisCofins: 0.0548, // 5,48% - PIS/COFINS
     };
 
-    // 3. Cálculo da fatura
+    // 4. Cálculo da fatura
     // Valor base da energia
     const energyValue = totalEnergyAccumulated * TARIFFS.energyTariff;
     console.log(
@@ -544,6 +581,8 @@ async function calculateEstimatedBill() {
 
     const billDetails = {
       consumption: totalEnergyAccumulated,
+      broker1Total: broker1Total,
+      broker2Total: broker2Total,
       energyTariff: TARIFFS.energyTariff,
       flagTariff: TARIFFS.flagTariff,
       icmsRate: TARIFFS.icms,
@@ -557,9 +596,9 @@ async function calculateEstimatedBill() {
         totalTaxes: parseFloat(totalTaxes.toFixed(2)),
         totalBill: parseFloat(totalBill.toFixed(2)),
       },
-      month: lastMonthlyRecord.month,
-      year: lastMonthlyRecord.year,
-      timestamp: lastMonthlyRecord.timestamp,
+      month: new Date().getMonth() + 1,
+      year: new Date().getFullYear(),
+      timestamp: new Date(),
     };
 
     console.log(
