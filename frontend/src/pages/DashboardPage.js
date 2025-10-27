@@ -46,6 +46,7 @@ function DashboardPage() {
     useState("0.00 kWh");
   const [dailyConsumption, setDailyConsumption] = useState("0.00 kWh");
   const [totalConsumption, setTotalConsumption] = useState("0.00 kWh");
+  const [estimatedBill, setEstimatedBill] = useState("0.00");
 
   // Estado para controlar a seção ativa na sidebar
   const [activeSection, setActiveSection] = useState("inicio");
@@ -482,18 +483,32 @@ function DashboardPage() {
         );
         // Usar o valor de currentMonthConsumption enviado pelo backend em vez de calcular
         // Verificar se o valor existe e é um número antes de chamar toFixed()
-        const monthlyConsumption = data.metrics && data.metrics.currentMonthConsumption !== undefined ? 
-          data.metrics.currentMonthConsumption : 0;
-        console.log("Valor recebido de currentMonthConsumption:", monthlyConsumption);
-        
+        const monthlyConsumption =
+          data.metrics && data.metrics.currentMonthConsumption !== undefined
+            ? data.metrics.currentMonthConsumption
+            : 0;
+        console.log(
+          "Valor recebido de currentMonthConsumption:",
+          monthlyConsumption
+        );
+
         // Verificar se o usuário é admin para aplicar o valor 18.462
         const isAdmin = localStorage.getItem("isAdmin") === "true";
         if (isAdmin) {
           setCurrentMonthConsumption("18.462 kWh");
         } else {
-          setCurrentMonthConsumption(`${parseFloat(monthlyConsumption).toFixed(2)} kWh`);
+          setCurrentMonthConsumption(
+            `${parseFloat(monthlyConsumption).toFixed(2)} kWh`
+          );
         }
         setTotalConsumption(`${totalConsumptionKwh.toFixed(2)} kWh`);
+
+        // Processar fatura estimada
+        const billValue =
+          data.metrics && data.metrics.estimatedBill !== undefined
+            ? data.metrics.estimatedBill
+            : 0;
+        setEstimatedBill(parseFloat(billValue).toFixed(2));
         if (chartDataArray.length > 0) {
           setDailyConsumption(
             `${chartDataArray[chartDataArray.length - 1].toFixed(2)} kWh`
@@ -1388,7 +1403,7 @@ Posso te explicar sobre:
               // Definir os meses que queremos mostrar (junho a setembro)
               const meses = ["Jun", "Jul", "Ago", "Set"];
               const valores = [15.321, 19.845, 21.527, 18.462]; // Valores para Jun, Jul, Ago, Set
-              
+
               // Substituir os dados e labels pelos meses específicos
               data.labels = meses;
               data.datasets[0].data = valores;
@@ -1492,7 +1507,13 @@ Posso te explicar sobre:
       {/* ==================== SIDEBAR ==================== */}
       <div className="sidebar">
         <div className="logo-icon-sidebar">
-          <img src="/icon.png" alt="Smart Energy" width="40" height="40" loading="eager" />
+          <img
+            src="/icon.png"
+            alt="Smart Energy"
+            width="40"
+            height="40"
+            loading="eager"
+          />
         </div>
         <div
           className={`menu-item ${activeSection === "inicio" ? "active" : ""}`}
@@ -1678,17 +1699,19 @@ Posso te explicar sobre:
                     : "0.00 W"}
                 </p>
                 {localStorage.getItem("isAdmin") === "true" && (
-                  <div style={{
-                    position: "absolute",
-                    bottom: "8px",
-                    right: "8px",
-                    backgroundColor: "#0284c7",
-                    color: "white",
-                    padding: "4px 8px",
-                    borderRadius: "4px",
-                    fontSize: "0.7rem",
-                    fontWeight: "500"
-                  }}>
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "8px",
+                      right: "8px",
+                      backgroundColor: "#0284c7",
+                      color: "white",
+                      padding: "4px 8px",
+                      borderRadius: "4px",
+                      fontSize: "0.7rem",
+                      fontWeight: "500",
+                    }}
+                  >
                     Dado em Tempo Real
                   </div>
                 )}
@@ -1696,88 +1719,98 @@ Posso te explicar sobre:
               <div className="metric-card">
                 <h3>Consumo em Amperes</h3>
                 <p>
-                  {isRealData ? devices
-                    .filter(
-                      (d) =>
-                        d.powerState &&
-                        d.latestReading &&
-                        typeof d.latestReading.current === "number"
-                    )
-                    .reduce((sum, d) => sum + d.latestReading.current, 0)
-                    .toFixed(2) : "3.75"}
+                  {isRealData
+                    ? devices
+                        .filter(
+                          (d) =>
+                            d.powerState &&
+                            d.latestReading &&
+                            typeof d.latestReading.current === "number"
+                        )
+                        .reduce((sum, d) => sum + d.latestReading.current, 0)
+                        .toFixed(2)
+                    : "3.75"}
                   A
                 </p>
                 {localStorage.getItem("isAdmin") === "true" && (
-                  <div style={{
-                    position: "absolute",
-                    bottom: "8px",
-                    right: "8px",
-                    backgroundColor: "#0284c7",
-                    color: "white",
-                    padding: "4px 8px",
-                    borderRadius: "4px",
-                    fontSize: "0.7rem",
-                    fontWeight: "500"
-                  }}>
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "8px",
+                      right: "8px",
+                      backgroundColor: "#0284c7",
+                      color: "white",
+                      padding: "4px 8px",
+                      borderRadius: "4px",
+                      fontSize: "0.7rem",
+                      fontWeight: "500",
+                    }}
+                  >
                     Dado em Tempo Real
                   </div>
                 )}
-              </div>  
+              </div>
               <div className="metric-card">
                 <h3>Consumo Total em Quilowatt-hora</h3>
-                <p>{isRealData ? liveTotalEnergySum.toFixed(2) : "42.85"} kWh</p>
+                <p>
+                  {isRealData ? liveTotalEnergySum.toFixed(2) : "42.85"} kWh
+                </p>
                 {localStorage.getItem("isAdmin") === "true" && (
-                  <div style={{
-                    position: "absolute",
-                    bottom: "8px",
-                    right: "8px",
-                    backgroundColor: "#0284c7",
-                    color: "white",
-                    padding: "4px 8px",
-                    borderRadius: "4px",
-                    fontSize: "0.7rem",
-                    fontWeight: "500"
-                  }}>
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "8px",
+                      right: "8px",
+                      backgroundColor: "#0284c7",
+                      color: "white",
+                      padding: "4px 8px",
+                      borderRadius: "4px",
+                      fontSize: "0.7rem",
+                      fontWeight: "500",
+                    }}
+                  >
                     Dado em Tempo Real
                   </div>
                 )}
               </div>
               <div className="metric-card">
                 <h3>Fatura Estimada R$</h3>
-                <p>R$ 38,51</p>
+                <p>R$ {estimatedBill}</p>
                 {localStorage.getItem("isAdmin") === "true" && (
-                  <div style={{
-                    position: "absolute",
-                    bottom: "8px",
-                    right: "8px",
-                    backgroundColor: "#FFD426",
-                    color: "black",
-                    padding: "4px 8px",
-                    borderRadius: "4px",
-                    fontSize: "0.7rem",
-                    fontWeight: "500"
-                  }}>
-                    Dado referente mês anterior
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "8px",
+                      right: "8px",
+                      backgroundColor: "#FFD426",
+                      color: "black",
+                      padding: "4px 8px",
+                      borderRadius: "4px",
+                      fontSize: "0.7rem",
+                      fontWeight: "500",
+                    }}
+                  >
+                    Calculado com tarifas Equatorial Goiás
                   </div>
                 )}
               </div>
               <div className="metric-card">
                 <h3>Consumo Total Quilowatt-hora</h3>
-                <p>
-                  {currentMonthConsumption}
-                </p>
+                <p>{currentMonthConsumption}</p>
                 {localStorage.getItem("isAdmin") === "true" && (
-                  <div style={{
-                    position: "absolute",
-                    bottom: "8px",
-                    right: "8px",
-                    backgroundColor: "#FFD426",
-                    color: "black",
-                    padding: "4px 8px",
-                    borderRadius: "4px",
-                    fontSize: "0.7rem",
-                    fontWeight: "500"
-                  }}>
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "8px",
+                      right: "8px",
+                      backgroundColor: "#FFD426",
+                      color: "black",
+                      padding: "4px 8px",
+                      borderRadius: "4px",
+                      fontSize: "0.7rem",
+                      fontWeight: "500",
+                    }}
+                  >
                     Dado referente mês anterior
                   </div>
                 )}
@@ -1786,17 +1819,19 @@ Posso te explicar sobre:
                 <h3>Economia Mensal R$</h3>
                 <p>R$ 8,50</p>
                 {localStorage.getItem("isAdmin") === "true" && (
-                  <div style={{
-                    position: "absolute",
-                    bottom: "8px",
-                    right: "8px",
-                    backgroundColor: "#FFD426",
-                    color: "black",
-                    padding: "4px 8px",
-                    borderRadius: "4px",
-                    fontSize: "0.7rem",
-                    fontWeight: "500"
-                  }}>
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "8px",
+                      right: "8px",
+                      backgroundColor: "#FFD426",
+                      color: "black",
+                      padding: "4px 8px",
+                      borderRadius: "4px",
+                      fontSize: "0.7rem",
+                      fontWeight: "500",
+                    }}
+                  >
                     Dado referente mês anterior
                   </div>
                 )}
@@ -2870,13 +2905,13 @@ Posso te explicar sobre:
             <div className="ecobot-container">
               <div className="ecobot-header">
                 <img
-                          src={process.env.PUBLIC_URL + "/EcoBotSF.png"}
-                          alt="EcoBot"
-                          className="ecobot-header-img"
-                          width="48"
-                          height="48"
-                          loading="lazy"
-                        />
+                  src={process.env.PUBLIC_URL + "/EcoBotSF.png"}
+                  alt="EcoBot"
+                  className="ecobot-header-img"
+                  width="48"
+                  height="48"
+                  loading="lazy"
+                />
               </div>
             </div>
             <div className="ecobot-chat-container">

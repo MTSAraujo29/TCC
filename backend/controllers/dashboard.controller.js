@@ -448,30 +448,41 @@ async function getDashboardData(req, res) {
       async function calculateMonthlyConsumptionFromBrokers() {
         try {
           // Filtra dispositivos por broker
-          const broker1Devices = realDevicesData.filter(d => d.broker === "broker1");
-          const broker2Devices = realDevicesData.filter(d => d.broker === "broker2");
-          
+          const broker1Devices = realDevicesData.filter(
+            (d) => d.broker === "broker1"
+          );
+          const broker2Devices = realDevicesData.filter(
+            (d) => d.broker === "broker2"
+          );
+
           // Calcula a soma de totalEnergy para cada broker
           let broker1TotalEnergy = 0;
           let broker2TotalEnergy = 0;
-          
-          broker1Devices.forEach(device => {
+
+          broker1Devices.forEach((device) => {
             if (device.latestReading && device.latestReading.totalEnergy) {
               broker1TotalEnergy += device.latestReading.totalEnergy;
             }
           });
-          
-          broker2Devices.forEach(device => {
+
+          broker2Devices.forEach((device) => {
             if (device.latestReading && device.latestReading.totalEnergy) {
               broker2TotalEnergy += device.latestReading.totalEnergy;
             }
           });
-          
+
           // Soma os valores de totalEnergy dos dois brokers
-          const totalMonthlyConsumption = broker1TotalEnergy + broker2TotalEnergy;
-          
-          console.log(`Consumo mensal calculado: Broker 1 (${broker1TotalEnergy.toFixed(2)} kWh) + Broker 2 (${broker2TotalEnergy.toFixed(2)} kWh) = ${totalMonthlyConsumption.toFixed(2)} kWh`);
-          
+          const totalMonthlyConsumption =
+            broker1TotalEnergy + broker2TotalEnergy;
+
+          console.log(
+            `Consumo mensal calculado: Broker 1 (${broker1TotalEnergy.toFixed(
+              2
+            )} kWh) + Broker 2 (${broker2TotalEnergy.toFixed(
+              2
+            )} kWh) = ${totalMonthlyConsumption.toFixed(2)} kWh`
+          );
+
           return parseFloat(totalMonthlyConsumption.toFixed(2));
         } catch (error) {
           console.error("Erro ao calcular consumo mensal dos brokers:", error);
@@ -480,31 +491,31 @@ async function getDashboardData(req, res) {
       }
 
       // Finaliza as métricas globais
-      // Se o totalEnergy no Tasmota for acumulativo e não reiniciar, o totalConsumptionAccumulated
-      // pode ser apenas a soma do latestReading.totalEnergy de todos os dispositivos.
-      // A "fatura estimada" no frontend usa currentMonthConsumption.
-      // dailyConsumption é o consumo do último dia.
+      // Obter o consumo mensal atual do modelo KWHMonthly
+      const currentMonthlyConsumption =
+        await tasmotaService.getCurrentMonthlyConsumption();
+
+      // Obter a fatura estimada calculada com as tarifas da Equatorial Goiás
+      const billCalculation = await tasmotaService.calculateEstimatedBill();
+      const estimatedBill = billCalculation.success
+        ? billCalculation.estimatedBill
+        : 0;
 
       dashboardData = {
         isRealData: true,
         userEmail: userEmail,
         userDevices: realDevicesData, // O frontend espera 'userDevices'
         metrics: {
-          // Convertendo Wh para kWh para exibição no frontend (dividir por 1000)
-          // Mas o seu schema.prisma tem Float, e Energy.Total do Tasmota é kWh.
-          // Então, vamos manter kWh, se o Tasmota manda kWh.
-          // Se o Tasmota manda Wh, ajuste no schema para Wh ou converta aqui.
-          // Assumindo que totalEnergy do Tasmota (e no DB) já é em kWh:
-          // Para o mês atual, fixamos o valor em 31.76 kWh conforme solicitado
-          // A partir do próximo mês, será calculado somando os valores de totalEnergy dos brokers 1 e 2
-          // Forçando o valor fixo para garantir que seja exibido corretamente
-          // Enviando como número para que o frontend possa usar toFixed()
-          currentMonthConsumption: 31.76, // Valor fixo conforme solicitado
+          // Usar o consumo mensal real calculado pela nova lógica
+          currentMonthConsumption: currentMonthlyConsumption
+            ? parseFloat(currentMonthlyConsumption.toFixed(2))
+            : 0,
           dailyConsumption: parseFloat(dailyConsumptionLastDay.toFixed(2)), // Consumo do último dia
           totalConsumption: parseFloat(totalConsumptionAccumulated.toFixed(2)), // Total acumulado de todos
           currentPower: parseFloat(currentRealPower.toFixed(2)), // Potência instantânea total em Watts
           devicesOnline: devicesActuallyOnline,
           energySaved: 0, // Lógica complexa, por enquanto 0
+          estimatedBill: parseFloat(estimatedBill.toFixed(2)), // Fatura estimada em R$
         },
         // O frontend espera 'labels' e 'datasets' para o gráfico principal
         mainChartData: {
@@ -639,7 +650,10 @@ async function getDashboardData(req, res) {
     }
 
     // console.log('Dados enviados para o frontend:', JSON.stringify(dashboardData, null, 2));
-    console.log("Enviando dashboardData para o frontend com currentMonthConsumption:", dashboardData.metrics.currentMonthConsumption);
+    console.log(
+      "Enviando dashboardData para o frontend com currentMonthConsumption:",
+      dashboardData.metrics.currentMonthConsumption
+    );
     res.json(dashboardData);
   } catch (error) {
     console.error("Erro ao carregar dados do dashboard:", error);
@@ -1308,10 +1322,98 @@ function calculateNextMonthForecast(analysis) {
   };
 }
 
+// Retorna o histórico de consumo mensal do modelo KWHMonthly
+async function getMonthlyConsumptionHistory(req, res) {
+  try {
+    const history = await tasmotaService.getMonthlyConsumptionHistory();
+
+    res.json({
+      success: true,
+      history: history,
+      message: "Histórico de consumo mensal obtido com sucesso",
+    });
+  } catch (error) {
+    console.error("Erro ao obter histórico de consumo mensal:", error);
+    res.status(500).json({
+      message: "Erro interno do servidor ao obter histórico de consumo mensal.",
+    });
+  }
+}
+
+// Função para testar o cálculo mensal manualmente (apenas para desenvolvimento)
+async function testMonthlyCalculation(req, res) {
+  try {
+    console.log("[TEST] Iniciando teste do cálculo mensal...");
+
+    // Chamar a função de cálculo mensal diretamente
+    const result = await tasmotaService.processMonthlyConsumptionCalculation();
+
+    res.json({
+      success: true,
+      message: "Teste do cálculo mensal executado com sucesso",
+      result: result,
+    });
+  } catch (error) {
+    console.error("Erro no teste do cálculo mensal:", error);
+    res.status(500).json({
+      message: "Erro interno do servidor no teste do cálculo mensal.",
+      error: error.message,
+    });
+  }
+}
+
+// Função para obter detalhes da fatura estimada
+async function getEstimatedBillDetails(req, res) {
+  try {
+    const billCalculation = await tasmotaService.calculateEstimatedBill();
+
+    res.json({
+      success: billCalculation.success,
+      message: billCalculation.message,
+      estimatedBill: billCalculation.estimatedBill,
+      details: billCalculation.details,
+      error: billCalculation.error || null,
+    });
+  } catch (error) {
+    console.error("Erro ao obter detalhes da fatura estimada:", error);
+    res.status(500).json({
+      message: "Erro interno do servidor ao obter fatura estimada.",
+      error: error.message,
+    });
+  }
+}
+
+// Função para testar o cálculo da fatura com valores específicos
+async function testBillCalculation(req, res) {
+  try {
+    const { consumption } = req.body;
+    const testConsumption = consumption || 102; // Valor padrão de 102 kWh
+
+    const result = tasmotaService.testBillCalculation(testConsumption);
+
+    res.json({
+      success: true,
+      message: `Teste de cálculo com ${testConsumption} kWh`,
+      result: result,
+    });
+  } catch (error) {
+    console.error("Erro no teste de cálculo da fatura:", error);
+    res.status(500).json({
+      message: "Erro interno do servidor no teste de cálculo da fatura.",
+      error: error.message,
+    });
+  }
+}
+
 module.exports = {
   getDashboardData,
   updateWhatsappNumber,
   getDailyEnergyYesterday,
   getWeeklyEnergyYesterday,
   getMonthlyEnergyData,
+  getConsumptionForecast,
+  getMonthlyConsumptionHistory,
+  testMonthlyCalculation,
+  getEstimatedBillDetails,
+  testBillCalculation,
 };
