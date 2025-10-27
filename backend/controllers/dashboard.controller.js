@@ -495,14 +495,6 @@ async function getDashboardData(req, res) {
       const currentMonthlyConsumption =
         await tasmotaService.getCurrentMonthlyConsumption();
 
-      // Obter o último totalEnergyAccumulated do KWHMonthly para exibir no "Consumo Total Quilowatt-hora"
-      const lastMonthlyRecord = await prisma.kWHMonthly.findFirst({
-        orderBy: { timestamp: "desc" },
-      });
-      const totalConsumptionFromKWHMonthly = lastMonthlyRecord
-        ? lastMonthlyRecord.totalEnergyAccumulated
-        : 0;
-
       // Obter a fatura estimada calculada com as tarifas da Equatorial Goiás
       const billCalculation = await tasmotaService.calculateEstimatedBill();
       const estimatedBill = billCalculation.success
@@ -519,9 +511,7 @@ async function getDashboardData(req, res) {
             ? parseFloat(currentMonthlyConsumption.toFixed(2))
             : 0,
           dailyConsumption: parseFloat(dailyConsumptionLastDay.toFixed(2)), // Consumo do último dia
-          totalConsumption: parseFloat(
-            totalConsumptionFromKWHMonthly.toFixed(2)
-          ), // Total do último KWHMonthly
+          totalConsumption: parseFloat(totalConsumptionAccumulated.toFixed(2)), // Total acumulado de todos
           currentPower: parseFloat(currentRealPower.toFixed(2)), // Potência instantânea total em Watts
           devicesOnline: devicesActuallyOnline,
           energySaved: 0, // Lógica complexa, por enquanto 0
@@ -1415,56 +1405,6 @@ async function testBillCalculation(req, res) {
   }
 }
 
-// Função para obter dados mensais do gráfico baseados no KWHMonthly
-async function getMonthlyChartData() {
-  try {
-    const monthlyRecords = await prisma.kWHMonthly.findMany({
-      orderBy: { timestamp: "asc" },
-    });
-
-    if (monthlyRecords.length === 0) {
-      return {
-        labels: [],
-        data: [],
-      };
-    }
-
-    const labels = [];
-    const data = [];
-    let previousValue = 0;
-
-    monthlyRecords.forEach((record, index) => {
-      const monthYear = `${record.month.toString().padStart(2, "0")}/${
-        record.year
-      }`;
-      labels.push(monthYear);
-
-      if (index === 0) {
-        // Primeiro registro: usar o valor total
-        data.push(parseFloat(record.totalEnergyAccumulated.toFixed(2)));
-        previousValue = record.totalEnergyAccumulated;
-      } else {
-        // Demais registros: calcular diferença
-        const monthlyConsumption =
-          record.totalEnergyAccumulated - previousValue;
-        data.push(parseFloat(monthlyConsumption.toFixed(2)));
-        previousValue = record.totalEnergyAccumulated;
-      }
-    });
-
-    return {
-      labels,
-      data,
-    };
-  } catch (error) {
-    console.error("Erro ao obter dados mensais do gráfico:", error);
-    return {
-      labels: [],
-      data: [],
-    };
-  }
-}
-
 module.exports = {
   getDashboardData,
   updateWhatsappNumber,
@@ -1476,5 +1416,4 @@ module.exports = {
   testMonthlyCalculation,
   getEstimatedBillDetails,
   testBillCalculation,
-  getMonthlyChartData,
 };

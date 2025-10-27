@@ -53,11 +53,4 @@ router.post(
   dashboardController.testBillCalculation
 );
 
-// Rota para obter dados mensais do gráfico baseados no KWHMonthly
-router.get(
-  "/monthly-chart-data",
-  authenticateToken,
-  dashboardController.getMonthlyChartData
-);
-
 module.exports = router;

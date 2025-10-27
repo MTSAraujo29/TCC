@@ -83,177 +83,26 @@ async function processEnergyData(energyData, deviceId, tasmotaTopic) {
     energyData.timestamp
   );
 
-  // Sempre salva totalEnergy (não mais null)
-  dataToSave.totalEnergy = energyData.totalEnergy;
-
-  // Verifica se é o último dia do mês para processar cálculo mensal
-  if (isLastDayOfMonth()) {
+  // Só salva totalEnergy no último minuto do último dia do mês
+  if (isLastMinuteOfMonth()) {
     // Atualiza o cache do dispositivo com o valor atual
     await prisma.device.update({
       where: { id: deviceId },
       data: { lastSavedTotalEnergy: energyData.totalEnergy },
     });
 
-    // Processa o cálculo mensal apenas na primeira leitura do último dia
-    await processMonthlyConsumptionOnFirstReading(
-      deviceId,
-      energyData.totalEnergy,
-      device.broker
-    );
+    // Processa o cálculo mensal completo (soma dos brokers + diferença)
+    await processMonthlyConsumptionCalculation();
 
     console.log(
-      `[${tasmotaTopic}] Último dia do mês - Valor atual salvo: ${energyData.totalEnergy} kWh`
+      `[${tasmotaTopic}] Último minuto do mês - Valor atual salvo: ${energyData.totalEnergy} kWh`
     );
+  } else {
+    dataToSave.totalEnergy = null;
   }
 
   // Sempre retorna o objeto completo para ser salvo no banco
   return dataToSave;
-}
-
-/**
- * Processa o cálculo mensal na primeira leitura do último dia do mês
- * Soma os dois brokers e calcula a diferença com o último valor salvo
- */
-async function processMonthlyConsumptionOnFirstReading(
-  deviceId,
-  totalEnergy,
-  broker
-) {
-  try {
-    console.log(
-      `[MONTHLY_FIRST] Processando primeira leitura do último dia - Broker: ${broker}, Device: ${deviceId}, Energy: ${totalEnergy} kWh`
-    );
-
-    // Verificar se já foi processado hoje (evitar duplicação)
-    const today = new Date();
-    const todayStart = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    );
-    const todayEnd = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate() + 1
-    );
-
-    const existingRecord = await prisma.kWHMonthly.findFirst({
-      where: {
-        timestamp: {
-          gte: todayStart,
-          lt: todayEnd,
-        },
-      },
-    });
-
-    if (existingRecord) {
-      console.log("[MONTHLY_FIRST] Cálculo mensal já foi processado hoje");
-      return;
-    }
-
-    // Buscar todos os dispositivos dos dois brokers
-    const broker1Devices = await prisma.device.findMany({
-      where: { broker: "broker1" },
-      select: { id: true, name: true, lastSavedTotalEnergy: true },
-    });
-
-    const broker2Devices = await prisma.device.findMany({
-      where: { broker: "broker2" },
-      select: { id: true, name: true, lastSavedTotalEnergy: true },
-    });
-
-    console.log(
-      `[MONTHLY_FIRST] Broker 1: ${broker1Devices.length} dispositivos`
-    );
-    console.log(
-      `[MONTHLY_FIRST] Broker 2: ${broker2Devices.length} dispositivos`
-    );
-
-    // Somar os valores de totalEnergy dos dois brokers
-    let broker1Total = 0;
-    let broker2Total = 0;
-
-    broker1Devices.forEach((device) => {
-      if (device.lastSavedTotalEnergy && device.lastSavedTotalEnergy > 0) {
-        broker1Total += device.lastSavedTotalEnergy;
-        console.log(
-          `[MONTHLY_FIRST] Broker 1 - ${device.name}: ${device.lastSavedTotalEnergy} kWh`
-        );
-      }
-    });
-
-    broker2Devices.forEach((device) => {
-      if (device.lastSavedTotalEnergy && device.lastSavedTotalEnergy > 0) {
-        broker2Total += device.lastSavedTotalEnergy;
-        console.log(
-          `[MONTHLY_FIRST] Broker 2 - ${device.name}: ${device.lastSavedTotalEnergy} kWh`
-        );
-      }
-    });
-
-    const totalBrokersSum = broker1Total + broker2Total;
-    console.log(
-      `[MONTHLY_FIRST] Soma total dos brokers: ${broker1Total} + ${broker2Total} = ${totalBrokersSum} kWh`
-    );
-
-    // Buscar o último valor salvo no KWHMonthly
-    const lastMonthlyRecord = await prisma.kWHMonthly.findFirst({
-      orderBy: { timestamp: "desc" },
-    });
-
-    let lastSavedValue = 0;
-    if (lastMonthlyRecord) {
-      lastSavedValue = lastMonthlyRecord.totalEnergyAccumulated;
-      console.log(`[MONTHLY_FIRST] Último valor salvo: ${lastSavedValue} kWh`);
-    } else {
-      console.log(
-        `[MONTHLY_FIRST] Primeiro registro mensal - sem valor anterior`
-      );
-    }
-
-    // Calcular a diferença (consumo real do mês)
-    const monthlyConsumption = totalBrokersSum - lastSavedValue;
-    console.log(
-      `[MONTHLY_FIRST] Consumo mensal calculado: ${totalBrokersSum} - ${lastSavedValue} = ${monthlyConsumption} kWh`
-    );
-
-    // Obter mês e ano atual
-    const now = new Date();
-    const currentMonth = now.getMonth() + 1;
-    const currentYear = now.getFullYear();
-
-    // Salvar no modelo KWHMonthly
-    const newMonthlyRecord = await prisma.kWHMonthly.create({
-      data: {
-        totalEnergyAccumulated: totalBrokersSum, // Valor total acumulado dos brokers
-        month: currentMonth,
-        year: currentYear,
-        timestamp: now,
-      },
-    });
-
-    console.log(`[MONTHLY_FIRST] Registro salvo no KWHMonthly:`, {
-      id: newMonthlyRecord.id,
-      totalEnergyAccumulated: newMonthlyRecord.totalEnergyAccumulated,
-      month: newMonthlyRecord.month,
-      year: newMonthlyRecord.year,
-      monthlyConsumption: monthlyConsumption,
-    });
-
-    return {
-      success: true,
-      broker1Total,
-      broker2Total,
-      totalBrokersSum,
-      lastSavedValue,
-      monthlyConsumption,
-      month: currentMonth,
-      year: currentYear,
-    };
-  } catch (error) {
-    console.error("[MONTHLY_FIRST] Erro no cálculo mensal:", error);
-    throw error;
-  }
 }
 
 /**
@@ -746,7 +595,6 @@ module.exports = {
   isLastMinuteOfMonth,
   calculateMonthlyConsumption,
   processEnergyData,
-  processMonthlyConsumptionOnFirstReading,
   processMonthlyConsumptionCalculation,
   getCurrentTotalEnergyForDisplay,
   getAccumulatedTotalEnergy,
