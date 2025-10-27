@@ -501,23 +501,21 @@ async function getCurrentMonthlyConsumption() {
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
 
-    // Busca o registro para o mês/ano atual
     const monthlyRecord = await prisma.kWHMonthly.findFirst({
       where: {
         month: currentMonth,
         year: currentYear,
-      }
-      // orderBy: { timestamp: "desc" }, // REMOVIDO - CAUSAVA O ERRO
+      },
+      orderBy: { timestamp: "desc" },
     });
 
     if (monthlyRecord) {
       // Buscar o registro anterior para calcular a diferença
       const previousRecord = await prisma.kWHMonthly.findFirst({
         where: {
-          // Busca um registro ANTERIOR ao timestamp do registro atual
           timestamp: { lt: monthlyRecord.timestamp },
         },
-        orderBy: { timestamp: "desc" }, // Ordena para pegar o mais recente dos anteriores
+        orderBy: { timestamp: "desc" },
       });
 
       if (previousRecord) {
@@ -527,28 +525,22 @@ async function getCurrentMonthlyConsumption() {
         console.log(
           `[MONTHLY_CONSUMPTION] Consumo mensal atual: ${monthlyConsumption} kWh`
         );
-        // Garante que o consumo não seja negativo (em caso de resets inesperados)
-        return monthlyConsumption >= 0 ? monthlyConsumption : monthlyRecord.totalEnergyAccumulated;
+        return monthlyConsumption;
       } else {
-        // Primeiro registro encontrado, retorna o valor total acumulado como consumo do primeiro mês
+        // Primeiro registro do ano, retorna o valor total
         console.log(
-          `[MONTHLY_CONSUMPTION] Primeiro registro encontrado: ${monthlyRecord.totalEnergyAccumulated} kWh`
+          `[MONTHLY_CONSUMPTION] Primeiro registro do ano: ${monthlyRecord.totalEnergyAccumulated} kWh`
         );
         return monthlyRecord.totalEnergyAccumulated;
       }
     }
 
-    // Se nenhum registro for encontrado para o mês/ano atual
-    console.log(`[MONTHLY_CONSUMPTION] Nenhum registro encontrado para ${currentMonth}/${currentYear}`);
-    return null; // Retorna null se não houver registro para o mês/ano atual
-
+    return null;
   } catch (error) {
     console.error("Erro ao obter consumo mensal atual:", error);
-    // Retorna null ou lança o erro, dependendo de como o chamador tratará
     return null;
   }
 }
-
 
 /**
  * Obtém o histórico de consumo mensal
@@ -564,37 +556,21 @@ async function getMonthlyConsumptionHistory() {
     let previousValue = 0;
 
     monthlyRecords.forEach((record, index) => {
-      // O consumo mensal é a diferença entre o acumulado atual e o anterior
-      // Para o primeiro registro, o consumo é o próprio valor acumulado
       const monthlyConsumption =
         index === 0
           ? record.totalEnergyAccumulated
           : record.totalEnergyAccumulated - previousValue;
 
-      // Adiciona ao histórico apenas se o consumo for positivo (evita valores estranhos após resets)
-      if (monthlyConsumption >= 0) {
-        history.push({
-          id: record.id,
-          month: record.month,
-          year: record.year,
-          totalEnergyAccumulated: record.totalEnergyAccumulated,
-          monthlyConsumption: monthlyConsumption,
-          timestamp: record.timestamp,
-        });
-      } else {
-         // Se for negativo, considera o consumo do mês como o valor acumulado atual (indicando possível reset)
-         history.push({
-          id: record.id,
-          month: record.month,
-          year: record.year,
-          totalEnergyAccumulated: record.totalEnergyAccumulated,
-          monthlyConsumption: record.totalEnergyAccumulated, // Usa o valor atual
-          timestamp: record.timestamp,
-        });
-        console.warn(`[HISTORY] Consumo mensal negativo detectado para ${record.month}/${record.year}. Usando valor acumulado.`);
-      }
+      history.push({
+        id: record.id,
+        month: record.month,
+        year: record.year,
+        totalEnergyAccumulated: record.totalEnergyAccumulated,
+        monthlyConsumption: monthlyConsumption,
+        timestamp: record.timestamp,
+      });
 
-      previousValue = record.totalEnergyAccumulated; // Atualiza o valor anterior para o próximo cálculo
+      previousValue = record.totalEnergyAccumulated;
     });
 
     return history;
