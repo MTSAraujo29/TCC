@@ -1389,38 +1389,36 @@ Posso te explicar sobre:
             });
           }
         } else if (viewMode === "month") {
+          // Usar nova rota de dados mensais baseados no KWHMonthly
           const res = await fetch(
-            API_ENDPOINTS.DASHBOARD_CHART_MONTHLY_ENERGY_DATA,
+            `${API_ENDPOINTS.BASE_URL}/api/dashboard/monthly-chart-data`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
           );
           if (res.ok) {
             const data = await res.json();
-            // Modificar para mostrar apenas junho a setembro para contas admin
-            const isAdmin = localStorage.getItem("isAdmin") === "true";
-            if (isAdmin && data.datasets && data.datasets[0]) {
-              // Definir os meses que queremos mostrar (junho a setembro)
-              const meses = ["Jun", "Jul", "Ago", "Set"];
-              const valores = [15.321, 19.845, 21.527, 18.462]; // Valores para Jun, Jul, Ago, Set
+            console.log("Dados mensais do KWHMonthly:", data);
 
-              // Substituir os dados e labels pelos meses específicos
-              data.labels = meses;
-              data.datasets[0].data = valores;
+            if (data.labels && data.data && data.labels.length > 0) {
+              setRealMonthlyChartData({
+                labels: data.labels,
+                datasets: [
+                  {
+                    label: "Consumo Mensal (kWh) - KWHMonthly",
+                    data: data.data,
+                    borderColor: "#e91e63",
+                    backgroundColor: "rgba(233, 30, 99, 0.4)",
+                    tension: 0.4,
+                    fill: true,
+                  },
+                ],
+              });
+            } else {
+              console.log("Nenhum dado mensal encontrado no KWHMonthly");
             }
-            setRealMonthlyChartData({
-              labels: data.labels,
-              datasets: [
-                {
-                  label: data.datasets?.[0]?.label || "Consumo Mensal (kWh)",
-                  data: data.datasets?.[0]?.data || [],
-                  borderColor: "#e91e63",
-                  backgroundColor: "rgba(233, 30, 99, 0.4)",
-                  tension: 0.4,
-                  fill: true,
-                },
-              ],
-            });
+          } else {
+            console.log("Erro ao buscar dados mensais do KWHMonthly");
           }
         }
       } catch (e) {
