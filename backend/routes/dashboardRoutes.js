@@ -53,11 +53,4 @@ router.post(
   dashboardController.testBillCalculation
 );
 
-// Rota para simular dados de dispositivos e testar cálculo real
-router.post(
-  "/simulate-device-data",
-  authenticateToken,
-  dashboardController.simulateDeviceData
-);
-
 module.exports = router;

@@ -1405,63 +1405,6 @@ async function testBillCalculation(req, res) {
   }
 }
 
-// Função para simular dados de dispositivos e testar o cálculo real
-async function simulateDeviceData(req, res) {
-  try {
-    console.log("[SIMULATE] Simulando dados de dispositivos para teste...");
-
-    // Buscar dispositivos existentes
-    const devices = await prisma.device.findMany({
-      where: {
-        OR: [{ broker: "broker1" }, { broker: "broker2" }],
-      },
-    });
-
-    if (devices.length === 0) {
-      return res.json({
-        success: false,
-        message: "Nenhum dispositivo encontrado para simulação",
-      });
-    }
-
-    // Simular valores de lastSavedTotalEnergy para teste
-    const simulatedValues = [25.5, 18.3, 12.7, 8.9]; // kWh
-    let totalSimulated = 0;
-
-    for (let i = 0; i < devices.length && i < simulatedValues.length; i++) {
-      const device = devices[i];
-      const simulatedValue = simulatedValues[i];
-
-      // Atualizar o dispositivo com valor simulado
-      await prisma.device.update({
-        where: { id: device.id },
-        data: { lastSavedTotalEnergy: simulatedValue },
-      });
-
-      totalSimulated += simulatedValue;
-      console.log(
-        `[SIMULATE] ${device.name} (${device.broker}): ${simulatedValue} kWh`
-      );
-    }
-
-    // Calcular fatura com os dados simulados
-    const billCalculation = await tasmotaService.calculateEstimatedBill();
-
-    res.json({
-      success: true,
-      message: `Dados simulados: ${totalSimulated} kWh total`,
-      simulatedTotal: totalSimulated,
-      billCalculation: billCalculation,
-    });
-  } catch (error) {
-    console.error("Erro na simulação de dados:", error);
-    res.status(500).json({
-      message: "Erro interno do servidor na simulação de dados.",
-      error: error.message,
-    });
-  }
-}
-
 module.exports = {
   getDashboardData,
   updateWhatsappNumber,
@@ -1473,5 +1416,4 @@ module.exports = {
   testMonthlyCalculation,
   getEstimatedBillDetails,
   testBillCalculation,
-  simulateDeviceData,
 };
