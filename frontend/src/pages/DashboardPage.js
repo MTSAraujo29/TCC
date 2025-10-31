@@ -1818,6 +1818,24 @@ Posso te explicar sobre:
               <div className="metric-card">
                 <h3>Economia Mensal R$</h3>
                 <p>R$ 8,50</p>
+                <p style={{ fontSize: "1rem", color: "#10b981", marginTop: "8px" }}>
+                  {(() => {
+                    // Cálculo da economia de CO2 conforme as imagens
+                    // 1. Economia de energia em kWh (penúltimo mês - último mês)
+                    const economiaKWh = 2.752; // Valor fixo conforme imagem
+                    
+                    // 2. Fator de emissão do Brasil: 0.0551 kg CO2e/kWh
+                    const fatorEmissao = 0.0551;
+                    
+                    // 3. Cálculo da economia de CO2 em kg
+                    const economiaCO2Kg = economiaKWh * fatorEmissao;
+                    
+                    // 4. Conversão para gramas
+                    const economiaCO2Gramas = economiaCO2Kg * 1000;
+                    
+                    return `${economiaCO2Gramas.toFixed(1)} g de CO₂e economizado`;
+                  })()}
+                </p>
                 {localStorage.getItem("isAdmin") === "true" && (
                   <div
                     style={{
