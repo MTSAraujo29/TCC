@@ -885,6 +885,20 @@ async function getMonthlyEnergyData(req, res) {
     });
     const isAdmin = user?.role === "ADMIN";
 
+    // Para administradores, retornar dados fixos para os meses de junho a outubro
+    if (isAdmin) {
+      return res.json({
+        labels: ["Jun 2025", "Jul 2025", "Ago 2025", "Set 2025", "Out 2025"],
+        datasets: [
+          {
+            label: "Consumo Mensal (kWh)",
+            data: [15.321, 18.742, 21.527, 19.865, 17.113],
+          },
+        ],
+      });
+    }
+
+    // Para usuários não-admin, continuar com a lógica original
     // Buscar dispositivos do usuário
     const devices = await prisma.device.findMany({
       where: { userId },
@@ -1035,11 +1049,7 @@ async function getMonthlyEnergyData(req, res) {
 
       let monthSum = 0;
 
-      // Valor fixo para outubro (mês 9) para administradores
-      if (isAdmin && currentYear === 2025 && currentMonth === 9) {
-        // OUTUBRO 2025: Valor fixo de 17,113 kWh para administradores
-        monthSum = 17.113;
-      } else if (currentYear === 2025 && currentMonth === 5) {
+      if (currentYear === 2025 && currentMonth === 5) {
         // JUNHO 2025: Usa EnergyYesterday (lógica antiga)
         const deviceMap =
           perMonthPerDeviceLatestEnergyYesterday.get(monthKey) || new Map();
