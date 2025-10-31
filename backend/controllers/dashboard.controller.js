@@ -491,9 +491,8 @@ async function getDashboardData(req, res) {
       }
 
       // Finaliza as métricas globais
-      // Obter o consumo mensal atual do modelo KWHMonthly
-      const currentMonthlyConsumption =
-        await tasmotaService.getCurrentMonthlyConsumption();
+      // Usar o valor fixo de 17.113 kWh conforme solicitado
+      const currentMonthlyConsumption = 17.113;
 
       // Obter a fatura estimada calculada com as tarifas da Equatorial Goiás
       const billCalculation = await tasmotaService.calculateEstimatedBill();
@@ -506,10 +505,8 @@ async function getDashboardData(req, res) {
         userEmail: userEmail,
         userDevices: realDevicesData, // O frontend espera 'userDevices'
         metrics: {
-          // Usar o consumo mensal real calculado pela nova lógica
-          currentMonthConsumption: currentMonthlyConsumption
-            ? parseFloat(currentMonthlyConsumption.toFixed(2))
-            : 0,
+          // Usar o valor fixo de 17.113 kWh conforme solicitado
+          currentMonthConsumption: 17.113,
           dailyConsumption: parseFloat(dailyConsumptionLastDay.toFixed(2)), // Consumo do último dia
           totalConsumption: parseFloat(totalConsumptionAccumulated.toFixed(2)), // Total acumulado de todos
           currentPower: parseFloat(currentRealPower.toFixed(2)), // Potência instantânea total em Watts
@@ -881,6 +878,13 @@ async function getWeeklyEnergyYesterday(req, res) {
 async function getMonthlyEnergyData(req, res) {
   const userId = req.user.userId;
   try {
+    // Verificar se o usuário é administrador
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true },
+    });
+    const isAdmin = user?.role === "ADMIN";
+
     // Buscar dispositivos do usuário
     const devices = await prisma.device.findMany({
       where: { userId },
@@ -1031,8 +1035,11 @@ async function getMonthlyEnergyData(req, res) {
 
       let monthSum = 0;
 
-      // Lógica específica por mês
-      if (currentYear === 2025 && currentMonth === 5) {
+      // Valor fixo para outubro (mês 9) para administradores
+      if (isAdmin && currentYear === 2025 && currentMonth === 9) {
+        // OUTUBRO 2025: Valor fixo de 17,113 kWh para administradores
+        monthSum = 17.113;
+      } else if (currentYear === 2025 && currentMonth === 5) {
         // JUNHO 2025: Usa EnergyYesterday (lógica antiga)
         const deviceMap =
           perMonthPerDeviceLatestEnergyYesterday.get(monthKey) || new Map();

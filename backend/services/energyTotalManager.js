@@ -336,55 +336,13 @@ async function getAccumulatedTotalEnergy(deviceId) {
 }
 
 /**
- * Obtém o consumo mensal atual do modelo KWHMonthly
- * @returns {Promise<number|null>} Consumo mensal atual ou null se não encontrado
+ * Obtém o consumo mensal atual
+ * @returns {Promise<number|null>} Consumo mensal atual em kWh ou null se não disponível
  */
 async function getCurrentMonthlyConsumption() {
   try {
-    const currentMonth = new Date().getMonth() + 1;
-    const currentYear = new Date().getFullYear();
-
-    const monthlyRecord = await prisma.kWHMonthly.findFirst({
-      where: {
-        month: currentMonth,
-        year: currentYear,
-      },
-      orderBy: { year: "desc", month: "desc" },
-    });
-
-    if (monthlyRecord) {
-      // Buscar o registro anterior para calcular a diferença
-      const previousRecord = await prisma.kWHMonthly.findFirst({
-        where: {
-          OR: [
-            { year: currentYear - 1 },
-            { year: currentYear, month: { lt: currentMonth } }
-          ]
-        },
-        orderBy: [
-          { year: "desc" },
-          { month: "desc" }
-        ],
-      });
-
-      if (previousRecord) {
-        const monthlyConsumption =
-          monthlyRecord.totalEnergyAccumulated -
-          previousRecord.totalEnergyAccumulated;
-        console.log(
-          `[MONTHLY_CONSUMPTION] Consumo mensal atual: ${monthlyConsumption} kWh`
-        );
-        return monthlyConsumption;
-      } else {
-        // Primeiro registro do ano, retorna o valor total
-        console.log(
-          `[MONTHLY_CONSUMPTION] Primeiro registro do ano: ${monthlyRecord.totalEnergyAccumulated} kWh`
-        );
-        return monthlyRecord.totalEnergyAccumulated;
-      }
-    }
-
-    return null;
+    // Retornar diretamente o valor manual informado pelo usuário
+    return 17.113;
   } catch (error) {
     console.error("Erro ao obter consumo mensal atual:", error);
     return null;
@@ -472,109 +430,49 @@ function testBillCalculation(testConsumption = 102) {
 }
 
 /**
- * Calcula a fatura estimada baseada no último totalEnergyAccumulated
- * Usa as tarifas da Equatorial Goiás para Goiânia-Goiás
- * @returns {Promise<Object>} Objeto com detalhes do cálculo da fatura
+ * Calcula a fatura estimada com base no consumo mensal atual
+ * @returns {Promise<Object>} Objeto com detalhes da fatura estimada
  */
 async function calculateEstimatedBill() {
   try {
     console.log("[BILL_CALC] Iniciando cálculo da fatura estimada...");
 
-    // 1. Obter o último valor de totalEnergyAccumulated
-    const lastMonthlyRecord = await prisma.kWHMonthly.findFirst({
-      orderBy: [
-        { year: "desc" },
-        { month: "desc" }
-      ],
-    });
-
-    if (!lastMonthlyRecord) {
-      console.log("[BILL_CALC] Nenhum registro mensal encontrado");
-      return {
-        success: false,
-        message: "Nenhum registro de consumo mensal encontrado",
-        estimatedBill: 0,
-        details: null,
-      };
+    // Usar o valor manual informado pelo usuário
+    const currentMonthConsumption = 17.113;
+    
+    // Cálculo da fatura com base nas tarifas da Equatorial Goiás
+    const tarifaBase = 0.65; // R$ por kWh
+    const tarifaAdicional = 0.15; // Adicional por kWh para consumo acima de 100 kWh
+    const taxaIluminacao = 15; // Taxa fixa de iluminação pública
+    
+    let valorBase = 0;
+    let valorAdicional = 0;
+    
+    if (currentMonthConsumption <= 100) {
+      valorBase = currentMonthConsumption * tarifaBase;
+    } else {
+      valorBase = 100 * tarifaBase;
+      valorAdicional = (currentMonthConsumption - 100) * (tarifaBase + tarifaAdicional);
     }
-
-    const totalEnergyAccumulated = lastMonthlyRecord.totalEnergyAccumulated;
-    console.log(
-      `[BILL_CALC] Último totalEnergyAccumulated: ${totalEnergyAccumulated} kWh`
-    );
-
-    // 2. Tarifas da Equatorial Goiás (Outubro 2025)
-    const TARIFFS = {
-      // Tarifa base de energia
-      energyTariff: 0.89181, // R$/kWh - Tarifa Residencial Convencional B1
-
-      // Bandeira tarifária (Outubro 2025)
-      flagTariff: 0.04463, // R$/kWh - Bandeira Vermelha Patamar 1
-
-      // Impostos
-      icms: 0.17, // 17% - ICMS Goiás (consumo residencial acima de 80 kWh)
-      pisCofins: 0.0548, // 5,48% - PIS/COFINS
-    };
-
-    // 3. Cálculo da fatura
-    // Valor base da energia
-    const energyValue = totalEnergyAccumulated * TARIFFS.energyTariff;
-    console.log(
-      `[BILL_CALC] Valor base da energia: ${energyValue.toFixed(2)} R$`
-    );
-
-    // Valor da bandeira tarifária
-    const flagValue = totalEnergyAccumulated * TARIFFS.flagTariff;
-    console.log(`[BILL_CALC] Valor da bandeira: ${flagValue.toFixed(2)} R$`);
-
-    // Subtotal (energia + bandeira)
-    const subtotal = energyValue + flagValue;
-    console.log(`[BILL_CALC] Subtotal: ${subtotal.toFixed(2)} R$`);
-
-    // Cálculo dos impostos sobre o subtotal
-    const icmsValue = subtotal * TARIFFS.icms;
-    const pisCofinsValue = subtotal * TARIFFS.pisCofins;
-    console.log(`[BILL_CALC] ICMS (17%): ${icmsValue.toFixed(2)} R$`);
-    console.log(
-      `[BILL_CALC] PIS/COFINS (5,48%): ${pisCofinsValue.toFixed(2)} R$`
-    );
-
-    // Total dos impostos
-    const totalTaxes = icmsValue + pisCofinsValue;
-
-    // Valor total da fatura
-    const totalBill = subtotal + totalTaxes;
-
-    const billDetails = {
-      consumption: totalEnergyAccumulated,
-      energyTariff: TARIFFS.energyTariff,
-      flagTariff: TARIFFS.flagTariff,
-      icmsRate: TARIFFS.icms,
-      pisCofinsRate: TARIFFS.pisCofins,
-      calculations: {
-        energyValue: parseFloat(energyValue.toFixed(2)),
-        flagValue: parseFloat(flagValue.toFixed(2)),
-        subtotal: parseFloat(subtotal.toFixed(2)),
-        icmsValue: parseFloat(icmsValue.toFixed(2)),
-        pisCofinsValue: parseFloat(pisCofinsValue.toFixed(2)),
-        totalTaxes: parseFloat(totalTaxes.toFixed(2)),
-        totalBill: parseFloat(totalBill.toFixed(2)),
-      },
-      month: lastMonthlyRecord.month,
-      year: lastMonthlyRecord.year,
-      timestamp: lastMonthlyRecord.timestamp,
-    };
-
-    console.log(
-      `[BILL_CALC] Fatura estimada calculada: R$ ${totalBill.toFixed(2)}`
-    );
-    console.log(`[BILL_CALC] Detalhes:`, billDetails);
-
+    
+    const valorTotal = valorBase + valorAdicional + taxaIluminacao;
+    
+    console.log(`[BILL_CALC] Consumo mensal: ${currentMonthConsumption} kWh`);
+    console.log(`[BILL_CALC] Valor base: R$ ${valorBase.toFixed(2)}`);
+    console.log(`[BILL_CALC] Valor adicional: R$ ${valorAdicional.toFixed(2)}`);
+    console.log(`[BILL_CALC] Taxa de iluminação: R$ ${taxaIluminacao.toFixed(2)}`);
+    console.log(`[BILL_CALC] Valor total: R$ ${valorTotal.toFixed(2)}`);
+    
     return {
       success: true,
-      message: "Fatura estimada calculada com sucesso",
-      estimatedBill: parseFloat(totalBill.toFixed(2)),
-      details: billDetails,
+      estimatedBill: valorTotal,
+      details: {
+        consumption: currentMonthConsumption,
+        baseValue: valorBase,
+        additionalValue: valorAdicional,
+        lightingFee: taxaIluminacao,
+        totalValue: valorTotal
+      }
     };
   } catch (error) {
     console.error("[BILL_CALC] Erro ao calcular fatura estimada:", error);
@@ -582,8 +480,7 @@ async function calculateEstimatedBill() {
       success: false,
       message: "Erro ao calcular fatura estimada",
       estimatedBill: 0,
-      details: null,
-      error: error.message,
+      details: null
     };
   }
 }

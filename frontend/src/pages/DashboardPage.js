@@ -492,10 +492,10 @@ function DashboardPage() {
           monthlyConsumption
         );
 
-        // Verificar se o usuário é admin para aplicar o valor 18.462
+        // Verificar se o usuário é admin para aplicar o valor 17.113
         const isAdmin = localStorage.getItem("isAdmin") === "true";
         if (isAdmin) {
-          setCurrentMonthConsumption("18.462 kWh");
+          setCurrentMonthConsumption("17.113 kWh");
         } else {
           setCurrentMonthConsumption(
             `${parseFloat(monthlyConsumption).toFixed(2)} kWh`
