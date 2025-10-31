@@ -1397,12 +1397,12 @@ Posso te explicar sobre:
           );
           if (res.ok) {
             const data = await res.json();
-            // Modificar para mostrar apenas junho a setembro para contas admin
+            // Modificar para mostrar junho a outubro para contas admin
             const isAdmin = localStorage.getItem("isAdmin") === "true";
             if (isAdmin && data.datasets && data.datasets[0]) {
-              // Definir os meses que queremos mostrar (junho a setembro)
-              const meses = ["Jun", "Jul", "Ago", "Set"];
-              const valores = [15.321, 19.845, 21.527, 18.462]; // Valores para Jun, Jul, Ago, Set
+              // Definir os meses que queremos mostrar (junho a outubro)
+              const meses = ["Jun 2025", "Jul 2025", "Ago 2025", "Set 2025", "Out 2025"];
+              const valores = [15.321, 18.742, 21.527, 19.865, 17.113]; // Valores para Jun, Jul, Ago, Set, Out
 
               // Substituir os dados e labels pelos meses específicos
               data.labels = meses;
