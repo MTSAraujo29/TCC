@@ -881,9 +881,9 @@ async function getMonthlyEnergyData(req, res) {
     // Verificar se o usuário é administrador
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { role: true },
+      select: { isAdmin: true },
     });
-    const isAdmin = user?.role === "ADMIN";
+    const isAdmin = user?.isAdmin === true;
 
     // Para administradores, retornar dados fixos para os meses de junho a outubro
     if (isAdmin) {
