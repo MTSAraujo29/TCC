@@ -15,9 +15,9 @@ function HomePage() {
               className="hero-logo-img"
             />
             <h1 className="hero-title">
-              Smart Energy
+              SisMon
               <span className="hero-subtitle">
-                Sistema Inteligente de Gerenciamento de Energia
+                Sistema Inteligente de Gerenciamento de Energia residencial
               </span>
             </h1>
           </div>

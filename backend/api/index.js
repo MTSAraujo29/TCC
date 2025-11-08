@@ -79,8 +79,8 @@ app.use((req, res, next) => {
 });
 
 // --- CONFIGURAÇÃO CORS ---
-// A URL do seu frontend no Netlify será passada para o Render como uma variável de ambiente (FRONTEND_URL).
-// Durante o desenvolvimento local do frontend, ela usará 'http://localhost:3000'.
+// A URL do frontend no Netlify será passada para o Render como uma variável de ambiente (FRONTEND_URL).
+// Durante o desenvolvimento local do frontend, usará 'http://localhost:3000'.
 const ALLOWED_ORIGIN =
   process.env.FRONTEND_URL || "https://smartenergytcc.com.br";
 

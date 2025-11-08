@@ -6,8 +6,6 @@ const prisma = new PrismaClient(); // Instância do Prisma
 // já que as funções como getDevices, getLatestEnergyReading etc.
 // devem ser implementadas lá ou diretamente aqui no controller usando prisma.
 // Se essas funções já estão no tasmota.service.js, o import está correto.
-// Se elas não estão e você vai implementá-las aqui, você não precisaria do import.
-// Pela estrutura atual do seu código, parece que você quer que tasmotaService contenha essas funções.
 const tasmotaService = require("../services/tasmota.service"); // Serviço para interagir com dados Tasmota
 
 // Cache para evitar logs repetitivos
@@ -660,28 +658,6 @@ async function getDashboardData(req, res) {
   }
 }
 
-// Atualiza o número do WhatsApp do usuário logado
-async function updateWhatsappNumber(req, res) {
-  const userId = req.user.userId;
-  const { whatsappNumber } = req.body;
-  // Validação simples: só aceita número com 13 dígitos (ex: 5562999999999)
-  if (!/^\d{13}$/.test(whatsappNumber)) {
-    return res
-      .status(400)
-      .json({ error: "Formato inválido. Exemplo: 5562999999999" });
-  }
-  try {
-    await prisma.user.update({
-      where: { id: userId },
-      data: { whatsappNumber },
-    });
-    return res.json({ success: true });
-  } catch (err) {
-    return res
-      .status(500)
-      .json({ error: "Erro ao atualizar número do WhatsApp." });
-  }
-}
 
 // Retorna os valores diários (últimos 7 dias) somando, por dia, o último EnergyYesterday salvo de cada dispositivo do usuário
 async function getDailyEnergyYesterday(req, res) {
