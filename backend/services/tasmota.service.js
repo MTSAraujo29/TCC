@@ -1,26 +1,27 @@
 // backend/services/tasmota.service.js
 
-// --- Importações de Módulos ---
-const mqtt = require("mqtt"); // Importa a biblioteca principal para comunicação MQTT.
-const { PrismaClient } = require("@prisma/client"); // Importa o PrismaClient, o ORM para interagir com o banco de dados.
-const energyTotalManager = require("./energyTotalManager"); // Importa nosso serviço customizado que centraliza as regras de negócio e cálculos de energia.
+// ATENÇÃO: Este serviço utiliza o padrão Singleton para as conexões MQTT.
+// NÃO crie novas conexões MQTT em outros arquivos! Sempre utilize as instâncias mqttClient e mqttClient2 deste serviço.
+// Isso é fundamental para não exceder o limite de sessões do HiveMQ.
 
-// --- Inicialização de Clientes ---
-const prisma = new PrismaClient(); // Cria uma instância global do Prisma para acesso ao banco.
+const mqtt = require("mqtt");
+const { PrismaClient } = require("@prisma/client"); // Importa o PrismaClient
+const energyTotalManager = require("./energyTotalManager"); // Importa o novo serviço
 
-// --- Configurações do Broker MQTT 1 (Principal) ---
-// Carrega as variáveis de ambiente (do arquivo .env) para o primeiro broker MQTT.
+// Instancia o PrismaClient uma única vez
+const prisma = new PrismaClient();
+
+// --- Configurações do MQTT (Broker HiveMQ Cloud) ---
+// Lendo do .env
 const MQTT_HOST = process.env.MQTT_HOST;
-const MQTT_PORT = process.env.MQTT_PORT || 8883; // Porta padrão 8883 (MQTTs)
+const MQTT_PORT = process.env.MQTT_PORT || 8883;
 const MQTT_USERNAME = process.env.MQTT_USERNAME;
 const MQTT_PASSWORD = process.env.MQTT_PASSWORD;
-const MQTT_PROTOCOL = process.env.MQTT_PROTOCOL || "mqtts"; // Protocolo 'mqtts' (seguro) por padrão
-const MQTT_URL = process.env.MQTT_URL; // URLs completas (podem ser usadas opcionalmente)
+const MQTT_PROTOCOL = process.env.MQTT_PROTOCOL || "mqtts";
+const MQTT_URL = process.env.MQTT_URL;
 const MQTT_WS_URL = process.env.MQTT_WS_URL;
 
-// --- Configurações do MQTT Broker 2 (Secundário) ---
-// Carrega as variáveis de ambiente para o segundo broker MQTT.
-// Ter dois brokers permite conectar dispositivos em redes ou locais diferentes.
+// --- Configurações do MQTT Broker 2 ---
 const MQTT_HOST2 = process.env.MQTT_HOST2;
 const MQTT_PORT2 = process.env.MQTT_PORT2 || 8883;
 const MQTT_USERNAME2 = process.env.MQTT_USERNAME2;
@@ -29,17 +30,14 @@ const MQTT_PROTOCOL2 = process.env.MQTT_PROTOCOL2 || "mqtts";
 const MQTT_URL2 = process.env.MQTT_TLS_URL2;
 const MQTT_WS_URL2 = process.env.MQTT_TLS_WS_URL2;
 
-// --- Tópicos MQTT dos Dispositivos ---
-// Lista de todos os tópicos que o backend precisa "ouvir" (subscrever).
-// Inclui tópicos de telemetria (SENSOR, STATE) e de status (STATUS, POWER).
+// Tópicos dos seus Sonoffs (ajuste conforme os Client IDs que você definiu no Tasmota)
+// Ex: Se o Client ID do seu Sonoff no Tasmota for 'sonoff_tv_sala', o tópico será 'tele/sonoff_tv_sala/STATE'
 const SONOFF_TOPICS = [
-  // Dispositivo 1 (conectado ao Broker 1)
   "stat/tasmota_C2BE64/STATUS10",
   "stat/tasmota_C2BE64/STATUS11",
   "stat/tasmota_C2BE64/POWER",
   "tele/tasmota_C2BE64/SENSOR",
   "tele/tasmota_C2BE64/STATE",
-  // Dispositivo 2 (conectado ao Broker 2)
   "stat/tasmota_C3B7EC/STATUS10",
   "stat/tasmota_C3B7EC/STATUS11",
   "stat/tasmota_C3B7EC/POWER",
@@ -47,27 +45,23 @@ const SONOFF_TOPICS = [
   "tele/tasmota_C3B7EC/STATE",
 ];
 
-// --- Configurações dos Clientes MQTT ---
-// Gera um ID de cliente único para esta instância do backend.
-// O sufixo aleatório evita conflitos se o backend for reiniciado rapidamente.
+// Client ID único para este backend MQTT
 const CLIENT_ID = `backend_tcc_monitor_${Math.random()
   .toString(16)
   .substr(2, 8)}`;
 
-// Objeto de opções de conexão para o Broker 1
 const MQTT_OPTIONS = {
   port: MQTT_PORT,
   username: MQTT_USERNAME,
   password: MQTT_PASSWORD,
-  clientId: CLIENT_ID, // Usa o mesmo Client ID para ambos (brokers diferentes)
-  clean: true, // Inicia uma sessão limpa, sem persistir mensagens
-  keepalive: 60, // Tempo em segundos para enviar "pings" e manter a conexão viva
-  reconnectPeriod: 1000, // Tenta reconectar a cada 1 segundo se a conexão cair
+  clientId: CLIENT_ID,
+  clean: true,
+  keepalive: 60,
+  reconnectPeriod: 1000,
   protocol: MQTT_PROTOCOL,
-  rejectUnauthorized: false, // IMPORTANTE: Permite conexões com certificados SSL autoassinados (bom para testes, inseguro para produção)
+  rejectUnauthorized: false, // Em produção, para certificados de CA confiável, pode ser true. Para desenvolvimento, false pode ser útil.
 };
 
-// Objeto de opções de conexão para o Broker 2
 const MQTT_OPTIONS2 = {
   port: MQTT_PORT2,
   username: MQTT_USERNAME2,
@@ -77,68 +71,57 @@ const MQTT_OPTIONS2 = {
   keepalive: 60,
   reconnectPeriod: 1000,
   protocol: MQTT_PROTOCOL2,
-  rejectUnauthorized: false, // Mesma observação de segurança do Broker 1
+  rejectUnauthorized: false,
 };
 
-// --- Variáveis de Estado e Controle ---
-let mqttClient = null; // Armazena a instância do cliente conectado ao Broker 1
-let mqttClient2 = null; // Armazena a instância do cliente conectado ao Broker 2
-let mqttClientInitCount = 0; // Contador para depuração (quantas vezes tentamos iniciar o Cliente 1)
-let mqttClient2InitCount = 0; // Contador para depuração (quantas vezes tentamos iniciar o Cliente 2)
-let mqttClientInactivityTimer = null; // Temporizador para desconectar o Cliente 1 por inatividade
-let mqttClient2InactivityTimer = null; // Temporizador para desconectar o Cliente 2 por inatividade
-const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000; // Define o tempo limite: 5 minutos
+let mqttClient = null;
+let mqttClient2 = null;
+let mqttClientInitCount = 0;
+let mqttClient2InitCount = 0;
+let mqttClientInactivityTimer = null;
+let mqttClient2InactivityTimer = null;
+const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutos
 
-// --- Cache em Memória ---
-// Guarda o último valor de energia total (kWh) recebido de cada dispositivo.
-// Isso é crucial para o 'energyTotalManager' calcular o consumo parcial.
+// Cache em memória para o valor mais recente de energia total de cada dispositivo
 const lastTotalEnergyCache = {};
 
-// Função auxiliar para ATUALIZAR o valor de energia total no cache
 function updateTotalEnergyCache(deviceId, valor) {
   lastTotalEnergyCache[deviceId] = valor;
 }
 
-// Função auxiliar para LER o valor de energia total do cache
 function getTotalEnergyFromCache(deviceId) {
-  return lastTotalEnergyCache[deviceId] || null; // Retorna o valor ou nulo se não existir
+  return lastTotalEnergyCache[deviceId] || null;
 }
 
-// --- Gerenciador de Inatividade ---
-// Esta função reinicia o "cronômetro" de inatividade.
-// Se um cliente ficar 5 minutos sem enviar ou receber NADA, ele será desconectado
-// para economizar recursos e forçar uma reconexão limpa se necessário.
 function resetMqttClientInactivityTimer(client, clientName) {
   if (clientName === "mqttClient") {
-    if (mqttClientInactivityTimer) clearTimeout(mqttClientInactivityTimer); // Limpa o timer antigo
-    // Cria um novo timer
+    if (mqttClientInactivityTimer) clearTimeout(mqttClientInactivityTimer);
     mqttClientInactivityTimer = setTimeout(() => {
       console.warn(
         `[MQTT] ${clientName} inativo por mais de 5 minutos. Desconectando...`
       );
-      client.end(true); // Força a desconexão
+      client.end(true, () => {
+        console.log(`[MQTT] ${clientName} desconectado por inatividade.`);
+      });
     }, INACTIVITY_TIMEOUT_MS);
   } else if (clientName === "mqttClient2") {
-    if (mqttClient2InactivityTimer) clearTimeout(mqttClient2InactivityTimer); // Limpa o timer antigo
-    // Cria um novo timer
+    if (mqttClient2InactivityTimer) clearTimeout(mqttClient2InactivityTimer);
     mqttClient2InactivityTimer = setTimeout(() => {
       console.warn(
         `[MQTT] ${clientName} inativo por mais de 5 minutos. Desconectando...`
       );
-      client.end(true); // Força a desconexão
+      client.end(true, () => {
+        console.log(`[MQTT] ${clientName} desconectado por inatividade.`);
+      });
     }, INACTIVITY_TIMEOUT_MS);
   }
 }
 
-// --- Funções Principais do Serviço ---
+// --- Funções de Serviço Tasmota ---
 
-/**
- * Inicializa AMBOS os clientes MQTT.
- * Esta função é "idemponente": ela só tenta conectar se o cliente ainda não estiver conectado.
- */
 async function initializeMqttClients() {
-  // --- Lógica para o Broker 1 ---
-  if (!mqttClient) { // Só executa se o cliente 1 não estiver inicializado
+  // Broker 1
+  if (!mqttClient) {
     mqttClientInitCount++;
     console.log(
       `[MQTT] Inicializando conexão MQTT 1 (vezes inicializado: ${mqttClientInitCount})`
@@ -146,18 +129,12 @@ async function initializeMqttClients() {
     console.log(
       `Tentando conectar ao broker MQTT 1: ${MQTT_PROTOCOL}://${MQTT_HOST}:${MQTT_PORT}`
     );
-    // Efetivamente inicia a conexão
     mqttClient = mqtt.connect(
       `${MQTT_PROTOCOL}://${MQTT_HOST}:${MQTT_PORT}`,
       MQTT_OPTIONS
     );
-
-    // --- Definição de "Listeners" de Eventos para o Cliente 1 ---
-
-    // Evento: 'connect' (disparado quando a conexão é bem-sucedida)
     mqttClient.on("connect", () => {
       console.log("Conectado ao broker MQTT 1!");
-      // Filtra APENAS os tópicos do Dispositivo 1 (C2BE64) e se inscreve neles
       SONOFF_TOPICS.filter((t) => t.includes("C2BE64")).forEach((topic) => {
         mqttClient.subscribe(topic, (err) => {
           if (!err) {
@@ -170,22 +147,15 @@ async function initializeMqttClients() {
           }
         });
       });
-      // Inicia o timer de inatividade assim que conecta
       resetMqttClientInactivityTimer(mqttClient, "mqttClient");
     });
-
-    // Evento: 'message' (disparado quando uma mensagem chega de um tópico inscrito)
     mqttClient.on("message", (topic, message) => {
-      resetMqttClientInactivityTimer(mqttClient, "mqttClient"); // Qualquer mensagem reinicia o timer
-      handleMqttMessage(topic, message, "broker1"); // Chama a função central para processar a mensagem
+      resetMqttClientInactivityTimer(mqttClient, "mqttClient");
+      handleMqttMessage(topic, message, "broker1");
     });
-
-    // Evento: 'packetsend' (disparado quando NÓS enviamos um pacote, ex: um comando)
     mqttClient.on("packetsend", () => {
-      resetMqttClientInactivityTimer(mqttClient, "mqttClient"); // Também reinicia o timer
+      resetMqttClientInactivityTimer(mqttClient, "mqttClient");
     });
-
-    // Eventos de 'close' (desconexão) e 'error' (erro)
     mqttClient.on("close", () => {
       console.warn("[MQTT] Conexão MQTT 1 fechada!");
     });
@@ -197,10 +167,7 @@ async function initializeMqttClients() {
       "[MQTT] mqttClient já inicializado, reutilizando conexão existente."
     );
   }
-
-  // --- Lógica para o Broker 2 ---
-  // O bloco abaixo é IDÊNTICO ao do Broker 1, mas para as variáveis do mqttClient2
-  // e filtrando os tópicos do Dispositivo 2 (C3B7EC).
+  // Broker 2
   if (!mqttClient2) {
     mqttClient2InitCount++;
     console.log(
@@ -213,7 +180,6 @@ async function initializeMqttClients() {
       `${MQTT_PROTOCOL2}://${MQTT_HOST2}:${MQTT_PORT2}`,
       MQTT_OPTIONS2
     );
-
     mqttClient2.on("connect", () => {
       console.log("Conectado ao broker MQTT 2!");
       SONOFF_TOPICS.filter((t) => t.includes("C3B7EC")).forEach((topic) => {
@@ -230,20 +196,16 @@ async function initializeMqttClients() {
       });
       resetMqttClientInactivityTimer(mqttClient2, "mqttClient2");
     });
-
     mqttClient2.on("message", (topic, message) => {
       resetMqttClientInactivityTimer(mqttClient2, "mqttClient2");
       handleMqttMessage(topic, message, "broker2");
     });
-
     mqttClient2.on("packetsend", () => {
       resetMqttClientInactivityTimer(mqttClient2, "mqttClient2");
     });
-
     mqttClient2.on("close", () => {
       console.warn("[MQTT] Conexão MQTT 2 fechada!");
     });
-
     mqttClient2.on("error", (err) => {
       console.error("[MQTT] Erro na conexão MQTT 2:", err);
     });
@@ -254,108 +216,95 @@ async function initializeMqttClients() {
   }
 }
 
-/**
- * Função CENTRALIZADA para processar todas as mensagens MQTT recebidas.
- * Ela identifica o tópico, extrai os dados e decide o que fazer com eles.
- * @param {string} topic - O tópico do qual a mensagem veio (ex: "tele/tasmota_C2BE64/SENSOR")
- * @param {Buffer} message - O conteúdo da mensagem (geralmente um JSON em formato Buffer)
- * @param {string} broker - Identificador ("broker1" ou "broker2") para sabermos de onde veio
- */
+// Função centralizada para processar mensagens de ambos os brokers
 async function handleMqttMessage(topic, message, broker) {
-  const payload = message.toString(); // Converte a mensagem de Buffer para String (JSON)
+  const payload = message.toString();
   try {
-    // --- Lógica para Tópicos de Energia (STATUS10 e SENSOR) ---
-    // Estes tópicos contêm dados de potência, tensão, corrente, energia total, etc.
-    // STATUS10: Geralmente vem como resposta a um comando.
-    // SENSOR: Vem periodicamente (telemetria).
-
+    // STATUS10: Dados de energia
     if (topic.endsWith("STATUS10")) {
-      const data = JSON.parse(payload); // Converte o JSON (string) para um objeto JS
-      const tasmotaTopic = topic.split("/")[1]; // Extrai o ID do dispositivo (ex: "tasmota_C2BE64")
-
-      // Busca o dispositivo no banco de dados usando seu ID (tasmotaTopic)
+      const data = JSON.parse(payload);
+      const tasmotaTopic = topic.split("/")[1];
       const device = await prisma.device.findUnique({
         where: { tasmotaTopic },
       });
-
-      // Se o dispositivo não estiver cadastrado no banco, ignora a mensagem.
       if (!device) {
         console.warn(
           `[${broker}] Dispositivo com tasmotaTopic "${tasmotaTopic}" não encontrado no banco de dados. Pulando salvamento.`
         );
         return;
       }
-      // Validação: Garante que o dispositivo C2BE64 (broker1) só seja processado se a msg veio do broker1.
       if (device.broker !== broker) {
         console.warn(
           `[${broker}] Dispositivo encontrado, mas broker não bate. Esperado: ${device.broker}`
         );
         return;
       }
-
-      // Verifica se a estrutura de dados esperada (StatusSNS.ENERGY) existe no JSON
       if (data.StatusSNS && data.StatusSNS.ENERGY) {
-        const energy = data.StatusSNS.ENERGY; // Pega o objeto de energia
-        
-        // Atualiza o cache em memória com o valor de Energia Total (kWh)
+        const energy = data.StatusSNS.ENERGY;
+        console.log(
+          `[${broker}] Payload STATUS10 recebido do Tasmota:`,
+          JSON.stringify(energy, null, 2)
+        );
         updateTotalEnergyCache(device.id, energy.Total);
-
-        // Envia os dados brutos para o 'energyTotalManager' para cálculos
-        // (ex: calcular o consumo parcial desde a última leitura)
         const processedData = await energyTotalManager.processEnergyData(
           {
             power: energy.Power,
             voltage: energy.Voltage,
             current: energy.Current,
-            totalEnergy: energy.Total, // kWh total acumulado no dispositivo
+            totalEnergy: energy.Total,
             EnergyToday: energy.Today,
             EnergyYesterday: energy.Yesterday,
             ApparentPower: energy.ApparentPower,
             ReactivePower: energy.ReactivePower,
             PowerFactor: energy.Factor,
-            timestamp: new Date(), // Adiciona a data/hora atual
+            timestamp: new Date(),
           },
-          device.id, // ID do dispositivo no nosso banco
+          device.id,
           tasmotaTopic
         );
-
-        // SALVA a leitura de energia processada no banco de dados
+        console.log(
+          `[${broker}] Dados processados para salvar (STATUS10):`,
+          JSON.stringify(processedData, null, 2)
+        );
         const leituraSalva = await prisma.energyReading.create({
           data: {
-            ...processedData, // Inclui todos os dados processados
-            brokerLabel: broker, // Salva qual broker enviou (para depuração)
+            ...processedData,
+            brokerLabel: broker,
           },
         });
       }
     }
 
-    // --- Lógica para Tópicos de Status (Ligado/Desligado) ---
-    // STATUS11, STATE, e POWER informam se o relé está "ON" ou "OFF".
-
-    // Tópico: STATUS11 (Resposta a comando de status)
+    // STATUS11: Status do dispositivo (POWER)
     if (topic.endsWith("STATUS11")) {
       const data = JSON.parse(payload);
       const tasmotaTopic = topic.split("/")[1];
       const device = await prisma.device.findUnique({
         where: { tasmotaTopic },
       });
-      if (!device) return; // Ignora se não achar o dispositivo
-      if (device.broker !== broker) return; // Ignora se o broker estiver errado
-
-      // Verifica se a informação de "POWER" existe
+      if (!device) {
+        console.warn(
+          `[${broker}] Dispositivo com tasmotaTopic "${tasmotaTopic}" não encontrado no banco de dados. Pulando atualização de status.`
+        );
+        return;
+      }
+      if (device.broker !== broker) {
+        console.warn(
+          `[${broker}] Dispositivo encontrado, mas broker não bate. Esperado: ${device.broker}`
+        );
+        return;
+      }
       if (data.StatusSTS && typeof data.StatusSTS.POWER !== "undefined") {
-        const isOn = data.StatusSTS.POWER === "ON"; // Converte "ON" (string) para true (boolean)
-        
-        // ATUALIZA o campo 'powerState' do dispositivo no banco de dados
+        const isOn = data.StatusSTS.POWER === "ON";
         await prisma.device.update({
           where: { id: device.id },
           data: { powerState: isOn },
         });
+        // console.log(`Status de powerState atualizado para ${isOn} no device ${tasmotaTopic}`);
       }
     }
 
-    // Tópico: SENSOR (Telemetria periódica)
-    // O Tasmota também envia dados de energia no tópico SENSOR.
+    // SENSOR: Dados de energia periódicos
     if (topic.endsWith("SENSOR")) {
       const data = JSON.parse(payload);
       const tasmotaTopic = topic.split("/")[1];
@@ -364,12 +313,16 @@ async function handleMqttMessage(topic, message, broker) {
       });
       if (!device) return;
       if (device.broker !== broker) {
+        console.warn(
+          `[${broker}] Dispositivo encontrado, mas broker não bate. Esperado: ${device.broker}`
+        );
         return;
       }
-
-      // A estrutura do SENSOR é um pouco diferente do STATUS10 (não tem 'StatusSNS')
       if (data.ENERGY) {
-        // A lógica de processamento e salvamento é IDÊNTICA à do STATUS10
+        console.log(
+          `[${broker}] Payload SENSOR recebido do Tasmota:`,
+          JSON.stringify(data.ENERGY, null, 2)
+        );
         updateTotalEnergyCache(device.id, data.ENERGY.Total);
         const processedData = await energyTotalManager.processEnergyData(
           {
@@ -387,8 +340,10 @@ async function handleMqttMessage(topic, message, broker) {
           device.id,
           tasmotaTopic
         );
-
-        // Salva no banco
+        console.log(
+          `[${broker}] Dados processados para salvar (SENSOR):`,
+          JSON.stringify(processedData, null, 2)
+        );
         const leituraSalva = await prisma.energyReading.create({
           data: {
             ...processedData,
@@ -398,7 +353,7 @@ async function handleMqttMessage(topic, message, broker) {
       }
     }
 
-    // Tópico: STATE (Telemetria periódica de status)
+    // STATE: Status do dispositivo
     if (topic.endsWith("STATE")) {
       const data = JSON.parse(payload);
       const tasmotaTopic = topic.split("/")[1];
@@ -407,22 +362,22 @@ async function handleMqttMessage(topic, message, broker) {
       });
       if (!device) return;
       if (device.broker !== broker) {
+        console.warn(
+          `[${broker}] Dispositivo encontrado, mas broker não bate. Esperado: ${device.broker}`
+        );
         return;
       }
-
-      // Verifica o campo "POWER" (assim como no STATUS11)
       if (typeof data.POWER !== "undefined") {
         const isOn = data.POWER === "ON";
-        // Atualiza o estado no banco
         await prisma.device.update({
           where: { id: device.id },
           data: { powerState: isOn },
         });
+        // console.log(`Status de powerState (STATE) atualizado para ${isOn} no device ${tasmotaTopic}`);
       }
     }
 
-    // Tópico: POWER (Publicado imediatamente quando o relé muda)
-    // Este é o tópico mais rápido para saber o status (ON/OFF).
+    // POWER: Mudança de estado ON/OFF
     if (topic.endsWith("POWER")) {
       const tasmotaTopic = topic.split("/")[1];
       const device = await prisma.device.findUnique({
@@ -430,20 +385,19 @@ async function handleMqttMessage(topic, message, broker) {
       });
       if (!device) return;
       if (device.broker !== broker) {
+        console.warn(
+          `[${broker}] Dispositivo encontrado, mas broker não bate. Esperado: ${device.broker}`
+        );
         return;
       }
-      
-      // O payload aqui não é JSON, é apenas a string "ON" ou "OFF"
-      const isOn = payload === "ON"; 
-      // Atualiza o estado no banco
+      const isOn = payload === "ON";
       await prisma.device.update({
         where: { id: device.id },
         data: { powerState: isOn },
       });
+      // console.log(`Status de powerState (POWER) atualizado para ${isOn} no device ${tasmotaTopic}`);
     }
   } catch (error) {
-    // Bloco TRY/CATCH: Se der erro ao processar UMA mensagem (ex: JSON mal formado),
-    // o serviço apenas loga o erro e continua rodando, sem "quebrar".
     console.error(
       `[${broker}] Erro ao processar ou salvar mensagem MQTT:`,
       error
@@ -452,22 +406,12 @@ async function handleMqttMessage(topic, message, broker) {
   }
 }
 
-/**
- * Função para ENVIAR comandos (publicar) para os dispositivos.
- * Ex: Ligar/Desligar o relé.
- * @param {string} topic - O tópico de comando (ex: "cmnd/tasmota_C2BE64/POWER")
- * @param {string} message - A mensagem (ex: "ON", "OFF", "TOGGLE")
- * @param {string} broker - Qual broker ("broker1" ou "broker2") deve enviar o comando
- */
+// Função para publicar comando no broker correto
 async function publishMqttCommand(topic, message, broker) {
-  // Roteamento: Verifica para qual broker o comando deve ir
   if (broker === "broker2") {
-    // Garante que o cliente 2 esteja conectado antes de tentar publicar
     if (!mqttClient2) await initializeMqttClients();
-    
-    // Usa uma Promise para que a função que chamou saiba se o comando foi enviado
     return new Promise((resolve, reject) => {
-      mqttClient2.publish(topic, message, (err) => { // Publica (envia) a mensagem
+      mqttClient2.publish(topic, message, (err) => {
         if (err) {
           console.error("[Broker2] Erro ao publicar comando MQTT:", err);
           reject(err);
@@ -480,7 +424,6 @@ async function publishMqttCommand(topic, message, broker) {
       });
     });
   } else {
-    // Lógica idêntica para o Broker 1 (padrão)
     if (!mqttClient) await initializeMqttClients();
     return new Promise((resolve, reject) => {
       mqttClient.publish(topic, message, (err) => {
@@ -498,24 +441,19 @@ async function publishMqttCommand(topic, message, broker) {
   }
 }
 
-// --- Re-exportação de Funções ---
-// "Puxa" as funções do 'energyTotalManager' e as exporta a partir deste módulo.
-// Isso centraliza o acesso: outros módulos (como controllers) podem importar
-// tudo relacionado a energia e Tasmota apenas deste arquivo.
+// Exporta o cliente Prisma para que possa ser usado em outros lugares (opcional, mas comum)
+// module.exports.prisma = prisma; // Você pode adicionar isso se quiser acessar 'prisma' de outros arquivos
+
+// Corrigir exportação: importar utilitários do energyTotalManager
 const isLastDayOfMonth = energyTotalManager.isLastDayOfMonth;
 const isPenultimateDayOfMonth = energyTotalManager.isPenultimateDayOfMonth;
 const calculateMonthlyConsumption =
   energyTotalManager.calculateMonthlyConsumption;
 
-// --- Exportações do Módulo ---
-// Expõe as funções que precisam ser acessadas por outras partes do backend.
 module.exports = {
-  // Funções principais deste serviço
-  initializeMqttClients, // Para ser chamada quando o servidor iniciar
-  publishMqttCommand, // Para os controllers poderem enviar comandos
-  getTotalEnergyFromCache, // Para os controllers obterem o último valor de kWh
-
-  // Funções "re-exportadas" do energyTotalManager
+  initializeMqttClients,
+  publishMqttCommand,
+  getTotalEnergyFromCache, // Exporta função para o controller
   isLastDayOfMonth,
   isPenultimateDayOfMonth,
   calculateMonthlyConsumption,

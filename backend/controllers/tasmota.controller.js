@@ -4,6 +4,8 @@ const energyTotalManager = require("../services/energyTotalManager"); // NOVO: I
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+// A função 'getDevice' é um bom middleware para rotas que precisam de um 'deviceId'
+// Certifique-se de que ela seja usada nas rotas apropriadas em tasmotaRoutes.js.
 async function getDevice(req, res, next) {
   const { deviceId } = req.params;
   const userId = req.user.userId; // ID do usuário do token JWT
@@ -286,7 +288,6 @@ async function getHistoricalEnergyReadings(req, res) {
 // Publicar comando para o dispositivo Tasmota (ligar/desligar)
 async function toggleDevicePower(req, res) {
   // req.device já foi preenchido pelo middleware getDevice
-  //Valida a Intenção do Usuário
   const device = req.device;
   const { state } = req.body; // 'ON' ou 'OFF'
 
@@ -312,9 +313,8 @@ async function toggleDevicePower(req, res) {
     console.log(
       `[toggleDevicePower] Enviando comando MQTT: ${topic} -> ${command} via ${broker}`
     );
-    
+
     // O tasmotaService precisa ter a função publishMqttCommand exportada
-    //Chama o tasmota.service para enviar o comando MQTT
     await tasmotaService.publishMqttCommand(topic, command, broker);
 
     if (state === "ON") {
